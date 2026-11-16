@@ -156,7 +156,7 @@ public class TntSecurityProbes {
         helper.setBlock(glassMarker, Blocks.GLASS);
         helper.setBlock(planksMarker, Blocks.OAK_PLANKS);
 
-        ServerPlayer archer = CustomTntGameTests.spawnSurvivalPlayer(helper, "AliceArcher", new Vec3(9.5, 4.0, 3.5));
+        ServerPlayer archer = CustomTntGameTests.spawnSurvivalPlayer(helper, "AlexArcher", new Vec3(9.5, 4.0, 3.5));
 
         // 1. Redstone ignition on Party TNT
         BlockPos partyPos = new BlockPos(3, 2, 3);
@@ -229,8 +229,8 @@ public class TntSecurityProbes {
         BlockPos chestPos = new BlockPos(7, 2, 4);
         helper.setBlock(chestPos, Blocks.CHEST);
 
-        ServerPlayer bob = CustomTntGameTests.spawnSurvivalPlayer(helper, "BobConfigOn", new Vec3(6.0, 2.0, 7.5));
-        ChesterEntity chester = ChesterService.summon(bob);
+        ServerPlayer steve = CustomTntGameTests.spawnSurvivalPlayer(helper, "SteveConfigOn", new Vec3(6.0, 2.0, 7.5));
+        ChesterEntity chester = ChesterService.summon(steve);
         Vec3 chesterAbs = helper.absoluteVec(new Vec3(8.5, 2.0, 7.5));
         chester.moveTo(chesterAbs.x, chesterAbs.y, chesterAbs.z, 0.0F, 0.0F);
         Vec3 center = helper.absoluteVec(new Vec3(7.5, 2.0, 7.5));
@@ -243,7 +243,7 @@ public class TntSecurityProbes {
 
             for (TntVariant safeVariant : List.of(TntVariant.PARTY, TntVariant.BOUNCE, TntVariant.FROST_NOVA)) {
                 ArtilianPrimedTnt safeTnt = new ArtilianPrimedTnt(
-                        level, center.x, center.y, center.z, bob, safeVariant);
+                        level, center.x, center.y, center.z, steve, safeVariant);
                 safeTnt.setFuse(1);
                 level.addFreshEntity(safeTnt);
                 safeTnt.tick();
@@ -251,14 +251,14 @@ public class TntSecurityProbes {
 
             assertShellIntact(helper, shell, "P1-10");
             helper.assertBlockPresent(Blocks.CHEST, chestPos);
-            helper.assertTrue(bob.getHealth() == bob.getMaxHealth(),
+            helper.assertTrue(steve.getHealth() == steve.getMaxHealth(),
                     "EXPLOITED P1-10: safe custom TNTs damaged player when config enabled");
             helper.assertTrue(chester.isAlive(),
                     "EXPLOITED P1-10: safe custom TNTs harmed Chester when config enabled");
 
             // Now confirm Cluster Quarry actually mines stone when config is true, while sparing Chest, Player & Chester.
             ArtilianPrimedTnt quarry = new ArtilianPrimedTnt(
-                    level, center.x, center.y, center.z, bob, TntVariant.CLUSTER_QUARRY);
+                    level, center.x, center.y, center.z, steve, TntVariant.CLUSTER_QUARRY);
             quarry.setFuse(1);
             level.addFreshEntity(quarry);
             quarry.tick();
@@ -268,7 +268,7 @@ public class TntSecurityProbes {
             helper.assertTrue(brokeAnyShellOrFloor,
                     "Cluster Quarry TNT should mine blocks when allowDestructiveCustomTnt is true");
             helper.assertBlockPresent(Blocks.CHEST, chestPos);
-            helper.assertTrue(bob.getHealth() == bob.getMaxHealth(),
+            helper.assertTrue(steve.getHealth() == steve.getMaxHealth(),
                     "EXPLOITED P1-10: Cluster Quarry harmed player");
             helper.assertTrue(chester.isAlive(),
                     "EXPLOITED P1-10: Cluster Quarry harmed Chester");
@@ -276,7 +276,7 @@ public class TntSecurityProbes {
             ArtilianConfig.setTestOverride(null);
             level.getEntitiesOfClass(ArtilianPrimedTnt.class, arenaBox).forEach(ArtilianPrimedTnt::discard);
             chester.discard();
-            CustomTntGameTests.removeTestPlayer(level, bob);
+            CustomTntGameTests.removeTestPlayer(level, steve);
         }
         helper.succeed();
     }

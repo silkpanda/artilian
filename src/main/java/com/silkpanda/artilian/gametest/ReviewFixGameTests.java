@@ -67,7 +67,7 @@ public class ReviewFixGameTests {
     @GameTest(template = "tnt_arena", timeoutTicks = 40)
     public static void sparkWandPrefersMonsterOverCloserAnimal(GameTestHelper helper) {
         buildStoneFloor(helper);
-        ServerPlayer alice = spawnCaster(helper, "AliceAim");
+        ServerPlayer alex = spawnCaster(helper, "AlexAim");
         // Sheep 2 blocks ahead, zombie 8: six apart, so the sheep is outside the 4.5-block chain too.
         Sheep sheep = helper.spawnWithNoFreeWill(EntityType.SHEEP, new Vec3(5.5, 2.0, 7.5));
         Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new Vec3(11.5, 2.0, 7.5));
@@ -75,7 +75,7 @@ public class ReviewFixGameTests {
         float zombieHp = zombie.getHealth();
 
         try {
-            castSparkAt(helper, alice, zombie);
+            castSparkAt(helper, alex, zombie);
             helper.assertTrue(zombie.getHealth() < zombieHp,
                     "Spark Wand should hit the zombie behind the sheep, zombie hp " + zombie.getHealth());
             helper.assertTrue(sheep.getHealth() == sheepHp && !sheep.hasEffect(MobEffects.GLOWING),
@@ -83,7 +83,7 @@ public class ReviewFixGameTests {
         } finally {
             sheep.discard();
             zombie.discard();
-            CustomTntGameTests.removeTestPlayer(helper.getLevel(), alice);
+            CustomTntGameTests.removeTestPlayer(helper.getLevel(), alex);
         }
         helper.succeed();
     }
@@ -92,7 +92,7 @@ public class ReviewFixGameTests {
     @GameTest(template = "tnt_arena", timeoutTicks = 40)
     public static void sparkWandBlockedByWall(GameTestHelper helper) {
         buildStoneFloor(helper);
-        ServerPlayer alice = spawnCaster(helper, "AliceWall");
+        ServerPlayer alex = spawnCaster(helper, "AlexWall");
         for (int y = 2; y <= 4; y++) {
             for (int z = 6; z <= 8; z++) {
                 helper.setBlock(new BlockPos(6, y, z), Blocks.STONE);
@@ -102,12 +102,12 @@ public class ReviewFixGameTests {
         float zombieHp = zombie.getHealth();
 
         try {
-            castSparkAt(helper, alice, zombie);
+            castSparkAt(helper, alex, zombie);
             helper.assertTrue(zombie.getHealth() == zombieHp && !zombie.hasEffect(MobEffects.GLOWING),
                     "Spark Wand reached through a stone wall, zombie hp " + zombieHp + " -> " + zombie.getHealth());
         } finally {
             zombie.discard();
-            CustomTntGameTests.removeTestPlayer(helper.getLevel(), alice);
+            CustomTntGameTests.removeTestPlayer(helper.getLevel(), alex);
         }
         helper.succeed();
     }
@@ -116,17 +116,17 @@ public class ReviewFixGameTests {
     @GameTest(template = "tnt_arena", timeoutTicks = 40)
     public static void sparkWandSparesIronGolem(GameTestHelper helper) {
         buildStoneFloor(helper);
-        ServerPlayer alice = spawnCaster(helper, "AliceGolem");
+        ServerPlayer alex = spawnCaster(helper, "AlexGolem");
         IronGolem golem = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new Vec3(7.5, 2.0, 7.5));
         float golemHp = golem.getHealth();
 
         try {
-            castSparkAt(helper, alice, golem);
+            castSparkAt(helper, alex, golem);
             helper.assertTrue(golem.getHealth() == golemHp && !golem.hasEffect(MobEffects.GLOWING),
                     "Spark Wand hurt an iron golem, hp " + golemHp + " -> " + golem.getHealth());
         } finally {
             golem.discard();
-            CustomTntGameTests.removeTestPlayer(helper.getLevel(), alice);
+            CustomTntGameTests.removeTestPlayer(helper.getLevel(), alex);
         }
         helper.succeed();
     }
@@ -135,18 +135,18 @@ public class ReviewFixGameTests {
     @GameTest(template = "tnt_arena", timeoutTicks = 40)
     public static void partyTntDoesNotBuffMonsters(GameTestHelper helper) {
         buildStoneFloor(helper);
-        ServerPlayer bob = CustomTntGameTests.spawnSurvivalPlayer(helper, "BobParty", new Vec3(5.5, 2.0, 7.5));
+        ServerPlayer steve = CustomTntGameTests.spawnSurvivalPlayer(helper, "SteveParty", new Vec3(5.5, 2.0, 7.5));
         Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new Vec3(9.5, 2.0, 7.5));
 
         try {
             detonate(helper, TntVariant.PARTY);
-            helper.assertTrue(bob.hasEffect(MobEffects.MOVEMENT_SPEED),
+            helper.assertTrue(steve.hasEffect(MobEffects.MOVEMENT_SPEED),
                     "Party TNT should still give players Speed");
             helper.assertTrue(!zombie.hasEffect(MobEffects.MOVEMENT_SPEED) && !zombie.hasEffect(MobEffects.REGENERATION),
                     "Party TNT gave a zombie Speed or Regeneration");
         } finally {
             zombie.discard();
-            CustomTntGameTests.removeTestPlayer(helper.getLevel(), bob);
+            CustomTntGameTests.removeTestPlayer(helper.getLevel(), steve);
         }
         helper.succeed();
     }

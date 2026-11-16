@@ -63,22 +63,22 @@ public class PetCaptureGameTests {
     @GameTest(template = "tnt_arena")
     public static void biomeTreatBefriendsWildCrystalFoxAndCaptureCrystalCapturesIt(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AlicePet");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexPet");
         CrystalFoxEntity wildFox = spawnFox(helper, new BlockPos(7, 1, 7));
 
         ItemStack treats = new ItemStack(ArtilianItems.BIOME_TREAT.get(), 3);
-        alice.setItemInHand(InteractionHand.MAIN_HAND, treats);
-        alice.interactOn(wildFox, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, treats);
+        alex.interactOn(wildFox, InteractionHand.MAIN_HAND);
         helper.assertTrue(wildFox.getAffinity() == 50 && !wildFox.isBefriended(),
                 "First Biome Treat should raise affinity to 50, got " + wildFox.getAffinity());
 
-        alice.interactOn(wildFox, InteractionHand.MAIN_HAND);
+        alex.interactOn(wildFox, InteractionHand.MAIN_HAND);
         helper.assertTrue(wildFox.isBefriended() && treats.getCount() == 1,
                 "Second Biome Treat should befriend wild Crystal Fox and leave 1 treat");
 
         ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, crystal);
-        alice.interactOn(wildFox, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        alex.interactOn(wildFox, InteractionHand.MAIN_HAND);
 
         helper.assertFalse(wildFox.isAlive(), "Captured wild Crystal Fox should leave the world into the crystal");
         CapturedPetData data = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
@@ -86,8 +86,8 @@ public class PetCaptureGameTests {
         helper.assertTrue(data.primaryElement() == PetElement.CRYSTAL
                         && data.secondaryElement().equals(Optional.of(PetElement.NATURE)),
                 "Crystal Fox should store Crystal / Nature elements");
-        helper.assertTrue(data.isOwnedBy(alice.getUUID()) && !data.fainted() && !data.summoned(),
-                "Captured crystal should belong to Alice and be ready to summon");
+        helper.assertTrue(data.isOwnedBy(alex.getUUID()) && !data.fainted() && !data.summoned(),
+                "Captured crystal should belong to Alex and be ready to summon");
         helper.assertTrue(Math.abs(CaptureCrystalItem.getVisualState(crystal) - 0.5F) < 0.01F,
                 "Filled ready crystal visual state should be 0.5");
 
@@ -97,19 +97,19 @@ public class PetCaptureGameTests {
     @GameTest(template = "tnt_arena")
     public static void captureCrystalSummonsAndRecallsCrystalFoxPreservingIdentityAndHealth(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceSummon");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexSummon");
         CrystalFoxEntity wildFox = spawnFox(helper, new BlockPos(7, 1, 7));
         wildFox.addAffinity(100);
 
         ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, crystal);
-        alice.interactOn(wildFox, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        alex.interactOn(wildFox, InteractionHand.MAIN_HAND);
 
         UUID originalPetId = crystal.get(ArtilianDataComponents.CAPTURED_PET.get()).petId();
 
         // Summon Crystal Fox
-        crystal.use(level, alice, InteractionHand.MAIN_HAND);
-        List<? extends CrystalFoxEntity> foxes = foxesOf(helper, alice);
+        crystal.use(level, alex, InteractionHand.MAIN_HAND);
+        List<? extends CrystalFoxEntity> foxes = foxesOf(helper, alex);
         helper.assertTrue(foxes.size() == 1, "Expected 1 summoned Crystal Fox, found " + foxes.size());
         CrystalFoxEntity summoned = foxes.get(0);
         helper.assertTrue(summoned.getPetId().equals(Optional.of(originalPetId)),
@@ -120,7 +120,7 @@ public class PetCaptureGameTests {
         // Injure and rename, then recall
         summoned.setHealth(12.0F);
         summoned.setCustomName(Component.literal("Sparkle"));
-        crystal.use(level, alice, InteractionHand.MAIN_HAND);
+        crystal.use(level, alex, InteractionHand.MAIN_HAND);
 
         helper.assertFalse(summoned.isAlive(), "Recalling should remove Crystal Fox entity from the world");
         CapturedPetData recalledData = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
@@ -130,8 +130,8 @@ public class PetCaptureGameTests {
                 "Recalled crystal must preserve 12.0 HP and custom name 'Sparkle'");
 
         // Re-summon and verify state persisted
-        crystal.use(level, alice, InteractionHand.MAIN_HAND);
-        List<? extends CrystalFoxEntity> resummoned = foxesOf(helper, alice);
+        crystal.use(level, alex, InteractionHand.MAIN_HAND);
+        List<? extends CrystalFoxEntity> resummoned = foxesOf(helper, alex);
         helper.assertTrue(resummoned.size() == 1, "Expected 1 re-summoned Crystal Fox");
         CrystalFoxEntity fox2 = resummoned.get(0);
         helper.assertTrue(fox2.getPetId().equals(Optional.of(originalPetId))
@@ -146,37 +146,37 @@ public class PetCaptureGameTests {
     @GameTest(template = "tnt_arena")
     public static void biomeTreatHealsOwnedPetAndWakesFaintedCrystal(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer bob = ChesterTestSupport.playerInTestArea(helper, "BobTreat");
+        ServerPlayer steve = ChesterTestSupport.playerInTestArea(helper, "SteveTreat");
         CrystalFoxEntity wildFox = spawnFox(helper, new BlockPos(7, 1, 7));
         wildFox.addAffinity(100);
 
         ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        bob.setItemInHand(InteractionHand.MAIN_HAND, crystal);
-        bob.interactOn(wildFox, InteractionHand.MAIN_HAND);
-        crystal.use(level, bob, InteractionHand.MAIN_HAND);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        steve.interactOn(wildFox, InteractionHand.MAIN_HAND);
+        crystal.use(level, steve, InteractionHand.MAIN_HAND);
 
-        CrystalFoxEntity fox = foxesOf(helper, bob).get(0);
+        CrystalFoxEntity fox = foxesOf(helper, steve).get(0);
         fox.setHealth(12.0F);
-        // Keep the bound crystal in Bob's inventory (slot 1) while feeding from main hand.
-        bob.getInventory().setItem(1, crystal);
+        // Keep the bound crystal in Steve's inventory (slot 1) while feeding from main hand.
+        steve.getInventory().setItem(1, crystal);
         ItemStack treat = new ItemStack(ArtilianItems.BIOME_TREAT.get(), 2);
-        bob.setItemInHand(InteractionHand.MAIN_HAND, treat);
-        bob.interactOn(fox, InteractionHand.MAIN_HAND);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, treat);
+        steve.interactOn(fox, InteractionHand.MAIN_HAND);
         helper.assertTrue(Math.abs(fox.getHealth() - 18.0F) < 0.01F && treat.getCount() == 1,
                 "Biome Treat should heal tamed pet by 6 HP (12 -> 18), got " + fox.getHealth());
 
         // Faint the pet, then wake it early using Biome Treat in offhand
         fox.hurt(level.damageSources().generic(), 100.0F);
         helper.assertFalse(fox.isAlive(), "Lethal damage should faint and recall the pet entity");
-        ItemStack faintedCrystal = bob.getInventory().getItem(1);
+        ItemStack faintedCrystal = steve.getInventory().getItem(1);
         helper.assertTrue(faintedCrystal.get(ArtilianDataComponents.CAPTURED_PET.get()).fainted(),
                 "Crystal should be marked fainted after lethal hit");
 
-        bob.setItemInHand(InteractionHand.MAIN_HAND, faintedCrystal);
-        bob.setItemInHand(InteractionHand.OFF_HAND, treat);
-        faintedCrystal.use(level, bob, InteractionHand.MAIN_HAND);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, faintedCrystal);
+        steve.setItemInHand(InteractionHand.OFF_HAND, treat);
+        faintedCrystal.use(level, steve, InteractionHand.MAIN_HAND);
 
-        List<? extends CrystalFoxEntity> woken = foxesOf(helper, bob);
+        List<? extends CrystalFoxEntity> woken = foxesOf(helper, steve);
         helper.assertTrue(woken.size() == 1 && treat.isEmpty(),
                 "Biome Treat in offhand should wake fainted Crystal Fox immediately and consume 1 treat");
         helper.assertTrue(Math.abs(woken.get(0).getHealth() - woken.get(0).getMaxHealth()) < 0.01F,
@@ -231,10 +231,10 @@ public class PetCaptureGameTests {
         helper.assertTrue(hasCrystalFoxSpawn,
                 "Crystal Canopy Woods must include Crystal Fox in creature spawns");
 
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceSafety");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexSafety");
         CrystalFoxEntity tamed = spawnFox(helper, new BlockPos(7, 1, 7));
-        tamed.setOwner(alice);
-        helper.assertFalse(ManaService.isValidOffensiveTarget(alice, tamed),
+        tamed.setOwner(alex);
+        helper.assertFalse(ManaService.isValidOffensiveTarget(alex, tamed),
                 "Owned Crystal Fox must be spared by offensive wands");
         helper.assertTrue(ManaService.isValidHealingTarget(tamed),
                 "Owned Crystal Fox must be healed by Heart-Bloom Staff");

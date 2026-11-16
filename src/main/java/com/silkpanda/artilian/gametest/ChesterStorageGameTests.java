@@ -25,7 +25,7 @@ import java.util.UUID;
 @GameTestHolder(ArtilianMod.MODID)
 @PrefixGameTestTemplate(false)
 public class ChesterStorageGameTests {
-    private static final String STICK_NAME = "Alice's Stick";
+    private static final String STICK_NAME = "Alex's Stick";
 
     @GameTest(template = "empty")
     public static void has27Slots(GameTestHelper helper) {

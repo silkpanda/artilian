@@ -43,6 +43,6 @@ adventures-in-artilian/
 ├── AGENTS.md / CLAUDE.md     # Agent operating rules
 ├── DESIGN.md                 # Visual tokens, cartoony style & HUD rules
 ├── PLAN.md                   # Master phased roadmap & session Now handoff
-├── PRODUCT.md                # Product spec, Alice & Bob wishlists, constraints
+├── PRODUCT.md                # Product spec, Alex & Steve wishlists, constraints
 └── TECH_DEBT.md              # Code health register
 ```

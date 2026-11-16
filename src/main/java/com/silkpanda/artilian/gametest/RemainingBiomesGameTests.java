@@ -56,7 +56,7 @@ public class RemainingBiomesGameTests {
     @GameTest(template = "tnt_arena")
     public static void remainingBiomeBlocksLootRecipesAndTreeGrowerWork(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "BobBiome");
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "SteveBiome");
 
         // 1. Ember Turf & Starlight Turf act as dirt and drop Dirt normally, self with Silk Touch.
         BlockPos emberTurfRel = new BlockPos(5, 1, 5);

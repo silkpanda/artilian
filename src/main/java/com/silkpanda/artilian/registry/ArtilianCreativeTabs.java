@@ -27,6 +27,8 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.CINDER_CRAG_SPAWN_EGG.get());
                         output.accept(ArtilianItems.ZAPHOX_SPAWN_EGG.get());
                         output.accept(ArtilianItems.GALECORN_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.EMBER_DRAKE_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.PEEPKIN_SPAWN_EGG.get());
                         output.accept(ArtilianItems.SUNSTEEL_ORE_ITEM.get());
                         output.accept(ArtilianItems.DEEPSLATE_SUNSTEEL_ORE_ITEM.get());
                         output.accept(ArtilianItems.SUNSTEEL_BLOCK_ITEM.get());

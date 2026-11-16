@@ -47,49 +47,49 @@ public class PetSecurityProbes {
     @GameTest(template = "tnt_arena")
     public static void p2_01_nonOwnerCannotCaptureStealOrRecallOthersPet(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceOwner");
-        ServerPlayer bob = ChesterTestSupport.playerInTestArea(helper, "BobIntruder");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexOwner");
+        ServerPlayer steve = ChesterTestSupport.playerInTestArea(helper, "SteveIntruder");
 
         CrystalFoxEntity wildFox = spawnFox(helper, new BlockPos(7, 1, 7));
         wildFox.addAffinity(100);
 
-        ItemStack alicesCrystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, alicesCrystal);
-        alice.interactOn(wildFox, InteractionHand.MAIN_HAND);
-        alicesCrystal.use(level, alice, InteractionHand.MAIN_HAND);
+        ItemStack alexsCrystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        alex.setItemInHand(InteractionHand.MAIN_HAND, alexsCrystal);
+        alex.interactOn(wildFox, InteractionHand.MAIN_HAND);
+        alexsCrystal.use(level, alex, InteractionHand.MAIN_HAND);
 
-        CrystalFoxEntity alicesFox = foxesOf(helper, alice).get(0);
-        alicesFox.setHealth(14.0F);
+        CrystalFoxEntity alexsFox = foxesOf(helper, alex).get(0);
+        alexsFox.setHealth(14.0F);
 
-        // 1. Bob tries to capture Alice's summoned fox with an empty crystal.
-        ItemStack bobsEmpty = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        bob.setItemInHand(InteractionHand.MAIN_HAND, bobsEmpty);
-        bob.interactOn(alicesFox, InteractionHand.MAIN_HAND);
-        helper.assertTrue(alicesFox.isAlive() && !bobsEmpty.has(ArtilianDataComponents.CAPTURED_PET.get()),
+        // 1. Steve tries to capture Alex's summoned fox with an empty crystal.
+        ItemStack stevesEmpty = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        steve.setItemInHand(InteractionHand.MAIN_HAND, stevesEmpty);
+        steve.interactOn(alexsFox, InteractionHand.MAIN_HAND);
+        helper.assertTrue(alexsFox.isAlive() && !stevesEmpty.has(ArtilianDataComponents.CAPTURED_PET.get()),
                 "EXPLOITED P2-01: a non-owner captured someone else's summoned pet");
 
-        // 2. Bob tries to shift-right-click to sit Alice's fox.
-        bob.setShiftKeyDown(true);
-        bob.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-        bob.interactOn(alicesFox, InteractionHand.MAIN_HAND);
-        helper.assertFalse(alicesFox.isSitting() || alicesFox.toggleSitting(bob),
+        // 2. Steve tries to shift-right-click to sit Alex's fox.
+        steve.setShiftKeyDown(true);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        steve.interactOn(alexsFox, InteractionHand.MAIN_HAND);
+        helper.assertFalse(alexsFox.isSitting() || alexsFox.toggleSitting(steve),
                 "EXPLOITED P2-01: a non-owner commanded someone else's pet to sit");
 
-        // 3. Bob tries to feed a Biome Treat to Alice's injured fox.
-        ItemStack bobsTreat = new ItemStack(ArtilianItems.BIOME_TREAT.get(), 1);
-        bob.setShiftKeyDown(false);
-        bob.setItemInHand(InteractionHand.MAIN_HAND, bobsTreat);
-        bob.interactOn(alicesFox, InteractionHand.MAIN_HAND);
-        helper.assertTrue(Math.abs(alicesFox.getHealth() - 14.0F) < 0.01F,
+        // 3. Steve tries to feed a Biome Treat to Alex's injured fox.
+        ItemStack stevesTreat = new ItemStack(ArtilianItems.BIOME_TREAT.get(), 1);
+        steve.setShiftKeyDown(false);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, stevesTreat);
+        steve.interactOn(alexsFox, InteractionHand.MAIN_HAND);
+        helper.assertTrue(Math.abs(alexsFox.getHealth() - 14.0F) < 0.01F,
                 "EXPLOITED P2-01: a non-owner interacted/healed someone else's pet");
 
-        // 4. Bob holds Alice's filled Capture Crystal and tries to recall Alice's fox.
-        bob.setItemInHand(InteractionHand.MAIN_HAND, alicesCrystal);
-        alicesCrystal.use(level, bob, InteractionHand.MAIN_HAND);
-        helper.assertTrue(alicesFox.isAlive() && alicesCrystal.get(ArtilianDataComponents.CAPTURED_PET.get()).summoned(),
+        // 4. Steve holds Alex's filled Capture Crystal and tries to recall Alex's fox.
+        steve.setItemInHand(InteractionHand.MAIN_HAND, alexsCrystal);
+        alexsCrystal.use(level, steve, InteractionHand.MAIN_HAND);
+        helper.assertTrue(alexsFox.isAlive() && alexsCrystal.get(ArtilianDataComponents.CAPTURED_PET.get()).summoned(),
                 "EXPLOITED P2-01: a non-owner recalled or stole from another player's Capture Crystal");
 
-        alicesFox.discard();
+        alexsFox.discard();
         helper.succeed();
     }
 
@@ -97,19 +97,19 @@ public class PetSecurityProbes {
     @GameTest(template = "tnt_arena", timeoutTicks = 140)
     public static void p2_02_nonLethalFaintingSavesPetIntoCrystalInsteadOfDying(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceFaint");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexFaint");
 
         CrystalFoxEntity wildFox = spawnFox(helper, new BlockPos(7, 1, 7));
         wildFox.addAffinity(100);
         wildFox.setCustomName(Component.literal("Prism"));
 
         ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, crystal);
-        alice.interactOn(wildFox, InteractionHand.MAIN_HAND);
-        crystal.use(level, alice, InteractionHand.MAIN_HAND);
-        alice.getInventory().setItem(1, crystal);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        alex.interactOn(wildFox, InteractionHand.MAIN_HAND);
+        crystal.use(level, alex, InteractionHand.MAIN_HAND);
+        alex.getInventory().setItem(1, crystal);
 
-        CrystalFoxEntity fox = foxesOf(helper, alice).get(0);
+        CrystalFoxEntity fox = foxesOf(helper, alex).get(0);
         UUID petId = fox.getPetId().orElseThrow();
 
         // Hit with massive lethal mob damage (500 HP).
@@ -120,7 +120,7 @@ public class PetSecurityProbes {
         fox.hurt(level.damageSources().mobAttack(attacker), 500.0F);
         attacker.discard();
 
-        ItemStack heldCrystal = alice.getInventory().getItem(1);
+        ItemStack heldCrystal = alex.getInventory().getItem(1);
         CapturedPetData afterFaint = heldCrystal.get(ArtilianDataComponents.CAPTURED_PET.get());
         helper.assertTrue(afterFaint != null && afterFaint.fainted() && afterFaint.petId().equals(petId),
                 "EXPLOITED P2-02: lethal damage killed the pet instead of fainting it safely into its Capture Crystal");
@@ -128,21 +128,21 @@ public class PetSecurityProbes {
                 "EXPLOITED P2-02: fainted crystal lost pet custom name");
 
         // Attempting to summon immediately before the 100-tick rest ends must fail.
-        alice.setItemInHand(InteractionHand.MAIN_HAND, heldCrystal);
-        heldCrystal.use(level, alice, InteractionHand.MAIN_HAND);
-        helper.assertTrue(foxesOf(helper, alice).isEmpty(),
+        alex.setItemInHand(InteractionHand.MAIN_HAND, heldCrystal);
+        heldCrystal.use(level, alex, InteractionHand.MAIN_HAND);
+        helper.assertTrue(foxesOf(helper, alex).isEmpty(),
                 "Fainted pet should rest before re-summoning without a Biome Treat");
 
         // Player death preserves PetRosterData via copyOnDeath().
-        ServerPlayer respawned = new FakePlayer(level, new GameProfile(alice.getUUID(), "AliceFaint"));
-        respawned.restoreFrom(alice, false);
+        ServerPlayer respawned = new FakePlayer(level, new GameProfile(alex.getUUID(), "AlexFaint"));
+        respawned.restoreFrom(alex, false);
         helper.assertTrue(PetRosterData.get(respawned).getRecord(petId).map(PetRosterData.PetRecord::fainted).orElse(false),
                 "EXPLOITED P2-02: PetRosterData did not survive owner death");
 
         // After the 100-tick rest expires, the pet summons healthy again.
         helper.runAfterDelay(105, () -> {
-            heldCrystal.use(level, alice, InteractionHand.MAIN_HAND);
-            List<? extends CrystalFoxEntity> recovered = foxesOf(helper, alice);
+            heldCrystal.use(level, alex, InteractionHand.MAIN_HAND);
+            List<? extends CrystalFoxEntity> recovered = foxesOf(helper, alex);
             helper.assertTrue(recovered.size() == 1,
                     "Expected fainted Crystal Fox to summon after rest period, found " + recovered.size());
             CrystalFoxEntity revived = recovered.get(0);
@@ -159,23 +159,23 @@ public class PetSecurityProbes {
     @GameTest(template = "tnt_arena")
     public static void p2_03_clonedCrystalCannotDuplicateActivePet(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceDup");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexDup");
 
         CrystalFoxEntity wildFox = spawnFox(helper, new BlockPos(7, 1, 7));
         wildFox.addAffinity(100);
 
         ItemStack crystalA = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, crystalA);
-        alice.interactOn(wildFox, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, crystalA);
+        alex.interactOn(wildFox, InteractionHand.MAIN_HAND);
 
         ItemStack crystalB = crystalA.copy();
         UUID petId = crystalA.get(ArtilianDataComponents.CAPTURED_PET.get()).petId();
 
         // Summon with crystalA, then try to summon a duplicate with crystalB.
-        crystalA.use(level, alice, InteractionHand.MAIN_HAND);
-        helper.assertTrue(foxesOf(helper, alice).size() == 1, "Expected 1 active fox after crystalA summon");
+        crystalA.use(level, alex, InteractionHand.MAIN_HAND);
+        helper.assertTrue(foxesOf(helper, alex).size() == 1, "Expected 1 active fox after crystalA summon");
 
-        crystalB.use(level, alice, InteractionHand.MAIN_HAND);
+        crystalB.use(level, alex, InteractionHand.MAIN_HAND);
         List<? extends CrystalFoxEntity> afterCloneUse = level.getEntities(ArtilianEntities.CRYSTAL_FOX.get(),
                 fox -> fox.isAlive() && fox.getPetId().equals(Optional.of(petId)));
         helper.assertTrue(afterCloneUse.size() <= 1,
@@ -183,17 +183,17 @@ public class PetSecurityProbes {
 
         // Re-summon and faint while crystalA is NOT in inventory; crystalA must still sync to fainted when used.
         if (afterCloneUse.isEmpty()) {
-            crystalA.use(level, alice, InteractionHand.MAIN_HAND);
+            crystalA.use(level, alex, InteractionHand.MAIN_HAND);
         }
-        CrystalFoxEntity active = foxesOf(helper, alice).get(0);
-        alice.getInventory().clearContent();
+        CrystalFoxEntity active = foxesOf(helper, alex).get(0);
+        alex.getInventory().clearContent();
         active.hurt(level.damageSources().generic(), 200.0F);
         helper.assertFalse(active.isAlive(), "Fainted fox should leave world");
 
-        // Alice pulls crystalA back out of storage and tries to use it while the pet is resting.
-        alice.setItemInHand(InteractionHand.MAIN_HAND, crystalA);
-        crystalA.use(level, alice, InteractionHand.MAIN_HAND);
-        helper.assertTrue(foxesOf(helper, alice).isEmpty()
+        // Alex pulls crystalA back out of storage and tries to use it while the pet is resting.
+        alex.setItemInHand(InteractionHand.MAIN_HAND, crystalA);
+        crystalA.use(level, alex, InteractionHand.MAIN_HAND);
+        helper.assertTrue(foxesOf(helper, alex).isEmpty()
                         && crystalA.get(ArtilianDataComponents.CAPTURED_PET.get()).fainted(),
                 "EXPLOITED P2-03: out-of-inventory crystal bypassed faint rest and spawned a duplicate pet");
 
@@ -204,23 +204,23 @@ public class PetSecurityProbes {
     @GameTest(template = "tnt_arena", timeoutTicks = 60)
     public static void p2_04_tamedPetNeverAttacksPlayersChesterVillagersOrAlliedPets(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceSafe");
-        ServerPlayer bob = ChesterTestSupport.playerInTestArea(helper, "BobAlly");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexSafe");
+        ServerPlayer steve = ChesterTestSupport.playerInTestArea(helper, "SteveAlly");
 
         CrystalFoxEntity wildFox = spawnFox(helper, new BlockPos(7, 0, 7));
         wildFox.addAffinity(100);
         ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, crystal);
-        alice.interactOn(wildFox, InteractionHand.MAIN_HAND);
-        crystal.use(level, alice, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        alex.interactOn(wildFox, InteractionHand.MAIN_HAND);
+        crystal.use(level, alex, InteractionHand.MAIN_HAND);
 
-        CrystalFoxEntity fox = foxesOf(helper, alice).get(0);
+        CrystalFoxEntity fox = foxesOf(helper, alex).get(0);
         BlockPos around = helper.absolutePos(new BlockPos(8, 0, 7));
         fox.moveTo(around.getX() - 0.5, around.getY(), around.getZ() + 0.5, 0.0F, 0.0F);
-        bob.moveTo(around.getX() + 0.5, around.getY(), around.getZ() + 0.5, 0.0F, 0.0F);
+        steve.moveTo(around.getX() + 0.5, around.getY(), around.getZ() + 0.5, 0.0F, 0.0F);
 
         ChesterEntity chester = ArtilianEntities.CHESTER.get().create(level);
-        chester.setOwner(bob);
+        chester.setOwner(steve);
         chester.moveTo(around.getX() + 0.5, around.getY(), around.getZ() + 1.5, 0.0F, 0.0F);
         level.addFreshEntity(chester);
 
@@ -233,7 +233,7 @@ public class PetSecurityProbes {
         level.addFreshEntity(golem);
 
         Wolf tamedWolf = EntityType.WOLF.create(level);
-        tamedWolf.tame(bob);
+        tamedWolf.tame(steve);
         tamedWolf.moveTo(around.getX() + 1.5, around.getY(), around.getZ() - 0.5, 0.0F, 0.0F);
         level.addFreshEntity(tamedWolf);
 
@@ -245,16 +245,16 @@ public class PetSecurityProbes {
         level.addFreshEntity(armorStand);
 
         List<LivingEntity> protectedEntities = List.of(
-                bob, chester, villager, golem, tamedWolf, befriendedFox, armorStand);
+                steve, chester, villager, golem, tamedWolf, befriendedFox, armorStand);
 
         // Even under owner-assist / owner-hurt provocation or direct doHurtTarget, all friendly entities stay safe.
         for (LivingEntity protectedEntity : protectedEntities) {
-            helper.assertFalse(PetService.isValidBattleTarget(alice, protectedEntity),
+            helper.assertFalse(PetService.isValidBattleTarget(alex, protectedEntity),
                     "EXPLOITED P2-04: pet target filter allowed " + protectedEntity.getType().getDescriptionId());
             helper.assertFalse(fox.canAttack(protectedEntity),
                     "EXPLOITED P2-04: pet canAttack returned true for " + protectedEntity.getType().getDescriptionId());
-            alice.setLastHurtByMob(protectedEntity);
-            alice.setLastHurtMob(protectedEntity);
+            alex.setLastHurtByMob(protectedEntity);
+            alex.setLastHurtMob(protectedEntity);
             helper.assertFalse(fox.doHurtTarget(protectedEntity),
                     "EXPLOITED P2-04: pet dealt battle damage to " + protectedEntity.getType().getDescriptionId());
         }

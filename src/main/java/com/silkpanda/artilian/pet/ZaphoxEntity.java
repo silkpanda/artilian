@@ -24,7 +24,7 @@ import software.bernie.geckolib.animation.RawAnimation;
 import java.util.Optional;
 
 /**
- * Alice's First Creature: Zaphox — a fusion of cheetah (speed, spots, tear marks), fox (alert ears,
+ * Alex's First Creature: Zaphox — a fusion of cheetah (speed, spots, tear marks), fox (alert ears,
  * bushy tail), and elephant (Option C: curling mini-trunk that points and shocks, tiny tusks).
  * Flies with orange sawtooth wings along its back. Elements: {@link PetElement#ELECTRIC} / {@link PetElement#AIR}.
  */

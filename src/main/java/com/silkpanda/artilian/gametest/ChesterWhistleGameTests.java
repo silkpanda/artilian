@@ -26,7 +26,7 @@ public class ChesterWhistleGameTests {
 
     @GameTest(template = "empty")
     public static void whistleWithNoChesterSpawnsOne(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alice");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alex");
 
         blowWhistle(helper, owner);
 
@@ -41,7 +41,7 @@ public class ChesterWhistleGameTests {
 
     @GameTest(template = "empty")
     public static void whistleLeavesExactlyOne(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alice");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alex");
         ChesterEntity first = ChesterService.summon(owner);
         first.moveTo(first.getX() + 1.0, first.getY(), first.getZ());
 
@@ -59,7 +59,7 @@ public class ChesterWhistleGameTests {
 
     @GameTest(template = "empty")
     public static void orphanedChesterRemovesItself(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Bob");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Steve");
         ChesterEntity real = ChesterService.summon(owner);
         // A second Chester that claims the same owner but is not the one on record. This is
         // what an old Chester looks like when its chunk loads after the owner whistled.
@@ -82,7 +82,7 @@ public class ChesterWhistleGameTests {
 
     @GameTest(template = "empty")
     public static void whistleDoesNotTouchTheItems(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alice");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alex");
         ChesterService.summon(owner);
         ChesterData.get(owner).getInventory().setStackInSlot(0, new ItemStack(Items.EMERALD, 12));
         ChesterData.get(owner).getInventory().setStackInSlot(26, new ItemStack(Items.CAKE));
@@ -101,7 +101,7 @@ public class ChesterWhistleGameTests {
 
     @GameTest(template = "empty")
     public static void firstLoginGivesOneWhistle(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Bob");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Steve");
 
         ChesterService.handleLogin(owner);
         ChesterService.handleLogin(owner);
@@ -114,7 +114,7 @@ public class ChesterWhistleGameTests {
 
     @GameTest(template = "empty")
     public static void whistleComesBackAfterDeath(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Bob");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Steve");
         List<ItemEntity> deathDrops = new ArrayList<>();
         deathDrops.add(drop(helper, new ItemStack(ArtilianItems.CHESTER_WHISTLE.get())));
         deathDrops.add(drop(helper, new ItemStack(Items.DIRT, 3)));

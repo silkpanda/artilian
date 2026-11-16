@@ -50,14 +50,14 @@ public class ManaAndWandsGameTests {
     @GameTest(template = "tnt_arena", timeoutTicks = 80)
     public static void manaAttachmentPersistsRegeneratesAndSyncsToClient(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = spawnTestPlayer(helper, "AliceMana", new Vec3(7.5, 2.0, 7.5));
+        ServerPlayer alex = spawnTestPlayer(helper, "AlexMana", new Vec3(7.5, 2.0, 7.5));
 
-        ManaData data = ManaData.get(alice);
+        ManaData data = ManaData.get(alex);
         helper.assertTrue(data.getMana() == ManaData.DEFAULT_MAX_MANA
                         && data.getMaxMana() == ManaData.DEFAULT_MAX_MANA,
                 "Player must start with 100/100 Mana");
 
-        boolean spent = ManaService.tryConsumeMana(alice, 40);
+        boolean spent = ManaService.tryConsumeMana(alex, 40);
         helper.assertTrue(spent, "Should be able to spend 40 Mana from 100");
         helper.assertTrue(data.getMana() == 60, "Expected 60 Mana after spending 40, got " + data.getMana());
         helper.assertTrue(data.getRegenCooldownTicks() == ManaData.REGEN_DELAY_AFTER_CAST_TICKS,
@@ -67,7 +67,7 @@ public class ManaAndWandsGameTests {
 
         // Verify a ClientboundCustomPayloadPacket(ManaSyncPayload) was queued on the player's channel.
         boolean sawManaPacket = false;
-        if (alice.connection.getConnection().channel() instanceof EmbeddedChannel embedded) {
+        if (alex.connection.getConnection().channel() instanceof EmbeddedChannel embedded) {
             for (Object msg : embedded.outboundMessages()) {
                 if (msg instanceof ClientboundCustomPayloadPacket packet
                         && packet.payload() instanceof ManaSyncPayload payload
@@ -87,8 +87,8 @@ public class ManaAndWandsGameTests {
         helper.assertTrue(restored.getMana() == 60 && restored.getMaxMana() == 100
                         && restored.getRegenCooldownTicks() == ManaData.REGEN_DELAY_AFTER_CAST_TICKS,
                 "ManaData NBT serialization must preserve mana, maxMana, and regen cooldown");
-        ServerPlayer respawned = new FakePlayer(level, alice.getGameProfile());
-        respawned.restoreFrom(alice, false);
+        ServerPlayer respawned = new FakePlayer(level, alex.getGameProfile());
+        respawned.restoreFrom(alex, false);
         helper.assertTrue(ManaData.get(respawned).getMana() == 60 && ManaData.get(respawned).getMaxMana() == 100,
                 "MANA attachment must copy data on death");
 
@@ -100,7 +100,7 @@ public class ManaAndWandsGameTests {
             helper.assertTrue(data.getSyncCount() > syncCountBeforeRegen && data.getLastSyncedMana() == data.getMana(),
                     "Server must sync Mana to client when auto-regeneration increases Mana");
 
-            CustomTntGameTests.removeTestPlayer(level, alice);
+            CustomTntGameTests.removeTestPlayer(level, alex);
             helper.succeed();
         });
     }
@@ -114,22 +114,22 @@ public class ManaAndWandsGameTests {
             helper.assertTrue(recipe.isPresent(), "Missing wand/staff recipe: " + path);
         }
 
-        ServerPlayer bob = spawnTestPlayer(helper, "BobLowMana", new Vec3(1.5, 1.0, 1.5));
-        ManaData data = ManaData.get(bob);
+        ServerPlayer steve = spawnTestPlayer(helper, "SteveLowMana", new Vec3(1.5, 1.0, 1.5));
+        ManaData data = ManaData.get(steve);
         data.setMana(10);
 
         ItemStack sparkWand = new ItemStack(ArtilianItems.SPARK_WAND.get());
-        bob.setItemInHand(InteractionHand.MAIN_HAND, sparkWand);
-        InteractionResultHolder<ItemStack> result = sparkWand.use(level, bob, InteractionHand.MAIN_HAND);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, sparkWand);
+        InteractionResultHolder<ItemStack> result = sparkWand.use(level, steve, InteractionHand.MAIN_HAND);
 
         helper.assertFalse(result.getResult().consumesAction(),
                 "Spark Wand must fail to cast when Mana (10) is below cost (20)");
         helper.assertTrue(data.getMana() == 10,
                 "Failed cast must not deduct Mana, got " + data.getMana());
-        helper.assertFalse(bob.getCooldowns().isOnCooldown(ArtilianItems.SPARK_WAND.get()),
+        helper.assertFalse(steve.getCooldowns().isOnCooldown(ArtilianItems.SPARK_WAND.get()),
                 "Failed cast must not trigger item cooldown");
 
-        CustomTntGameTests.removeTestPlayer(level, bob);
+        CustomTntGameTests.removeTestPlayer(level, steve);
         helper.succeed();
     }
 
@@ -146,15 +146,15 @@ public class ManaAndWandsGameTests {
         ServerLevel level = helper.getLevel();
         buildStoneFloor(helper);
 
-        ServerPlayer alice = spawnTestPlayer(helper, "AliceSpark", new Vec3(3.5, 2.0, 7.5));
-        ServerPlayer bob = spawnTestPlayer(helper, "BobAlly", new Vec3(6.0, 2.0, 7.5));
-        ChesterEntity chester = ChesterService.summon(alice);
+        ServerPlayer alex = spawnTestPlayer(helper, "AlexSpark", new Vec3(3.5, 2.0, 7.5));
+        ServerPlayer steve = spawnTestPlayer(helper, "SteveAlly", new Vec3(6.0, 2.0, 7.5));
+        ChesterEntity chester = ChesterService.summon(alex);
         Vec3 chesterAbs = helper.absoluteVec(new Vec3(8.5, 2.0, 6.5));
         chester.moveTo(chesterAbs.x, chesterAbs.y, chesterAbs.z, 0.0F, 0.0F);
         float chesterStartHp = chester.getHealth();
 
         Wolf wolf = helper.spawnWithNoFreeWill(EntityType.WOLF, new Vec3(8.5, 2.0, 8.5));
-        wolf.tame(alice);
+        wolf.tame(alex);
         float wolfStartHp = wolf.getHealth();
 
         Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new Vec3(5.0, 2.0, 7.5));
@@ -167,15 +167,15 @@ public class ManaAndWandsGameTests {
         Skeleton chain2 = helper.spawnWithNoFreeWill(EntityType.SKELETON, new Vec3(10.5, 2.0, 6.0));
         chain2.setHealth(20.0F);
 
-        alice.lookAt(EntityAnchorArgument.Anchor.EYES, primary.getEyePosition());
+        alex.lookAt(EntityAnchorArgument.Anchor.EYES, primary.getEyePosition());
         ItemStack sparkWand = new ItemStack(ArtilianItems.SPARK_WAND.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, sparkWand);
-        InteractionResultHolder<ItemStack> result = sparkWand.use(level, alice, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, sparkWand);
+        InteractionResultHolder<ItemStack> result = sparkWand.use(level, alex, InteractionHand.MAIN_HAND);
 
         helper.assertTrue(result.getResult().consumesAction(), "Spark Wand cast should succeed");
-        helper.assertTrue(ManaData.get(alice).getMana() == 80,
-                "Spark Wand should consume 20 Mana (expected 80, got " + ManaData.get(alice).getMana() + ")");
-        helper.assertTrue(alice.getCooldowns().isOnCooldown(ArtilianItems.SPARK_WAND.get()),
+        helper.assertTrue(ManaData.get(alex).getMana() == 80,
+                "Spark Wand should consume 20 Mana (expected 80, got " + ManaData.get(alex).getMana() + ")");
+        helper.assertTrue(alex.getCooldowns().isOnCooldown(ArtilianItems.SPARK_WAND.get()),
                 "Spark Wand should go on cooldown after cast");
 
         helper.assertTrue(primary.getHealth() <= 14.0F,
@@ -188,7 +188,7 @@ public class ManaAndWandsGameTests {
         helper.assertTrue(chain2.getHealth() <= 16.0F && chain2.hasEffect(MobEffects.GLOWING),
                 "Spark Wand must chain 4 magic damage + Glowing to nearby skeleton, hp=" + chain2.getHealth());
 
-        helper.assertTrue(bob.getHealth() == bob.getMaxHealth() && !bob.hasEffect(MobEffects.GLOWING),
+        helper.assertTrue(steve.getHealth() == steve.getMaxHealth() && !steve.hasEffect(MobEffects.GLOWING),
                 "Spark Wand must strictly spare Players");
         helper.assertTrue(chester.isAlive() && chester.getHealth() == chesterStartHp
                         && !chester.hasEffect(MobEffects.GLOWING),
@@ -205,8 +205,8 @@ public class ManaAndWandsGameTests {
         primary.discard();
         chain1.discard();
         chain2.discard();
-        CustomTntGameTests.removeTestPlayer(level, alice);
-        CustomTntGameTests.removeTestPlayer(level, bob);
+        CustomTntGameTests.removeTestPlayer(level, alex);
+        CustomTntGameTests.removeTestPlayer(level, steve);
         helper.succeed();
     }
 
@@ -215,49 +215,49 @@ public class ManaAndWandsGameTests {
         ServerLevel level = helper.getLevel();
         buildStoneFloor(helper);
 
-        ServerPlayer alice = spawnTestPlayer(helper, "AliceBloom", new Vec3(7.5, 2.0, 7.5));
-        alice.setHealth(10.0F);
-        alice.setRemainingFireTicks(100);
-        alice.addEffect(new MobEffectInstance(MobEffects.POISON, 120, 0));
-        alice.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 0));
+        ServerPlayer alex = spawnTestPlayer(helper, "AlexBloom", new Vec3(7.5, 2.0, 7.5));
+        alex.setHealth(10.0F);
+        alex.setRemainingFireTicks(100);
+        alex.addEffect(new MobEffectInstance(MobEffects.POISON, 120, 0));
+        alex.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 0));
 
-        ServerPlayer bob = spawnTestPlayer(helper, "BobBloom", new Vec3(9.5, 2.0, 7.5));
-        bob.setHealth(10.0F);
-        bob.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 0));
+        ServerPlayer steve = spawnTestPlayer(helper, "SteveBloom", new Vec3(9.5, 2.0, 7.5));
+        steve.setHealth(10.0F);
+        steve.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 0));
 
-        ChesterEntity chester = ChesterService.summon(alice);
+        ChesterEntity chester = ChesterService.summon(alex);
         Vec3 chesterAbs = helper.absoluteVec(new Vec3(7.5, 2.0, 9.5));
         chester.moveTo(chesterAbs.x, chesterAbs.y, chesterAbs.z, 0.0F, 0.0F);
         chester.setHealth(10.0F);
 
         Wolf wolf = helper.spawnWithNoFreeWill(EntityType.WOLF, new Vec3(7.5, 2.0, 5.5));
-        wolf.tame(alice);
+        wolf.tame(alex);
         wolf.setHealth(4.0F);
 
         Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new Vec3(5.5, 2.0, 7.5));
         zombie.setHealth(10.0F);
 
         ItemStack staff = new ItemStack(ArtilianItems.HEART_BLOOM_STAFF.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, staff);
-        InteractionResultHolder<ItemStack> result = staff.use(level, alice, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, staff);
+        InteractionResultHolder<ItemStack> result = staff.use(level, alex, InteractionHand.MAIN_HAND);
 
         helper.assertTrue(result.getResult().consumesAction(), "Heart-Bloom Staff cast should succeed");
-        helper.assertTrue(ManaData.get(alice).getMana() == 70,
-                "Heart-Bloom Staff should consume 30 Mana (expected 70, got " + ManaData.get(alice).getMana() + ")");
+        helper.assertTrue(ManaData.get(alex).getMana() == 70,
+                "Heart-Bloom Staff should consume 30 Mana (expected 70, got " + ManaData.get(alex).getMana() + ")");
 
-        helper.assertTrue(alice.getHealth() >= 16.0F,
-                "Heart-Bloom Staff must heal caster by 6 HP, got " + alice.getHealth());
-        helper.assertTrue(alice.hasEffect(MobEffects.REGENERATION) && alice.hasEffect(MobEffects.ABSORPTION),
+        helper.assertTrue(alex.getHealth() >= 16.0F,
+                "Heart-Bloom Staff must heal caster by 6 HP, got " + alex.getHealth());
+        helper.assertTrue(alex.hasEffect(MobEffects.REGENERATION) && alex.hasEffect(MobEffects.ABSORPTION),
                 "Heart-Bloom Staff must grant Regeneration II and Absorption to caster");
-        helper.assertFalse(alice.hasEffect(MobEffects.POISON) || alice.hasEffect(MobEffects.MOVEMENT_SLOWDOWN),
+        helper.assertFalse(alex.hasEffect(MobEffects.POISON) || alex.hasEffect(MobEffects.MOVEMENT_SLOWDOWN),
                 "Heart-Bloom Staff must clear negative effects on caster");
-        helper.assertTrue(alice.getRemainingFireTicks() <= 0,
+        helper.assertTrue(alex.getRemainingFireTicks() <= 0,
                 "Heart-Bloom Staff must extinguish fire on caster");
 
-        helper.assertTrue(bob.getHealth() >= 16.0F
-                        && bob.hasEffect(MobEffects.REGENERATION)
-                        && bob.hasEffect(MobEffects.ABSORPTION)
-                        && !bob.hasEffect(MobEffects.WEAKNESS),
+        helper.assertTrue(steve.getHealth() >= 16.0F
+                        && steve.hasEffect(MobEffects.REGENERATION)
+                        && steve.hasEffect(MobEffects.ABSORPTION)
+                        && !steve.hasEffect(MobEffects.WEAKNESS),
                 "Heart-Bloom Staff must heal, shield, and cleanse nearby Players");
         helper.assertTrue(chester.getHealth() >= 16.0F && chester.hasEffect(MobEffects.REGENERATION),
                 "Heart-Bloom Staff must heal and buff Chester");
@@ -272,8 +272,8 @@ public class ManaAndWandsGameTests {
         chester.discard();
         wolf.discard();
         zombie.discard();
-        CustomTntGameTests.removeTestPlayer(level, alice);
-        CustomTntGameTests.removeTestPlayer(level, bob);
+        CustomTntGameTests.removeTestPlayer(level, alex);
+        CustomTntGameTests.removeTestPlayer(level, steve);
         helper.succeed();
     }
 
@@ -283,40 +283,40 @@ public class ManaAndWandsGameTests {
         ServerLevel level = helper.getLevel();
         buildStoneFloor(helper);
 
-        ServerPlayer bob = spawnTestPlayer(helper, "BobDash", new Vec3(7.5, 2.0, 7.5));
-        bob.setYRot(-90.0F);
-        bob.setXRot(0.0F);
-        bob.fallDistance = 12.0F;
+        ServerPlayer steve = spawnTestPlayer(helper, "SteveDash", new Vec3(7.5, 2.0, 7.5));
+        steve.setYRot(-90.0F);
+        steve.setXRot(0.0F);
+        steve.fallDistance = 12.0F;
 
-        ServerPlayer alice = spawnTestPlayer(helper, "AliceFriend", new Vec3(7.5, 2.0, 5.5));
-        Vec3 aliceStart = alice.position();
+        ServerPlayer alex = spawnTestPlayer(helper, "AlexFriend", new Vec3(7.5, 2.0, 5.5));
+        Vec3 alexStart = alex.position();
 
-        ChesterEntity sleepingChester = ChesterService.summon(alice);
+        ChesterEntity sleepingChester = ChesterService.summon(alex);
         Vec3 chesterAbs = helper.absoluteVec(new Vec3(7.5, 2.0, 9.5));
         sleepingChester.moveTo(chesterAbs.x, chesterAbs.y, chesterAbs.z, 0.0F, 0.0F);
-        sleepingChester.toggleSitAndSleep(alice);
+        sleepingChester.toggleSitAndSleep(alex);
         helper.assertTrue(sleepingChester.isAsleep(), "Chester should be asleep before Zephyr Dash");
 
         Wolf wolf = helper.spawnWithNoFreeWill(EntityType.WOLF, new Vec3(6.0, 2.0, 7.5));
-        wolf.tame(bob);
+        wolf.tame(steve);
         Vec3 wolfStart = wolf.position();
 
         Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new Vec3(9.5, 2.0, 7.5));
 
         ItemStack zephyrWand = new ItemStack(ArtilianItems.ZEPHYR_DASH_WAND.get());
-        bob.setItemInHand(InteractionHand.MAIN_HAND, zephyrWand);
-        InteractionResultHolder<ItemStack> result = zephyrWand.use(level, bob, InteractionHand.MAIN_HAND);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, zephyrWand);
+        InteractionResultHolder<ItemStack> result = zephyrWand.use(level, steve, InteractionHand.MAIN_HAND);
 
         helper.assertTrue(result.getResult().consumesAction(), "Zephyr Dash Wand cast should succeed");
-        helper.assertTrue(ManaData.get(bob).getMana() == 75,
-                "Zephyr Dash Wand should consume 25 Mana (expected 75, got " + ManaData.get(bob).getMana() + ")");
+        helper.assertTrue(ManaData.get(steve).getMana() == 75,
+                "Zephyr Dash Wand should consume 25 Mana (expected 75, got " + ManaData.get(steve).getMana() + ")");
 
-        Vec3 dashVel = bob.getDeltaMovement();
+        Vec3 dashVel = steve.getDeltaMovement();
         helper.assertTrue(dashVel.x > 0.8 && dashVel.y >= 0.5,
                 "Zephyr Dash must propel caster forward and upward, got " + dashVel);
-        helper.assertTrue(bob.fallDistance == 0.0F,
+        helper.assertTrue(steve.fallDistance == 0.0F,
                 "Zephyr Dash must reset fallDistance");
-        helper.assertTrue(bob.hasEffect(MobEffects.SLOW_FALLING) && bob.hasEffect(MobEffects.MOVEMENT_SPEED),
+        helper.assertTrue(steve.hasEffect(MobEffects.SLOW_FALLING) && steve.hasEffect(MobEffects.MOVEMENT_SPEED),
                 "Zephyr Dash must grant Slow Falling and Speed II");
 
         Vec3 zombieVel = zombie.getDeltaMovement();
@@ -326,8 +326,8 @@ public class ManaAndWandsGameTests {
         helper.assertTrue(sleepingChester.getDeltaMovement().horizontalDistance() < 0.05
                         && sleepingChester.distanceToSqr(chesterAbs) < 0.05,
                 "Zephyr Dash must not push sleeping Chester");
-        helper.assertTrue(alice.getDeltaMovement().horizontalDistance() < 0.05
-                        && alice.distanceToSqr(aliceStart) < 0.05,
+        helper.assertTrue(alex.getDeltaMovement().horizontalDistance() < 0.05
+                        && alex.distanceToSqr(alexStart) < 0.05,
                 "Zephyr Dash must not push nearby Players");
         helper.assertTrue(wolf.getDeltaMovement().horizontalDistance() < 0.05
                         && wolf.distanceToSqr(wolfStart) < 0.05,
@@ -336,8 +336,8 @@ public class ManaAndWandsGameTests {
         sleepingChester.discard();
         wolf.discard();
         zombie.discard();
-        CustomTntGameTests.removeTestPlayer(level, bob);
-        CustomTntGameTests.removeTestPlayer(level, alice);
+        CustomTntGameTests.removeTestPlayer(level, steve);
+        CustomTntGameTests.removeTestPlayer(level, alex);
         helper.succeed();
     }
 }

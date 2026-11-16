@@ -48,7 +48,7 @@ public class OresAndGearGameTests {
     @GameTest(template = "empty")
     public static void sunsteelOreDropsRawSunsteelWithStonePickaxe(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "Bob");
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "Steve");
         BlockPos relPos = new BlockPos(1, 1, 1);
         BlockPos absPos = helper.absolutePos(relPos);
 
@@ -76,7 +76,7 @@ public class OresAndGearGameTests {
     @GameTest(template = "empty")
     public static void starlightOreRequiresIronPickaxeAndSilkTouchWorks(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "Alice");
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "Alex");
         BlockPos relPos = new BlockPos(1, 1, 1);
         BlockPos absPos = helper.absolutePos(relPos);
 
@@ -220,7 +220,7 @@ public class OresAndGearGameTests {
     @GameTest(template = "empty")
     public static void sunsteelPickaxeMinesStarlightAndStarlightMinesObsidian(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "Bob");
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "Steve");
         BlockPos starlightRel = new BlockPos(1, 1, 1);
         BlockPos obsidianRel = new BlockPos(1, 1, 2);
         BlockPos starlightPos = helper.absolutePos(starlightRel);

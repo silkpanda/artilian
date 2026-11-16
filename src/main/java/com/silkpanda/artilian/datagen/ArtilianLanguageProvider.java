@@ -107,17 +107,22 @@ public class ArtilianLanguageProvider extends LanguageProvider {
 
         // Phase 2 Stage 3: Pet Capture & Expanded Element System
         this.addEntityType(ArtilianEntities.CRYSTAL_FOX, "Crystal Fox");
-        // Phase 2 St: Bob's Pets (working names until Bob picks official names)
+        // Phase 2 St: Steve's Pets (working names until Steve picks official names)
         this.addEntityType(ArtilianEntities.SHADOW_WISP, "Shadow Wisp");
         this.addEntityType(ArtilianEntities.CINDER_CRAG, "Cinder Crag");
-        // Phase 2 St: Alice's Pets
+        // Phase 2 St: Alex's Pets
         this.addEntityType(ArtilianEntities.ZAPHOX, "Zaphox");
         this.addEntityType(ArtilianEntities.GALECORN, "Galecorn");
+        // Phase 2 Stage 5: Early Dimension-Theme Pets (Dragon Hatchling & Eye-Themed Pet)
+        this.addEntityType(ArtilianEntities.EMBER_DRAKE, "Ember Drake");
+        this.addEntityType(ArtilianEntities.PEEPKIN, "Peepkin");
         this.addItem(ArtilianItems.CRYSTAL_FOX_SPAWN_EGG, "Crystal Fox Spawn Egg");
         this.addItem(ArtilianItems.SHADOW_WISP_SPAWN_EGG, "Shadow Wisp Spawn Egg");
         this.addItem(ArtilianItems.CINDER_CRAG_SPAWN_EGG, "Cinder Crag Spawn Egg");
         this.addItem(ArtilianItems.ZAPHOX_SPAWN_EGG, "Zaphox Spawn Egg");
         this.addItem(ArtilianItems.GALECORN_SPAWN_EGG, "Galecorn Spawn Egg");
+        this.addItem(ArtilianItems.EMBER_DRAKE_SPAWN_EGG, "Ember Drake Spawn Egg");
+        this.addItem(ArtilianItems.PEEPKIN_SPAWN_EGG, "Peepkin Spawn Egg");
         this.addItem(ArtilianItems.CAPTURE_CRYSTAL, "Capture Crystal");
         this.add("item.artilian.capture_crystal.filled", "Capture Crystal (%s)");
         this.add("item.artilian.capture_crystal.tooltip", "Captures Biome Pets — Right-click a wild pet!");

@@ -26,7 +26,7 @@ import software.bernie.geckolib.animation.RawAnimation;
 import java.util.Optional;
 
 /**
- * Bob's Fire/Rock Creature (working name: Cinder Crag): a squat crimson-stone pet with
+ * Steve's Fire/Rock Creature (working name: Cinder Crag): a squat crimson-stone pet with
  * fiery eyes and mouth in its middle body, topped by three flame spires, spawning anywhere
  * near lava. Elements: {@link PetElement#FIRE} / {@link PetElement#EARTH}.
  */

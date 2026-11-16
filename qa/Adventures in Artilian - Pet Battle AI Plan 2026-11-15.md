@@ -13,7 +13,7 @@ Relates to: `PLAN.md` Phase 2 Stage 4, `PRODUCT.md`, `DESIGN.md`, `security/FIND
 
 ## Why
 
-Phase 2 Stage 3 shipped Capture Crystals, Biome Treats, the expanded 11-element `PetElement` system, non-lethal fainting, and `Crystal Fox`, but summoned pets currently only follow and sit — they do not fight alongside the player or use their element matchups in battle (`PLAN.md` Phase 2 Stage 4). Alice and Bob want their summoned pets to defend them, assist their attacks, target hostile & structure enemies, and unleash readable elemental hits while keeping every kid-safety net intact.
+Phase 2 Stage 3 shipped Capture Crystals, Biome Treats, the expanded 11-element `PetElement` system, non-lethal fainting, and `Crystal Fox`, but summoned pets currently only follow and sit — they do not fight alongside the player or use their element matchups in battle (`PLAN.md` Phase 2 Stage 4). Alex and Steve want their summoned pets to defend them, assist their attacks, target hostile & structure enemies, and unleash readable elemental hits while keeping every kid-safety net intact.
 
 ## Decisions
 
@@ -31,7 +31,7 @@ Phase 2 Stage 3 shipped Capture Crystals, Biome Treats, the expanded 11-element 
    - `doHurtTarget` multiplies base `ATTACK_DAMAGE` by `primary.multiplierAgainst(defPrimary, defSecondary)` (`1.5x` Super Effective / `0.75x` Resisted / `1.0x` Neutral), spawns element particles + high chime on super-effective hits, and applies the pet's element signature perk on a `60`-tick (`3`s) cooldown (`CRYSTAL` -> `Slowness I` `40`t + `Glowing` `60`t).
    - Updates `PetRosterData` snapshot on hit/damage so health remains accurate if recalled.
 3. **Strict Kid-Safe Target Filtering (`PetService#isValidBattleTarget` / `P2-04`):**
-   - Pets **never** target or harm any `Player` (even in PvP accidents between Alice and Bob), `ChesterEntity`, villagers, iron/snow golems, armor stands, baby animals, or any tamed/befriended pet (`ArtilianPetEntity`, `TamableAnimal`, `AbstractHorse`).
+   - Pets **never** target or harm any `Player` (even in PvP accidents between Alex and Steve), `ChesterEntity`, villagers, iron/snow golems, armor stands, baby animals, or any tamed/befriended pet (`ArtilianPetEntity`, `TamableAnimal`, `AbstractHorse`).
 
 ## Stages
 
@@ -62,4 +62,4 @@ Applies — battle AI introduces autonomous entity targeting (`P2-04`) that must
 
 - Additional biome pets, dragon hatchling, and eye-themed pet (Phase 2 Stage 5).
 - Custom biome structures and custom structure enemy mobs (Phase 2 Stage 6; Stage 4 provides `artilian:structure_enemies` tag and `ElementalMob` interface for Stage 6 to plug into).
-- Final Phase 2 art pass against Alice & Bob's drawings (Phase 2 St).
+- Final Phase 2 art pass against Alex & Steve's drawings (Phase 2 St).

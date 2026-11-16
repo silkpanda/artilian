@@ -14,7 +14,7 @@ commits inside that PR. -->
 
 ## Why
 
-Phase 2 begins expanding the Overworld with custom biomes so Alice and Bob have magical places to explore and find biome-specific pets and structures later in Phase 2 (`PLAN.md` Phase 2 Stage 1). Today there are no custom biomes and TerraBlender is not wired into the build. This stage adds **TerraBlender `4.1.0.8`** (bundled via `jarJar` so family co-op still installs one `.jar`) and builds the first Overworld biome, **Crystal Canopy Woods** (`artilian:crystal_canopy_woods`), end to end to prove the worldgen pipeline.
+Phase 2 begins expanding the Overworld with custom biomes so Alex and Steve have magical places to explore and find biome-specific pets and structures later in Phase 2 (`PLAN.md` Phase 2 Stage 1). Today there are no custom biomes and TerraBlender is not wired into the build. This stage adds **TerraBlender `4.1.0.8`** (bundled via `jarJar` so family co-op still installs one `.jar`) and builds the first Overworld biome, **Crystal Canopy Woods** (`artilian:crystal_canopy_woods`), end to end to prove the worldgen pipeline.
 
 ## Decisions
 

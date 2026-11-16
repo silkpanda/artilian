@@ -21,7 +21,7 @@ Private machine details (launcher paths, local LAN IPs) go in `CLAUDE.local.md` 
 
 ## Backups
 
-- **World Backups:** Always copy the `saves/<world_name>` directory to an off-drive or backup folder before testing a new phase release with Alice and Bob.
+- **World Backups:** Always copy the `saves/<world_name>` directory to an off-drive or backup folder before testing a new phase release with Alex and Steve.
 
 ## Rolling back a bad release
 

@@ -14,13 +14,13 @@ Minecraft: Java Edition (`1.21.1`) client & dedicated/LAN server mod (`artilian`
 
 ## Users
 
-- **Alice:** Wants biome-specific pets, pet capture & battling, a personal cartoony living chest friend named **Chester** (who sleeps looking like a normal chest), an **Eye Dimension** covered in eyes everywhere, custom biome-specific structures, and custom structure enemies.
-- **Bob:** Wants custom bosses, custom weapons/armor/tools, custom TNTs, new biomes, and a distinct second dimension (**Giant Jungle of Dragons** with multiple dragon species).
+- **Alex:** Wants biome-specific pets, pet capture & battling, a personal cartoony living chest friend named **Chester** (who sleeps looking like a normal chest), an **Eye Dimension** covered in eyes everywhere, custom biome-specific structures, and custom structure enemies.
+- **Steve:** Wants custom bosses, custom weapons/armor/tools, custom TNTs, new biomes, and a distinct second dimension (**Giant Jungle of Dragons** with multiple dragon species).
 - **The owner (Creator / Parent Admin):** Builds and curates the mod in playable phases for co-op family sessions.
 
 ## Product Purpose
 
-Deliver a cohesive, kid-friendly Minecraft Java overhaul mod—**Adventures in Artilian**—that unites Alice's and Bob's wishlists into one clear, rewarding progression loop, shipped in playable milestones so the kids can play each phase as it's built.
+Deliver a cohesive, kid-friendly Minecraft Java overhaul mod—**Adventures in Artilian**—that unites Alex's and Steve's wishlists into one clear, rewarding progression loop, shipped in playable milestones so the kids can play each phase as it's built.
 
 ## Positioning
 
@@ -37,7 +37,7 @@ Unlike hardcore RPG or grindy tech overhaul packs, *Adventures in Artilian* prio
 - **Pet Capture & Battles:** Biome pets can be captured with **Capture Crystals** or befriended with **Biome Treats**, summoned to battle alongside the player, and safely **faint** back into their crystal instead of dying permanently.
 - **Magic System:** Auto-regenerating Mana bar paired with **Wands & Staves** (no frustrating consumable scroll ammo).
 - **Custom TNTs & Arsenal:** Playful non-destructive TNTs (Party, Bounce, Frost) plus configurable demolition TNTs (`allowDestructiveCustomTnt` toggle in config to protect kids' bases).
-- **Two Distinct Dimensions:** Alice's **Eye Realm** (eyes across terrain, trees, sky, mobs, pet, and boss) and Bob's **Dragon Jungle** (giant prehistoric jungle with multiple dragon species and dragonscale endgame).
+- **Two Distinct Dimensions:** Alex's **Eye Realm** (eyes across terrain, trees, sky, mobs, pet, and boss) and Steve's **Dragon Jungle** (giant prehistoric jungle with multiple dragon species and dragonscale endgame).
 - **Hard Constraint:** Every phase must remain kid-accessible, readable (telegraphed boss attacks, clear audio/visual cues), and playable without waiting for all 5 phases to finish.
 
 ## Brand Commitments
@@ -48,4 +48,4 @@ Unlike hardcore RPG or grindy tech overhaul packs, *Adventures in Artilian* prio
 ## Evidence on Hand
 
 - Master phased plan in `PLAN.md`.
-- Intake confirmed for both Alice's and Bob's wishlists (2026-11-15).
+- Intake confirmed for both Alex's and Steve's wishlists (2026-11-15).

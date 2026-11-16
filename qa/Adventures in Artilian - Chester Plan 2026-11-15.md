@@ -12,11 +12,11 @@ commits inside that PR. -->
 > | 3 Whistle | `82cdb5c`. `ChesterWhistleItem` (given on first login, kept out of death drops and returned on respawn/login, stick + gold nugget recipe/model/lang via datagen, 40-tick cooldown, flute sound). `ChesterService.summon` removes prior loaded Chester and updates `chesterEntityId`; `discardIfOrphan` removes stale loaded Chesters. GameTests: `whistleWithNoChesterSpawnsOne`, `whistleLeavesExactlyOne`, `orphanedChesterRemovesItself`, `whistleDoesNotTouchTheItems`, `firstLoginGivesOneWhistle`, `whistleComesBackAfterDeath`. Red-proof: removing orphan self-removal fails `orphanedChesterRemovesItself`; removing old-Chester discard in `summon` fails `whistleLeavesExactlyOne`. |
 > | 4 Menu & ownership gate | `65354e8`. `ChesterContainer` (27-slot `ChestMenu`, `MAX_REACH_SQR` = 64, alive & owner checks in `stillValid`), server-side owner check in `mobInteract` & `createMenu`, non-owner locked message. Security probes `P1-01`, `P1-02`, `P1-04`, `P1-06` in `ChesterSecurityProbes` each seen EXPLOITED with control off and HELD with control on. |
 > | 5 Sleeping form | `2d8cade`. Synced `ASLEEP` data, `ToldToSleep` saved in NBT, `Shift + Right-Click` Sit & Sleep toggle, owner bed sleep/wake (`applyOwnerBedState`), immobile & unpushable while asleep (`holdStill`, `isImmobile`, `isPushable`), snaps to 90° yaw with chest close/open sounds and particles, `ChesterModel` hides `eyes` & `feet` bones while asleep. GameTests: `ownerShiftClickTogglesSleep`, `bedSleepAndWake`, `sitAndSleepSurvivesMorning`, `sitAndSleepSurvivesSaving`, `sleepingChesterStaysPut`, and security probe `P1-05`. Red-proof: removing owner check on toggle, `holdStill`, `toldToSleep` precedence, and NBT save each fail their test. |
-> | 6 Placeholder art, LAN playtest, jar | `e1248d9`. Matched Chester's wood panels in `tools/art/make_chester_art.py` / `chester.png` to the vanilla chest and centered pupils; captured side-by-side in-game comparison in `qa/evidence/chester-forms-2026-11-15.png`. Updated `deploy/README.md` (GeckoLib bundled via `jarJar`, no sharing toggle) and `README.md`. Verified `runData` (clean `src/generated`), `build` (`adventures-in-artilian-0.1.0.jar` holds `META-INF/jarjar/geckolib-neoforge-1.21.1-4.9.3.jar`), and `runGameTestServer` (`25/25` required tests passed in 526.2 ms). LAN co-op playtest by the owner, Alice, and Bob pending merge/release. |
+> | 6 Placeholder art, LAN playtest, jar | `e1248d9`. Matched Chester's wood panels in `tools/art/make_chester_art.py` / `chester.png` to the vanilla chest and centered pupils; captured side-by-side in-game comparison in `qa/evidence/chester-forms-2026-11-15.png`. Updated `deploy/README.md` (GeckoLib bundled via `jarJar`, no sharing toggle) and `README.md`. Verified `runData` (clean `src/generated`), `build` (`adventures-in-artilian-0.1.0.jar` holds `META-INF/jarjar/geckolib-neoforge-1.21.1-4.9.3.jar`), and `runGameTestServer` (`25/25` required tests passed in 526.2 ms). LAN co-op playtest by the owner, Alex, and Steve pending merge/release. |
 
 ## Why
 
-Alice asked for "a personal cartoony living chest friend named Chester" who sleeps looking like a normal chest. Each kid gets their own, nobody else can open it, and nothing young kids does (dying, losing Chester, falling in lava) can lose what is inside.
+Alex asked for "a personal cartoony living chest friend named Chester" who sleeps looking like a normal chest. Each kid gets their own, nobody else can open it, and nothing young kids does (dying, losing Chester, falling in lava) can lose what is inside.
 
 ## Decisions
 
@@ -25,7 +25,7 @@ Alice asked for "a personal cartoony living chest friend named Chester" who slee
 3. **One Chester per player.** The attachment records the current Chester's entity UUID. The whistle removes the old one before spawning a new one. A Chester whose UUID does not match its owner's record removes itself on its next tick.
 4. **Chester cannot be hurt by players or mobs.** He is invulnerable to everything except the void and `/kill`. Those still happen, so the "Chester dies" case is real and tested.
 5. **GeckoLib `4.9.3` is bundled with jarJar.** `deploy/` hands the kids one jar; a second jar to forget is a second way for the game not to start. GeckoLib is MIT licensed.
-6. **Art spec: Alice's drawing of Chester's face.** Not in hand yet. Stages 2 to 5 ship a placeholder (a chest with eyes). Stage 6 applies the drawing if it has arrived; otherwise it goes to the Phase 1 art pass.
+6. **Art spec: Alex's drawing of Chester's face.** Not in hand yet. Stages 2 to 5 ship a placeholder (a chest with eyes). Stage 6 applies the drawing if it has arrived; otherwise it goes to the Phase 1 art pass.
 
 ## Stages
 
@@ -60,8 +60,8 @@ Alice asked for "a personal cartoony living chest friend named Chester" who slee
 - **Done When:** checks green, and in `runClient` sleeping Chester is hard to tell from a chest at a glance.
 
 ### Stage 6: Placeholder art, LAN playtest, jar
-- **Changes:** tidy the placeholder model and animations (idle blink, chomp on open, bouncy walk, snap-flat on sleep). Apply Alice's drawing if it is in hand. Update `deploy/README.md`, `README.md`, and PLAN.md.
-- **Done When:** on a LAN world Alice and Bob each get their own Chester, cannot open the other's, and lose nothing when Chester or the player dies. The PLAN.md Stage 2 Done When, checked by the owner.
+- **Changes:** tidy the placeholder model and animations (idle blink, chomp on open, bouncy walk, snap-flat on sleep). Apply Alex's drawing if it is in hand. Update `deploy/README.md`, `README.md`, and PLAN.md.
+- **Done When:** on a LAN world Alex and Steve each get their own Chester, cannot open the other's, and lose nothing when Chester or the player dies. The PLAN.md Stage 2 Done When, checked by the owner.
 
 ## Security gate
 

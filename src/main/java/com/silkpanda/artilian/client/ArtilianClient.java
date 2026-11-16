@@ -36,6 +36,8 @@ public final class ArtilianClient {
         event.registerEntityRenderer(ArtilianEntities.CINDER_CRAG.get(), CinderCragRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.ZAPHOX.get(), ZaphoxRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.GALECORN.get(), GalecornRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.EMBER_DRAKE.get(), EmberDrakeRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.PEEPKIN.get(), PeepkinRenderer::new);
     }
 
     @SubscribeEvent

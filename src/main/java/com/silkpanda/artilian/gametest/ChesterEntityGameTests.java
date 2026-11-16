@@ -24,59 +24,59 @@ public class ChesterEntityGameTests {
 
     @GameTest(template = "empty")
     public static void firstLoginSpawnsOneChester(GameTestHelper helper) {
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "Alice");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "Alex");
 
-        ChesterService.handleLogin(alice);
+        ChesterService.handleLogin(alex);
 
-        var chesters = ChesterTestSupport.chestersOf(helper, alice);
+        var chesters = ChesterTestSupport.chestersOf(helper, alex);
         helper.assertTrue(chesters.size() == 1, "First login should spawn 1 Chester but spawned " + chesters.size());
         ChesterEntity chester = chesters.get(0);
-        helper.assertTrue(ChesterData.get(alice).getChesterEntityId().filter(chester.getUUID()::equals).isPresent(),
+        helper.assertTrue(ChesterData.get(alex).getChesterEntityId().filter(chester.getUUID()::equals).isPresent(),
                 "The player record does not point at their Chester");
-        helper.assertTrue(ChesterData.get(alice).isFirstSpawnDone(), "First login was not remembered");
-        helper.assertTrue("Alice".equals(chester.getOwnerName()), "Chester does not know who owns him");
+        helper.assertTrue(ChesterData.get(alex).isFirstSpawnDone(), "First login was not remembered");
+        helper.assertTrue("Alex".equals(chester.getOwnerName()), "Chester does not know who owns him");
 
-        ChesterTestSupport.removeChestersOf(helper, alice);
+        ChesterTestSupport.removeChestersOf(helper, alex);
         helper.succeed();
     }
 
     @GameTest(template = "empty")
     public static void secondLoginSpawnsNothing(GameTestHelper helper) {
-        ServerPlayer bob = ChesterTestSupport.playerInTestArea(helper, "Bob");
-        ChesterService.handleLogin(bob);
-        UUID first = ChesterData.get(bob).getChesterEntityId().orElseThrow();
+        ServerPlayer steve = ChesterTestSupport.playerInTestArea(helper, "Steve");
+        ChesterService.handleLogin(steve);
+        UUID first = ChesterData.get(steve).getChesterEntityId().orElseThrow();
 
-        ChesterService.handleLogin(bob);
+        ChesterService.handleLogin(steve);
 
-        UUID afterSecondLogin = ChesterData.get(bob).getChesterEntityId().orElseThrow();
+        UUID afterSecondLogin = ChesterData.get(steve).getChesterEntityId().orElseThrow();
         helper.assertTrue(first.equals(afterSecondLogin), "A second login replaced the Chester with a new one");
-        helper.assertTrue(ChesterTestSupport.chestersOf(helper, bob).size() == 1,
+        helper.assertTrue(ChesterTestSupport.chestersOf(helper, steve).size() == 1,
                 "A second login changed how many Chesters the player has");
 
-        ChesterTestSupport.removeChestersOf(helper, bob);
+        ChesterTestSupport.removeChestersOf(helper, steve);
         helper.succeed();
     }
 
     @GameTest(template = "empty")
     public static void eachPlayerGetsTheirOwn(GameTestHelper helper) {
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "Alice");
-        ServerPlayer bob = ChesterTestSupport.playerInTestArea(helper, "Bob");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "Alex");
+        ServerPlayer steve = ChesterTestSupport.playerInTestArea(helper, "Steve");
 
-        ChesterEntity alices = ChesterService.summon(alice);
-        ChesterEntity bobs = ChesterService.summon(bob);
+        ChesterEntity alexs = ChesterService.summon(alex);
+        ChesterEntity steves = ChesterService.summon(steve);
 
-        helper.assertTrue(alices.isOwner(alice) && !alices.isOwner(bob), "The first Chester has the wrong owner");
-        helper.assertTrue(bobs.isOwner(bob) && !bobs.isOwner(alice), "The second Chester has the wrong owner");
-        helper.assertFalse(alices.getUUID().equals(bobs.getUUID()), "Both players were given the same Chester");
+        helper.assertTrue(alexs.isOwner(alex) && !alexs.isOwner(steve), "The first Chester has the wrong owner");
+        helper.assertTrue(steves.isOwner(steve) && !steves.isOwner(alex), "The second Chester has the wrong owner");
+        helper.assertFalse(alexs.getUUID().equals(steves.getUUID()), "Both players were given the same Chester");
 
-        ChesterTestSupport.removeChestersOf(helper, alice, bob);
+        ChesterTestSupport.removeChestersOf(helper, alex, steve);
         helper.succeed();
     }
 
     @GameTest(template = "empty")
     public static void nothingHurtsChester(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alice");
-        ServerPlayer other = ChesterTestSupport.playerInTestArea(helper, "Bob");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alex");
+        ServerPlayer other = ChesterTestSupport.playerInTestArea(helper, "Steve");
         ChesterEntity chester = ChesterService.summon(owner);
         Zombie zombie = EntityType.ZOMBIE.create(helper.getLevel());
         DamageSources sources = helper.getLevel().damageSources();
@@ -98,7 +98,7 @@ public class ChesterEntityGameTests {
 
     @GameTest(template = "empty")
     public static void killingChesterLosesNothing(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alice");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alex");
         ChesterEntity chester = ChesterService.summon(owner);
         ChesterData.get(owner).getInventory().setStackInSlot(3, new ItemStack(Items.DIAMOND, 7));
 

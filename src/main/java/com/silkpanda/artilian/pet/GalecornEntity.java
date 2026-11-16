@@ -26,7 +26,7 @@ import software.bernie.geckolib.animation.RawAnimation;
 import java.util.Optional;
 
 /**
- * Alice's Second Creature: Galecorn — a fusion of fox and unicorn with an Air element.
+ * Alex's Second Creature: Galecorn — a fusion of fox and unicorn with an Air element.
  * Uses its gigantic, fluffy whirlwind tail to blow hostile mobs away with a 360-degree tail-spin.
  * Elements: {@link PetElement#AIR} / {@link PetElement#NATURE}.
  */
@@ -93,7 +93,7 @@ public class GalecornEntity extends ArtilianPetEntity {
         return hurt;
     }
 
-    /** Alice's signature feature: uses its giant tail to blow enemies away! */
+    /** Alex's signature feature: uses its giant tail to blow enemies away! */
     public void applyWhirlwindTailKnockback(LivingEntity target) {
         Vec3 diff = target.position().subtract(this.position());
         double distSq = diff.x * diff.x + diff.z * diff.z;
