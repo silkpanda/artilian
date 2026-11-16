@@ -68,9 +68,9 @@ public class ReviewFixProbes {
         ServerLevel level = helper.getLevel();
         buildStoneFloor(helper);
 
-        ServerPlayer alice = CustomTntGameTests.spawnSurvivalPlayer(helper, "AliceQuarry" + mode, new Vec3(4.5, 2.0, 4.5));
+        ServerPlayer alex = CustomTntGameTests.spawnSurvivalPlayer(helper, "AlexQuarry" + mode, new Vec3(4.5, 2.0, 4.5));
         Wolf wolf = helper.spawnWithNoFreeWill(EntityType.WOLF, new Vec3(9.5, 2.0, 7.5));
-        wolf.tame(alice);
+        wolf.tame(alex);
         Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new Vec3(5.5, 2.0, 7.5));
         IronGolem golem = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new Vec3(7.5, 2.0, 10.0));
         Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new Vec3(7.5, 2.0, 5.0));
@@ -100,7 +100,7 @@ public class ReviewFixProbes {
         } finally {
             level.getEntitiesOfClass(ArtilianPrimedTnt.class, arenaBox(helper)).forEach(ArtilianPrimedTnt::discard);
             spawned.forEach(Entity::discard);
-            CustomTntGameTests.removeTestPlayer(level, alice);
+            CustomTntGameTests.removeTestPlayer(level, alex);
         }
         helper.succeed();
     }

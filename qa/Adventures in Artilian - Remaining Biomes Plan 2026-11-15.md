@@ -13,7 +13,7 @@ Relates to: `PLAN.md` Phase 2 Stage 2, `DESIGN.md`, `PRODUCT.md`.
 
 ## Why
 
-Phase 2 Stage 1 proved TerraBlender (`4.1.0.8`) and the Overworld biome pipeline with *Crystal Canopy Woods*. Stage 2 (`PLAN.md` Phase 2 Stage 2) completes Artilian's three-biome Overworld trio so Alice and Bob can explore warm golden flower meadows (**Emberbloom Meadows**) and misty twilight mountain plateaus (**Starlight Highlands**) before pet capture and biome-specific pets arrive in Stages 3–5.
+Phase 2 Stage 1 proved TerraBlender (`4.1.0.8`) and the Overworld biome pipeline with *Crystal Canopy Woods*. Stage 2 (`PLAN.md` Phase 2 Stage 2) completes Artilian's three-biome Overworld trio so Alex and Steve can explore warm golden flower meadows (**Emberbloom Meadows**) and misty twilight mountain plateaus (**Starlight Highlands**) before pet capture and biome-specific pets arrive in Stages 3–5.
 
 ## Decisions
 
@@ -28,7 +28,7 @@ Phase 2 Stage 1 proved TerraBlender (`4.1.0.8`) and the Overworld biome pipeline
    - Tag `STARLIGHT_HIGHLANDS` into `BiomeTags.IS_OVERWORLD`, `BiomeTags.IS_MOUNTAIN`, `Tags.Biomes.IS_MOUNTAIN`, `Tags.Biomes.IS_MAGICAL`.
    - Keep Phase 1 Sunsteel and Starlight Crystal ore generation flowing automatically under both biomes via `BiomeTags.IS_OVERWORLD`, without giving away free surface `STARLIGHT_CRYSTAL_BLOCK` outcrops.
 4. **Placeholder art until Phase 2 Stage 7:**
-   - Extend `tools/art/make_biomes_art.py` deterministically using parameterized palette helpers rather than duplicated loops; Phase 2 St handles final polish from Alice & Bob's drawings.
+   - Extend `tools/art/make_biomes_art.py` deterministically using parameterized palette helpers rather than duplicated loops; Phase 2 St handles final polish from Alex & Steve's drawings.
 
 ## Stages
 
@@ -58,4 +58,4 @@ n/a: Phase 2 Stage 2 adds Overworld biomes, terrain/plant blocks, art, and Terra
 
 - Biome-specific pets, Capture Crystals, Biome Treats, and pet battling (Phase 2 Stages 3–5).
 - Custom biome structures and structure enemies (Phase 2 Stage 6).
-- Final Phase 2 art pass against Alice & Bob's drawings (Phase 2 St).
+- Final Phase 2 art pass against Alex & Steve's drawings (Phase 2 St).

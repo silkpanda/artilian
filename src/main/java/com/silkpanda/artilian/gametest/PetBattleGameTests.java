@@ -35,14 +35,14 @@ public class PetBattleGameTests {
     @GameTest(template = "tnt_arena", timeoutTicks = 100)
     public static void tamedCrystalFoxAttacksHostileAndStructureEnemiesWhileSittingClearsTarget(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceBattle");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexBattle");
 
         helper.assertTrue(EntityType.PILLAGER.is(ArtilianTags.EntityTypes.STRUCTURE_ENEMIES),
                 "Pillager should be tagged artilian:structure_enemies");
         helper.assertTrue(EntityType.BREEZE.is(ArtilianTags.EntityTypes.STRUCTURE_ENEMIES),
                 "Breeze should be tagged artilian:structure_enemies");
 
-        CrystalFoxEntity fox = summonTamedFox(helper, alice, new BlockPos(7, 0, 7));
+        CrystalFoxEntity fox = summonTamedFox(helper, alex, new BlockPos(7, 0, 7));
         Pillager pillager = EntityType.PILLAGER.create(level);
         BlockPos enemyPos = helper.absolutePos(new BlockPos(9, 0, 7));
         pillager.moveTo(enemyPos.getX() + 0.5, enemyPos.getY(), enemyPos.getZ() + 0.5, 0.0F, 0.0F);
@@ -64,8 +64,8 @@ public class PetBattleGameTests {
     @GameTest(template = "tnt_arena", timeoutTicks = 100)
     public static void tamedCrystalFoxDefendsOwnerAndAppliesCrystalElementPerk(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer bob = ChesterTestSupport.playerInTestArea(helper, "BobDefend");
-        CrystalFoxEntity fox = summonTamedFox(helper, bob, new BlockPos(7, 0, 7));
+        ServerPlayer steve = ChesterTestSupport.playerInTestArea(helper, "SteveDefend");
+        CrystalFoxEntity fox = summonTamedFox(helper, steve, new BlockPos(7, 0, 7));
 
         Husk husk = EntityType.HUSK.create(level);
         BlockPos zPos = helper.absolutePos(new BlockPos(9, 0, 7));
@@ -73,12 +73,12 @@ public class PetBattleGameTests {
         husk.setNoAi(true);
         level.addFreshEntity(husk);
 
-        // Simulate husk striking Bob so PetOwnerHurtByTargetGoal engages immediately.
-        bob.setLastHurtByMob(husk);
+        // Simulate husk striking Steve so PetOwnerHurtByTargetGoal engages immediately.
+        steve.setLastHurtByMob(husk);
 
         helper.succeedWhen(() -> {
             helper.assertTrue(husk.getHealth() < husk.getMaxHealth(),
-                    "Expected Crystal Fox to defend Bob against attacker");
+                    "Expected Crystal Fox to defend Steve against attacker");
             helper.assertTrue(husk.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)
                             && husk.hasEffect(MobEffects.GLOWING),
                     "Expected Crystal signature hit to apply Slowness and Glowing");
@@ -90,8 +90,8 @@ public class PetBattleGameTests {
     @GameTest(template = "tnt_arena")
     public static void elementalMatchupsScaleBattleDamageUpForSuperEffectiveAndDownForResisted(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceElementDmg");
-        CrystalFoxEntity fox = summonTamedFox(helper, alice, new BlockPos(7, 0, 7));
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexElementDmg");
+        CrystalFoxEntity fox = summonTamedFox(helper, alex, new BlockPos(7, 0, 7));
 
         EnderMan shadowTarget = EntityType.ENDERMAN.create(level);
         BlockPos pos = helper.absolutePos(new BlockPos(8, 0, 7));
@@ -131,8 +131,8 @@ public class PetBattleGameTests {
     @GameTest(template = "tnt_arena", timeoutTicks = 80)
     public static void petDisengagesToFollowFarOwnerAndNeverTargetsCreepersPassively(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceFollow");
-        CrystalFoxEntity fox = summonTamedFox(helper, alice, new BlockPos(1, 0, 1));
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexFollow");
+        CrystalFoxEntity fox = summonTamedFox(helper, alex, new BlockPos(1, 0, 1));
 
         net.minecraft.world.entity.monster.Creeper creeper = EntityType.CREEPER.create(level);
         BlockPos cPos = helper.absolutePos(new BlockPos(3, 0, 1));
@@ -146,14 +146,14 @@ public class PetBattleGameTests {
         level.addFreshEntity(husk);
         fox.setTarget(husk);
 
-        // Move Alice > 18 blocks across the arena so PetFollowOwnerGoal disengages combat and hops to Alice.
+        // Move Alex > 18 blocks across the arena so PetFollowOwnerGoal disengages combat and hops to Alex.
         BlockPos farPos = helper.absolutePos(new BlockPos(14, 0, 14));
-        alice.moveTo(farPos.getX() + 0.5, farPos.getY(), farPos.getZ() + 0.5, 0.0F, 0.0F);
+        alex.moveTo(farPos.getX() + 0.5, farPos.getY(), farPos.getZ() + 0.5, 0.0F, 0.0F);
 
         helper.succeedWhen(() -> {
             helper.assertFalse(fox.getTarget() instanceof net.minecraft.world.entity.monster.Creeper,
                     "Crystal Fox must not passively target Creepers");
-            helper.assertTrue(fox.distanceToSqr(alice) < 8.0 * 8.0 && fox.getTarget() == null,
+            helper.assertTrue(fox.distanceToSqr(alex) < 8.0 * 8.0 && fox.getTarget() == null,
                     "Crystal Fox should disengage combat and follow far owner");
             creeper.discard();
             husk.discard();

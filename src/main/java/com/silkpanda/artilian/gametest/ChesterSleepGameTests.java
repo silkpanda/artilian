@@ -19,7 +19,7 @@ public class ChesterSleepGameTests {
 
     @GameTest(template = "empty")
     public static void ownerShiftClickTogglesSleep(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alice");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alex");
         ChesterEntity chester = ChesterService.summon(owner);
         owner.setShiftKeyDown(true);
 
@@ -35,7 +35,7 @@ public class ChesterSleepGameTests {
 
     @GameTest(template = "empty")
     public static void bedSleepAndWake(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Bob");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Steve");
         ChesterEntity chester = ChesterService.summon(owner);
 
         chester.applyOwnerBedState(true);
@@ -50,7 +50,7 @@ public class ChesterSleepGameTests {
 
     @GameTest(template = "empty")
     public static void sitAndSleepSurvivesMorning(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alice");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alex");
         ChesterEntity chester = ChesterService.summon(owner);
         chester.toggleSitAndSleep(owner);
 
@@ -65,7 +65,7 @@ public class ChesterSleepGameTests {
 
     @GameTest(template = "empty")
     public static void sitAndSleepSurvivesSaving(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alice");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Alex");
         ChesterEntity chester = ChesterService.summon(owner);
         chester.toggleSitAndSleep(owner);
 
@@ -74,7 +74,7 @@ public class ChesterSleepGameTests {
         loaded.load(saved);
 
         helper.assertTrue(loaded.isAsleep() && loaded.isToldToSleep(), "Chester forgot he was told to Sit & Sleep");
-        helper.assertTrue(loaded.isOwner(owner) && "Alice".equals(loaded.getOwnerName()), "Chester forgot his owner");
+        helper.assertTrue(loaded.isOwner(owner) && "Alex".equals(loaded.getOwnerName()), "Chester forgot his owner");
 
         ChesterTestSupport.removeChestersOf(helper, owner);
         helper.succeed();
@@ -82,7 +82,7 @@ public class ChesterSleepGameTests {
 
     @GameTest(template = "empty", timeoutTicks = 100)
     public static void sleepingChesterStaysPut(GameTestHelper helper) {
-        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Bob");
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "Steve");
         ChesterEntity chester = ChesterService.summon(owner);
         chester.toggleSitAndSleep(owner);
 

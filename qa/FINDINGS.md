@@ -1,6 +1,6 @@
 # QA findings — Adventures in Artilian
 
-Whether the mod works smoothly for Alice, Bob, and the owner. Security/ownership/anti-griefing findings go in `security/FINDINGS.md`, and code-health items in `TECH_DEBT.md`.
+Whether the mod works smoothly for Alex, Steve, and the owner. Security/ownership/anti-griefing findings go in `security/FINDINGS.md`, and code-health items in `TECH_DEBT.md`.
 
 Log each finding the moment it's found, with an ID (`QA-01`, `QA-02`, ...) and a status in its heading: OPEN, FIXED (with the commit), or ACCEPTED (with the reason).
 

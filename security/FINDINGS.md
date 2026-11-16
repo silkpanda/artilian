@@ -23,7 +23,7 @@ Template for an entry:
 ### P1-01 — Non-owner opens another player's Chester — FIXED
 - **Severity:** High
 - **Where:** `chester/ChesterEntity.java` (`mobInteract`, `createMenu`)
-- **Attack:** Another player (e.g., Bob) right-clicks Alice's Chester or attempts to open a menu on it.
+- **Attack:** Another player (e.g., Steve) right-clicks Alex's Chester or attempts to open a menu on it.
 - **Impact:** With the control off, a non-owner could open a container menu against Chester.
 - **Fix:** Both `mobInteract` and `createMenu` check `this.isOwner(player)` server-side; non-owners get a locked chest sound and action-bar message (`message.artilian.chester.not_yours`) and `createMenu` returns `null`. Commit `65354e8`.
 - **Proof:** GameTest `ChesterSecurityProbes.p1_01_nonOwnerGetsNoMenu`. EXPLOITED with the owner check switched off; HELD with it on (`25/25` tests passing in `runGameTestServer`).
@@ -123,7 +123,7 @@ Template for an entry:
 ### P2-01 — Non-owner captures, commands, heals, or recalls another player's pet or Capture Crystal — FIXED
 - **Severity:** High
 - **Where:** `pet/PetService.java` (`tryCapturePet`, `useCaptureCrystal`, `feedBiomeTreat`), `pet/ArtilianPetEntity.java` (`toggleSitting`, `mobInteract`)
-- **Attack:** Another player (e.g., Bob) uses an empty Capture Crystal on Alice's summoned Crystal Fox, shift-right-clicks to sit it, feeds it a Biome Treat, or uses Alice's filled Capture Crystal to recall or summon it.
+- **Attack:** Another player (e.g., Steve) uses an empty Capture Crystal on Alex's summoned Crystal Fox, shift-right-clicks to sit it, feeds it a Biome Treat, or uses Alex's filled Capture Crystal to recall or summon it.
 - **Impact:** Without owner verification on both the pet entity and `CapturedPetData` on the crystal, a second player could steal, control, or recall someone else's companion.
 - **Fix:** Both `ArtilianPetEntity` (`isOwner`) and `CapturedPetData` (`isOwnedBy`) enforce owner UUID matching server-side across capture, sit/follow, feeding, summon, and recall. Stage 2 on `phase-2-stage-3-pet-capture`.
 - **Proof:** GameTest `PetSecurityProbes.p2_01_nonOwnerCannotCaptureStealOrRecallOthersPet`. EXPLOITED (`EXPLOITED P2-01: a non-owner recalled or stole from another player's Capture Crystal`) with `isOwnedBy` check bypassed in `PetService#useCaptureCrystal`; HELD with it on (`63/63` tests passing).
@@ -153,7 +153,7 @@ Template for an entry:
 ### P2-04 — Tamed pet battle AI targets or harms Players, Chester, villagers, friendly golems, or allied/tamed pets — FIXED
 - **Severity:** High
 - **Where:** `pet/PetService.java` (`isValidBattleTarget`, `isValidAutonomousBattleTarget`, `performElementalAttack`), `pet/ArtilianPetEntity.java` (`canAttack`, battle target goals)
-- **Attack:** A summoned Crystal Fox stands next to another `Player` (`Bob`), `ChesterEntity`, `Villager`, `IronGolem`, tamed `Wolf`, befriended `CrystalFoxEntity`, and `ArmorStand` while provoked via owner-hurt (`setLastHurtByMob`) / owner-assist (`setLastHurtMob`), autonomous target scans, and direct `doHurtTarget`.
+- **Attack:** A summoned Crystal Fox stands next to another `Player` (`Steve`), `ChesterEntity`, `Villager`, `IronGolem`, tamed `Wolf`, befriended `CrystalFoxEntity`, and `ArmorStand` while provoked via owner-hurt (`setLastHurtByMob`) / owner-assist (`setLastHurtMob`), autonomous target scans, and direct `doHurtTarget`.
 - **Impact:** Without unified friendly-entity exclusion across battle target acquisition and melee execution, co-op players or companions could injure siblings, Chester chests, village traders, or allied pets.
 - **Fix:** `PetService#isValidBattleTarget` rejects all `Player`, `ChesterEntity`, `ArmorStand`, `AbstractVillager`, non-hostile `AbstractGolem`, tamed/befriended pets, and baby animals, enforced identically by `ArtilianPetEntity#canAttack`, target goals, and `PetService#performElementalAttack`. Stage 2 on `phase-2-stage-4-pet-battle-ai`.
 - **Proof:** GameTest `PetSecurityProbes.p2_04_tamedPetNeverAttacksPlayersChesterVillagersOrAlliedPets`. EXPLOITED (`EXPLOITED P2-04: pet target filter allowed entity.artilian.chester`) when friendly entity checks were bypassed in `PetService#isValidBattleTarget`; HELD with checks restored (`68/68` tests passing).

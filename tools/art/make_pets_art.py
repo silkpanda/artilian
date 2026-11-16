@@ -374,7 +374,7 @@ def make_biome_treat():
 def make_shadow_wisp():
     img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
 
-    # Dark charcoal-violet blocky head + vivid purple tapered torso & tendrils (Bob's drawing)
+    # Dark charcoal-violet blocky head + vivid purple tapered torso & tendrils (Steve's drawing)
     SH_HEAD_HI = (78, 68, 98, 255)
     SH_HEAD_BASE = (58, 50, 76, 255)
     SH_HEAD_SHADE = (42, 36, 58, 255)
@@ -398,7 +398,7 @@ def make_shadow_wisp():
         fill(img, rect, SH_EYE_OUTER)
     fill(img, cf["front"], SH_EYE_GLOW)
 
-    # Boxy charcoal-violet head with shadowy speckles matching Bob's shaded head block
+    # Boxy charcoal-violet head with shadowy speckles matching Steve's shaded head block
     smooth_coat(img, 0, 10, 8, 6, 7, SH_HEAD_HI, SH_HEAD_BASE, SH_HEAD_SHADE, SH_HEAD_DEEP)
     hf = faces(0, 10, 8, 6, 7)
     fx, fy, fw, fh = hf["front"]
@@ -444,7 +444,7 @@ def make_shadow_wisp():
 def make_cinder_crag():
     img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
 
-    # Crimson-basalt stone & molten orange-gold magma core (Bob's fire/rock creature)
+    # Crimson-basalt stone & molten orange-gold magma core (Steve's fire/rock creature)
     RK_HI = (225, 56, 84, 255)
     RK_BASE = (182, 32, 62, 255)
     RK_SHADE = (132, 22, 48, 255)
@@ -682,7 +682,7 @@ def make_zaphox():
 def make_galecorn():
     img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
 
-    # Sunny pastel-yellow fox-unicorn coat (Alice's drawing yellow body) + aqua-mint mane/accents + billowing white cloud fan
+    # Sunny pastel-yellow fox-unicorn coat (Alex's drawing yellow body) + aqua-mint mane/accents + billowing white cloud fan
     GC_COAT_CORE = (255, 252, 232, 255)
     GC_COAT_HI = (254, 246, 194, 255)
     GC_COAT_BASE = (253, 224, 104, 255)
@@ -801,12 +801,176 @@ def make_galecorn():
     img.save(dest)
 
 
+def make_ember_drake():
+    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+
+    # DESIGN.md Dragon Jungle Accent: Canopy Emerald (#22C55E) + Ember Amber (#F97316)
+    ED_HI = (110, 238, 152, 255)
+    ED_BASE = (34, 197, 94, 255)
+    ED_SHADE = (22, 148, 70, 255)
+    ED_DEEP = (14, 98, 48, 255)
+
+    AMB_HI = (255, 222, 120, 255)
+    AMB_BASE = (249, 115, 22, 255)
+    AMB_SHADE = (194, 72, 14, 255)
+    AMB_DEEP = (138, 44, 10, 255)
+
+    HORN_HI = (255, 246, 214, 255)
+    HORN_BASE = (224, 204, 164, 255)
+    HORN_SHADE = (176, 152, 118, 255)
+
+    # 1. Body [6, 5, 9] at [0, 0] + Belly [5, 1, 8] at [32, 0] + Dorsal Spikes [1, 2, 2] at [60, 0] & [68, 0]
+    smooth_coat(img, 0, 0, 6, 5, 9, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
+    bf = faces(0, 0, 6, 5, 9)
+    # Subtle dragon scale checker along top/sides
+    for side in ("top", "east", "west"):
+        sx, sy, sw, sh = bf[side]
+        for py in range(sy, sy + sh):
+            for px in range(sx, sx + sw):
+                if (px + py) % 3 == 0:
+                    put(img, px, py, ED_HI if side == "top" else ED_SHADE)
+    smooth_coat(img, 32, 0, 5, 1, 8, AMB_HI, (255, 190, 96, 255), AMB_BASE, AMB_SHADE)
+    smooth_coat(img, 60, 0, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+    smooth_coat(img, 68, 0, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+
+    # 2. Neck [4, 4, 3] at [76, 0]
+    smooth_coat(img, 76, 0, 4, 4, 3, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
+    nf = faces(76, 0, 4, 4, 3)
+    fill(img, (nf["front"][0] + 1, nf["front"][1] + 1, 2, 3), AMB_HI)
+
+    # 3. Head [6, 5, 5] at [0, 16], Snout [4, 3, 3] at [24, 16], Jaw [3, 1, 3] at [40, 16], Crest [1, 2, 2] at [54, 16]
+    smooth_coat(img, 0, 16, 6, 5, 5, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
+    smooth_coat(img, 24, 16, 4, 3, 3, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
+    snf = faces(24, 16, 4, 3, 3)
+    put(img, snf["front"][0], snf["front"][1] + 1, ED_DEEP)
+    put(img, snf["front"][0] + 3, snf["front"][1] + 1, ED_DEEP)
+    smooth_coat(img, 40, 16, 3, 1, 3, AMB_HI, (255, 190, 96, 255), AMB_BASE, AMB_SHADE)
+    smooth_coat(img, 54, 16, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+
+    # 4. Horns [1, 3, 1] at [62, 16] & [68, 16]
+    for hu in (62, 68):
+        smooth_coat(img, hu, 16, 1, 3, 1, HORN_HI, HORN_BASE, HORN_SHADE, HORN_SHADE)
+
+    # 5. Golden-Amber Eyes [2, 2, 1] at [74, 16] & [82, 16]
+    for idx, eu in enumerate((74, 82)):
+        ef = faces(eu, 16, 2, 2, 1)
+        for rect in ef.values():
+            fill(img, rect, AMB_DEEP)
+        ex, ey, _, _ = ef["front"]
+        fill(img, (ex, ey, 2, 2), AMB_HI)
+        put(img, ex + (1 if idx == 0 else 0), ey + 1, (38, 18, 10, 255))
+        put(img, ex + (0 if idx == 0 else 1), ey, (255, 255, 255, 255))
+
+    # 6. Fluttering Baby Wings: Arm [6, 1, 2] at [0, 28] & [40, 28], Membrane [6, 1, 4] at [18, 28] & [58, 28]
+    for wu in (0, 40):
+        smooth_coat(img, wu, 28, 6, 1, 2, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
+    for mu in (18, 58):
+        smooth_coat(img, mu, 28, 6, 1, 4, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+
+    # 7. Tail Base [4, 4, 4] at [0, 36], Spike [1, 2, 2] at [18, 36], Tail Tip [3, 3, 4] at [26, 36], Spade [4, 2, 3] at [42, 36]
+    smooth_coat(img, 0, 36, 4, 4, 4, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
+    smooth_coat(img, 18, 36, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+    smooth_coat(img, 26, 36, 3, 3, 4, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
+    smooth_coat(img, 42, 36, 4, 2, 3, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+
+    # 8. Stubby Clawed Legs [2, 4, 2] at [0, 48], [10, 48], [20, 48], [30, 48]
+    for lu in (0, 10, 20, 30):
+        smooth_coat(img, lu, 48, 2, 4, 2, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
+        lf = faces(lu, 48, 2, 4, 2)
+        fill(img, lf["bottom"], HORN_BASE)
+        put(img, lf["front"][0], lf["front"][1] + 3, HORN_HI)
+        put(img, lf["front"][0] + 1, lf["front"][1] + 3, HORN_HI)
+
+    dest = OUT / "entity/ember_drake.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+
+
+def make_peepkin():
+    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+
+    # DESIGN.md Eye Realm Accent: Twilight Magenta (#D946EF) & Pupil Glow (#7DF9FF)
+    PK_HI = (128, 96, 192, 255)
+    PK_BASE = (86, 56, 146, 255)
+    PK_SHADE = (58, 36, 106, 255)
+    PK_DEEP = (36, 22, 72, 255)
+
+    MAG_HI = (244, 142, 255, 255)
+    MAG_BASE = (217, 70, 239, 255)   # #D946EF
+    MAG_SHADE = (158, 42, 184, 255)
+    PUPIL_GLOW = (125, 249, 255, 255)  # #7DF9FF
+    SCLERA = (250, 250, 255, 255)
+    SCLERA_SHADE = (214, 212, 236, 255)
+
+    # 1. Plush Orb Core [8, 8, 8] at [0, 0] + Belly Rim [7, 2, 7] at [34, 0] + Crown Tuft [4, 2, 4] at [64, 0]
+    smooth_coat(img, 0, 0, 8, 8, 8, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
+    smooth_coat(img, 34, 0, 7, 2, 7, MAG_HI, MAG_BASE, MAG_SHADE, PK_DEEP)
+    smooth_coat(img, 64, 0, 4, 2, 4, MAG_HI, MAG_BASE, MAG_SHADE, PK_SHADE)
+
+    # 2. Giant Main Eye: Sclera [6, 5, 1] at [0, 18] & Iris/Pupil [3, 3, 1] at [16, 18]
+    smooth_coat(img, 0, 18, 6, 5, 1, SCLERA, SCLERA, SCLERA, SCLERA_SHADE)
+    ir = faces(16, 18, 3, 3, 1)
+    for rect in ir.values():
+        fill(img, rect, MAG_SHADE)
+    ix, iy, _, _ = ir["front"]
+    fill(img, (ix, iy, 3, 3), MAG_BASE)
+    put(img, ix + 1, iy + 1, (24, 18, 52, 255))
+    put(img, ix + 1, iy, PUPIL_GLOW)
+    put(img, ix + 1, iy + 2, PUPIL_GLOW)
+    put(img, ix + 2, iy, (255, 255, 255, 255))
+
+    # 3. Blinking Eyelids [6, 1, 1] at [28, 18] & [44, 18]
+    for lu in (28, 44):
+        smooth_coat(img, lu, 18, 6, 1, 1, MAG_HI, PK_BASE, PK_SHADE, PK_DEEP)
+        lf = faces(lu, 18, 6, 1, 1)
+        fill(img, lf["front"], MAG_BASE)
+
+    # 4. Two Crown Eye-Buds: Stalks [1, 3, 1] at [60, 18] & [80, 18], Mini Orbs [3, 3, 3] at [66, 18] & [86, 18]
+    for su in (60, 80):
+        smooth_coat(img, su, 18, 1, 3, 1, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
+    for ou in (66, 86):
+        smooth_coat(img, ou, 18, 3, 3, 3, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
+        mof = faces(ou, 18, 3, 3, 3)
+        fx, fy, _, _ = mof["front"]
+        fill(img, (fx, fy, 3, 3), SCLERA)
+        put(img, fx + 1, fy + 1, PUPIL_GLOW)
+        put(img, fx + 1, fy, MAG_BASE)
+
+    # 5. Ear-Winglets [4, 3, 2] at [0, 28] & [14, 28]
+    for eu in (0, 14):
+        smooth_coat(img, eu, 28, 4, 3, 2, MAG_HI, MAG_BASE, MAG_SHADE, PK_SHADE)
+        ef = faces(eu, 28, 4, 3, 2)
+        fill(img, (ef["front"][0] + (3 if eu == 0 else 0), ef["front"][1], 1, 3), PUPIL_GLOW)
+
+    # 6. Tail Stem [3, 2, 4] at [28, 28] & Peeking Tail Eye [4, 3, 3] at [44, 28]
+    smooth_coat(img, 28, 28, 3, 2, 4, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
+    smooth_coat(img, 44, 28, 4, 3, 3, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
+    tef = faces(44, 28, 4, 3, 3)
+    bx, by, _, _ = tef["back"]
+    fill(img, (bx + 1, by, 2, 3), SCLERA)
+    put(img, bx + 1, by + 1, PUPIL_GLOW)
+    put(img, bx + 2, by + 1, MAG_BASE)
+
+    # 7. Four Floating Tassel Feet [2, 3, 2] at [0, 38], [10, 38], [20, 38], [30, 38]
+    for fu in (0, 10, 20, 30):
+        smooth_coat(img, fu, 38, 2, 3, 2, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
+        ff = faces(fu, 38, 2, 3, 2)
+        fill(img, (ff["front"][0], ff["front"][1] + 2, 2, 1), MAG_BASE)
+        fill(img, ff["bottom"], PUPIL_GLOW)
+
+    dest = OUT / "entity/peepkin.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+
+
 def main():
     make_crystal_fox()
     make_shadow_wisp()
     make_cinder_crag()
     make_zaphox()
     make_galecorn()
+    make_ember_drake()
+    make_peepkin()
 
     item_dir = OUT / "item"
     item_dir.mkdir(parents=True, exist_ok=True)
@@ -817,7 +981,7 @@ def main():
     )
     draw_crystal(GOLD_DARK, GOLD, GOLD_HI).save(item_dir / "capture_crystal_fainted.png")
     make_biome_treat().save(item_dir / "biome_treat.png")
-    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn).")
+    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin).")
 
 
 if __name__ == "__main__":

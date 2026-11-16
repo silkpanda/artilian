@@ -142,29 +142,29 @@ public class CustomTntGameTests {
         BlockPos planksPos = new BlockPos(7, 2, 5);
         helper.setBlock(planksPos, Blocks.OAK_PLANKS);
 
-        ServerPlayer alice = spawnSurvivalPlayer(helper, "AliceParty", new Vec3(5.5, 2.0, 7.5));
-        alice.setHealth(12.0F);
+        ServerPlayer alex = spawnSurvivalPlayer(helper, "AlexParty", new Vec3(5.5, 2.0, 7.5));
+        alex.setHealth(12.0F);
         Pig pig = helper.spawnWithNoFreeWill(EntityType.PIG, new Vec3(9.5, 2.0, 7.5));
 
         Vec3 tntAbs = helper.absoluteVec(new Vec3(7.5, 2.0, 7.5));
         ArtilianPrimedTnt partyTnt = new ArtilianPrimedTnt(
-                level, tntAbs.x, tntAbs.y, tntAbs.z, alice, TntVariant.PARTY);
+                level, tntAbs.x, tntAbs.y, tntAbs.z, alex, TntVariant.PARTY);
         partyTnt.setFuse(5);
         level.addFreshEntity(partyTnt);
 
         helper.runAfterDelay(10, () -> {
-            helper.assertTrue(alice.hasEffect(MobEffects.MOVEMENT_SPEED),
+            helper.assertTrue(alex.hasEffect(MobEffects.MOVEMENT_SPEED),
                     "Party TNT should grant Speed to nearby players");
-            helper.assertTrue(alice.hasEffect(MobEffects.REGENERATION),
+            helper.assertTrue(alex.hasEffect(MobEffects.REGENERATION),
                     "Party TNT should grant Regeneration to nearby players");
-            helper.assertTrue(alice.getHealth() >= 12.0F,
-                    "Party TNT must deal zero damage, health was " + alice.getHealth());
+            helper.assertTrue(alex.getHealth() >= 12.0F,
+                    "Party TNT must deal zero damage, health was " + alex.getHealth());
             helper.assertTrue(pig.hasEffect(MobEffects.MOVEMENT_SPEED),
                     "Party TNT should buff nearby living entities too");
             helper.assertBlockPresent(Blocks.OAK_PLANKS, planksPos);
             helper.assertBlockPresent(Blocks.GLASS, new BlockPos(7, 1, 7));
 
-            removeTestPlayer(level, alice);
+            removeTestPlayer(level, alex);
             pig.discard();
             helper.succeed();
         });
@@ -179,33 +179,33 @@ public class CustomTntGameTests {
             }
         }
 
-        ServerPlayer bob = spawnSurvivalPlayer(helper, "BobBounce", new Vec3(5.5, 2.0, 7.5));
-        ServerPlayer alice = spawnSurvivalPlayer(helper, "AliceBounce", new Vec3(2.5, 2.0, 2.5));
+        ServerPlayer steve = spawnSurvivalPlayer(helper, "SteveBounce", new Vec3(5.5, 2.0, 7.5));
+        ServerPlayer alex = spawnSurvivalPlayer(helper, "AlexBounce", new Vec3(2.5, 2.0, 2.5));
         Pig pig = helper.spawnWithNoFreeWill(EntityType.PIG, new Vec3(9.5, 2.0, 7.5));
 
-        ChesterEntity awakeChester = ChesterService.summon(bob);
+        ChesterEntity awakeChester = ChesterService.summon(steve);
         Vec3 awakeAbs = helper.absoluteVec(new Vec3(7.5, 2.0, 5.5));
         awakeChester.moveTo(awakeAbs.x, awakeAbs.y, awakeAbs.z, 0.0F, 0.0F);
 
-        ChesterEntity sleepingChester = ChesterService.summon(alice);
+        ChesterEntity sleepingChester = ChesterService.summon(alex);
         Vec3 sleepAbs = helper.absoluteVec(new Vec3(7.5, 2.0, 9.5));
         sleepingChester.moveTo(sleepAbs.x, sleepAbs.y, sleepAbs.z, 0.0F, 0.0F);
-        sleepingChester.toggleSitAndSleep(alice);
+        sleepingChester.toggleSitAndSleep(alex);
         helper.assertTrue(sleepingChester.isAsleep(), "Sleeping Chester should be asleep before Bounce TNT");
 
         Vec3 tntAbs = helper.absoluteVec(new Vec3(7.5, 2.0, 7.5));
         ArtilianPrimedTnt bounceTnt = new ArtilianPrimedTnt(
-                level, tntAbs.x, tntAbs.y, tntAbs.z, bob, TntVariant.BOUNCE);
+                level, tntAbs.x, tntAbs.y, tntAbs.z, steve, TntVariant.BOUNCE);
         bounceTnt.setFuse(5);
         level.addFreshEntity(bounceTnt);
 
         helper.runAfterDelay(6, () -> {
-            helper.assertTrue(bob.hasEffect(MobEffects.SLOW_FALLING),
+            helper.assertTrue(steve.hasEffect(MobEffects.SLOW_FALLING),
                     "Bounce TNT must grant Slow Falling so players land safely");
-            helper.assertTrue(bob.hasEffect(MobEffects.JUMP),
+            helper.assertTrue(steve.hasEffect(MobEffects.JUMP),
                     "Bounce TNT must grant Jump Boost");
-            helper.assertTrue(bob.getDeltaMovement().y > 0.5,
-                    "Bounce TNT should launch player upward, got y=" + bob.getDeltaMovement().y);
+            helper.assertTrue(steve.getDeltaMovement().y > 0.5,
+                    "Bounce TNT should launch player upward, got y=" + steve.getDeltaMovement().y);
             helper.assertTrue(pig.hasEffect(MobEffects.SLOW_FALLING) && pig.getDeltaMovement().y > 0.5,
                     "Bounce TNT should launch nearby pig with Slow Falling");
             helper.assertTrue(awakeChester.getDeltaMovement().y > 0.5,
@@ -218,8 +218,8 @@ public class CustomTntGameTests {
             awakeChester.discard();
             sleepingChester.discard();
             pig.discard();
-            removeTestPlayer(level, bob);
-            removeTestPlayer(level, alice);
+            removeTestPlayer(level, steve);
+            removeTestPlayer(level, alex);
             helper.succeed();
         });
     }
@@ -237,13 +237,13 @@ public class CustomTntGameTests {
         helper.setBlock(waterPos, Blocks.WATER);
         helper.setBlock(planksPos, Blocks.OAK_PLANKS);
 
-        ServerPlayer alice = spawnSurvivalPlayer(helper, "AliceFrost", new Vec3(5.5, 2.0, 7.5));
-        ChesterEntity chester = ChesterService.summon(alice);
+        ServerPlayer alex = spawnSurvivalPlayer(helper, "AlexFrost", new Vec3(5.5, 2.0, 7.5));
+        ChesterEntity chester = ChesterService.summon(alex);
         Vec3 chesterAbs = helper.absoluteVec(new Vec3(7.5, 2.0, 9.5));
         chester.moveTo(chesterAbs.x, chesterAbs.y, chesterAbs.z, 0.0F, 0.0F);
 
         Wolf wolf = helper.spawnWithNoFreeWill(EntityType.WOLF, new Vec3(8.5, 2.0, 9.0));
-        wolf.tame(alice);
+        wolf.tame(alex);
         float wolfStartHealth = wolf.getHealth();
 
         Creeper creeper = helper.spawnWithNoFreeWill(EntityType.CREEPER, new Vec3(9.5, 2.0, 7.5));
@@ -251,7 +251,7 @@ public class CustomTntGameTests {
 
         Vec3 tntAbs = helper.absoluteVec(new Vec3(7.5, 2.0, 7.5));
         ArtilianPrimedTnt frostTnt = new ArtilianPrimedTnt(
-                level, tntAbs.x, tntAbs.y, tntAbs.z, alice, TntVariant.FROST_NOVA);
+                level, tntAbs.x, tntAbs.y, tntAbs.z, alex, TntVariant.FROST_NOVA);
         frostTnt.setFuse(5);
         level.addFreshEntity(frostTnt);
 
@@ -268,9 +268,9 @@ public class CustomTntGameTests {
                             && creeper.hasEffect(MobEffects.WEAKNESS),
                     "Frost Nova TNT should apply Slowness and Weakness to hostile mobs");
 
-            helper.assertTrue(alice.getHealth() == alice.getMaxHealth(),
-                    "Frost Nova TNT must not damage players, hp=" + alice.getHealth());
-            helper.assertFalse(alice.hasEffect(MobEffects.MOVEMENT_SLOWDOWN),
+            helper.assertTrue(alex.getHealth() == alex.getMaxHealth(),
+                    "Frost Nova TNT must not damage players, hp=" + alex.getHealth());
+            helper.assertFalse(alex.hasEffect(MobEffects.MOVEMENT_SLOWDOWN),
                     "Frost Nova TNT must not slow players");
             helper.assertTrue(chester.isAlive() && !chester.hasEffect(MobEffects.MOVEMENT_SLOWDOWN),
                     "Frost Nova TNT must spare Chester");
@@ -280,7 +280,7 @@ public class CustomTntGameTests {
             chester.discard();
             wolf.discard();
             creeper.discard();
-            removeTestPlayer(level, alice);
+            removeTestPlayer(level, alex);
             helper.succeed();
         });
     }

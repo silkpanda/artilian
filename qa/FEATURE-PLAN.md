@@ -12,7 +12,7 @@ feature. Don't edit this copy. When every stage is done, move the plan to qa/arc
 
 ## Why
 
-[The problem, in the owner's, Alice's, or Bob's words where possible. What's wrong or missing today.]
+[The problem, in the owner's, Alex's, or Steve's words where possible. What's wrong or missing today.]
 
 ## Stages
 

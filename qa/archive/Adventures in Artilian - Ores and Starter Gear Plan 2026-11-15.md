@@ -14,7 +14,7 @@ commits inside that PR. -->
 
 ## Why
 
-Bob asked for custom weapons, armor, and tools, and both kids need an inviting, readable progression loop in survival before custom biomes and bosses arrive. Right now there are no Artilian ores in the world and no starter gear to craft. This feature introduces Artilian's two signature materials from `DESIGN.md` — **Sunsteel** (`#FF9F38` Sunsteel Gold) and **Starlight Crystal** (`#38D9C0` Starlight Teal) — with clear mining tiers, Overworld ore generation, and full starter sets of tools, weapons, and armor.
+Steve asked for custom weapons, armor, and tools, and both kids need an inviting, readable progression loop in survival before custom biomes and bosses arrive. Right now there are no Artilian ores in the world and no starter gear to craft. This feature introduces Artilian's two signature materials from `DESIGN.md` — **Sunsteel** (`#FF9F38` Sunsteel Gold) and **Starlight Crystal** (`#38D9C0` Starlight Teal) — with clear mining tiers, Overworld ore generation, and full starter sets of tools, weapons, and armor.
 
 ## Decisions
 

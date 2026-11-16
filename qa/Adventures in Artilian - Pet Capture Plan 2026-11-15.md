@@ -13,7 +13,7 @@ Relates to: `PLAN.md` Phase 2 Stage 3, `PRODUCT.md`, `DESIGN.md`, `security/FIND
 
 ## Why
 
-Alice wants biome-specific pets that can be captured, carried safely, and called out for adventures, and `PRODUCT.md` guarantees pets **faint safely back into their Capture Crystal** instead of dying permanently. Today Artilian has three Overworld biomes (Phase 2 Stages 1–2), but no Capture Crystals, no Biome Treats, and no capturable pets. Phase 2 Stage 3 builds the full pet capture foundation end to end with **Crystal Fox** (`artilian:crystal_fox`) in **Crystal Canopy Woods** so Stage 4 (Pet battle AI) and St (full Biome Pet roster + dragon hatchling + eye pet) can plug straight in.
+Alex wants biome-specific pets that can be captured, carried safely, and called out for adventures, and `PRODUCT.md` guarantees pets **faint safely back into their Capture Crystal** instead of dying permanently. Today Artilian has three Overworld biomes (Phase 2 Stages 1–2), but no Capture Crystals, no Biome Treats, and no capturable pets. Phase 2 Stage 3 builds the full pet capture foundation end to end with **Crystal Fox** (`artilian:crystal_fox`) in **Crystal Canopy Woods** so Stage 4 (Pet battle AI) and St (full Biome Pet roster + dragon hatchling + eye pet) can plug straight in.
 
 ## Decisions
 
@@ -69,4 +69,4 @@ Applies — pet capture introduces player-owned `CaptureCrystalItem` / `Artilian
 - Pet combat / targeting structure enemies (Phase 2 Stage 4).
 - Additional biome pets (Emberbloom / Starlight Highlands pets, dragon hatchling, eye-themed pet — Phase 2 Stage 5).
 - Custom biome structures and structure enemies (Phase 2 Stage 6).
-- Final Phase 2 art pass against Alice & Bob's drawings (Phase 2 St).
+- Final Phase 2 art pass against Alex & Steve's drawings (Phase 2 St).

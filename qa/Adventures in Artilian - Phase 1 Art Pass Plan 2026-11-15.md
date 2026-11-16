@@ -3,7 +3,7 @@
 <!-- PLAN.md Phase 1 Stage 6. One PLAN stage, one PR, one jar. The numbered stages below are
 commits inside that PR. -->
 
-> **Status: Complete (all 4 stages done; ready for the owner, Alice, and Bob's in-game sign-off).** Record each stage's commit here.
+> **Status: Complete (all 4 stages done; ready for the owner, Alex, and Steve's in-game sign-off).** Record each stage's commit here.
 >
 > | Stage | Done |
 > |---|---|
@@ -14,7 +14,7 @@ commits inside that PR. -->
 
 ## Why
 
-Phase 1 Stages 2–5 shipped playable mechanics with placeholder programmer art (flat oak panels on Chester, simple geometric bands on Bounce/Frost Nova TNT, corner-clipped or blocky wand sprites, and a plain Sunsteel block). Before Alice, Bob, and the owner do their Phase 1 co-op sign-off playtest (`PLAN.md` Stage 6), every Phase 1 creature, block, item, armor piece, and HUD element needs cohesive, expressive, high-contrast `DESIGN.md` art and zero missing-asset issues in-game.
+Phase 1 Stages 2–5 shipped playable mechanics with placeholder programmer art (flat oak panels on Chester, simple geometric bands on Bounce/Frost Nova TNT, corner-clipped or blocky wand sprites, and a plain Sunsteel block). Before Alex, Steve, and the owner do their Phase 1 co-op sign-off playtest (`PLAN.md` Stage 6), every Phase 1 creature, block, item, armor piece, and HUD element needs cohesive, expressive, high-contrast `DESIGN.md` art and zero missing-asset issues in-game.
 
 ## Decisions
 
@@ -49,7 +49,7 @@ Phase 1 Stages 2–5 shipped playable mechanics with placeholder programmer art 
 
 ### Stage 4: Client verification, evidence, docs & PR
 - **Changes:** Run temporary `./gradlew runClient` showcase verifying awake & sleeping Chester beside a vanilla oak chest, all 4 Custom TNTs, all 3 Wands & Staves + Mana HUD bar, Sunsteel/Starlight ores, blocks, weapons, tools, 3D GeckoLib armor, and the full `Adventures in Artilian` Creative Tab with zero missing-texture/model errors in `run/logs/latest.log`. Save updated screenshots in `qa/evidence/`, revert temporary harness, update this plan and `PLAN.md` **Now**, run `runData`/`build`/`runGameTestServer`, push `phase-1-stage-6-art-pass`, and open PR stacked on `phase-1-stage-5-mana-and-wands`.
-- **Done When:** `runData` leaves `src/generated` clean, `build` and `runGameTestServer` are green, client showcase evidence is saved, and the stacked PR is open for the owner, Alice, and Bob's in-game sign-off.
+- **Done When:** `runData` leaves `src/generated` clean, `build` and `runGameTestServer` are green, client showcase evidence is saved, and the stacked PR is open for the owner, Alex, and Steve's in-game sign-off.
 
 ## Security gate
 
@@ -57,5 +57,5 @@ n/a: art pass only (textures, GeckoLib models/animations, HUD polish, and asset-
 
 ## Out of scope
 
-- Any kids' drawing-specific revisions that haven't been shared yet (captured as follow-ups once Alice and Bob review the Phase 1 Stage 6 jar in-game).
+- Any kids' drawing-specific revisions that haven't been shared yet (captured as follow-ups once Alex and Steve review the Phase 1 Stage 6 jar in-game).
 - Phase 2 TerraBlender biomes, pets, structures, or enemies.

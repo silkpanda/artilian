@@ -4,7 +4,9 @@ import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.pet.CaptureCrystalItem;
 import com.silkpanda.artilian.pet.CapturedPetData;
 import com.silkpanda.artilian.pet.CinderCragEntity;
+import com.silkpanda.artilian.pet.EmberDrakeEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
+import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PetElement;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
@@ -42,7 +44,7 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import java.util.List;
 import java.util.Optional;
 
-/** Phase 2 St: Bob's Shadow Wisp & Cinder Crag roster, spawns, capture, fainting, and battle. */
+/** Phase 2 St: Steve's Shadow Wisp & Cinder Crag roster, spawns, capture, fainting, and battle. */
 @GameTestHolder(ArtilianMod.MODID)
 @PrefixGameTestTemplate(false)
 public class PetRosterGameTests {
@@ -135,9 +137,9 @@ public class PetRosterGameTests {
     }
 
     @GameTest(template = "tnt_arena")
-    public static void bobPetsCaptureBefriendSummonAndFaintSafelyIntoCrystal(GameTestHelper helper) {
+    public static void stevePetsCaptureBefriendSummonAndFaintSafelyIntoCrystal(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer bob = ChesterTestSupport.playerInTestArea(helper, "BobRoster");
+        ServerPlayer steve = ChesterTestSupport.playerInTestArea(helper, "SteveRoster");
 
         ShadowWispEntity wildWisp = ArtilianEntities.SHADOW_WISP.get().create(level);
         BlockPos wispPos = helper.absolutePos(new BlockPos(5, 1, 7));
@@ -145,14 +147,14 @@ public class PetRosterGameTests {
         level.addFreshEntity(wildWisp);
 
         ItemStack treats = new ItemStack(ArtilianItems.BIOME_TREAT.get(), 4);
-        bob.setItemInHand(InteractionHand.MAIN_HAND, treats);
-        bob.interactOn(wildWisp, InteractionHand.MAIN_HAND);
-        bob.interactOn(wildWisp, InteractionHand.MAIN_HAND);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, treats);
+        steve.interactOn(wildWisp, InteractionHand.MAIN_HAND);
+        steve.interactOn(wildWisp, InteractionHand.MAIN_HAND);
         helper.assertTrue(wildWisp.isBefriended(), "Two Biome Treats should befriend Shadow Wisp");
 
         ItemStack wispCrystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        bob.setItemInHand(InteractionHand.MAIN_HAND, wispCrystal);
-        bob.interactOn(wildWisp, InteractionHand.MAIN_HAND);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, wispCrystal);
+        steve.interactOn(wildWisp, InteractionHand.MAIN_HAND);
         CapturedPetData wispData = wispCrystal.get(ArtilianDataComponents.CAPTURED_PET.get());
         helper.assertTrue(wispData != null && wispData.primaryElement() == PetElement.SHADOW
                         && wispData.entityType().equals(ArtilianEntities.SHADOW_WISP.getId()),
@@ -165,18 +167,18 @@ public class PetRosterGameTests {
         level.addFreshEntity(wildCrag);
 
         ItemStack cragCrystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        bob.setItemInHand(InteractionHand.MAIN_HAND, cragCrystal);
-        bob.interactOn(wildCrag, InteractionHand.MAIN_HAND);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, cragCrystal);
+        steve.interactOn(wildCrag, InteractionHand.MAIN_HAND);
         CapturedPetData cragData = cragCrystal.get(ArtilianDataComponents.CAPTURED_PET.get());
         helper.assertTrue(cragData != null && cragData.primaryElement() == PetElement.FIRE
                         && cragData.secondaryElement().equals(Optional.of(PetElement.EARTH)),
                 "Capture Crystal should store Cinder Crag FIRE / EARTH elements");
 
         // Summon Cinder Crag and verify non-lethal fainting into crystal
-        bob.setItemInHand(InteractionHand.MAIN_HAND, cragCrystal);
-        cragCrystal.use(level, bob, InteractionHand.MAIN_HAND);
+        steve.setItemInHand(InteractionHand.MAIN_HAND, cragCrystal);
+        cragCrystal.use(level, steve, InteractionHand.MAIN_HAND);
         List<? extends CinderCragEntity> crags = level.getEntities(
-                ArtilianEntities.CINDER_CRAG.get(), e -> e.isAlive() && e.isOwner(bob));
+                ArtilianEntities.CINDER_CRAG.get(), e -> e.isAlive() && e.isOwner(steve));
         helper.assertTrue(crags.size() == 1, "Expected 1 summoned Cinder Crag");
         CinderCragEntity summonedCrag = crags.get(0);
         summonedCrag.hurt(level.damageSources().mobAttack(summonedCrag), 999.0F);
@@ -191,14 +193,14 @@ public class PetRosterGameTests {
     }
 
     @GameTest(template = "tnt_arena")
-    public static void bobPetsBattleWithShadowAndFireElementalMatchupsAndPerks(GameTestHelper helper) {
+    public static void stevePetsBattleWithShadowAndFireElementalMatchupsAndPerks(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer bob = ChesterTestSupport.playerInTestArea(helper, "BobBattle");
+        ServerPlayer steve = ChesterTestSupport.playerInTestArea(helper, "SteveBattle");
 
         ShadowWispEntity wisp = ArtilianEntities.SHADOW_WISP.get().create(level);
         BlockPos wispPos = helper.absolutePos(new BlockPos(6, 1, 7));
         wisp.moveTo(wispPos.getX() + 0.5, wispPos.getY(), wispPos.getZ() + 0.5, 0.0F, 0.0F);
-        wisp.setOwner(bob);
+        wisp.setOwner(steve);
         wisp.addAffinity(100);
         level.addFreshEntity(wisp);
 
@@ -217,7 +219,7 @@ public class PetRosterGameTests {
         CinderCragEntity crag = ArtilianEntities.CINDER_CRAG.get().create(level);
         BlockPos cragPos = helper.absolutePos(new BlockPos(9, 1, 7));
         crag.moveTo(cragPos.getX() + 0.5, cragPos.getY(), cragPos.getZ() + 0.5, 0.0F, 0.0F);
-        crag.setOwner(bob);
+        crag.setOwner(steve);
         crag.addAffinity(100);
         level.addFreshEntity(crag);
 
@@ -321,9 +323,9 @@ public class PetRosterGameTests {
     }
 
     @GameTest(template = "tnt_arena")
-    public static void alicePetsCaptureBefriendSummonAndFaintSafelyIntoCrystal(GameTestHelper helper) {
+    public static void alexPetsCaptureBefriendSummonAndFaintSafelyIntoCrystal(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceRoster");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexRoster");
 
         ZaphoxEntity wildZaphox = ArtilianEntities.ZAPHOX.get().create(level);
         BlockPos zaphoxPos = helper.absolutePos(new BlockPos(5, 1, 7));
@@ -331,14 +333,14 @@ public class PetRosterGameTests {
         level.addFreshEntity(wildZaphox);
 
         ItemStack treats = new ItemStack(ArtilianItems.BIOME_TREAT.get(), 4);
-        alice.setItemInHand(InteractionHand.MAIN_HAND, treats);
-        alice.interactOn(wildZaphox, InteractionHand.MAIN_HAND);
-        alice.interactOn(wildZaphox, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, treats);
+        alex.interactOn(wildZaphox, InteractionHand.MAIN_HAND);
+        alex.interactOn(wildZaphox, InteractionHand.MAIN_HAND);
         helper.assertTrue(wildZaphox.isBefriended(), "Two Biome Treats should befriend Zaphox");
 
         ItemStack zaphoxCrystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, zaphoxCrystal);
-        alice.interactOn(wildZaphox, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, zaphoxCrystal);
+        alex.interactOn(wildZaphox, InteractionHand.MAIN_HAND);
         CapturedPetData zaphoxData = zaphoxCrystal.get(ArtilianDataComponents.CAPTURED_PET.get());
         helper.assertTrue(zaphoxData != null
                         && zaphoxData.primaryElement() == PetElement.ELECTRIC
@@ -353,8 +355,8 @@ public class PetRosterGameTests {
         level.addFreshEntity(wildGalecorn);
 
         ItemStack galecornCrystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
-        alice.setItemInHand(InteractionHand.MAIN_HAND, galecornCrystal);
-        alice.interactOn(wildGalecorn, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, galecornCrystal);
+        alex.interactOn(wildGalecorn, InteractionHand.MAIN_HAND);
         CapturedPetData galecornData = galecornCrystal.get(ArtilianDataComponents.CAPTURED_PET.get());
         helper.assertTrue(galecornData != null
                         && galecornData.primaryElement() == PetElement.AIR
@@ -363,10 +365,10 @@ public class PetRosterGameTests {
                 "Capture Crystal should store Galecorn identity and AIR / NATURE elements");
 
         // Summon Galecorn and verify safe fainting back into crystal
-        alice.setItemInHand(InteractionHand.MAIN_HAND, galecornCrystal);
-        galecornCrystal.use(level, alice, InteractionHand.MAIN_HAND);
+        alex.setItemInHand(InteractionHand.MAIN_HAND, galecornCrystal);
+        galecornCrystal.use(level, alex, InteractionHand.MAIN_HAND);
         List<? extends GalecornEntity> galecorns = level.getEntities(
-                ArtilianEntities.GALECORN.get(), e -> e.isAlive() && e.isOwner(alice));
+                ArtilianEntities.GALECORN.get(), e -> e.isAlive() && e.isOwner(alex));
         helper.assertTrue(galecorns.size() == 1, "Expected 1 summoned Galecorn");
         GalecornEntity summonedGalecorn = galecorns.get(0);
         summonedGalecorn.hurt(level.damageSources().mobAttack(summonedGalecorn), 999.0F);
@@ -381,14 +383,14 @@ public class PetRosterGameTests {
     }
 
     @GameTest(template = "tnt_arena")
-    public static void alicePetsBattleWithElectricAndAirMatchupsAndSignaturePerks(GameTestHelper helper) {
+    public static void alexPetsBattleWithElectricAndAirMatchupsAndSignaturePerks(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer alice = ChesterTestSupport.playerInTestArea(helper, "AliceBattle");
+        ServerPlayer alex = ChesterTestSupport.playerInTestArea(helper, "AlexBattle");
 
         ZaphoxEntity zaphox = ArtilianEntities.ZAPHOX.get().create(level);
         BlockPos zaphoxPos = helper.absolutePos(new BlockPos(6, 1, 7));
         zaphox.moveTo(zaphoxPos.getX() + 0.5, zaphoxPos.getY(), zaphoxPos.getZ() + 0.5, 0.0F, 0.0F);
-        zaphox.setOwner(alice);
+        zaphox.setOwner(alex);
         zaphox.addAffinity(100);
         level.addFreshEntity(zaphox);
 
@@ -408,7 +410,7 @@ public class PetRosterGameTests {
         GalecornEntity galecorn = ArtilianEntities.GALECORN.get().create(level);
         BlockPos galecornPos = helper.absolutePos(new BlockPos(9, 1, 7));
         galecorn.moveTo(galecornPos.getX() + 0.5, galecornPos.getY(), galecornPos.getZ() + 0.5, 0.0F, 0.0F);
-        galecorn.setOwner(alice);
+        galecorn.setOwner(alex);
         galecorn.addAffinity(100);
         level.addFreshEntity(galecorn);
 
@@ -440,6 +442,200 @@ public class PetRosterGameTests {
             helper.assertTrue(SpawnEggItem.byId(type) != null,
                     "Missing spawn egg for entity " + holder.getId());
         }
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void emberDrakeIsDragonFireImmuneToFireAndSpawnsInEmberbloomMeadows(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        EmberDrakeEntity drake = ArtilianEntities.EMBER_DRAKE.get().create(level);
+        helper.assertTrue(drake != null
+                        && drake.getPrimaryElement() == PetElement.DRAGON
+                        && drake.getSecondaryElement().equals(Optional.of(PetElement.FIRE)),
+                "Ember Drake must be DRAGON / FIRE dual-element");
+        helper.assertTrue(drake.fireImmune(), "Ember Drake must be fire immune");
+        helper.assertFalse(drake.causeFallDamage(30.0F, 1.0F, level.damageSources().fall()),
+                "Winged Ember Drake hatchling must flutter safely with zero fall damage");
+
+        Registry<Biome> biomes = level.registryAccess().registryOrThrow(Registries.BIOME);
+        Holder<Biome> ember = biomes.getHolderOrThrow(ArtilianBiomes.EMBERBLOOM_MEADOWS);
+        boolean inEmberSpawns = ember.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.EMBER_DRAKE.get());
+        helper.assertTrue(inEmberSpawns, "Emberbloom Meadows must include Ember Drake in CREATURE spawns");
+
+        BlockPos spawnPos = helper.absolutePos(new BlockPos(7, 2, 7));
+        level.setBlockAndUpdate(spawnPos, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(spawnPos.above(), Blocks.AIR.defaultBlockState());
+
+        level.setBlockAndUpdate(spawnPos.below(), ArtilianBlocks.EMBER_TURF.get().defaultBlockState());
+        helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.EMBER_DRAKE.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Ember Drake must be allowed to spawn on Ember Turf");
+
+        level.setBlockAndUpdate(spawnPos.below(), Blocks.STONE.defaultBlockState());
+        helper.assertFalse(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.EMBER_DRAKE.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Ember Drake must not spawn on plain Stone");
+
+        level.addFreshEntity(drake);
+        float before = drake.getHealth();
+        drake.hurt(level.damageSources().lava(), 6.0F);
+        helper.assertTrue(drake.getHealth() == before, "Ember Drake must take 0 damage from lava");
+        drake.discard();
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void peepkinIsShadowStarlightFloatsSafelyAndSpawnsInHighlandsAndWoods(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        PeepkinEntity peepkin = ArtilianEntities.PEEPKIN.get().create(level);
+        helper.assertTrue(peepkin != null
+                        && peepkin.getPrimaryElement() == PetElement.SHADOW
+                        && peepkin.getSecondaryElement().equals(Optional.of(PetElement.STARLIGHT)),
+                "Peepkin must be SHADOW / STARLIGHT dual-element");
+        helper.assertFalse(peepkin.causeFallDamage(40.0F, 1.0F, level.damageSources().fall()),
+                "Floating Peepkin must take zero fall damage");
+
+        Registry<Biome> biomes = level.registryAccess().registryOrThrow(Registries.BIOME);
+        Holder<Biome> starlight = biomes.getHolderOrThrow(ArtilianBiomes.STARLIGHT_HIGHLANDS);
+        Holder<Biome> woods = biomes.getHolderOrThrow(ArtilianBiomes.CRYSTAL_CANOPY_WOODS);
+        boolean inStarlight = starlight.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.PEEPKIN.get());
+        boolean inWoods = woods.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.PEEPKIN.get());
+        helper.assertTrue(inStarlight && inWoods,
+                "Peepkin must spawn in Starlight Highlands and Crystal Canopy Woods");
+
+        BlockPos spawnPos = helper.absolutePos(new BlockPos(7, 2, 7));
+        level.setBlockAndUpdate(spawnPos, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(spawnPos.above(), Blocks.AIR.defaultBlockState());
+
+        level.setBlockAndUpdate(spawnPos.below(), ArtilianBlocks.STARLIGHT_SLATE.get().defaultBlockState());
+        helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.PEEPKIN.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Peepkin must be allowed to spawn on Starlight Slate");
+
+        level.setBlockAndUpdate(spawnPos.below(), ArtilianBlocks.CRYSTAL_TURF.get().defaultBlockState());
+        helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.PEEPKIN.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Peepkin must be allowed to spawn on Crystal Turf");
+
+        level.setBlockAndUpdate(spawnPos.below(), Blocks.STONE.defaultBlockState());
+        helper.assertFalse(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.PEEPKIN.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Peepkin must not spawn on plain Stone");
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void dragonAndEyePetsCaptureBefriendSummonAndFaintSafelyIntoCrystal(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "DragonEyeRoster");
+
+        EmberDrakeEntity wildDrake = ArtilianEntities.EMBER_DRAKE.get().create(level);
+        BlockPos drakePos = helper.absolutePos(new BlockPos(5, 1, 7));
+        wildDrake.moveTo(drakePos.getX() + 0.5, drakePos.getY(), drakePos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(wildDrake);
+
+        ItemStack treats = new ItemStack(ArtilianItems.BIOME_TREAT.get(), 4);
+        player.setItemInHand(InteractionHand.MAIN_HAND, treats);
+        player.interactOn(wildDrake, InteractionHand.MAIN_HAND);
+        player.interactOn(wildDrake, InteractionHand.MAIN_HAND);
+        helper.assertTrue(wildDrake.isBefriended(), "Two Biome Treats should befriend Ember Drake");
+
+        ItemStack drakeCrystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, drakeCrystal);
+        player.interactOn(wildDrake, InteractionHand.MAIN_HAND);
+        CapturedPetData drakeData = drakeCrystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(drakeData != null
+                        && drakeData.primaryElement() == PetElement.DRAGON
+                        && drakeData.secondaryElement().equals(Optional.of(PetElement.FIRE))
+                        && drakeData.entityType().equals(ArtilianEntities.EMBER_DRAKE.getId()),
+                "Capture Crystal should store Ember Drake identity and DRAGON / FIRE elements");
+
+        PeepkinEntity wildPeepkin = ArtilianEntities.PEEPKIN.get().create(level);
+        BlockPos peepPos = helper.absolutePos(new BlockPos(9, 1, 7));
+        wildPeepkin.moveTo(peepPos.getX() + 0.5, peepPos.getY(), peepPos.getZ() + 0.5, 0.0F, 0.0F);
+        wildPeepkin.addAffinity(100);
+        level.addFreshEntity(wildPeepkin);
+
+        ItemStack peepCrystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, peepCrystal);
+        player.interactOn(wildPeepkin, InteractionHand.MAIN_HAND);
+        CapturedPetData peepData = peepCrystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(peepData != null
+                        && peepData.primaryElement() == PetElement.SHADOW
+                        && peepData.secondaryElement().equals(Optional.of(PetElement.STARLIGHT))
+                        && peepData.entityType().equals(ArtilianEntities.PEEPKIN.getId()),
+                "Capture Crystal should store Peepkin identity and SHADOW / STARLIGHT elements");
+
+        // Summon Ember Drake and verify safe non-lethal fainting back into crystal
+        player.setItemInHand(InteractionHand.MAIN_HAND, drakeCrystal);
+        drakeCrystal.use(level, player, InteractionHand.MAIN_HAND);
+        List<? extends EmberDrakeEntity> drakes = level.getEntities(
+                ArtilianEntities.EMBER_DRAKE.get(), e -> e.isAlive() && e.isOwner(player));
+        helper.assertTrue(drakes.size() == 1, "Expected 1 summoned Ember Drake");
+        EmberDrakeEntity summonedDrake = drakes.get(0);
+        summonedDrake.hurt(level.damageSources().mobAttack(summonedDrake), 999.0F);
+
+        helper.assertFalse(summonedDrake.isAlive(), "Fainted Ember Drake should withdraw from the world");
+        CapturedPetData faintedData = drakeCrystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(faintedData != null && faintedData.fainted()
+                        && Math.abs(CaptureCrystalItem.getVisualState(drakeCrystal) - 0.25F) < 0.01F,
+                "Fainted Ember Drake must safely return to its crystal in fainted state");
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void dragonAndEyePetsBattleWithDragonAndShadowElementalMatchupsAndPerks(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "DragonEyeBattle");
+
+        EmberDrakeEntity drake = ArtilianEntities.EMBER_DRAKE.get().create(level);
+        BlockPos drakePos = helper.absolutePos(new BlockPos(6, 1, 7));
+        drake.moveTo(drakePos.getX() + 0.5, drakePos.getY(), drakePos.getZ() + 0.5, 0.0F, 0.0F);
+        drake.setOwner(player);
+        drake.addAffinity(100);
+        level.addFreshEntity(drake);
+
+        Creeper creeper = EntityType.CREEPER.create(level);
+        creeper.moveTo(drakePos.getX() + 1.2, drakePos.getY(), drakePos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(creeper);
+        float creeperBefore = creeper.getHealth();
+        drake.doHurtTarget(creeper);
+        float drakeDamage = creeperBefore - creeper.getHealth();
+        helper.assertTrue(Math.abs(drakeDamage - 7.5F) < 0.05F,
+                "Ember Drake (5.0 base, DRAGON) vs Nature Creeper should deal 7.5 (1.5x), got " + drakeDamage);
+        helper.assertTrue(creeper.isOnFire() && creeper.hasEffect(MobEffects.GLOWING),
+                "Ember Drake DRAGON signature hit should ignite and apply Glowing");
+        creeper.discard();
+
+        PeepkinEntity peepkin = ArtilianEntities.PEEPKIN.get().create(level);
+        BlockPos peepPos = helper.absolutePos(new BlockPos(9, 1, 7));
+        peepkin.moveTo(peepPos.getX() + 0.5, peepPos.getY(), peepPos.getZ() + 0.5, 0.0F, 0.0F);
+        peepkin.setOwner(player);
+        peepkin.addAffinity(100);
+        level.addFreshEntity(peepkin);
+
+        Phantom phantom = EntityType.PHANTOM.create(level);
+        phantom.moveTo(peepPos.getX() + 1.2, peepPos.getY(), peepPos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(phantom);
+        float phantomBefore = phantom.getHealth();
+        peepkin.doHurtTarget(phantom);
+        float peepDamage = phantomBefore - phantom.getHealth();
+        helper.assertTrue(Math.abs(peepDamage - 6.75F) < 0.05F,
+                "Peepkin (4.5 base, SHADOW) vs Starlight Phantom should deal 6.75 (1.5x), got " + peepDamage);
+        helper.assertTrue(phantom.hasEffect(MobEffects.BLINDNESS),
+                "Peepkin SHADOW signature hit should apply Blindness");
+
+        helper.assertFalse(drake.canAttack(peepkin), "Tamed pets must never attack allied tamed pets");
+
+        phantom.discard();
+        drake.discard();
+        peepkin.discard();
         helper.succeed();
     }
 }

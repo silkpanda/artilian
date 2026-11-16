@@ -24,6 +24,8 @@ public final class PetEvents {
             event.put(ArtilianEntities.CINDER_CRAG.get(), CinderCragEntity.createAttributes().build());
             event.put(ArtilianEntities.ZAPHOX.get(), ZaphoxEntity.createAttributes().build());
             event.put(ArtilianEntities.GALECORN.get(), GalecornEntity.createAttributes().build());
+            event.put(ArtilianEntities.EMBER_DRAKE.get(), EmberDrakeEntity.createAttributes().build());
+            event.put(ArtilianEntities.PEEPKIN.get(), PeepkinEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -61,6 +63,20 @@ public final class PetEvents {
                     SpawnPlacementTypes.ON_GROUND,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     GalecornEntity::checkGalecornSpawnRules,
+                    RegisterSpawnPlacementsEvent.Operation.REPLACE
+            );
+            event.register(
+                    ArtilianEntities.EMBER_DRAKE.get(),
+                    SpawnPlacementTypes.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    EmberDrakeEntity::checkDragonHatchlingSpawnRules,
+                    RegisterSpawnPlacementsEvent.Operation.REPLACE
+            );
+            event.register(
+                    ArtilianEntities.PEEPKIN.get(),
+                    SpawnPlacementTypes.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    PeepkinEntity::checkEyePetSpawnRules,
                     RegisterSpawnPlacementsEvent.Operation.REPLACE
             );
         }

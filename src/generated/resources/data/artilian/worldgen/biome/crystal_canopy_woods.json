@@ -148,6 +148,12 @@
         "weight": 4
       },
       {
+        "type": "artilian:peepkin",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 3
+      },
+      {
         "type": "minecraft:fox",
         "maxCount": 4,
         "minCount": 2,

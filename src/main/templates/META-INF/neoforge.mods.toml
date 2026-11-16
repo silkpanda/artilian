@@ -8,7 +8,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="the owner"
 description='''
-A kid-friendly adventure overhaul for Alice and Bob: Chester, pets, wands, custom TNTs, bosses, and two new dimensions.
+A kid-friendly adventure overhaul for Alex and Steve: Chester, pets, wands, custom TNTs, bosses, and two new dimensions.
 '''
 
 [[dependencies.${mod_id}]]

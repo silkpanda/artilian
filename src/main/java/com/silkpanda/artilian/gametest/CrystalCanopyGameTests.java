@@ -54,7 +54,7 @@ public class CrystalCanopyGameTests {
     @GameTest(template = "tnt_arena")
     public static void crystalCanopyBlocksLootRecipesAndTreeGrowerWork(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "AliceBiome");
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "AlexBiome");
 
         // 1. Crystal Turf acts as dirt, drops Dirt normally and Crystal Turf with Silk Touch.
         BlockPos turfRel = new BlockPos(7, 1, 7);

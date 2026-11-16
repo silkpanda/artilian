@@ -22,7 +22,7 @@ import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 
 /**
- * Bob's Shadow Creature (working name: Shadow Wisp): a blocky-headed, purple-tendriled
+ * Steve's Shadow Creature (working name: Shadow Wisp): a blocky-headed, purple-tendriled
  * Shadow pet native to Starlight Highlands. Primary element: {@link PetElement#SHADOW}.
  */
 public class ShadowWispEntity extends ArtilianPetEntity {

@@ -4,7 +4,9 @@ import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
+import com.silkpanda.artilian.pet.EmberDrakeEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
+import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
 import com.silkpanda.artilian.tnt.ArtilianPrimedTnt;
@@ -43,7 +45,7 @@ public class ArtilianEntities {
                     .clientTrackingRange(10)
                     .build("crystal_fox"));
 
-    /** Shadow Wisp (working name for Bob's Shadow Creature): large Shadow pet native to Starlight Highlands. */
+    /** Shadow Wisp (working name for Steve's Shadow Creature): large Shadow pet native to Starlight Highlands. */
     public static final DeferredHolder<EntityType<?>, EntityType<ShadowWispEntity>> SHADOW_WISP =
             ENTITY_TYPES.register("shadow_wisp", () -> EntityType.Builder.of(ShadowWispEntity::new, MobCategory.CREATURE)
                     .sized(1.45F, 2.68F)
@@ -51,7 +53,7 @@ public class ArtilianEntities {
                     .clientTrackingRange(10)
                     .build("shadow_wisp"));
 
-    /** Cinder Crag (working name for Bob's Fire/Rock Creature): Fire/Earth pet spawning near lava. */
+    /** Cinder Crag (working name for Steve's Fire/Rock Creature): Fire/Earth pet spawning near lava. */
     public static final DeferredHolder<EntityType<?>, EntityType<CinderCragEntity>> CINDER_CRAG =
             ENTITY_TYPES.register("cinder_crag", () -> EntityType.Builder.of(CinderCragEntity::new, MobCategory.CREATURE)
                     .fireImmune()
@@ -60,7 +62,7 @@ public class ArtilianEntities {
                     .clientTrackingRange(10)
                     .build("cinder_crag"));
 
-    /** Zaphox: Alice's first creature, a large elephant-sized flying cheetah/fox/elephant Electric/Air pet native to Starlight Highlands. */
+    /** Zaphox: Alex's first creature, a large elephant-sized flying cheetah/fox/elephant Electric/Air pet native to Starlight Highlands. */
     public static final DeferredHolder<EntityType<?>, EntityType<ZaphoxEntity>> ZAPHOX =
             ENTITY_TYPES.register("zaphox", () -> EntityType.Builder.of(ZaphoxEntity::new, MobCategory.CREATURE)
                     .sized(1.85F, 2.15F)
@@ -68,13 +70,30 @@ public class ArtilianEntities {
                     .clientTrackingRange(10)
                     .build("zaphox"));
 
-    /** Galecorn: Alice's second creature, an Air/Nature fox-unicorn that whips up whirlwind knockbacks. */
+    /** Galecorn: Alex's second creature, an Air/Nature fox-unicorn that whips up whirlwind knockbacks. */
     public static final DeferredHolder<EntityType<?>, EntityType<GalecornEntity>> GALECORN =
             ENTITY_TYPES.register("galecorn", () -> EntityType.Builder.of(GalecornEntity::new, MobCategory.CREATURE)
                     .sized(0.80F, 0.80F)
                     .eyeHeight(0.60F)
                     .clientTrackingRange(10)
                     .build("galecorn"));
+
+    /** Ember Drake: a small Dragon/Fire hatchling native to Emberbloom Meadows. */
+    public static final DeferredHolder<EntityType<?>, EntityType<EmberDrakeEntity>> EMBER_DRAKE =
+            ENTITY_TYPES.register("ember_drake", () -> EntityType.Builder.of(EmberDrakeEntity::new, MobCategory.CREATURE)
+                    .fireImmune()
+                    .sized(0.75F, 0.72F)
+                    .eyeHeight(0.54F)
+                    .clientTrackingRange(10)
+                    .build("ember_drake"));
+
+    /** Peepkin: a curious Shadow/Starlight eye-themed pet native to Starlight Highlands & Crystal Canopy Woods. */
+    public static final DeferredHolder<EntityType<?>, EntityType<PeepkinEntity>> PEEPKIN =
+            ENTITY_TYPES.register("peepkin", () -> EntityType.Builder.of(PeepkinEntity::new, MobCategory.CREATURE)
+                    .sized(0.72F, 0.85F)
+                    .eyeHeight(0.55F)
+                    .clientTrackingRange(10)
+                    .build("peepkin"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

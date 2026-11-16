@@ -14,7 +14,7 @@ commits inside that PR. -->
 
 ## Why
 
-Bob asked for custom TNTs, and both kids need playful, expressive explosives that won't accidentally blow up their builds by default. Right now there are no custom TNTs and no `allowDestructiveCustomTnt` safety switch. This stage adds four distinct custom TNTs (**Party TNT**, **Bounce TNT**, **Frost Nova TNT**, and **Cluster Quarry TNT**), the kid-safe common config `allowDestructiveCustomTnt = false`, and the `1.5`-second visual/audio fuse telegraph from `DESIGN.md`.
+Steve asked for custom TNTs, and both kids need playful, expressive explosives that won't accidentally blow up their builds by default. Right now there are no custom TNTs and no `allowDestructiveCustomTnt` safety switch. This stage adds four distinct custom TNTs (**Party TNT**, **Bounce TNT**, **Frost Nova TNT**, and **Cluster Quarry TNT**), the kid-safe common config `allowDestructiveCustomTnt = false`, and the `1.5`-second visual/audio fuse telegraph from `DESIGN.md`.
 
 ## Decisions
 

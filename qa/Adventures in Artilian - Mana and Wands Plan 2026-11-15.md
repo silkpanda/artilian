@@ -14,7 +14,7 @@ commits inside that PR. -->
 
 ## Why
 
-Alice and Bob want accessible magic without frustrating consumable scroll ammo (`PRODUCT.md`). Today players have melee gear and custom TNTs, but no Mana resource, no HUD Mana bar, and no Wands or Staves. This stage adds an auto-regenerating per-player Mana pool synced to a compact `DESIGN.md` HUD bar and three starter spell items: **Spark Wand**, **Heart-Bloom Staff**, and **Zephyr Dash Wand**.
+Alex and Steve want accessible magic without frustrating consumable scroll ammo (`PRODUCT.md`). Today players have melee gear and custom TNTs, but no Mana resource, no HUD Mana bar, and no Wands or Staves. This stage adds an auto-regenerating per-player Mana pool synced to a compact `DESIGN.md` HUD bar and three starter spell items: **Spark Wand**, **Heart-Bloom Staff**, and **Zephyr Dash Wand**.
 
 ## Decisions
 
