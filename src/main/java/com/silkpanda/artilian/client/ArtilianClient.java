@@ -34,6 +34,8 @@ public final class ArtilianClient {
         event.registerEntityRenderer(ArtilianEntities.CRYSTAL_FOX.get(), CrystalFoxRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.SHADOW_WISP.get(), ShadowWispRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.CINDER_CRAG.get(), CinderCragRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.ZAPHOX.get(), ZaphoxRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.GALECORN.get(), GalecornRenderer::new);
     }
 
     @SubscribeEvent

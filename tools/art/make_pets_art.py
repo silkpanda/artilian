@@ -527,10 +527,286 @@ def make_cinder_crag():
     img.save(dest)
 
 
+def make_zaphox():
+    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+
+    ZX_GOLD_HI = (254, 240, 178, 255)
+    ZX_GOLD_BASE = (251, 191, 36, 255)
+    ZX_GOLD_SHADE = (217, 138, 16, 255)
+    ZX_GOLD_DEEP = (176, 92, 12, 255)
+    ZX_SPOT = (92, 42, 14, 255)
+
+    ZX_FOX_HI = (251, 146, 60, 255)
+    ZX_FOX_RUFF = (234, 88, 12, 255)
+
+    ZX_WING_CORE = (254, 249, 195, 255)
+    ZX_WING_HI = (253, 224, 71, 255)
+    ZX_WING_BASE = (249, 115, 22, 255)
+    ZX_WING_SHADE = (194, 65, 12, 255)
+
+    ZX_TEAR = (30, 27, 75, 255)
+    ZX_SPARK = (125, 249, 255, 255)
+    ZX_EYE = (250, 204, 21, 255)
+    ZX_PUPIL = (24, 24, 27, 255)
+    ZX_WHITE = (255, 255, 255, 255)
+    ZX_TUSK = (254, 249, 195, 255)
+    ZX_NOSE = (49, 46, 129, 255)
+
+    # 1. Sleek Cheetah Torso [5, 4, 11] at [0, 0]
+    smooth_coat(img, 0, 0, 5, 4, 11, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
+    bf = faces(0, 0, 5, 4, 11)
+    fill(img, bf["bottom"], ZX_GOLD_HI)
+    for side in ("east", "west"):
+        sx, sy, sw, sh = bf[side]
+        for px, py in [(2, 1), (5, 2), (8, 1), (3, 3), (7, 3), (9, 2)]:
+            put(img, sx + px, sy + py, ZX_SPOT)
+        put(img, sx + 4, sy + 1, ZX_SPARK)
+    tx, ty, tw, th = bf["top"]
+    for px, py in [(1, 2), (3, 3), (1, 6), (3, 7), (2, 9)]:
+        put(img, tx + px, ty + py, ZX_SPOT)
+
+    # 2. Chest / Shoulder Arch [6, 5, 3] at [32, 0] — warm fox orange with cream bib
+    smooth_coat(img, 32, 0, 6, 5, 3, ZX_FOX_HI, ZX_FOX_RUFF, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
+    rf = faces(32, 0, 6, 5, 3)
+    fill(img, (rf["front"][0] + 1, rf["front"][1] + 1, 4, 3), ZX_GOLD_HI)
+
+    # 3. Head [7, 5, 5] at [50, 0] — cheetah-fox face with tear-marks & cream muzzle frame
+    smooth_coat(img, 50, 0, 7, 5, 5, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
+    hf = faces(50, 0, 7, 5, 5)
+    fx, fy, fw, fh = hf["front"]
+    fill(img, (fx + 1, fy + 3, fw - 2, 2), ZX_GOLD_HI)
+    # Cheetah tear-marks + electric cheek accent
+    for dy in (2, 3, 4):
+        put(img, fx + 1, fy + dy, ZX_TEAR)
+        put(img, fx + fw - 2, fy + dy, ZX_TEAR)
+    put(img, fx, fy + 2, ZX_SPARK)
+    put(img, fx + fw - 1, fy + 2, ZX_SPARK)
+    # Cheek ruffs [1, 3, 2] at [74, 0] & [80, 0]
+    for cu in (74, 80):
+        smooth_coat(img, cu, 0, 1, 3, 2, ZX_GOLD_HI, ZX_FOX_HI, ZX_FOX_RUFF, ZX_GOLD_DEEP)
+
+    # 4. Snout [3, 2, 2] at [86, 0]
+    smooth_coat(img, 86, 0, 3, 2, 2, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
+    sf = faces(86, 0, 3, 2, 2)
+    put(img, sf["front"][0] + 1, sf["front"][1], ZX_NOSE)
+
+    # 5. Upward-Curling Elephant Mini-Trunk: Base [2,2,2]@[96,0], Mid [2,2,2]@[104,0], Tip [2,2,2]@[112,0]
+    smooth_coat(img, 96, 0, 2, 2, 2, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
+    smooth_coat(img, 104, 0, 2, 2, 2, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP, ZX_SPOT)
+    smooth_coat(img, 112, 0, 2, 2, 2, ZX_WING_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
+    ttf = faces(112, 0, 2, 2, 2)
+    fill(img, ttf["front"], ZX_SPARK)
+    fill(img, ttf["top"], ZX_WING_CORE)
+
+    # 6. Small Ivory Tusks [1, 1, 2] at [120, 0] & [120, 4]
+    for tv in (0, 4):
+        smooth_coat(img, 120, tv, 1, 1, 2, ZX_WHITE, ZX_TUSK, ZX_GOLD_HI, ZX_GOLD_BASE)
+
+    # 7. Forehead Lightning Curl Crest [1, 2, 1] at [32, 10] & [36, 10]
+    smooth_coat(img, 32, 10, 1, 2, 1, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE, ZX_SPOT)
+    smooth_coat(img, 36, 10, 1, 2, 1, ZX_WING_CORE, ZX_WING_HI, ZX_WING_BASE, ZX_SPARK)
+
+    # 8. Expressive 2x3 Eyes at [40, 10] & [46, 10]
+    for idx, eu in enumerate((40, 46)):
+        ef = faces(eu, 10, 2, 3, 1)
+        for rect in ef.values():
+            fill(img, rect, ZX_TEAR)
+        ex, ey, _, _ = ef["front"]
+        fill(img, (ex, ey, 2, 3), ZX_EYE)
+        px_col = ex + (1 if idx == 0 else 0)
+        hi_col = ex + (0 if idx == 0 else 1)
+        put(img, px_col, ey, ZX_PUPIL)
+        put(img, px_col, ey + 1, ZX_PUPIL)
+        put(img, px_col, ey + 2, ZX_PUPIL)
+        put(img, hi_col, ey, ZX_WHITE)
+        put(img, hi_col, ey + 2, ZX_SPARK)
+
+    # 9. Hybrid Elephant-Fox Ears:
+    # Tall Fox Ear [2, 5, 1] at [0, 16] & [12, 16]; Flared Elephant Pinna [2, 4, 1] at [6, 16] & [18, 16]
+    for eu in (0, 12):
+        smooth_coat(img, eu, 16, 2, 5, 1, ZX_FOX_HI, ZX_FOX_RUFF, ZX_GOLD_DEEP, ZX_SPOT)
+        ef = faces(eu, 16, 2, 5, 1)
+        put(img, ef["front"][0] + (0 if eu == 0 else 1), ef["front"][1] + 2, ZX_GOLD_HI)
+        put(img, ef["front"][0] + (0 if eu == 0 else 1), ef["front"][1] + 3, ZX_GOLD_HI)
+        put(img, ef["front"][0] + (0 if eu == 0 else 1), ef["front"][1] + 4, ZX_GOLD_HI)
+        fill(img, ef["top"], ZX_SPOT)
+    for pu in (6, 18):
+        smooth_coat(img, pu, 16, 2, 4, 1, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_FOX_RUFF)
+        pf = faces(pu, 16, 2, 4, 1)
+        fill(img, (pf["front"][0], pf["front"][1] + 1, 2, 2), ZX_GOLD_HI)
+
+    # 10. Dramatic Jagged Orange Lightning-Bolt Wings (3 stepped blades per wing)
+    # Left wing: [24, 16] (1,5,3), [32, 16] (1,6,3), [40, 16] (1,5,3)
+    # Right wing: [48, 16] (1,5,3), [56, 16] (1,6,3), [64, 16] (1,5,3)
+    for wu, wh in ((24, 5), (32, 6), (40, 5), (48, 5), (56, 6), (64, 5)):
+        smooth_coat(img, wu, 16, 1, wh, 3, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE, ZX_FOX_RUFF)
+        wf = faces(wu, 16, 1, wh, 3)
+        fill(img, wf["top"], ZX_WING_CORE)
+        for side in ("east", "west"):
+            sx, sy, sw, sh = wf[side]
+            for dy in range(sh):
+                put(img, sx + (dy % sw), sy + dy, ZX_WING_HI if dy < 2 else ZX_WING_CORE if dy == 0 else ZX_WING_HI)
+                if dy == 0:
+                    put(img, sx + sw - 1, sy, ZX_SPARK)
+
+    # 11. Original Cheetah Whip-Tail + Zigzag Lightning-Bolt Tip
+    # tail_base [2, 2, 5] at [0, 26], tail_mid [2, 2, 5] at [14, 26]
+    for tu in (0, 14):
+        smooth_coat(img, tu, 26, 2, 2, 5, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
+        tf = faces(tu, 26, 2, 2, 5)
+        for side in ("east", "west", "top"):
+            sx, sy, sw, sh = tf[side]
+            put(img, sx + 1, sy, ZX_SPOT)
+            put(img, sx + min(sw - 1, 3), sy + min(sh - 1, 1), ZX_SPOT)
+    # Zigzag Lightning Bolt Tip: [28, 26] (1,2,3), [36, 26] (1,2,3), [44, 26] (1,1,3)
+    smooth_coat(img, 28, 26, 1, 2, 3, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE, ZX_FOX_RUFF)
+    smooth_coat(img, 36, 26, 1, 2, 3, ZX_WING_CORE, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE)
+    smooth_coat(img, 44, 26, 1, 1, 3, ZX_SPARK, ZX_WING_CORE, ZX_WING_HI, ZX_SPARK)
+
+    # 12. Slender Cheetah Sprint Legs [2, 8, 2] at [0, 36], [10, 36], [20, 36], [30, 36]
+    for lu in (0, 10, 20, 30):
+        smooth_coat(img, lu, 36, 2, 8, 2, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
+        lf = faces(lu, 36, 2, 8, 2)
+        for face_name in ("front", "east", "west"):
+            fx, fy, fw, fh = lf[face_name]
+            put(img, fx, fy + 2, ZX_SPOT)
+            put(img, fx + 1, fy + 4, ZX_SPOT)
+            fill(img, (fx, fy + 7, fw, 1), ZX_TEAR)
+        fill(img, lf["bottom"], ZX_TEAR)
+
+    dest = OUT / "entity/zaphox.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+
+
+def make_galecorn():
+    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+
+    # Sunny pastel-yellow fox-unicorn coat (Alice's drawing yellow body) + aqua-mint mane/accents + billowing white cloud fan
+    GC_COAT_CORE = (255, 252, 232, 255)
+    GC_COAT_HI = (254, 246, 194, 255)
+    GC_COAT_BASE = (253, 224, 104, 255)
+    GC_COAT_SHADE = (238, 188, 64, 255)
+
+    GC_CYAN_HI = (178, 248, 244, 255)
+    GC_CYAN_BASE = (56, 217, 192, 255)
+    GC_CYAN_SHADE = (28, 168, 178, 255)
+
+    GC_HORN_CORE = (255, 255, 255, 255)
+    GC_HORN_HI = (224, 247, 255, 255)
+    GC_HORN_BLUE = (125, 249, 255, 255)
+
+    GC_CLOUD_HI = (255, 255, 255, 255)
+    GC_CLOUD_BASE = (240, 247, 255, 255)
+    GC_CLOUD_SHADE = (214, 232, 248, 255)
+    GC_CLOUD_BREEZE = (166, 224, 248, 255)
+
+    GC_EYE_IRIS = (14, 148, 214, 255)
+    GC_EYE_PUPIL = (16, 62, 104, 255)
+    GC_NOSE = (28, 152, 206, 255)
+
+    # 1. Sunny Yellow Fox-Unicorn Body [5, 4, 9] at [0, 0]
+    smooth_coat(img, 0, 0, 5, 4, 9, GC_COAT_HI, GC_COAT_BASE, GC_COAT_SHADE, GC_COAT_SHADE)
+    bf = faces(0, 0, 5, 4, 9)
+    fill(img, bf["bottom"], GC_COAT_CORE)
+
+    # 2. Fluffy Cream Chest Tuft [4, 3, 2] at [28, 0]
+    smooth_coat(img, 28, 0, 4, 3, 2, GC_COAT_CORE, GC_COAT_HI, GC_COAT_BASE, GC_COAT_SHADE)
+
+    # 3. Flowing Silky Unicorn Mane: neck [3, 4, 3] at [40, 0] & back lock [2, 3, 4] at [52, 0]
+    smooth_coat(img, 40, 0, 3, 4, 3, GC_CYAN_HI, GC_CYAN_BASE, GC_CLOUD_BREEZE, GC_CYAN_SHADE)
+    mnf = faces(40, 0, 3, 4, 3)
+    fill(img, mnf["top"], GC_CLOUD_HI)
+    smooth_coat(img, 52, 0, 2, 3, 4, GC_CLOUD_HI, GC_CYAN_HI, GC_CYAN_BASE, GC_CYAN_SHADE)
+
+    # 4. Head [6, 5, 5] at [64, 0] — Aqua-teal crown & outer head blending into clean cream face
+    smooth_coat(img, 64, 0, 6, 5, 5, GC_CYAN_HI, GC_CYAN_BASE, GC_CYAN_SHADE, GC_CYAN_SHADE)
+    hf = faces(64, 0, 6, 5, 5)
+    fx, fy, fw, fh = hf["front"]
+    fill(img, (fx + 1, fy + 2, fw - 2, fh - 2), GC_COAT_CORE)
+    fill(img, (fx + 2, fy + 1, fw - 4, 1), GC_COAT_HI)
+    # Cheek tufts [1, 3, 2] at [86, 0] & [92, 0]
+    for cu in (86, 92):
+        smooth_coat(img, cu, 0, 1, 3, 2, GC_COAT_CORE, GC_COAT_HI, GC_CYAN_HI, GC_CYAN_BASE)
+
+    # 5. Clean Cream Snout [3, 2, 3] at [98, 0]
+    smooth_coat(img, 98, 0, 3, 2, 3, GC_COAT_CORE, GC_COAT_HI, GC_COAT_BASE, GC_COAT_BASE)
+    sf = faces(98, 0, 3, 2, 3)
+    put(img, sf["front"][0] + 1, sf["front"][1], GC_NOSE)
+
+    # 6. Spiraling Tapered Unicorn Horn: Base [2,2,2]@[110,0], Mid [1,3,1]@[118,0], Tip [1,2,1]@[122,0]
+    smooth_coat(img, 110, 0, 2, 2, 2, GC_HORN_CORE, GC_HORN_HI, GC_HORN_BLUE, GC_CYAN_BASE)
+    smooth_coat(img, 118, 0, 1, 3, 1, GC_HORN_CORE, GC_HORN_BLUE, GC_HORN_HI, GC_CYAN_BASE)
+    hm = faces(118, 0, 1, 3, 1)
+    for side in ("front", "east", "west", "back"):
+        put(img, hm[side][0], hm[side][1] + 1, GC_HORN_CORE)
+    smooth_coat(img, 122, 0, 1, 2, 1, GC_HORN_CORE, GC_HORN_CORE, GC_HORN_BLUE, GC_HORN_HI)
+
+    # 7. Forelock Crest [2, 3, 2] at [28, 6]
+    smooth_coat(img, 28, 6, 2, 3, 2, GC_CLOUD_HI, GC_CYAN_HI, GC_CYAN_BASE, GC_CYAN_SHADE)
+
+    # 8. Alert Fox Ears [2, 4, 1] at [36, 7] & [42, 7]
+    for eu in (36, 42):
+        smooth_coat(img, eu, 7, 2, 4, 1, GC_CYAN_HI, GC_CYAN_BASE, GC_CYAN_SHADE, GC_CYAN_SHADE)
+        ef = faces(eu, 7, 2, 4, 1)
+        inner_x = ef["front"][0] + (0 if eu == 36 else 1)
+        put(img, inner_x, ef["front"][1] + 1, GC_COAT_CORE)
+        put(img, inner_x, ef["front"][1] + 2, GC_COAT_CORE)
+        put(img, inner_x, ef["front"][1] + 3, GC_COAT_HI)
+
+    # 9. Expressive 2x3 Sky-Blue Eyes at [48, 7] & [54, 7]
+    for idx, eu in enumerate((48, 54)):
+        ef = faces(eu, 7, 2, 3, 1)
+        for rect in ef.values():
+            fill(img, rect, GC_EYE_PUPIL)
+        ex, ey, _, _ = ef["front"]
+        fill(img, (ex, ey, 2, 3), GC_EYE_IRIS)
+        px_col = ex + (1 if idx == 0 else 0)
+        hi_col = ex + (0 if idx == 0 else 1)
+        put(img, px_col, ey, GC_EYE_PUPIL)
+        put(img, px_col, ey + 1, GC_EYE_PUPIL)
+        put(img, px_col, ey + 2, GC_EYE_PUPIL)
+        put(img, hi_col, ey, GC_CLOUD_HI)
+        put(img, hi_col, ey + 2, GC_HORN_BLUE)
+
+    # 10. Giant Horizontal Whirlwind Cloud-Fan Tail
+    # tail_root [4,3,3]@[0,14], tail_cloud_center [5,4,6]@[14,14], crest [4,2,4]@[36,14]
+    # tail_fan_left [4,3,6]@[52,14], tail_fan_right [4,3,6]@[72,14]
+    # tail_gust_tips center [4,3,4]@[92,14], fins [2,2,4]@[108,14] & [0,24]
+    smooth_coat(img, 0, 14, 4, 3, 3, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_BREEZE, GC_CYAN_HI)
+    smooth_coat(img, 14, 14, 5, 4, 6, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_SHADE, GC_CLOUD_BREEZE)
+    smooth_coat(img, 36, 14, 4, 2, 4, GC_CLOUD_HI, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_BREEZE)
+    for fan_u in (52, 72):
+        smooth_coat(img, fan_u, 14, 4, 3, 6, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_SHADE, GC_CLOUD_BREEZE)
+        ff = faces(fan_u, 14, 4, 3, 6)
+        tx, ty, tw, th = ff["top"]
+        for dy in range(th):
+            put(img, tx + (dy % tw), ty + dy, GC_HORN_BLUE if dy % 2 == 0 else GC_CLOUD_BREEZE)
+    smooth_coat(img, 92, 14, 4, 3, 4, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_BREEZE, GC_CYAN_HI)
+    smooth_coat(img, 108, 14, 2, 2, 4, GC_CLOUD_HI, GC_HORN_HI, GC_CLOUD_BREEZE, GC_CYAN_BASE)
+    smooth_coat(img, 0, 24, 2, 2, 4, GC_CLOUD_HI, GC_HORN_HI, GC_CLOUD_BREEZE, GC_CYAN_BASE)
+
+    # 11. Graceful Yellow Legs + Aqua Fetlocks + Pearlescent Hooves [2, 6, 2] at [0, 34]..[30, 34]
+    for lu in (0, 10, 20, 30):
+        smooth_coat(img, lu, 34, 2, 6, 2, GC_COAT_HI, GC_COAT_BASE, GC_COAT_SHADE, GC_COAT_SHADE)
+        lf = faces(lu, 34, 2, 6, 2)
+        for face_name in ("front", "back", "east", "west"):
+            fx, fy, fw, fh = lf[face_name]
+            fill(img, (fx, fy + 3, fw, 2), GC_CYAN_BASE)
+            fill(img, (fx, fy + 5, fw, 1), GC_HORN_HI)
+        fill(img, lf["bottom"], GC_CLOUD_BREEZE)
+
+    dest = OUT / "entity/galecorn.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+
+
 def main():
     make_crystal_fox()
     make_shadow_wisp()
     make_cinder_crag()
+    make_zaphox()
+    make_galecorn()
 
     item_dir = OUT / "item"
     item_dir.mkdir(parents=True, exist_ok=True)
@@ -541,7 +817,7 @@ def main():
     )
     draw_crystal(GOLD_DARK, GOLD, GOLD_HI).save(item_dir / "capture_crystal_fainted.png")
     make_biome_treat().save(item_dir / "biome_treat.png")
-    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag).")
+    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn).")
 
 
 if __name__ == "__main__":

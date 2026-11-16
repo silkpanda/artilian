@@ -27,6 +27,7 @@ public class ArtilianLanguageProvider extends LanguageProvider {
 
         this.addItem(ArtilianItems.CHESTER_WHISTLE, "Chester Whistle");
         this.add("item.artilian.chester_whistle.tooltip", "Calls Chester");
+        this.addItem(ArtilianItems.CHESTER_SPAWN_EGG, "Chester Spawn Egg");
 
         this.addBlock(ArtilianBlocks.SUNSTEEL_ORE, "Sunsteel Ore");
         this.addBlock(ArtilianBlocks.DEEPSLATE_SUNSTEEL_ORE, "Deepslate Sunsteel Ore");
@@ -109,6 +110,14 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         // Phase 2 St: Bob's Pets (working names until Bob picks official names)
         this.addEntityType(ArtilianEntities.SHADOW_WISP, "Shadow Wisp");
         this.addEntityType(ArtilianEntities.CINDER_CRAG, "Cinder Crag");
+        // Phase 2 St: Alice's Pets
+        this.addEntityType(ArtilianEntities.ZAPHOX, "Zaphox");
+        this.addEntityType(ArtilianEntities.GALECORN, "Galecorn");
+        this.addItem(ArtilianItems.CRYSTAL_FOX_SPAWN_EGG, "Crystal Fox Spawn Egg");
+        this.addItem(ArtilianItems.SHADOW_WISP_SPAWN_EGG, "Shadow Wisp Spawn Egg");
+        this.addItem(ArtilianItems.CINDER_CRAG_SPAWN_EGG, "Cinder Crag Spawn Egg");
+        this.addItem(ArtilianItems.ZAPHOX_SPAWN_EGG, "Zaphox Spawn Egg");
+        this.addItem(ArtilianItems.GALECORN_SPAWN_EGG, "Galecorn Spawn Egg");
         this.addItem(ArtilianItems.CAPTURE_CRYSTAL, "Capture Crystal");
         this.add("item.artilian.capture_crystal.filled", "Capture Crystal (%s)");
         this.add("item.artilian.capture_crystal.tooltip", "Captures Biome Pets — Right-click a wild pet!");

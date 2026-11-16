@@ -16,7 +16,7 @@ commits inside that PR. -->
 
 ## Why
 
-Alice asked for "a personal cartoony living chest friend named Chester" who sleeps looking like a normal chest. Each kid gets their own, nobody else can open it, and nothing a young kid does (dying, losing Chester, falling in lava) can lose what is inside.
+Alice asked for "a personal cartoony living chest friend named Chester" who sleeps looking like a normal chest. Each kid gets their own, nobody else can open it, and nothing young kids does (dying, losing Chester, falling in lava) can lose what is inside.
 
 ## Decisions
 

@@ -7,6 +7,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 public class ShadowWispRenderer extends GeoEntityRenderer<ShadowWispEntity> {
     public ShadowWispRenderer(EntityRendererProvider.Context context) {
         super(context, new ShadowWispModel());
-        this.shadowRadius = 0.38F;
+        this.withScale(2.2F);
+        this.shadowRadius = 0.84F;
     }
 }

@@ -120,7 +120,6 @@ Template for an entry:
 
 ---
 
-<<<<<<< HEAD
 ### P2-01 — Non-owner captures, commands, heals, or recalls another player's pet or Capture Crystal — FIXED
 - **Severity:** High
 - **Where:** `pet/PetService.java` (`tryCapturePet`, `useCaptureCrystal`, `feedBiomeTreat`), `pet/ArtilianPetEntity.java` (`toggleSitting`, `mobInteract`)
@@ -158,23 +157,3 @@ Template for an entry:
 - **Impact:** Without unified friendly-entity exclusion across battle target acquisition and melee execution, co-op players or companions could injure siblings, Chester chests, village traders, or allied pets.
 - **Fix:** `PetService#isValidBattleTarget` rejects all `Player`, `ChesterEntity`, `ArmorStand`, `AbstractVillager`, non-hostile `AbstractGolem`, tamed/befriended pets, and baby animals, enforced identically by `ArtilianPetEntity#canAttack`, target goals, and `PetService#performElementalAttack`. Stage 2 on `phase-2-stage-4-pet-battle-ai`.
 - **Proof:** GameTest `PetSecurityProbes.p2_04_tamedPetNeverAttacksPlayersChesterVillagersOrAlliedPets`. EXPLOITED (`EXPLOITED P2-04: pet target filter allowed entity.artilian.chester`) when friendly entity checks were bypassed in `PetService#isValidBattleTarget`; HELD with checks restored (`68/68` tests passing).
-
----
-
-### REVIEW-01 — Cluster Quarry TNT hurts pets, villagers, golems, and dropped items in kid-safe mode — FIXED
-- **Severity:** High
-- **Where:** `tnt/ArtilianPrimedTnt.java` (`SAFE_QUARRY_DAMAGE_CALCULATOR#shouldDamageEntity`)
-- **Attack:** No attacker needed. A player lights Cluster Quarry TNT near a tamed wolf or cat, a villager, an iron golem, an item frame, or items lying on the ground, with `allowDestructiveCustomTnt` at its default `false`.
-- **Impact:** The config only stopped block damage. The blast still dealt full explosion damage to every entity except Players and Chester: a tamed wolf two blocks away dropped from 40 to 15.7 health, and dropped items were destroyed.
-- **Fix:** `shouldDamageEntity` now returns true only for living entities that pass `safety/KidSafeTargets#isValidOffensiveTarget`. Players, Chester, tamed or owned pets, villagers, iron and snow golems, baby animals, armor stands, and everything that is not alive (dropped items, item frames, boats, minecarts) take no blast damage in either config mode. Monsters and wild grown animals still do. Stage 1 on `phase-1-stage-7-review-fixes`.
-- **Proof:** GameTests `ReviewFixProbes.review_01_quarrySafeModeSparesPetsVillagersAndItems` and `review_01b_quarryDestructiveModeStillSparesThem`. EXPLOITED with the old rule restored (`EXPLOITED REVIEW-01 (safe): Cluster Quarry hurt a tamed wolf, hp 40.0 -> 15.702457`); HELD with the fix (`56/56` tests passing in `runGameTestServer`).
-
----
-
-### REVIEW-02 — Frost Nova TNT freezes villagers, baby animals, and golems — FIXED
-- **Severity:** Medium
-- **Where:** `tnt/ArtilianPrimedTnt.java` (`explodeFrostNova`)
-- **Attack:** No attacker needed. A player lights Frost Nova TNT in a village or beside an animal pen.
-- **Impact:** Frost Nova skipped Players, Chester, and owned pets, and dealt 6 freeze damage plus Slowness and Weakness to everything else, including the villagers and baby animals that the wands spare. Two blasts kill a cow.
-- **Fix:** `explodeFrostNova` uses the same `KidSafeTargets#isValidOffensiveTarget` rule as the wands and Cluster Quarry. Stage 1 on `phase-1-stage-7-review-fixes`.
-- **Proof:** GameTest `ReviewFixProbes.review_02_frostNovaSparesVillagersBabiesAndGolems`. EXPLOITED with the old rule restored (`EXPLOITED REVIEW-02: Frost Nova froze a villager, hp 20.0 -> 14.0`); HELD with the fix (`56/56` tests passing).

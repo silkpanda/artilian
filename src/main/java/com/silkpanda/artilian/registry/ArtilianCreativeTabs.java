@@ -19,8 +19,14 @@ public class ArtilianCreativeTabs {
                     .icon(() -> new ItemStack(ArtilianItems.SUNSTEEL_SWORD.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(ArtilianItems.CHESTER_WHISTLE.get());
+                        output.accept(ArtilianItems.CHESTER_SPAWN_EGG.get());
                         output.accept(ArtilianItems.CAPTURE_CRYSTAL.get());
                         output.accept(ArtilianItems.BIOME_TREAT.get());
+                        output.accept(ArtilianItems.CRYSTAL_FOX_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.SHADOW_WISP_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.CINDER_CRAG_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.ZAPHOX_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.GALECORN_SPAWN_EGG.get());
                         output.accept(ArtilianItems.SUNSTEEL_ORE_ITEM.get());
                         output.accept(ArtilianItems.DEEPSLATE_SUNSTEEL_ORE_ITEM.get());
                         output.accept(ArtilianItems.SUNSTEEL_BLOCK_ITEM.get());

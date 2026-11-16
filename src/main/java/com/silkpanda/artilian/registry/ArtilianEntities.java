@@ -4,7 +4,9 @@ import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
+import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
+import com.silkpanda.artilian.pet.ZaphoxEntity;
 import com.silkpanda.artilian.tnt.ArtilianPrimedTnt;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
@@ -41,11 +43,11 @@ public class ArtilianEntities {
                     .clientTrackingRange(10)
                     .build("crystal_fox"));
 
-    /** Shadow Wisp (working name for Bob's Shadow Creature): Shadow pet native to Starlight Highlands. */
+    /** Shadow Wisp (working name for Bob's Shadow Creature): large Shadow pet native to Starlight Highlands. */
     public static final DeferredHolder<EntityType<?>, EntityType<ShadowWispEntity>> SHADOW_WISP =
             ENTITY_TYPES.register("shadow_wisp", () -> EntityType.Builder.of(ShadowWispEntity::new, MobCategory.CREATURE)
-                    .sized(0.75F, 1.15F)
-                    .eyeHeight(0.95F)
+                    .sized(1.45F, 2.68F)
+                    .eyeHeight(2.27F)
                     .clientTrackingRange(10)
                     .build("shadow_wisp"));
 
@@ -57,6 +59,22 @@ public class ArtilianEntities {
                     .eyeHeight(0.55F)
                     .clientTrackingRange(10)
                     .build("cinder_crag"));
+
+    /** Zaphox: Alice's first creature, a large elephant-sized flying cheetah/fox/elephant Electric/Air pet native to Starlight Highlands. */
+    public static final DeferredHolder<EntityType<?>, EntityType<ZaphoxEntity>> ZAPHOX =
+            ENTITY_TYPES.register("zaphox", () -> EntityType.Builder.of(ZaphoxEntity::new, MobCategory.CREATURE)
+                    .sized(1.85F, 2.15F)
+                    .eyeHeight(1.65F)
+                    .clientTrackingRange(10)
+                    .build("zaphox"));
+
+    /** Galecorn: Alice's second creature, an Air/Nature fox-unicorn that whips up whirlwind knockbacks. */
+    public static final DeferredHolder<EntityType<?>, EntityType<GalecornEntity>> GALECORN =
+            ENTITY_TYPES.register("galecorn", () -> EntityType.Builder.of(GalecornEntity::new, MobCategory.CREATURE)
+                    .sized(0.80F, 0.80F)
+                    .eyeHeight(0.60F)
+                    .clientTrackingRange(10)
+                    .build("galecorn"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

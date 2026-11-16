@@ -6,15 +6,15 @@ Written 2026-11-15, resized the same day. This is the one plan for the repositor
 
 ## Now
 
-*Updated 2026-11-16 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
+*Updated 2026-11-15 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
 
 | | |
 |---|---|
-| **In progress** | Phase 1 Stage 7 (`phase-1-stage-7-review-fixes`, PR #10) rebased cleanly onto `main` (`16f82e0`, PR #15) keeping `main`'s 64×64 armor pass (`QA-05` superseded by PR #15). Preserves Stage 1 (`safety/KidSafeTargets`, `REVIEW-01`/`REVIEW-02` in `security/FINDINGS.md`, `QA-01`–`QA-03` in `qa/FINDINGS.md`) and Stage 2 sleeping Chester (`chester_sleep.geo.json`, `ChesterModel`, `QA-04`) + enlarged wand/TNT shapes (`QA-06`). Verified `./gradlew build`, `./gradlew runGameTestServer` (`81/81` green), `./gradlew runData`, and `tools/art/check_armor_sheets.py` (exit 0). |
-| **Next** | Merge PR #10 into `main`; run the family LAN co-op playtest (`deploy/README.md` / `build/libs/adventures-in-artilian-0.1.0.jar`) and sign off on Phase 1 Stage 6; complete Phase 2 St (PR #17 `phase-2-stage-5-dragon-eye-pets` and Bob's official names for Shadow Wisp and Cinder Crag). |
-| **Waiting on the owner** | 1. Merge PR #10 (`phase-1-stage-7-review-fixes` → `main`) once CI is green. 2. Review the PR #15 armor renders (`qa/evidence/armor-pass-{sunsteel,starlight}-2026-11-15*.png`) and PR #17 (`Ember Drake` & `Peepkin`), plus pick Bob's official names for **Shadow Wisp** (`artilian:shadow_wisp`) and **Cinder Crag** (`artilian:cinder_crag`). 3. Run the LAN co-op playtest with Alice and Bob, test the Spark Wand near animals/villagers, check off Phase 1 Stage 6 once approved, and confirm Starlight Crystal ore frequency. |
-| **Other work in flight** | Open PR #10 (`phase-1-stage-7-review-fixes` → `main`), open PR #17 (`phase-2-stage-5-dragon-eye-pets`), open stale stacked PRs #11–#14 (whose Stage 1–5 commits already landed in `main` via PR #15), and uncommitted local work in `D:/Projects/adventures-in-artilian` (`art/2026-11-15-crystal-fox-pass`) and `D:/Projects/adventures-in-artilian-review-fixes` (left untouched). |
-| **Loose ends** | `D:/Projects/adventures-in-artilian-review-fixes` still holds uncommitted Stage 2 armor experiments (`add_armor_pieces.py`, `make_armor_plate_art.py`, `ArmorShowcaseCapture.java`, `tools/art/models/`) and was left untouched. `.opencode/` is untracked in the main checkout and left alone. `runData` may touch CRLF on `src/generated/**` with empty `git diff` — do not commit those. |
+| **In progress** | Integrated CurseForge showcase build on `showcase/2026-11-15-curseforge` (`D:/Projects/adventures-in-artilian-curseforge`, JAR deployed to `~/curseforge\minecraft\Instances\Adventures in Artilian\mods\adventures-in-artilian-0.1.0.jar`). Combines Phase 2 Stage 5 (`phase-2-stage-5-alice-pets` + uncommitted Shadow Wisp 2.2x, elephant-sized Zaphox, Galecorn updates, and 5 pet spawn eggs), Crystal Fox Blockbench pass (`art/2026-11-15-crystal-fox-pass`), Armor Art Pass Stage 2 (`art/2026-11-15-armor-pass`), Phase 1 Stage 7 Review Fixes (`KidSafeTargets`, sleeping Chester real-chest model, bigger Wand & TNT emblem art), and adds `chester_spawn_egg` so every living entity in `ArtilianEntities` has a Creative spawn egg (enforced by `PetRosterGameTests.everyLivingEntityHasSpawnEgg`). Verified `./gradlew runData`, `runGameTestServer` (`86/86` green), and `./gradlew build`. |
+| **Next** | The owner shows Alice and Bob everything in CurseForge (all 6 spawn eggs, Zaphox, Galecorn, Shadow Wisp 2.2x, Cinder Crag, Crystal Fox, sleeping Chester, armor pass, TNTs, wands, and all 3 biomes), then completes Phase 2 St Stage 4 (small dragon hatchling, eye-themed pet, Emberbloom meadow pet) and merges the stacked feature PRs. |
+| **Waiting on the owner** | 1. Launch the `Adventures in Artilian` CurseForge instance with Alice and Bob to review the pets, armor, wands/TNTs, Chester, and biomes in-game. 2. Have Bob pick official names for **Shadow Wisp** and **Cinder Crag**. 3. Merge stacked PRs #2–#16 in order once signed off. |
+| **Other work in flight** | Original worktrees (`D:/Projects/adventures-in-artilian`, `D:/Projects/adventures-in-artilian-armor-pass`, `D:/Projects/adventures-in-artilian-alice-pets`, `D:/Projects/adventures-in-artilian-review-fixes`) were left untouched with their existing uncommitted work. |
+| **Loose ends** | `showcase/2026-11-15-curseforge` (`D:/Projects/adventures-in-artilian-curseforge`) is a combined local playtest/showcase branch for CurseForge; merge the individual feature PRs rather than this combined branch unless desired. |
 
 ---
 
@@ -25,7 +25,7 @@ Sizes are ballparks in evenings of work, corrected as stages finish.
 | Phase | Description | Stages | Rough size | Status |
 |---|---|---|---|---|
 | 0 | Project prep: folder, Git repo, 5-doc stack, registers, GitHub repo & CI | n/a | n/a | ✅ Done |
-| 1 | NeoForge 1.21.1 baseline, Chester, starter gear, custom TNTs, Wands & Staves | 7 | 4–6 weeks | ⏳ Next |
+| 1 | NeoForge 1.21.1 baseline, Chester, starter gear, custom TNTs, Wands & Staves | 6 | 4–6 weeks | ⏳ Next |
 | 2 | Overworld biomes (TerraBlender), pet capture & battle, structures & enemies | 7 | 2–3 months | ⏳ In progress |
 | 3 | Custom bosses, rematch altars, Tier 3 gear, advanced Staves/TNTs | 5 | 6–8 weeks | ⏹ Pending |
 | 4 | Alice's Dimension: The Eye Realm | 7 | 2–3 months | ⏹ Pending |
@@ -69,7 +69,6 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 4 | Custom TNTs | ~1 week | Opus |
 | 5 | Mana & wands | ~1 week | Opus |
 | 6 | Art pass | 3–5 evenings | Fable |
-| 7 | Review fixes | 1 evening | Fable |
 
 - [x] **Stage 1: Scaffold.** NeoForge `1.21.1` (`ModDevGradle`) project, `ArtilianMod.java`, registries, datagen wiring, one trivial GameTest. `.github/workflows/tests.yml` extended to run `runData` and `runGameTestServer` as well as `build`. GeckoLib and TerraBlender are *not* added here.
   - **Done When:** `./gradlew build`, `runData`, and `runGameTestServer` are green locally and in CI, and `./gradlew runClient` reaches the title screen with the mod listed.
@@ -83,8 +82,6 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   - **Done When:** Mana GameTests pass, and both kids can cast all three in LAN co-op with the bar tracking correctly.
 - [ ] **Stage 6: Art pass.** Replace Phase 1 placeholders against the kids' drawings and `DESIGN.md`.
   - **Done When:** The owner, Alice, and Bob sign off on Chester and the starter gear in-game.
-- [x] **Stage 7: Review fixes.** One shared kid-safe target rule (`safety/KidSafeTargets`) for every TNT and wand, closing the five findings from the Phase 1 code review. Security gate applies: `REVIEW-01` and `REVIEW-02` red-proven then HELD.
-  - **Done When:** GameTests prove Cluster Quarry and Frost Nova spare pets, villagers, golems, and dropped items, and the Spark Wand picks monsters first and stops at walls.
 
 ### Phase 2: Wild Biomes, Dungeons & Pet Battles
 
