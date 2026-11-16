@@ -21,6 +21,7 @@ import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SwordItem;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -35,6 +36,26 @@ public class ArtilianItems {
             ITEMS.register("capture_crystal", () -> new CaptureCrystalItem(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<BiomeTreatItem> BIOME_TREAT =
             ITEMS.register("biome_treat", () -> new BiomeTreatItem(new Item.Properties().stacksTo(64)));
+
+    // Creative spawn eggs (all living entities)
+    public static final DeferredItem<DeferredSpawnEggItem> CHESTER_SPAWN_EGG =
+            ITEMS.register("chester_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CHESTER, 0x9C6B37, 0xF5D04E, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> CRYSTAL_FOX_SPAWN_EGG =
+            ITEMS.register("crystal_fox_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CRYSTAL_FOX, 0xD4F4F3, 0x38D9C0, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> SHADOW_WISP_SPAWN_EGG =
+            ITEMS.register("shadow_wisp_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.SHADOW_WISP, 0x3A324C, 0xD946EF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> CINDER_CRAG_SPAWN_EGG =
+            ITEMS.register("cinder_crag_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CINDER_CRAG, 0xB6203E, 0xF97316, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> ZAPHOX_SPAWN_EGG =
+            ITEMS.register("zaphox_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.ZAPHOX, 0xFBBF24, 0xF97316, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> GALECORN_SPAWN_EGG =
+            ITEMS.register("galecorn_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.GALECORN, 0xFDE068, 0x38D9C0, new Item.Properties()));
 
     // Blocks
     public static final DeferredItem<BlockItem> SUNSTEEL_ORE_ITEM =

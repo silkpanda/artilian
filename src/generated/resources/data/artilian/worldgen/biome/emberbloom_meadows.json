@@ -138,6 +138,12 @@
         "weight": 8
       },
       {
+        "type": "artilian:galecorn",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 6
+      },
+      {
         "type": "minecraft:horse",
         "maxCount": 4,
         "minCount": 2,

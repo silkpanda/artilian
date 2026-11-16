@@ -142,6 +142,12 @@
         "weight": 6
       },
       {
+        "type": "artilian:galecorn",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 4
+      },
+      {
         "type": "minecraft:fox",
         "maxCount": 4,
         "minCount": 2,

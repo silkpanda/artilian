@@ -22,6 +22,8 @@ public final class PetEvents {
             event.put(ArtilianEntities.CRYSTAL_FOX.get(), CrystalFoxEntity.createAttributes().build());
             event.put(ArtilianEntities.SHADOW_WISP.get(), ShadowWispEntity.createAttributes().build());
             event.put(ArtilianEntities.CINDER_CRAG.get(), CinderCragEntity.createAttributes().build());
+            event.put(ArtilianEntities.ZAPHOX.get(), ZaphoxEntity.createAttributes().build());
+            event.put(ArtilianEntities.GALECORN.get(), GalecornEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -45,6 +47,20 @@ public final class PetEvents {
                     SpawnPlacementTypes.ON_GROUND,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     CinderCragEntity::checkLavaSpawnRules,
+                    RegisterSpawnPlacementsEvent.Operation.REPLACE
+            );
+            event.register(
+                    ArtilianEntities.ZAPHOX.get(),
+                    SpawnPlacementTypes.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    ZaphoxEntity::checkZaphoxSpawnRules,
+                    RegisterSpawnPlacementsEvent.Operation.REPLACE
+            );
+            event.register(
+                    ArtilianEntities.GALECORN.get(),
+                    SpawnPlacementTypes.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    GalecornEntity::checkGalecornSpawnRules,
                     RegisterSpawnPlacementsEvent.Operation.REPLACE
             );
         }

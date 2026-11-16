@@ -14,7 +14,13 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         this.basicItem(ArtilianItems.CHESTER_WHISTLE.get());
+        this.withExistingParent("chester_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.basicItem(ArtilianItems.BIOME_TREAT.get());
+        this.withExistingParent("crystal_fox_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("shadow_wisp_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("cinder_crag_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("zaphox_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("galecorn_spawn_egg", mcLoc("item/template_spawn_egg"));
         captureCrystalModels();
         this.basicItem(ArtilianItems.RAW_SUNSTEEL.get());
         this.basicItem(ArtilianItems.SUNSTEEL_INGOT.get());
