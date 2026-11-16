@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sunsteel_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "artilian:sunsteel_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "artilian:sunsteel_ingot_from_sunsteel_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sunsteel_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "artilian:sunsteel_ingot_from_sunsteel_block"
+    ]
+  }
+}

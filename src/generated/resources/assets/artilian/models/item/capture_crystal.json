@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "artilian:item/capture_crystal_fainted",
+      "predicate": {
+        "artilian:crystal_state": 0.25
+      }
+    },
+    {
+      "model": "artilian:item/capture_crystal_filled",
+      "predicate": {
+        "artilian:crystal_state": 0.5
+      }
+    },
+    {
+      "model": "artilian:item/capture_crystal_summoned",
+      "predicate": {
+        "artilian:crystal_state": 1.0
+      }
+    }
+  ],
+  "textures": {
+    "layer0": "artilian:item/capture_crystal"
+  }
+}

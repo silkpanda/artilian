@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "artilian:block/deepslate_starlight_crystal_ore"
+  }
+}

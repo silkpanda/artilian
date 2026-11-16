@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "artilian:block/crystal_canopy_planks"
+  }
+}

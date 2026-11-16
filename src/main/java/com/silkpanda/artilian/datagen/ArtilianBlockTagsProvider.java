@@ -1,0 +1,115 @@
+package com.silkpanda.artilian.datagen;
+
+import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.registry.ArtilianBlocks;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
+import net.minecraft.tags.BlockTags;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+
+import java.util.concurrent.CompletableFuture;
+
+public class ArtilianBlockTagsProvider extends BlockTagsProvider {
+    public ArtilianBlockTagsProvider(
+            PackOutput output,
+            CompletableFuture<HolderLookup.Provider> lookupProvider,
+            ExistingFileHelper existingFileHelper) {
+        super(output, lookupProvider, ArtilianMod.MODID, existingFileHelper);
+    }
+
+    @Override
+    protected void addTags(HolderLookup.Provider provider) {
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
+                ArtilianBlocks.SUNSTEEL_ORE.get(),
+                ArtilianBlocks.DEEPSLATE_SUNSTEEL_ORE.get(),
+                ArtilianBlocks.SUNSTEEL_BLOCK.get(),
+                ArtilianBlocks.STARLIGHT_CRYSTAL_ORE.get(),
+                ArtilianBlocks.DEEPSLATE_STARLIGHT_CRYSTAL_ORE.get(),
+                ArtilianBlocks.STARLIGHT_CRYSTAL_BLOCK.get(),
+                ArtilianBlocks.STARLIGHT_SLATE.get()
+        );
+
+        tag(BlockTags.NEEDS_STONE_TOOL).add(
+                ArtilianBlocks.SUNSTEEL_ORE.get(),
+                ArtilianBlocks.DEEPSLATE_SUNSTEEL_ORE.get(),
+                ArtilianBlocks.SUNSTEEL_BLOCK.get()
+        );
+
+        tag(BlockTags.NEEDS_IRON_TOOL).add(
+                ArtilianBlocks.STARLIGHT_CRYSTAL_ORE.get(),
+                ArtilianBlocks.DEEPSLATE_STARLIGHT_CRYSTAL_ORE.get(),
+                ArtilianBlocks.STARLIGHT_CRYSTAL_BLOCK.get()
+        );
+
+        tag(Tags.Blocks.ORES).add(
+                ArtilianBlocks.SUNSTEEL_ORE.get(),
+                ArtilianBlocks.DEEPSLATE_SUNSTEEL_ORE.get(),
+                ArtilianBlocks.STARLIGHT_CRYSTAL_ORE.get(),
+                ArtilianBlocks.DEEPSLATE_STARLIGHT_CRYSTAL_ORE.get()
+        );
+
+        tag(Tags.Blocks.ORES_IN_GROUND_STONE).add(
+                ArtilianBlocks.SUNSTEEL_ORE.get(),
+                ArtilianBlocks.STARLIGHT_CRYSTAL_ORE.get()
+        );
+
+        tag(Tags.Blocks.ORES_IN_GROUND_DEEPSLATE).add(
+                ArtilianBlocks.DEEPSLATE_SUNSTEEL_ORE.get(),
+                ArtilianBlocks.DEEPSLATE_STARLIGHT_CRYSTAL_ORE.get()
+        );
+
+        tag(Tags.Blocks.STORAGE_BLOCKS).add(
+                ArtilianBlocks.SUNSTEEL_BLOCK.get(),
+                ArtilianBlocks.STARLIGHT_CRYSTAL_BLOCK.get()
+        );
+
+        tag(BlockTags.DIRT).add(
+                ArtilianBlocks.CRYSTAL_TURF.get(),
+                ArtilianBlocks.EMBER_TURF.get(),
+                ArtilianBlocks.STARLIGHT_TURF.get()
+        );
+        tag(BlockTags.ANIMALS_SPAWNABLE_ON).add(
+                ArtilianBlocks.CRYSTAL_TURF.get(),
+                ArtilianBlocks.EMBER_TURF.get(),
+                ArtilianBlocks.STARLIGHT_TURF.get()
+        );
+        tag(BlockTags.MINEABLE_WITH_SHOVEL).add(
+                ArtilianBlocks.CRYSTAL_TURF.get(),
+                ArtilianBlocks.EMBER_TURF.get(),
+                ArtilianBlocks.STARLIGHT_TURF.get()
+        );
+        tag(BlockTags.MINEABLE_WITH_AXE).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_LOG.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get(),
+                ArtilianBlocks.EMBERWOOD_LOG.get(),
+                ArtilianBlocks.EMBERWOOD_PLANKS.get()
+        );
+        tag(BlockTags.MINEABLE_WITH_HOE).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_LEAVES.get(),
+                ArtilianBlocks.EMBERWOOD_LEAVES.get()
+        );
+        tag(BlockTags.LOGS_THAT_BURN).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_LOG.get(),
+                ArtilianBlocks.EMBERWOOD_LOG.get()
+        );
+        tag(BlockTags.PLANKS).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get(),
+                ArtilianBlocks.EMBERWOOD_PLANKS.get()
+        );
+        tag(BlockTags.LEAVES).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_LEAVES.get(),
+                ArtilianBlocks.EMBERWOOD_LEAVES.get()
+        );
+        tag(BlockTags.SAPLINGS).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_SAPLING.get(),
+                ArtilianBlocks.EMBERWOOD_SAPLING.get()
+        );
+        tag(BlockTags.SMALL_FLOWERS).add(
+                ArtilianBlocks.CRYSTAL_BLOOM.get(),
+                ArtilianBlocks.EMBER_BLOOM.get(),
+                ArtilianBlocks.STARLIGHT_BLOSSOM.get()
+        );
+    }
+}

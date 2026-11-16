@@ -1,0 +1,12 @@
+{
+  "values": [
+    "minecraft:pillager",
+    "minecraft:vindicator",
+    "minecraft:evoker",
+    "minecraft:wither_skeleton",
+    "minecraft:stray",
+    "minecraft:bogged",
+    "minecraft:husk",
+    "minecraft:breeze"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "artilian:item/zephyr_dash_wand"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "artilian:starlight_crystal"
+    },
+    "G": {
+      "item": "artilian:sunsteel_ingot"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "  C",
+    " G ",
+    "S  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:spark_wand"
+  }
+}

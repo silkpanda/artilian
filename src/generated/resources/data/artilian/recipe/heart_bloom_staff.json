@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "artilian:starlight_crystal"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "GCG",
+    " S ",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:heart_bloom_staff"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_biome_bloom": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#artilian:biome_blooms"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "artilian:biome_treat"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_biome_bloom"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "artilian:biome_treat"
+    ]
+  }
+}

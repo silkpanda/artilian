@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "artilian:crystal_canopy_log"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "artilian:crystal_canopy_planks"
+  }
+}

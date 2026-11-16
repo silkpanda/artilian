@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "artilian:starlight_crystal"
+    },
+    "F": {
+      "item": "minecraft:feather"
+    },
+    "G": {
+      "item": "artilian:sunsteel_ingot"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    " FC",
+    " GF",
+    "S  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:zephyr_dash_wand"
+  }
+}

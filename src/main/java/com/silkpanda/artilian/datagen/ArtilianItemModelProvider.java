@@ -1,0 +1,74 @@
+package com.silkpanda.artilian.datagen;
+
+import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.registry.ArtilianItems;
+import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+
+public class ArtilianItemModelProvider extends ItemModelProvider {
+    public ArtilianItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, ArtilianMod.MODID, existingFileHelper);
+    }
+
+    @Override
+    protected void registerModels() {
+        this.basicItem(ArtilianItems.CHESTER_WHISTLE.get());
+        this.basicItem(ArtilianItems.BIOME_TREAT.get());
+        captureCrystalModels();
+        this.basicItem(ArtilianItems.RAW_SUNSTEEL.get());
+        this.basicItem(ArtilianItems.SUNSTEEL_INGOT.get());
+        this.basicItem(ArtilianItems.STARLIGHT_CRYSTAL.get());
+
+        this.handheldItem(ArtilianItems.SUNSTEEL_SWORD.get());
+        this.handheldItem(ArtilianItems.SUNSTEEL_PICKAXE.get());
+        this.handheldItem(ArtilianItems.SUNSTEEL_AXE.get());
+        this.handheldItem(ArtilianItems.SUNSTEEL_SHOVEL.get());
+        this.handheldItem(ArtilianItems.SUNSTEEL_HOE.get());
+
+        this.handheldItem(ArtilianItems.STARLIGHT_SWORD.get());
+        this.handheldItem(ArtilianItems.STARLIGHT_PICKAXE.get());
+        this.handheldItem(ArtilianItems.STARLIGHT_AXE.get());
+        this.handheldItem(ArtilianItems.STARLIGHT_SHOVEL.get());
+        this.handheldItem(ArtilianItems.STARLIGHT_HOE.get());
+
+        this.basicItem(ArtilianItems.SUNSTEEL_HELMET.get());
+        this.basicItem(ArtilianItems.SUNSTEEL_CHESTPLATE.get());
+        this.basicItem(ArtilianItems.SUNSTEEL_LEGGINGS.get());
+        this.basicItem(ArtilianItems.SUNSTEEL_BOOTS.get());
+
+        this.basicItem(ArtilianItems.STARLIGHT_HELMET.get());
+        this.basicItem(ArtilianItems.STARLIGHT_CHESTPLATE.get());
+        this.basicItem(ArtilianItems.STARLIGHT_LEGGINGS.get());
+        this.basicItem(ArtilianItems.STARLIGHT_BOOTS.get());
+
+        this.handheldItem(ArtilianItems.SPARK_WAND.get());
+        this.handheldItem(ArtilianItems.HEART_BLOOM_STAFF.get());
+        this.handheldItem(ArtilianItems.ZEPHYR_DASH_WAND.get());
+
+        flatBlockItem("crystal_canopy_sapling");
+        flatBlockItem("crystal_bloom");
+        flatBlockItem("emberwood_sapling");
+        flatBlockItem("ember_bloom");
+        flatBlockItem("starlight_blossom");
+    }
+
+    private void flatBlockItem(String name) {
+        this.singleTexture(name, mcLoc("item/generated"), "layer0", modLoc("block/" + name));
+    }
+
+    private void captureCrystalModels() {
+        var fainted = this.singleTexture("capture_crystal_fainted", mcLoc("item/generated"),
+                "layer0", modLoc("item/capture_crystal_fainted"));
+        var filled = this.singleTexture("capture_crystal_filled", mcLoc("item/generated"),
+                "layer0", modLoc("item/capture_crystal_filled"));
+        var summoned = this.singleTexture("capture_crystal_summoned", mcLoc("item/generated"),
+                "layer0", modLoc("item/capture_crystal_summoned"));
+
+        this.withExistingParent("capture_crystal", mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/capture_crystal"))
+                .override().predicate(modLoc("crystal_state"), 0.25F).model(fainted).end()
+                .override().predicate(modLoc("crystal_state"), 0.5F).model(filled).end()
+                .override().predicate(modLoc("crystal_state"), 1.0F).model(summoned).end();
+    }
+}

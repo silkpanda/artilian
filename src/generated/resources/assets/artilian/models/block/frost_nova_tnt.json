@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "artilian:block/frost_nova_tnt_bottom",
+    "side": "artilian:block/frost_nova_tnt_side",
+    "top": "artilian:block/frost_nova_tnt_top"
+  }
+}

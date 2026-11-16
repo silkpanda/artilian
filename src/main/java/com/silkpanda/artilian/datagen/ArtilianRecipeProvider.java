@@ -1,0 +1,259 @@
+package com.silkpanda.artilian.datagen;
+
+import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.registry.ArtilianBlocks;
+import com.silkpanda.artilian.registry.ArtilianItems;
+import com.silkpanda.artilian.registry.ArtilianTags;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+public class ArtilianRecipeProvider extends RecipeProvider {
+    public ArtilianRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+        super(output, registries);
+    }
+
+    @Override
+    protected void buildRecipes(RecipeOutput output) {
+        // A stick over a gold nugget. Cheap on purpose: nobody should be stuck without a whistle.
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.CHESTER_WHISTLE.get())
+                .pattern("S")
+                .pattern("N")
+                .define('S', Items.STICK)
+                .define('N', Items.GOLD_NUGGET)
+                .unlockedBy("has_gold_nugget", has(Items.GOLD_NUGGET))
+                .save(output);
+
+        List<ItemLike> sunsteelSmeltables = List.of(
+                ArtilianBlocks.SUNSTEEL_ORE.get(),
+                ArtilianBlocks.DEEPSLATE_SUNSTEEL_ORE.get(),
+                ArtilianItems.RAW_SUNSTEEL.get()
+        );
+        oreSmeltingAndBlasting(output, sunsteelSmeltables, ArtilianItems.SUNSTEEL_INGOT.get(), 0.7F, "sunsteel_ingot");
+
+        List<ItemLike> starlightSmeltables = List.of(
+                ArtilianBlocks.STARLIGHT_CRYSTAL_ORE.get(),
+                ArtilianBlocks.DEEPSLATE_STARLIGHT_CRYSTAL_ORE.get()
+        );
+        oreSmeltingAndBlasting(output, starlightSmeltables, ArtilianItems.STARLIGHT_CRYSTAL.get(), 1.0F, "starlight_crystal");
+
+        storageBlock(output, ArtilianItems.SUNSTEEL_INGOT.get(), ArtilianBlocks.SUNSTEEL_BLOCK.get());
+        storageBlock(output, ArtilianItems.STARLIGHT_CRYSTAL.get(), ArtilianBlocks.STARLIGHT_CRYSTAL_BLOCK.get());
+
+        gearSet(output, ArtilianItems.SUNSTEEL_INGOT.get(),
+                ArtilianItems.SUNSTEEL_SWORD.get(),
+                ArtilianItems.SUNSTEEL_PICKAXE.get(),
+                ArtilianItems.SUNSTEEL_AXE.get(),
+                ArtilianItems.SUNSTEEL_SHOVEL.get(),
+                ArtilianItems.SUNSTEEL_HOE.get(),
+                ArtilianItems.SUNSTEEL_HELMET.get(),
+                ArtilianItems.SUNSTEEL_CHESTPLATE.get(),
+                ArtilianItems.SUNSTEEL_LEGGINGS.get(),
+                ArtilianItems.SUNSTEEL_BOOTS.get());
+
+        gearSet(output, ArtilianItems.STARLIGHT_CRYSTAL.get(),
+                ArtilianItems.STARLIGHT_SWORD.get(),
+                ArtilianItems.STARLIGHT_PICKAXE.get(),
+                ArtilianItems.STARLIGHT_AXE.get(),
+                ArtilianItems.STARLIGHT_SHOVEL.get(),
+                ArtilianItems.STARLIGHT_HOE.get(),
+                ArtilianItems.STARLIGHT_HELMET.get(),
+                ArtilianItems.STARLIGHT_CHESTPLATE.get(),
+                ArtilianItems.STARLIGHT_LEGGINGS.get(),
+                ArtilianItems.STARLIGHT_BOOTS.get());
+
+        customTntRecipe(output, ArtilianBlocks.PARTY_TNT.get(), Items.SUGAR, ArtilianItems.SUNSTEEL_INGOT.get());
+        customTntRecipe(output, ArtilianBlocks.BOUNCE_TNT.get(), Items.SLIME_BALL, ArtilianItems.SUNSTEEL_INGOT.get());
+        customTntRecipe(output, ArtilianBlocks.FROST_NOVA_TNT.get(), Items.SNOWBALL, ArtilianItems.STARLIGHT_CRYSTAL.get());
+        customTntRecipe(output, ArtilianBlocks.CLUSTER_QUARRY_TNT.get(), ArtilianItems.STARLIGHT_CRYSTAL.get(), ArtilianItems.SUNSTEEL_INGOT.get());
+
+        wandRecipes(output);
+
+        logToPlanks(output, ArtilianBlocks.CRYSTAL_CANOPY_LOG.get(), ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get());
+        logToPlanks(output, ArtilianBlocks.EMBERWOOD_LOG.get(), ArtilianBlocks.EMBERWOOD_PLANKS.get());
+
+        // Pet Capture Crystals & Biome Treats (Phase 2 Stage 3)
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.CAPTURE_CRYSTAL.get(), 2)
+                .pattern(" G ")
+                .pattern("ICI")
+                .pattern(" G ")
+                .define('G', Items.GLASS)
+                .define('I', ArtilianItems.SUNSTEEL_INGOT.get())
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ArtilianItems.BIOME_TREAT.get(), 4)
+                .requires(ArtilianTags.Items.BIOME_BLOOMS)
+                .requires(Items.SWEET_BERRIES)
+                .requires(Items.SUGAR)
+                .unlockedBy("has_biome_bloom", has(ArtilianTags.Items.BIOME_BLOOMS))
+                .save(output);
+    }
+
+    private static void logToPlanks(RecipeOutput output, ItemLike log, ItemLike planks) {
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, planks, 4)
+                .requires(log)
+                .unlockedBy("has_" + BuiltInRegistries.ITEM.getKey(log.asItem()).getPath(), has(log))
+                .save(output);
+    }
+
+    private static void wandRecipes(RecipeOutput output) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.SPARK_WAND.get())
+                .pattern("  C")
+                .pattern(" G ")
+                .pattern("S  ")
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('G', ArtilianItems.SUNSTEEL_INGOT.get())
+                .define('S', Items.STICK)
+                .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.HEART_BLOOM_STAFF.get())
+                .pattern("GCG")
+                .pattern(" S ")
+                .pattern(" S ")
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('G', Items.GOLD_INGOT)
+                .define('S', Items.STICK)
+                .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.ZEPHYR_DASH_WAND.get())
+                .pattern(" FC")
+                .pattern(" GF")
+                .pattern("S  ")
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('G', ArtilianItems.SUNSTEEL_INGOT.get())
+                .define('F', Items.FEATHER)
+                .define('S', Items.STICK)
+                .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
+    }
+
+    private static void customTntRecipe(
+            RecipeOutput output,
+            ItemLike result,
+            ItemLike topBottomAccent,
+            ItemLike sideMaterial) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, result, 2)
+                .pattern(" A ")
+                .pattern("MTM")
+                .pattern(" A ")
+                .define('A', topBottomAccent)
+                .define('M', sideMaterial)
+                .define('T', Items.TNT)
+                .unlockedBy("has_tnt", has(Items.TNT))
+                .save(output);
+    }
+
+    private static void gearSet(
+            RecipeOutput output,
+            ItemLike material,
+            ItemLike sword,
+            ItemLike pickaxe,
+            ItemLike axe,
+            ItemLike shovel,
+            ItemLike hoe,
+            ItemLike helmet,
+            ItemLike chestplate,
+            ItemLike leggings,
+            ItemLike boots) {
+        String unlock = getHasName(material);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, sword)
+                .pattern("M").pattern("M").pattern("S")
+                .define('M', material).define('S', Items.STICK)
+                .unlockedBy(unlock, has(material))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, pickaxe)
+                .pattern("MMM").pattern(" S ").pattern(" S ")
+                .define('M', material).define('S', Items.STICK)
+                .unlockedBy(unlock, has(material))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, axe)
+                .pattern("MM").pattern("MS").pattern(" S")
+                .define('M', material).define('S', Items.STICK)
+                .unlockedBy(unlock, has(material))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, shovel)
+                .pattern("M").pattern("S").pattern("S")
+                .define('M', material).define('S', Items.STICK)
+                .unlockedBy(unlock, has(material))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, hoe)
+                .pattern("MM").pattern(" S").pattern(" S")
+                .define('M', material).define('S', Items.STICK)
+                .unlockedBy(unlock, has(material))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, helmet)
+                .pattern("MMM").pattern("M M")
+                .define('M', material)
+                .unlockedBy(unlock, has(material))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, chestplate)
+                .pattern("M M").pattern("MMM").pattern("MMM")
+                .define('M', material)
+                .unlockedBy(unlock, has(material))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, leggings)
+                .pattern("MMM").pattern("M M").pattern("M M")
+                .define('M', material)
+                .unlockedBy(unlock, has(material))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, boots)
+                .pattern("M M").pattern("M M")
+                .define('M', material)
+                .unlockedBy(unlock, has(material))
+                .save(output);
+    }
+
+    private static void oreSmeltingAndBlasting(
+            RecipeOutput output,
+            List<ItemLike> inputs,
+            ItemLike result,
+            float xp,
+            String group) {
+        for (ItemLike input : inputs) {
+            SimpleCookingRecipeBuilder.smelting(Ingredient.of(input), RecipeCategory.MISC, result, xp, 200)
+                    .group(group)
+                    .unlockedBy(getHasName(input), has(input))
+                    .save(output, ArtilianMod.id(getItemName(result) + "_from_smelting_" + getItemName(input)));
+
+            SimpleCookingRecipeBuilder.blasting(Ingredient.of(input), RecipeCategory.MISC, result, xp, 100)
+                    .group(group)
+                    .unlockedBy(getHasName(input), has(input))
+                    .save(output, ArtilianMod.id(getItemName(result) + "_from_blasting_" + getItemName(input)));
+        }
+    }
+
+    private static void storageBlock(RecipeOutput output, ItemLike unpacked, ItemLike packed) {
+        nineBlockStorageRecipes(
+                output,
+                RecipeCategory.MISC, unpacked,
+                RecipeCategory.BUILDING_BLOCKS, packed,
+                ArtilianMod.id(getItemName(packed)).toString(), null,
+                ArtilianMod.id(getItemName(unpacked) + "_from_" + getItemName(packed)).toString(),
+                getItemName(unpacked));
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "sunsteel_ingot",
+  "ingredients": [
+    {
+      "item": "artilian:sunsteel_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "artilian:sunsteel_ingot"
+  }
+}

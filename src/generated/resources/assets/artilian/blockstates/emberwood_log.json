@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "artilian:block/emberwood_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "artilian:block/emberwood_log"
+    },
+    "axis=z": {
+      "model": "artilian:block/emberwood_log_horizontal",
+      "x": 90
+    }
+  }
+}

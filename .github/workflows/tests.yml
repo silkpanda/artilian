@@ -1,0 +1,62 @@
+# Runs the checks on GitHub's machines for every push and pull request, so each
+# one gets a green check or a red cross. Uses Java 21 to match NeoForge 1.21.1.
+name: Tests
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      CI: "true"
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Validate docs baseline
+        shell: bash
+        run: |
+          test -f PRODUCT.md
+          test -f PLAN.md
+          test -f AGENTS.md
+          test -f CLAUDE.md
+          test -f README.md
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Generate data
+        run: ./gradlew runData --no-daemon
+
+      - name: Check generated data is committed
+        shell: bash
+        run: |
+          if [ -n "$(git status --porcelain src/generated)" ]; then
+            echo "Datagen output differs from what is committed. Run ./gradlew runData and commit src/generated."
+            git status --porcelain src/generated
+            exit 1
+          fi
+
+      - name: Build
+        run: ./gradlew build --no-daemon
+
+      - name: Run GameTests
+        run: ./gradlew runGameTestServer --no-daemon
+
+      - name: Upload mod jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: adventures-in-artilian-jar
+          path: build/libs/adventures-in-artilian-*.jar
+          if-no-files-found: error

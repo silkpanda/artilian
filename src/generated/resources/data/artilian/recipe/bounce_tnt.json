@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "A": {
+      "item": "minecraft:slime_ball"
+    },
+    "M": {
+      "item": "artilian:sunsteel_ingot"
+    },
+    "T": {
+      "item": "minecraft:tnt"
+    }
+  },
+  "pattern": [
+    " A ",
+    "MTM",
+    " A "
+  ],
+  "result": {
+    "count": 2,
+    "id": "artilian:bounce_tnt"
+  }
+}

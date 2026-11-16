@@ -1,0 +1,46 @@
+# Gradle & Build Output
+.gradle/
+build/
+out/
+bin/
+
+# Minecraft / NeoForge Runtime
+run/
+runs/
+logs/
+crash-reports/
+saves/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDEs & OS Artifacts
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets, Local Env & Local Databases (Mandatory project-prep rules)
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.db
+*.pem
+*.key
+*credentials*
+*secret*
+
+# Local Agent Overrides (Never ignore AGENTS.md or CLAUDE.md)
+CLAUDE.local.md
+.claude/settings.local.json
+
+# NeoForge datagen cache
+src/generated/**/.cache/

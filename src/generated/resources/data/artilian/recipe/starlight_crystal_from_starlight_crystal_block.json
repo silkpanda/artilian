@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "starlight_crystal",
+  "ingredients": [
+    {
+      "item": "artilian:starlight_crystal_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "artilian:starlight_crystal"
+  }
+}

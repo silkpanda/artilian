@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 1.0,
+  "group": "starlight_crystal",
+  "ingredient": {
+    "item": "artilian:deepslate_starlight_crystal_ore"
+  },
+  "result": {
+    "count": 1,
+    "id": "artilian:starlight_crystal"
+  }
+}
