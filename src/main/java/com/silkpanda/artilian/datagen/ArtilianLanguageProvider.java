@@ -152,6 +152,8 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addEntityType(ArtilianEntities.PRISM_SENTINEL, "Prism Sentinel");
         this.addEntityType(ArtilianEntities.CINDER_RAIDER, "Cinder Raider");
         this.addEntityType(ArtilianEntities.ASTRAL_STALKER, "Astral Stalker");
+        // Phase 3 Stage 1: Boss framework test boss
+        this.addEntityType(ArtilianEntities.TRAINING_GOLEM, "Training Golem");
         this.addItem(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG, "Prism Sentinel Spawn Egg");
         this.addItem(ArtilianItems.CINDER_RAIDER_SPAWN_EGG, "Cinder Raider Spawn Egg");
         this.addItem(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG, "Astral Stalker Spawn Egg");

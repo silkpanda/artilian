@@ -3,11 +3,11 @@
 Branch: `phase-3-stage-1-boss-framework` (from `main` at `9a1655b`).
 Relates to: `PLAN.md` Phase 3 Stage 1, `PRODUCT.md` (hard constraint: telegraphed boss attacks), `DESIGN.md` (Clear Telegraphs, Boss / Danger Telegraph `#FF4D5A`, clean boss bars), `enemy/StructureEnemyEntity.java` (the pattern this extends), `safety/KidSafeTargets.java`.
 
-> **Status: Not started.** Record each stage's commit here.
+> **Status: Stage 1 complete; Stage 2 next.** Record each stage's commit here.
 >
 > | Stage | Done |
 > |---|---|
-> | 1 Boss base, boss bar, arena safety | |
+> | 1 Boss base, boss bar, arena safety | Built by OpenCode (Kylan), reviewed and fixed by Claude Code, commit `Boss Framework Stage 1`. `boss/ArtilianBossEntity` (48-block range-managed `ServerBossEvent`, `NOTCHED_10`, progress tracks health, never despawns, persistent after `finalizeSpawn`, knockback resistance 0.8), `boss/TrainingGolemEntity` (Earth, 120 health, test-only: no egg, tab entry, spawns or loot), `artilian:bosses` tag, pet target filter includes it, placeholder art from `tools/art/make_bosses_art.py`. `PetRosterGameTests.everyLivingEntityHasSpawnEgg` now exempts the golem. Review fixes: tests switched from vanilla mock players (left on the server player list) to `CustomTntGameTests.spawnSurvivalPlayer` / `removeTestPlayer`; `start/stopSeenByPlayer` now call `super`. Red-proven: range check always true turned `bossBarAddsNearbyPlayersAndDropsFarOnes` red; `removeWhenFarAway` true turned `bossNeverDespawns` red (re-run by Claude Code); golem dropped from the tag turned `bossIsInBossTagAndPetsTargetIt` red. Restored: `105/105` green. |
 > | 2 Telegraphed attacks | |
 > | 3 Boss Altar and rematches | |
 > | 4 Client verification, live evidence, PR | |
@@ -37,7 +37,7 @@ Steve wants custom bosses, and Phase 3 ships two of them (*The Crystal Colossus*
   - `bossBarTracksHealthAndClearsOnDeath`: damage to 50% shows progress 0.5; killing the boss leaves the bar with no players.
   - `bossNeverDespawns`: `removeWhenFarAway` false and persistence set after `finalizeSpawn`.
   - `bossIsInBossTagAndPetsTargetIt`: the golem is in `artilian:bosses`; a summoned pet next to it picks it as a target.
-- **Red-proof:** skip the range check (add every player) → `bossBarAddsNearbyPlayersAndDropsFarOnes` red; make `removeWhenFarAway` return true → `bossNeverDespawns` red; drop the tag from the pet target filter → `bossIsInBossTagAndPetsTargetIt` red. Restore each.
+- **Red-proof:** skip the range check (add every player) → `bossBarAddsNearbyPlayersAndDropsFarOnes` red; make `removeWhenFarAway` return true → `bossNeverDespawns` red; drop the golem from the `artilian:bosses` tag provider and re-run `runData` → `bossIsInBossTagAndPetsTargetIt` red on the tag check. (Dropping the tag from the pet target filter can't go red: bosses extend `Monster`, which is already an `Enemy`, so the filter's tag clause is a backstop.) Restore each.
 - **Done When:** `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` pass 100%.
 
 ### Stage 2: Telegraphed attacks

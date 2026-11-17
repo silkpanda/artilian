@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.enemy.AstralStalkerEntity;
 import com.silkpanda.artilian.enemy.CinderRaiderEntity;
@@ -166,6 +167,14 @@ public class ArtilianEntities {
                     .eyeHeight(1.55F)
                     .clientTrackingRange(10)
                     .build("astral_stalker"));
+
+    /** Test-only boss for the boss framework. Not in the creative tab and has no spawn egg. */
+    public static final DeferredHolder<EntityType<?>, EntityType<TrainingGolemEntity>> TRAINING_GOLEM =
+            ENTITY_TYPES.register("training_golem", () -> EntityType.Builder.of(TrainingGolemEntity::new, MobCategory.MONSTER)
+                    .sized(1.6F, 2.6F)
+                    .eyeHeight(2.2F)
+                    .clientTrackingRange(10)
+                    .build("training_golem"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

@@ -451,7 +451,9 @@ public class PetRosterGameTests {
     public static void everyLivingEntityHasSpawnEgg(GameTestHelper helper) {
         for (var holder : ArtilianEntities.ENTITY_TYPES.getEntries()) {
             EntityType<?> type = holder.get();
-            if (type == ArtilianEntities.PRIMED_TNT.get()) {
+            if (type == ArtilianEntities.PRIMED_TNT.get()
+                    || type == ArtilianEntities.TRAINING_GOLEM.get()) {
+                // Primed TNT is not living; the Training Golem is a test-only boss with no spawn egg.
                 continue;
             }
             helper.assertTrue(SpawnEggItem.byId(type) != null,

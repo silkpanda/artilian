@@ -49,6 +49,8 @@ public final class ArtilianClient {
                 ctx -> new StructureEnemyRenderer<>(ctx, "cinder_raider", 0.45F));
         event.registerEntityRenderer(ArtilianEntities.ASTRAL_STALKER.get(),
                 ctx -> new StructureEnemyRenderer<>(ctx, "astral_stalker", 0.48F));
+        event.registerEntityRenderer(ArtilianEntities.TRAINING_GOLEM.get(),
+                ctx -> new TrainingGolemRenderer<>(ctx, "training_golem", 1.0F));
     }
 
     @SubscribeEvent
