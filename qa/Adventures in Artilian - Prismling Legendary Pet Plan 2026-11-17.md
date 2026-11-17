@@ -3,13 +3,13 @@
 Branch: `phase-2-prism-pet` (from `main` at `9a1655b`).
 Relates to: `PLAN.md` Phase 2, `PRODUCT.md`, `DESIGN.md`, `qa/archive/` pet roster plans, `qa/Adventures in Artilian - Dragon and Eye Pets Plan 2026-11-16.md` (the pattern this follows).
 
-> **Status: Stages 1–2 complete; Stage 3 (in-game check) handed to Antigravity.** Record each stage's commit here.
+> **Status: Stages 1–3 complete; PR open, waiting on CI.** Record each stage's commit here.
 >
 > | Stage | Done |
 > |---|---|
 > | 1 All-types battle rule, Prismling entity, spawns, GeckoLib model/texture/animations & datagen | Built by Claude Code in the Stage 1–2 commit on `phase-2-prism-pet`. `ElementalMob#isAllTypes`, `ArtilianPetEntity#attackElementAgainst`, `PrismlingEntity`, 64x64 texture from `make_prismling()`, rendered at 2x scale with a 1.6 x 2.0 hitbox (owner asked for it substantially larger than Peepkin). Clean `runData` (lang + three biome spawn entries + spawn egg model) and `build`. |
 > | 2 GameTests, red-proofs, capture/faint verification | Same commit. Four `PetRosterGameTests` added. Red-proven: `attackElementAgainst` returning the primary turned `prismlingAttacksWithTheBestElementAgainstEveryTarget` red (picked STARLIGHT 1.0x vs Creeper, best is 1.5x); `isAllTypes` returning `false` turned `prismlingTakesNeutralDamageFromEveryElement` (SHADOW hit for 1.5x) and `prismlingIsAllTypesLegendarySizedAndSpawnsInAllThreeBiomes` red. Restored: `105/105` `runGameTestServer` green. |
-> | 3 Client verification, live evidence, PR | Waiting on Antigravity: in-game look + screenshot. |
+> | 3 Client verification, live evidence, PR | In-game check turned into an art rework: new 256x128 geo, texture and animations, `prismling_glowmask.png` with `AutoGlowingGeoLayer` (visor eyes, crest, cuffs, crystal veins, floating element symbols), hitbox 1.6 x 2.0 to 2.8 x 4.1, eye height 3.3, shadow 1.75. Owner chose to ship the 4.1-block size. Rainbow reads red on viewer-left. No Prismling model or texture warnings in `run/logs/latest.log`. Evidence: `qa/evidence/prismling-2026-11-17.png`. Claude Code re-ran `build` + `runGameTestServer`: `105/105` green. Commit + PR by Claude Code. |
 
 ## Why
 
@@ -35,7 +35,7 @@ Pets carry a primary and an optional secondary element, so "all types" needs a r
 - **Defending:** it has no weaknesses and no resistances. Every elemental attack against it uses the neutral 1.0x multiplier.
 - **Crystal badge:** shows "All Types" instead of a single element.
 - **Spawning:** rare, in all three Overworld biomes (Emberbloom Meadows, Starlight Highlands, Crystal Canopy Woods) at spawn weight 1, group size 1. The other pets use weights 3 to 6, so it shows up roughly a fifth as often as a typical pet.
-- **Size:** the owner asked for it substantially larger than Peepkin. The model renders at 2x: about 2 blocks tall with arms spanning about 4 blocks, hitbox 1.6 x 2.0 (Peepkin is 0.72 x 0.85). A GameTest holds it at 2x Peepkin or bigger.
+- **Size:** the owner asked for it substantially larger than Peepkin. Stage 3's art rework made it a towering guardian: renders at 2x, about 4.1 blocks tall (about 5 with the floating element-symbol arc), hitbox 2.8 x 4.1 (Peepkin is 0.72 x 0.85). Owner chose to ship this size on 2026-11-17, knowing it won't fit through doors, 2-high tunnels or dense woods. A GameTest holds it at 2x Peepkin or bigger.
 - **Stats:** 30 health (other pets 22), 5.0 attack (Peepkin 4.5), speed 0.30. A step above the roster, and still beatable by a well-matched pet.
 
 ## Stages

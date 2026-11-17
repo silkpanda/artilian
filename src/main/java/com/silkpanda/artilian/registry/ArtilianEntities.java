@@ -102,8 +102,8 @@ public class ArtilianEntities {
     /** Prismling: the legendary rainbow all-types pet for everyone, rare in all three Overworld biomes. */
     public static final DeferredHolder<EntityType<?>, EntityType<PrismlingEntity>> PRISMLING =
             ENTITY_TYPES.register("prismling", () -> EntityType.Builder.of(PrismlingEntity::new, MobCategory.CREATURE)
-                    .sized(1.6F, 2.0F)
-                    .eyeHeight(1.7F)
+                    .sized(2.8F, 4.1F)
+                    .eyeHeight(3.3F)
                     .clientTrackingRange(10)
                     .build("prismling"));
 
