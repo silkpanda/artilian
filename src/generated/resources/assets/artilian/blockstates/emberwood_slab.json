@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "artilian:block/emberwood_slab"
+    },
+    "type=double": {
+      "model": "artilian:block/emberwood_planks"
+    },
+    "type=top": {
+      "model": "artilian:block/emberwood_slab_top"
+    }
+  }
+}

@@ -3,11 +3,11 @@
 Branch: `phase-2-stage-7-structure-rebuild`, stacked on `phase-2-stage-6-structures-and-enemies` (`d549792`, PR #3). Rebase onto `main` once PR #3 merges, and don't open this branch's PR before then.
 Relates to: `PLAN.md` Phase 2 Stage 7 (Art pass), `DESIGN.md`, `qa/reference/structures/`.
 
-> **Status: Not started.** Record each stage's commit here.
+> **Status: Stage 1 complete; Stage 2 next.** Record each stage's commit here.
 >
 > | Stage | Done |
 > |---|---|
-> | 1 Building-block variants | |
+> | 1 Building-block variants | This commit. 15 blocks (crystal canopy and emberwood stairs, slab, fence, fence gate, door, trapdoor; starlight slate stairs, slab, wall) with items, creative-tab entries, blockstates/models, loot (doubled slab drops 2, door drops 1), crafting recipes, slate stonecutter recipes under `artilian:` (vanilla `stonecutterResultFromBase` writes to `minecraft:`, replaced), vanilla tags, language, `tools/art/make_building_blocks_art.py` door/trapdoor textures, `BuildingBlockVariantsGameTests` (`101/101` green). Red-proof: emptied `minecraft:walls` -> `fencesandwallsconnect` and `buildingblockvariantsregisteredwithitemsandtags` failed (wall stood alone with `east=none`); restored green (`101/101`). Not yet placed in the dev client; door item icons are full squares, not door-shaped (placeholder art). |
 > | 2 Hand-built template pipeline | |
 > | 3 Build the three structures | |
 > | 4 In-game verification, evidence & PR | |

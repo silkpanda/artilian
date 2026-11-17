@@ -2,7 +2,19 @@
   "values": [
     "artilian:crystal_canopy_log",
     "artilian:crystal_canopy_planks",
+    "artilian:crystal_canopy_stairs",
+    "artilian:crystal_canopy_slab",
+    "artilian:crystal_canopy_fence",
+    "artilian:crystal_canopy_fence_gate",
+    "artilian:crystal_canopy_door",
+    "artilian:crystal_canopy_trapdoor",
     "artilian:emberwood_log",
-    "artilian:emberwood_planks"
+    "artilian:emberwood_planks",
+    "artilian:emberwood_stairs",
+    "artilian:emberwood_slab",
+    "artilian:emberwood_fence",
+    "artilian:emberwood_fence_gate",
+    "artilian:emberwood_door",
+    "artilian:emberwood_trapdoor"
   ]
 }

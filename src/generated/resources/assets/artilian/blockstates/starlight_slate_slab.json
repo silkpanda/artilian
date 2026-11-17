@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "artilian:block/starlight_slate_slab"
+    },
+    "type=double": {
+      "model": "artilian:block/starlight_slate"
+    },
+    "type=top": {
+      "model": "artilian:block/starlight_slate_slab_top"
+    }
+  }
+}

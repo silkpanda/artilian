@@ -15,6 +15,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PickaxeItem;
@@ -103,6 +104,22 @@ public class ArtilianItems {
             ITEMS.registerSimpleBlockItem("crystal_canopy_log", ArtilianBlocks.CRYSTAL_CANOPY_LOG);
     public static final DeferredItem<BlockItem> CRYSTAL_CANOPY_PLANKS_ITEM =
             ITEMS.registerSimpleBlockItem("crystal_canopy_planks", ArtilianBlocks.CRYSTAL_CANOPY_PLANKS);
+
+    // Building-block variants (Structure Rebuild Stage 1)
+    public static final DeferredItem<BlockItem> CRYSTAL_CANOPY_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("crystal_canopy_stairs", ArtilianBlocks.CRYSTAL_CANOPY_STAIRS);
+    public static final DeferredItem<BlockItem> CRYSTAL_CANOPY_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("crystal_canopy_slab", ArtilianBlocks.CRYSTAL_CANOPY_SLAB);
+    public static final DeferredItem<BlockItem> CRYSTAL_CANOPY_FENCE_ITEM =
+            ITEMS.registerSimpleBlockItem("crystal_canopy_fence", ArtilianBlocks.CRYSTAL_CANOPY_FENCE);
+    public static final DeferredItem<BlockItem> CRYSTAL_CANOPY_FENCE_GATE_ITEM =
+            ITEMS.registerSimpleBlockItem("crystal_canopy_fence_gate", ArtilianBlocks.CRYSTAL_CANOPY_FENCE_GATE);
+    public static final DeferredItem<DoubleHighBlockItem> CRYSTAL_CANOPY_DOOR_ITEM =
+            ITEMS.register("crystal_canopy_door", () -> new DoubleHighBlockItem(
+                    ArtilianBlocks.CRYSTAL_CANOPY_DOOR.get(), new Item.Properties()));
+    public static final DeferredItem<BlockItem> CRYSTAL_CANOPY_TRAPDOOR_ITEM =
+            ITEMS.registerSimpleBlockItem("crystal_canopy_trapdoor", ArtilianBlocks.CRYSTAL_CANOPY_TRAPDOOR);
+
     public static final DeferredItem<BlockItem> CRYSTAL_CANOPY_LEAVES_ITEM =
             ITEMS.registerSimpleBlockItem("crystal_canopy_leaves", ArtilianBlocks.CRYSTAL_CANOPY_LEAVES);
     public static final DeferredItem<BlockItem> CRYSTAL_CANOPY_SAPLING_ITEM =
@@ -117,6 +134,22 @@ public class ArtilianItems {
             ITEMS.registerSimpleBlockItem("emberwood_log", ArtilianBlocks.EMBERWOOD_LOG);
     public static final DeferredItem<BlockItem> EMBERWOOD_PLANKS_ITEM =
             ITEMS.registerSimpleBlockItem("emberwood_planks", ArtilianBlocks.EMBERWOOD_PLANKS);
+
+    // Building-block variants (Structure Rebuild Stage 1)
+    public static final DeferredItem<BlockItem> EMBERWOOD_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("emberwood_stairs", ArtilianBlocks.EMBERWOOD_STAIRS);
+    public static final DeferredItem<BlockItem> EMBERWOOD_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("emberwood_slab", ArtilianBlocks.EMBERWOOD_SLAB);
+    public static final DeferredItem<BlockItem> EMBERWOOD_FENCE_ITEM =
+            ITEMS.registerSimpleBlockItem("emberwood_fence", ArtilianBlocks.EMBERWOOD_FENCE);
+    public static final DeferredItem<BlockItem> EMBERWOOD_FENCE_GATE_ITEM =
+            ITEMS.registerSimpleBlockItem("emberwood_fence_gate", ArtilianBlocks.EMBERWOOD_FENCE_GATE);
+    public static final DeferredItem<DoubleHighBlockItem> EMBERWOOD_DOOR_ITEM =
+            ITEMS.register("emberwood_door", () -> new DoubleHighBlockItem(
+                    ArtilianBlocks.EMBERWOOD_DOOR.get(), new Item.Properties()));
+    public static final DeferredItem<BlockItem> EMBERWOOD_TRAPDOOR_ITEM =
+            ITEMS.registerSimpleBlockItem("emberwood_trapdoor", ArtilianBlocks.EMBERWOOD_TRAPDOOR);
+
     public static final DeferredItem<BlockItem> EMBERWOOD_LEAVES_ITEM =
             ITEMS.registerSimpleBlockItem("emberwood_leaves", ArtilianBlocks.EMBERWOOD_LEAVES);
     public static final DeferredItem<BlockItem> EMBERWOOD_SAPLING_ITEM =
@@ -129,6 +162,15 @@ public class ArtilianItems {
             ITEMS.registerSimpleBlockItem("starlight_turf", ArtilianBlocks.STARLIGHT_TURF);
     public static final DeferredItem<BlockItem> STARLIGHT_SLATE_ITEM =
             ITEMS.registerSimpleBlockItem("starlight_slate", ArtilianBlocks.STARLIGHT_SLATE);
+
+    // Building-block variants (Structure Rebuild Stage 1)
+    public static final DeferredItem<BlockItem> STARLIGHT_SLATE_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("starlight_slate_stairs", ArtilianBlocks.STARLIGHT_SLATE_STAIRS);
+    public static final DeferredItem<BlockItem> STARLIGHT_SLATE_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("starlight_slate_slab", ArtilianBlocks.STARLIGHT_SLATE_SLAB);
+    public static final DeferredItem<BlockItem> STARLIGHT_SLATE_WALL_ITEM =
+            ITEMS.registerSimpleBlockItem("starlight_slate_wall", ArtilianBlocks.STARLIGHT_SLATE_WALL);
+
     public static final DeferredItem<BlockItem> STARLIGHT_BLOSSOM_ITEM =
             ITEMS.registerSimpleBlockItem("starlight_blossom", ArtilianBlocks.STARLIGHT_BLOSSOM);
 

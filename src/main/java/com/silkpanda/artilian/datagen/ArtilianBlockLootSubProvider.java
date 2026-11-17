@@ -39,6 +39,12 @@ public class ArtilianBlockLootSubProvider extends BlockLootSubProvider {
                 block -> createSingleItemTableWithSilkTouch(block, Blocks.DIRT));
         dropSelf(ArtilianBlocks.CRYSTAL_CANOPY_LOG.get());
         dropSelf(ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get());
+        dropSelf(ArtilianBlocks.CRYSTAL_CANOPY_STAIRS.get());
+        add(ArtilianBlocks.CRYSTAL_CANOPY_SLAB.get(), block -> createSlabItemTable(block));
+        dropSelf(ArtilianBlocks.CRYSTAL_CANOPY_FENCE.get());
+        dropSelf(ArtilianBlocks.CRYSTAL_CANOPY_FENCE_GATE.get());
+        add(ArtilianBlocks.CRYSTAL_CANOPY_DOOR.get(), block -> createDoorTable(block));
+        dropSelf(ArtilianBlocks.CRYSTAL_CANOPY_TRAPDOOR.get());
         add(ArtilianBlocks.CRYSTAL_CANOPY_LEAVES.get(),
                 block -> createLeavesDrops(block, ArtilianBlocks.CRYSTAL_CANOPY_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES));
         dropSelf(ArtilianBlocks.CRYSTAL_CANOPY_SAPLING.get());
@@ -48,6 +54,12 @@ public class ArtilianBlockLootSubProvider extends BlockLootSubProvider {
                 block -> createSingleItemTableWithSilkTouch(block, Blocks.DIRT));
         dropSelf(ArtilianBlocks.EMBERWOOD_LOG.get());
         dropSelf(ArtilianBlocks.EMBERWOOD_PLANKS.get());
+        dropSelf(ArtilianBlocks.EMBERWOOD_STAIRS.get());
+        add(ArtilianBlocks.EMBERWOOD_SLAB.get(), block -> createSlabItemTable(block));
+        dropSelf(ArtilianBlocks.EMBERWOOD_FENCE.get());
+        dropSelf(ArtilianBlocks.EMBERWOOD_FENCE_GATE.get());
+        add(ArtilianBlocks.EMBERWOOD_DOOR.get(), block -> createDoorTable(block));
+        dropSelf(ArtilianBlocks.EMBERWOOD_TRAPDOOR.get());
         add(ArtilianBlocks.EMBERWOOD_LEAVES.get(),
                 block -> createLeavesDrops(block, ArtilianBlocks.EMBERWOOD_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES));
         dropSelf(ArtilianBlocks.EMBERWOOD_SAPLING.get());
@@ -56,6 +68,9 @@ public class ArtilianBlockLootSubProvider extends BlockLootSubProvider {
         add(ArtilianBlocks.STARLIGHT_TURF.get(),
                 block -> createSingleItemTableWithSilkTouch(block, Blocks.DIRT));
         dropSelf(ArtilianBlocks.STARLIGHT_SLATE.get());
+        dropSelf(ArtilianBlocks.STARLIGHT_SLATE_STAIRS.get());
+        add(ArtilianBlocks.STARLIGHT_SLATE_SLAB.get(), block -> createSlabItemTable(block));
+        dropSelf(ArtilianBlocks.STARLIGHT_SLATE_WALL.get());
         dropSelf(ArtilianBlocks.STARLIGHT_BLOSSOM.get());
     }
 

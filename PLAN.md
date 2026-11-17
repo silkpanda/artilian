@@ -6,12 +6,12 @@ Written 2026-11-15, resized the same day. This is the one plan for the repositor
 
 ## Now
 
-*Updated 2026-11-17 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
+*Updated 2026-11-17 by Claude Code. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
 
 | | |
 |---|---|
-| **In progress** | Phase 2 Stage 6 (*Structures & enemies*) on `phase-2-stage-6-structures-and-enemies` — all 3 stages complete and ready for PR merge into `main`: custom `artilian:structure_enemies` (*Prism Sentinel*, *Cinder Raider*, *Astral Stalker*), three biome structures (*Crystal Grove Shrine*, *Emberbloom Outpost*, *Starlight Watchtower* with chest loot + persistent guardians), `97/97` GameTests green, and live client screenshots in `qa/evidence/`. |
-| **Next** | Review and merge the Phase 2 Stage 6 PR (`phase-2-stage-6-structures-and-enemies` → `main`) once CI is green; move on to Phase 2 Stage 7 (*Art pass*: polish Phase 2 pets, blocks, and structure enemies against Alex & Steve's drawings and `DESIGN.md`); run the family LAN co-op playtest (`deploy/README.md`) and sign off on Phase 1 Stage 6. |
+| **In progress** | Structure Rebuild (`qa/Adventures in Artilian - Structure Rebuild Plan 2026-11-17.md`) on `phase-2-stage-7-structure-rebuild`, stacked on `phase-2-stage-6-structures-and-enemies` (PR #3, open). Stage 1 done: 15 building-block variants, `101/101` GameTests green and red-proven. Reference screenshots live in `qa/reference/structures/`. |
+| **Next** | Merge PR #3, then rebase `phase-2-stage-7-structure-rebuild` onto `main`. Place all 15 new blocks in the dev client (Stage 1's in-game check is still open). Then Structure Rebuild Stage 2: move the three structure `.nbt` files to `src/main/resources`, delete the `fillBox` builders, add `StructureTemplateContentsGameTests` and `qa/reference/structures/HOW-TO-SAVE.md`. |
 | **Waiting on the owner** | 1. Have Steve pick official names for **Shadow Wisp** (`artilian:shadow_wisp`) and **Cinder Crag** (`artilian:cinder_crag`), and review **Zaphox**, **Galecorn**, **Ember Drake**, and **Peepkin** in-game with Alex & Steve. 2. Run the LAN co-op playtest with Alex and Steve and check off Phase 1 Stage 6 once approved. 3. Confirm `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is configured if not already set. |
 | **Other work in flight** | Unmerged/superseded local or remote branches: `phase-2-stage-5-main`, `chore/2026-11-16-strip-identifiers`, `phase-1-stage-7-review-fixes`, `phase-2-stage-5-pet-roster`, `phase-2-stage-5-alice-pets`, `phase-2-stage-5-dragon-eye-pets`, `art/2026-11-15-crystal-fox-pass`, `art/2026-11-15-armor-pass`, `showcase/2026-11-15-curseforge`. Note: PR #2 (`d9ee782`) dropped `qa/FINDINGS.md` Phase 1 review notes and Phase 1 review-fix plan doc from `main`, which can be restored in a follow-up docs PR if desired. |
 | **Loose ends** | `runData` may touch CRLF on `src/generated/**` with empty `git diff` — do not commit those. |
