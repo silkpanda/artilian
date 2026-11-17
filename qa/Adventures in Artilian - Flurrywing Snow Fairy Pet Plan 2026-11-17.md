@@ -3,13 +3,13 @@
 Branch: `phase-2-flurrywing-pet`, stacked on `phase-2-prism-pet` (`85b09b3`) because both add a pet to the same registry, lang, art-script and GameTest files. Rebase onto `main` once Prismling's PR merges.
 Relates to: `PLAN.md` Phase 2, `PRODUCT.md`, `DESIGN.md`, `qa/Adventures in Artilian - Prismling Legendary Pet Plan 2026-11-17.md` and `qa/Adventures in Artilian - Dragon and Eye Pets Plan 2026-11-16.md` (the patterns this follows).
 
-> **Status: Stages 1–2 done (2026-11-17, Claude Code); Stage 3 next.** Record each stage's commit here.
+> **Status: Stages 1–3 done (2026-11-17, Claude Code); PR open.** Record each stage's commit here.
 >
 > | Stage | Done |
 > |---|---|
 > | 1 Flurrywing entity, hover, spawns, GeckoLib model/texture/animations & datagen | Done, commit `Flurrywing Stages 1-2`. Modeled headless with the `bbmodel` MCP server: source `tools/art/models/flurrywing.bbmodel` (GeckoLib format, box UV, 128x64), exported to `flurrywing.geo.json` / `flurrywing.animation.json`. 22 px to the hat top at `withScale(2.0F)` = 2.75 blocks; hitbox `1.3 x 2.75`. Bones `root` > `body` > `bottom_ball`, `middle_ball`, `head`, `hat`, `arm_left`, `arm_right`, four `wing_*`. "Left"/"right" are the drawing's: from the front, the pointed upper wing and the stick arm are on the viewer's left (+X), the rounded wing and mitten on the right. Lower wings fan out behind the bottom ball with their lowest pixel at ground level. Blockbench geometry and animation gates pass (no ground sink in any clip). `make_flurrywing()` paints `flurrywing.png`; `crystal_fox.png` restored after the script. `runData`: real diffs only in `en_us.json`, `starlight_highlands.json`, new `flurrywing_spawn_egg.json`. |
 > | 2 GameTests, red-proofs, capture/faint verification | Done, same commit. Four `PetRosterGameTests` added; `109/109` green. Red-proofs: `causeFallDamage` → `super.causeFallDamage(...)` turned `flurrywingHoversAndTakesNoFallDamage` red (1 failed, "must report no fall damage"); size → `0.9 x 1.8` turned `flurrywingIsIceAirTallAndSpawnsInStarlightHighlands` red ("got 1.8"). Both restored, `109/109` again. |
-> | 3 Client verification, live evidence, PR | |
+> | 3 Client verification, live evidence, PR | `runClient` (2026-11-17): two Flurrywings hovering beside a 2-block pillar, wings, stick arm and mitten reading as drawn, snowflake particles on. No Flurrywing model or texture warnings in `run/logs/latest.log`. Evidence: `qa/evidence/flurrywing-2026-11-17.png`. Rebased onto `phase-2-prism-pet` (`ab165d0`, Prismling's Stage 3 rework); `build` + `runGameTestServer` re-run on the combined code. Showing the kids (and whether they want the upper wings matched) is still with the owner. Commit + PR by Claude Code. |
 
 ## Why
 
