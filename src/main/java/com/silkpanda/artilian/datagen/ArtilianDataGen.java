@@ -26,6 +26,7 @@ public class ArtilianDataGen {
         generator.addProvider(event.includeClient(), new ArtilianItemModelProvider(output, existingFileHelper));
 
         generator.addProvider(event.includeServer(), new GameTestStructureProvider(output));
+        generator.addProvider(event.includeServer(), new ArtilianStructureTemplateProvider(output));
         ArtilianBlockTagsProvider blockTags = new ArtilianBlockTagsProvider(output, lookupProvider, existingFileHelper);
         generator.addProvider(event.includeServer(), blockTags);
         generator.addProvider(event.includeServer(),

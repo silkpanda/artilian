@@ -2,6 +2,7 @@ package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.worldgen.ArtilianBiomes;
+import com.silkpanda.artilian.worldgen.ArtilianStructures;
 import com.silkpanda.artilian.worldgen.ArtilianWorldGen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
@@ -18,6 +19,9 @@ public class ArtilianWorldGenProvider extends DatapackBuiltinEntriesProvider {
             .add(Registries.CONFIGURED_FEATURE, ArtilianWorldGen::bootstrapConfiguredFeatures)
             .add(Registries.PLACED_FEATURE, ArtilianWorldGen::bootstrapPlacedFeatures)
             .add(Registries.BIOME, ArtilianBiomes::bootstrap)
+            .add(Registries.TEMPLATE_POOL, ArtilianStructures::bootstrapTemplatePools)
+            .add(Registries.STRUCTURE, ArtilianStructures::bootstrapStructures)
+            .add(Registries.STRUCTURE_SET, ArtilianStructures::bootstrapStructureSets)
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ArtilianWorldGen::bootstrapBiomeModifiers);
 
     public ArtilianWorldGenProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {

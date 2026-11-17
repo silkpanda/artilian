@@ -3,12 +3,12 @@
 Branch: `phase-2-stage-6-structures-and-enemies` (from `main` `d91a82d`).
 Relates to: `PLAN.md` Phase 2 Stage 6, `DESIGN.md`, `PRODUCT.md`.
 
-> **Status: Stage 1 complete (Stage 2 next).** Record each stage's commit here.
+> **Status: Stage 2 complete (Stage 3 client verification & PR next).** Record each stage's commit here.
 >
 > | Stage | Done |
 > |---|---|
-> | 1 Custom structure enemies, GeckoLib art & pet battle integration | Pending commit — `StructureEnemyEntity`, `PrismSentinelEntity` (`CRYSTAL`/`EARTH`), `CinderRaiderEntity` (`FIRE`/`EARTH`), `AstralStalkerEntity` (`STARLIGHT`/`SHADOW`), `EnemyEvents`, parameterized `StructureEnemyModel`/`StructureEnemyRenderer`, `ArtilianEntityLootSubProvider`, spawn eggs, `artilian:structure_enemies` tag, `tools/art/make_structures_enemies_art.py`, `StructureEnemiesGameTests` (`93/93` green). Red-proof: omitted `PRISM_SENTINEL` from `ArtilianEntityTypeTagsProvider` -> `structureenemiesregisteredtaggedhaveeggsandelementaltypes` failed; restored green (`93/93`). |
-> | 2 Biome-specific structures, loot tables & worldgen | |
+> | 1 Custom structure enemies, GeckoLib art & pet battle integration | `f969c60` — `StructureEnemyEntity`, `PrismSentinelEntity` (`CRYSTAL`/`EARTH`), `CinderRaiderEntity` (`FIRE`/`EARTH`), `AstralStalkerEntity` (`STARLIGHT`/`SHADOW`), `EnemyEvents`, parameterized `StructureEnemyModel`/`StructureEnemyRenderer`, `ArtilianEntityLootSubProvider`, spawn eggs, `artilian:structure_enemies` tag, `tools/art/make_structures_enemies_art.py`, `StructureEnemiesGameTests` (`93/93` green). Red-proof: omitted `PRISM_SENTINEL` from `ArtilianEntityTypeTagsProvider` -> `structureenemiesregisteredtaggedhaveeggsandelementaltypes` failed; restored green (`93/93`). |
+> | 2 Biome-specific structures, loot tables & worldgen | Pending commit — `ArtilianStructures` (`CRYSTAL_GROVE_SHRINE`, `EMBERBLOOM_OUTPOST`, `STARLIGHT_WATCHTOWER`, template pools, `StructureSet`s with guardian `SpawnOverrides`), `ArtilianStructureTemplateProvider` (`.nbt` templates with loot chests + persistent guardians), `ArtilianChestLootSubProvider`, `ArtilianBiomeTagsProvider` (`has_structure/...`), `ArtilianWorldGenProvider`, `BiomeStructuresGameTests` (`97/97` green). Red-proof: omitted `HAS_CRYSTAL_GROVE_SHRINE` from `ArtilianBiomeTagsProvider` -> `biomestructuresandsetsregisteredformatchingbiomes` failed; restored green (`97/97`). |
 > | 3 Client verification, evidence, docs & PR | |
 
 ## Why

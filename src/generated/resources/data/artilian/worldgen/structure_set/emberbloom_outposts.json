@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 72593122,
+    "separation": 8,
+    "spacing": 18
+  },
+  "structures": [
+    {
+      "structure": "artilian:emberbloom_outpost",
+      "weight": 1
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 61482011,
+    "separation": 8,
+    "spacing": 18
+  },
+  "structures": [
+    {
+      "structure": "artilian:crystal_grove_shrine",
+      "weight": 1
+    }
+  ]
+}
