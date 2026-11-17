@@ -1346,6 +1346,130 @@ def make_prismling():
     glow.save(OUT / "entity/prismling_glowmask.png")
 
 
+def make_flurrywing():
+    """Flurrywing: the kids' four-winged snow-fairy snowman (qa/reference/pets/flurrywing-drawing-2026-11-17.jpg).
+
+    Layout matches src/main/resources/assets/artilian/geo/entity/flurrywing.geo.json (box UV, 128x64),
+    exported from tools/art/models/flurrywing.bbmodel. Each entry is (u, v, w, h, d).
+    """
+    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+
+    SNOW = (248, 252, 255, 255)
+    SNOW_HI = (255, 255, 255, 255)
+    SNOW_SHADE = (214, 236, 248, 255)   # pale ice-blue shade side
+    SNOW_DEEP = (184, 216, 238, 255)
+    OUTLINE = (45, 212, 191, 255)       # #2DD4BF, the drawing's turquoise marker
+    OUTLINE_DARK = (17, 158, 142, 255)
+    OUTLINE_HI = (110, 231, 214, 255)
+    COAL = (36, 36, 44, 255)
+    WING = (125, 249, 255, 255)         # #7DF9FF, Ice
+    WING_PALE = (178, 252, 255, 255)
+    VEIN = (255, 255, 255, 255)
+    STICK = (122, 80, 42, 255)
+    STICK_DARK = (86, 54, 26, 255)
+    MITTEN = (125, 188, 240, 255)
+    MITTEN_HI = (168, 214, 250, 255)
+    MITTEN_DARK = (86, 150, 214, 255)
+
+    BALLS = {
+        "bottom_core": (0, 0, 10, 6, 10),
+        "bottom_cap": (40, 0, 8, 8, 8),
+        "middle_core": (72, 0, 6, 4, 6),
+        "middle_cap": (96, 0, 4, 6, 4),
+        "head_core": (0, 16, 5, 4, 5),
+        "head_cap": (20, 16, 3, 5, 3),
+    }
+    HAT = {"hat_brim": (32, 16, 6, 1, 6), "hat_crown": (74, 16, 4, 1, 4)}
+    STICKS = {"stick_upper": (100, 29, 5, 1, 1), "stick_lower": (40, 25, 1, 3, 1), "mitten_arm": (12, 32, 4, 1, 1)}
+    MITTENS = {"mitten_palm": (12, 25, 3, 2, 2), "mitten_tip": (32, 25, 2, 2, 2)}
+    # Wing slabs, hinge to tip. Pointed upper-left, rounded upper-right, then the two lower fans.
+    UPPER_WINGS = [
+        [(22, 25, 4, 3, 1), (90, 16, 6, 4, 1), (0, 25, 5, 3, 1), (88, 29, 3, 2, 1), (96, 29, 1, 2, 1)],
+        [(78, 29, 4, 2, 1), (104, 16, 7, 3, 1), (56, 16, 8, 4, 1), (36, 29, 6, 2, 1), (22, 32, 4, 1, 1)],
+    ]
+    LOWER_WINGS = [
+        [(50, 29, 6, 2, 1), (84, 25, 8, 2, 1), (44, 25, 9, 2, 1), (102, 25, 8, 2, 1), (112, 29, 5, 1, 1)],
+        [(64, 29, 6, 2, 1), (0, 29, 8, 2, 1), (64, 25, 9, 2, 1), (18, 29, 8, 2, 1), (0, 32, 5, 1, 1)],
+    ]
+
+    # 1. Snowballs: white fronts, pale ice-blue sides, turquoise marker rim down each silhouette edge.
+    for name, (u, v, w, h, d) in BALLS.items():
+        f = faces(u, v, w, h, d)
+        for face, (x, y, fw, fh) in f.items():
+            base = {"top": SNOW_HI, "bottom": SNOW_DEEP, "east": SNOW_SHADE, "west": SNOW_SHADE}.get(face, SNOW)
+            fill(img, (x, y, fw, fh), base)
+            if face in ("front", "back", "east", "west"):
+                for py in range(y, y + fh):
+                    put(img, x, py, OUTLINE)
+                    put(img, x + fw - 1, py, OUTLINE)
+                if name.endswith("_cap"):
+                    for px in range(x, x + fw):
+                        put(img, px, y, OUTLINE)
+                        put(img, px, y + fh - 1, OUTLINE_DARK)
+                for py in range(y + 1, y + fh - 1):  # frosty sparkle
+                    for px in range(x + 1, x + fw - 1):
+                        if (px * 7 + py * 3) % 11 == 0:
+                            put(img, px, py, SNOW_SHADE if base == SNOW else SNOW)
+            elif face == "top" and name.endswith("_core"):
+                for px in range(x, x + fw):
+                    put(img, px, y, OUTLINE)
+                    put(img, px, y + fh - 1, OUTLINE)
+                for py in range(y, y + fh):
+                    put(img, x, py, OUTLINE)
+                    put(img, x + fw - 1, py, OUTLINE)
+
+    # Coal buttons: the drawing's dashed line, 3 dashes on the bottom ball and 2 on the middle.
+    x, y, _, _ = faces(*BALLS["bottom_core"])["front"]
+    for row in (0, 2, 4):
+        fill(img, (x + 4, y + row, 2, 1), COAL)
+    x, y, _, _ = faces(*BALLS["middle_core"])["front"]
+    for row in (0, 2):
+        fill(img, (x + 2, y + row, 2, 1), COAL)
+
+    # Coal face: two dot eyes and a small mouth.
+    x, y, _, _ = faces(*BALLS["head_core"])["front"]
+    fill(img, (x + 1, y, 3, 4), SNOW)
+    put(img, x + 1, y + 1, COAL)
+    put(img, x + 3, y + 1, COAL)
+    put(img, x + 2, y + 3, COAL)
+
+    # 2. Turquoise beanie.
+    smooth_coat(img, *HAT["hat_brim"], OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DARK)
+    smooth_coat(img, *HAT["hat_crown"], OUTLINE_HI, OUTLINE_HI, OUTLINE, OUTLINE_DARK)
+
+    # 3. Brown stick arm and ice-blue mitten.
+    for box in STICKS.values():
+        smooth_coat(img, *box, STICK, STICK, STICK_DARK, STICK_DARK)
+    for box in MITTENS.values():
+        smooth_coat(img, *box, MITTEN_HI, MITTEN, MITTEN_DARK, MITTEN_DARK)
+
+    # 4. Frost wings: pale cyan panes with white veins, turquoise marker on every thin edge.
+    for slabs in UPPER_WINGS + LOWER_WINGS:
+        upper = slabs in UPPER_WINGS
+        for i, (u, v, w, h, d) in enumerate(slabs):
+            f = faces(u, v, w, h, d)
+            for face in ("top", "bottom", "east", "west"):
+                fill(img, f[face], OUTLINE)
+            for face in ("front", "back"):
+                x, y, fw, fh = f[face]
+                fill(img, (x, y, fw, fh), WING)
+                for py in range(y, y + fh):
+                    for px in range(x, x + fw):
+                        if (px + py) % 4 == 0:
+                            put(img, px, py, VEIN)
+                        elif (px - py) % 6 == 0:
+                            put(img, px, py, WING_PALE)
+                    put(img, x, py, OUTLINE)
+                    put(img, x + fw - 1, py, OUTLINE)
+                if i == len(slabs) - 1:  # the tip slab closes the wing: top edge up high, bottom edge down low
+                    for px in range(x, x + fw):
+                        put(img, px, y if upper else y + fh - 1, OUTLINE)
+
+    dest = OUT / "entity/flurrywing.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+
+
 def main():
     import sys
 
@@ -1361,6 +1485,7 @@ def main():
     make_ember_drake()
     make_peepkin()
     make_prismling()
+    make_flurrywing()
 
     item_dir = OUT / "item"
     item_dir.mkdir(parents=True, exist_ok=True)
@@ -1371,7 +1496,7 @@ def main():
     )
     draw_crystal(GOLD_DARK, GOLD, GOLD_HI).save(item_dir / "capture_crystal_fainted.png")
     make_biome_treat().save(item_dir / "biome_treat.png")
-    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin, Prismling).")
+    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin, Prismling, Flurrywing).")
 
 
 if __name__ == "__main__":

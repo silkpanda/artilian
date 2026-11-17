@@ -5,6 +5,7 @@ import com.silkpanda.artilian.pet.CaptureCrystalItem;
 import com.silkpanda.artilian.pet.CapturedPetData;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
+import com.silkpanda.artilian.pet.FlurrywingEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
@@ -791,6 +792,138 @@ public class PetRosterGameTests {
                         && Math.abs(CaptureCrystalItem.getVisualState(crystal) - 0.25F) < 0.01F,
                 "Fainted Prismling must safely return to its crystal in fainted state");
 
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void flurrywingIsIceAirTallAndSpawnsInStarlightHighlands(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        FlurrywingEntity flurrywing = ArtilianEntities.FLURRYWING.get().create(level);
+        helper.assertTrue(flurrywing != null
+                        && flurrywing.getPrimaryElement() == PetElement.ICE
+                        && flurrywing.getSecondaryElement().equals(Optional.of(PetElement.AIR)),
+                "Flurrywing must be ICE / AIR dual-element");
+
+        EntityType<?> flurryType = ArtilianEntities.FLURRYWING.get();
+        helper.assertTrue(flurryType.getHeight() >= 2.5F && flurryType.getHeight() <= 3.0F,
+                "Flurrywing must stand 2.5 to 3 blocks tall, got " + flurryType.getHeight());
+
+        Registry<Biome> biomes = level.registryAccess().registryOrThrow(Registries.BIOME);
+        boolean inHighlands = biomes.getHolderOrThrow(ArtilianBiomes.STARLIGHT_HIGHLANDS).value().getMobSettings()
+                .getMobs(MobCategory.CREATURE).unwrap().stream()
+                .anyMatch(d -> d.type == flurryType && d.getWeight().asInt() == 4 && d.minCount == 1 && d.maxCount == 2);
+        helper.assertTrue(inHighlands, "Flurrywing must spawn in Starlight Highlands (weight 4, group 1-2)");
+        for (var key : List.of(ArtilianBiomes.EMBERBLOOM_MEADOWS, ArtilianBiomes.CRYSTAL_CANOPY_WOODS)) {
+            boolean elsewhere = biomes.getHolderOrThrow(key).value().getMobSettings()
+                    .getMobs(MobCategory.CREATURE).unwrap().stream().anyMatch(d -> d.type == flurryType);
+            helper.assertFalse(elsewhere, "Flurrywing must only spawn in Starlight Highlands, found in " + key.location());
+        }
+
+        BlockPos spawnPos = helper.absolutePos(new BlockPos(7, 2, 7));
+        level.setBlockAndUpdate(spawnPos, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(spawnPos.above(), Blocks.AIR.defaultBlockState());
+        for (var ground : List.of(ArtilianBlocks.STARLIGHT_SLATE.get(), ArtilianBlocks.STARLIGHT_TURF.get())) {
+            level.setBlockAndUpdate(spawnPos.below(), ground.defaultBlockState());
+            helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                            ArtilianEntities.FLURRYWING.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                    "Flurrywing must be allowed to spawn on " + ground.getDescriptionId());
+        }
+        level.setBlockAndUpdate(spawnPos.below(), Blocks.STONE.defaultBlockState());
+        helper.assertFalse(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.FLURRYWING.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Flurrywing must not spawn on plain Stone");
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void flurrywingHoversAndTakesNoFallDamage(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        FlurrywingEntity flurrywing = ArtilianEntities.FLURRYWING.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(7, 1, 7));
+        flurrywing.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(flurrywing);
+
+        float before = flurrywing.getHealth();
+        // A 10-block drop: 7 damage for anything that can be hurt by falling.
+        boolean hurt = flurrywing.causeFallDamage(10.0F, 1.0F, level.damageSources().fall());
+        helper.assertFalse(hurt, "Hovering Flurrywing must report no fall damage");
+        helper.assertTrue(flurrywing.getHealth() == before,
+                "Flurrywing dropped from 10 blocks must land at full health, went " + before + " -> " + flurrywing.getHealth());
+
+        flurrywing.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void flurrywingCapturesBefriendsSummonsAndFaintsSafelyIntoCrystal(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "FlurrywingRoster");
+
+        FlurrywingEntity wild = ArtilianEntities.FLURRYWING.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(7, 1, 7));
+        wild.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(wild);
+
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.BIOME_TREAT.get(), 4));
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        helper.assertTrue(wild.isBefriended(), "Two Biome Treats should befriend Flurrywing");
+
+        ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        CapturedPetData data = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(data != null
+                        && data.primaryElement() == PetElement.ICE
+                        && data.secondaryElement().equals(Optional.of(PetElement.AIR))
+                        && data.entityType().equals(ArtilianEntities.FLURRYWING.getId()),
+                "Capture Crystal should store Flurrywing identity and ICE / AIR elements");
+
+        crystal.use(level, player, InteractionHand.MAIN_HAND);
+        List<? extends FlurrywingEntity> summoned = level.getEntities(
+                ArtilianEntities.FLURRYWING.get(), e -> e.isAlive() && e.isOwner(player));
+        helper.assertTrue(summoned.size() == 1, "Expected 1 summoned Flurrywing");
+        FlurrywingEntity pet = summoned.get(0);
+        pet.hurt(level.damageSources().mobAttack(pet), 999.0F);
+
+        helper.assertFalse(pet.isAlive(), "Fainted Flurrywing should withdraw from the world");
+        CapturedPetData fainted = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(fainted != null && fainted.fainted()
+                        && Math.abs(CaptureCrystalItem.getVisualState(crystal) - 0.25F) < 0.01F,
+                "Fainted Flurrywing must safely return to its crystal in fainted state");
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void flurrywingBattlesWithIceMatchups(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "FlurrywingBattle");
+        BlockPos pos = helper.absolutePos(new BlockPos(6, 1, 7));
+
+        FlurrywingEntity flurrywing = ArtilianEntities.FLURRYWING.get().create(level);
+        flurrywing.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        flurrywing.setOwner(player);
+        flurrywing.addAffinity(100);
+        level.addFreshEntity(flurrywing);
+
+        Creeper creeper = EntityType.CREEPER.create(level);
+        creeper.moveTo(pos.getX() + 1.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(creeper);
+        float before = creeper.getHealth();
+        flurrywing.doHurtTarget(creeper);
+        float dealt = before - creeper.getHealth();
+        helper.assertTrue(Math.abs(dealt - 6.75F) < 0.05F,
+                "Flurrywing (4.5 base, ICE) vs Nature Creeper should deal 6.75 (1.5x), got " + dealt);
+        helper.assertTrue(creeper.hasEffect(MobEffects.MOVEMENT_SLOWDOWN),
+                "Flurrywing ICE signature hit should apply Slowness");
+
+        helper.assertTrue(PetElement.FIRE.multiplierAgainst(flurrywing) == 1.5F,
+                "Fire must hit Ice-type Flurrywing for 1.5x, got " + PetElement.FIRE.multiplierAgainst(flurrywing));
+
+        creeper.discard();
+        flurrywing.discard();
         helper.succeed();
     }
 }

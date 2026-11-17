@@ -27,6 +27,7 @@ public final class PetEvents {
             event.put(ArtilianEntities.EMBER_DRAKE.get(), EmberDrakeEntity.createAttributes().build());
             event.put(ArtilianEntities.PEEPKIN.get(), PeepkinEntity.createAttributes().build());
             event.put(ArtilianEntities.PRISMLING.get(), PrismlingEntity.createAttributes().build());
+            event.put(ArtilianEntities.FLURRYWING.get(), FlurrywingEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -85,6 +86,13 @@ public final class PetEvents {
                     SpawnPlacementTypes.ON_GROUND,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     PrismlingEntity::checkPrismlingSpawnRules,
+                    RegisterSpawnPlacementsEvent.Operation.REPLACE
+            );
+            event.register(
+                    ArtilianEntities.FLURRYWING.get(),
+                    SpawnPlacementTypes.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    FlurrywingEntity::checkFlurrywingSpawnRules,
                     RegisterSpawnPlacementsEvent.Operation.REPLACE
             );
         }
