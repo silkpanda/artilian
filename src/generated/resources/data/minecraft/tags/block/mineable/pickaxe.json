@@ -6,6 +6,9 @@
     "artilian:starlight_crystal_ore",
     "artilian:deepslate_starlight_crystal_ore",
     "artilian:starlight_crystal_block",
-    "artilian:starlight_slate"
+    "artilian:starlight_slate",
+    "artilian:starlight_slate_stairs",
+    "artilian:starlight_slate_slab",
+    "artilian:starlight_slate_wall"
   ]
 }

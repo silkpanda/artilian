@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "artilian:starlight_slate"
+  },
+  "result": {
+    "count": 1,
+    "id": "artilian:starlight_slate_stairs"
+  }
+}

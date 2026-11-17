@@ -8,14 +8,23 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.DropExperienceBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -98,6 +107,30 @@ public class ArtilianBlocks {
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
                     .mapColor(MapColor.COLOR_PURPLE)));
 
+    // Building-block variants (Structure Rebuild Stage 1)
+    public static final DeferredBlock<StairBlock> CRYSTAL_CANOPY_STAIRS = BLOCKS.register("crystal_canopy_stairs",
+            () -> new StairBlock(CRYSTAL_CANOPY_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS)
+                            .mapColor(MapColor.COLOR_PURPLE)));
+    public static final DeferredBlock<SlabBlock> CRYSTAL_CANOPY_SLAB = BLOCKS.register("crystal_canopy_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB)
+                    .mapColor(MapColor.COLOR_PURPLE)));
+    public static final DeferredBlock<FenceBlock> CRYSTAL_CANOPY_FENCE = BLOCKS.register("crystal_canopy_fence",
+            () -> new FenceBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_FENCE)
+                    .mapColor(MapColor.COLOR_PURPLE)));
+    public static final DeferredBlock<FenceGateBlock> CRYSTAL_CANOPY_FENCE_GATE = BLOCKS.register("crystal_canopy_fence_gate",
+            () -> new FenceGateBlock(WoodType.OAK,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_FENCE_GATE)
+                            .mapColor(MapColor.COLOR_PURPLE)));
+    public static final DeferredBlock<DoorBlock> CRYSTAL_CANOPY_DOOR = BLOCKS.register("crystal_canopy_door",
+            () -> new DoorBlock(BlockSetType.OAK,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_DOOR)
+                            .mapColor(MapColor.COLOR_PURPLE)));
+    public static final DeferredBlock<TrapDoorBlock> CRYSTAL_CANOPY_TRAPDOOR = BLOCKS.register("crystal_canopy_trapdoor",
+            () -> new TrapDoorBlock(BlockSetType.OAK,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_TRAPDOOR)
+                            .mapColor(MapColor.COLOR_PURPLE)));
+
     public static final DeferredBlock<LeavesBlock> CRYSTAL_CANOPY_LEAVES = BLOCKS.register("crystal_canopy_leaves",
             () -> new LeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES)
                     .mapColor(MapColor.COLOR_CYAN)
@@ -130,6 +163,30 @@ public class ArtilianBlocks {
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
                     .mapColor(MapColor.COLOR_ORANGE)));
 
+    // Building-block variants (Structure Rebuild Stage 1)
+    public static final DeferredBlock<StairBlock> EMBERWOOD_STAIRS = BLOCKS.register("emberwood_stairs",
+            () -> new StairBlock(EMBERWOOD_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS)
+                            .mapColor(MapColor.COLOR_ORANGE)));
+    public static final DeferredBlock<SlabBlock> EMBERWOOD_SLAB = BLOCKS.register("emberwood_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB)
+                    .mapColor(MapColor.COLOR_ORANGE)));
+    public static final DeferredBlock<FenceBlock> EMBERWOOD_FENCE = BLOCKS.register("emberwood_fence",
+            () -> new FenceBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_FENCE)
+                    .mapColor(MapColor.COLOR_ORANGE)));
+    public static final DeferredBlock<FenceGateBlock> EMBERWOOD_FENCE_GATE = BLOCKS.register("emberwood_fence_gate",
+            () -> new FenceGateBlock(WoodType.OAK,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_FENCE_GATE)
+                            .mapColor(MapColor.COLOR_ORANGE)));
+    public static final DeferredBlock<DoorBlock> EMBERWOOD_DOOR = BLOCKS.register("emberwood_door",
+            () -> new DoorBlock(BlockSetType.OAK,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_DOOR)
+                            .mapColor(MapColor.COLOR_ORANGE)));
+    public static final DeferredBlock<TrapDoorBlock> EMBERWOOD_TRAPDOOR = BLOCKS.register("emberwood_trapdoor",
+            () -> new TrapDoorBlock(BlockSetType.OAK,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_TRAPDOOR)
+                            .mapColor(MapColor.COLOR_ORANGE)));
+
     public static final DeferredBlock<LeavesBlock> EMBERWOOD_LEAVES = BLOCKS.register("emberwood_leaves",
             () -> new LeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES)
                     .mapColor(MapColor.COLOR_YELLOW)
@@ -158,6 +215,15 @@ public class ArtilianBlocks {
             () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
                     .mapColor(MapColor.COLOR_PURPLE)
                     .strength(2.0F, 6.0F)));
+
+    // Building-block variants (Structure Rebuild Stage 1)
+    public static final DeferredBlock<StairBlock> STARLIGHT_SLATE_STAIRS = BLOCKS.register("starlight_slate_stairs",
+            () -> new StairBlock(STARLIGHT_SLATE.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(STARLIGHT_SLATE.get())));
+    public static final DeferredBlock<SlabBlock> STARLIGHT_SLATE_SLAB = BLOCKS.register("starlight_slate_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(STARLIGHT_SLATE.get())));
+    public static final DeferredBlock<WallBlock> STARLIGHT_SLATE_WALL = BLOCKS.register("starlight_slate_wall",
+            () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(STARLIGHT_SLATE.get())));
 
     public static final DeferredBlock<FlowerBlock> STARLIGHT_BLOSSOM = BLOCKS.register("starlight_blossom",
             () -> new FlowerBlock(MobEffects.NIGHT_VISION, 5.0F,

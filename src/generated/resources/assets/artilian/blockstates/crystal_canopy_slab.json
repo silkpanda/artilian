@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "artilian:block/crystal_canopy_slab"
+    },
+    "type=double": {
+      "model": "artilian:block/crystal_canopy_planks"
+    },
+    "type=top": {
+      "model": "artilian:block/crystal_canopy_slab_top"
+    }
+  }
+}

@@ -13,6 +13,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.recipes.SingleItemRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -84,6 +85,38 @@ public class ArtilianRecipeProvider extends RecipeProvider {
         logToPlanks(output, ArtilianBlocks.CRYSTAL_CANOPY_LOG.get(), ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get());
         logToPlanks(output, ArtilianBlocks.EMBERWOOD_LOG.get(), ArtilianBlocks.EMBERWOOD_PLANKS.get());
 
+        // Building-block variants (Structure Rebuild Stage 1)
+        woodVariantRecipes(output,
+                ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_STAIRS.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_SLAB.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_FENCE.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_FENCE_GATE.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_DOOR.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_TRAPDOOR.get());
+        woodVariantRecipes(output,
+                ArtilianBlocks.EMBERWOOD_PLANKS.get(),
+                ArtilianBlocks.EMBERWOOD_STAIRS.get(),
+                ArtilianBlocks.EMBERWOOD_SLAB.get(),
+                ArtilianBlocks.EMBERWOOD_FENCE.get(),
+                ArtilianBlocks.EMBERWOOD_FENCE_GATE.get(),
+                ArtilianBlocks.EMBERWOOD_DOOR.get(),
+                ArtilianBlocks.EMBERWOOD_TRAPDOOR.get());
+
+        ItemLike slate = ArtilianBlocks.STARLIGHT_SLATE.get();
+        ItemLike slateStairs = ArtilianBlocks.STARLIGHT_SLATE_STAIRS.get();
+        ItemLike slateSlab = ArtilianBlocks.STARLIGHT_SLATE_SLAB.get();
+        ItemLike slateWall = ArtilianBlocks.STARLIGHT_SLATE_WALL.get();
+        stairBuilder(slateStairs, Ingredient.of(slate))
+                .unlockedBy(getHasName(slate), has(slate))
+                .save(output);
+        slab(output, RecipeCategory.BUILDING_BLOCKS, slateSlab, slate);
+        wall(output, RecipeCategory.BUILDING_BLOCKS, slateWall, slate);
+        // Vanilla's stonecutterResultFromBase saves under minecraft:, so build these with artilian: ids.
+        slateStonecutting(output, slateStairs, slate, 1);
+        slateStonecutting(output, slateSlab, slate, 2);
+        slateStonecutting(output, slateWall, slate, 1);
+
         // Pet Capture Crystals & Biome Treats (Phase 2 Stage 3)
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.CAPTURE_CRYSTAL.get(), 2)
                 .pattern(" G ")
@@ -100,6 +133,41 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .requires(Items.SWEET_BERRIES)
                 .requires(Items.SUGAR)
                 .unlockedBy("has_biome_bloom", has(ArtilianTags.Items.BIOME_BLOOMS))
+                .save(output);
+    }
+
+    private static void slateStonecutting(RecipeOutput output, ItemLike result, ItemLike base, int count) {
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(base), RecipeCategory.BUILDING_BLOCKS, result, count)
+                .unlockedBy(getHasName(base), has(base))
+                .save(output, ArtilianMod.id(getConversionRecipeName(result, base) + "_stonecutting"));
+    }
+
+    private static void woodVariantRecipes(
+            RecipeOutput output,
+            ItemLike planks,
+            ItemLike stairs,
+            ItemLike slab,
+            ItemLike fence,
+            ItemLike fenceGate,
+            ItemLike door,
+            ItemLike trapdoor) {
+        String unlock = getHasName(planks);
+
+        stairBuilder(stairs, Ingredient.of(planks))
+                .unlockedBy(unlock, has(planks))
+                .save(output);
+        slab(output, RecipeCategory.BUILDING_BLOCKS, slab, planks);
+        fenceBuilder(fence, Ingredient.of(planks))
+                .unlockedBy(unlock, has(planks))
+                .save(output);
+        fenceGateBuilder(fenceGate, Ingredient.of(planks))
+                .unlockedBy(unlock, has(planks))
+                .save(output);
+        doorBuilder(door, Ingredient.of(planks))
+                .unlockedBy(unlock, has(planks))
+                .save(output);
+        trapdoorBuilder(trapdoor, Ingredient.of(planks))
+                .unlockedBy(unlock, has(planks))
                 .save(output);
     }
 

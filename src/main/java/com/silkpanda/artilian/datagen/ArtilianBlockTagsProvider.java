@@ -28,7 +28,10 @@ public class ArtilianBlockTagsProvider extends BlockTagsProvider {
                 ArtilianBlocks.STARLIGHT_CRYSTAL_ORE.get(),
                 ArtilianBlocks.DEEPSLATE_STARLIGHT_CRYSTAL_ORE.get(),
                 ArtilianBlocks.STARLIGHT_CRYSTAL_BLOCK.get(),
-                ArtilianBlocks.STARLIGHT_SLATE.get()
+                ArtilianBlocks.STARLIGHT_SLATE.get(),
+                ArtilianBlocks.STARLIGHT_SLATE_STAIRS.get(),
+                ArtilianBlocks.STARLIGHT_SLATE_SLAB.get(),
+                ArtilianBlocks.STARLIGHT_SLATE_WALL.get()
         );
 
         tag(BlockTags.NEEDS_STONE_TOOL).add(
@@ -83,9 +86,48 @@ public class ArtilianBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.MINEABLE_WITH_AXE).add(
                 ArtilianBlocks.CRYSTAL_CANOPY_LOG.get(),
                 ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_STAIRS.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_SLAB.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_FENCE.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_FENCE_GATE.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_DOOR.get(),
+                ArtilianBlocks.CRYSTAL_CANOPY_TRAPDOOR.get(),
                 ArtilianBlocks.EMBERWOOD_LOG.get(),
-                ArtilianBlocks.EMBERWOOD_PLANKS.get()
+                ArtilianBlocks.EMBERWOOD_PLANKS.get(),
+                ArtilianBlocks.EMBERWOOD_STAIRS.get(),
+                ArtilianBlocks.EMBERWOOD_SLAB.get(),
+                ArtilianBlocks.EMBERWOOD_FENCE.get(),
+                ArtilianBlocks.EMBERWOOD_FENCE_GATE.get(),
+                ArtilianBlocks.EMBERWOOD_DOOR.get(),
+                ArtilianBlocks.EMBERWOOD_TRAPDOOR.get()
         );
+        tag(BlockTags.WOODEN_STAIRS).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_STAIRS.get(),
+                ArtilianBlocks.EMBERWOOD_STAIRS.get()
+        );
+        tag(BlockTags.WOODEN_SLABS).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_SLAB.get(),
+                ArtilianBlocks.EMBERWOOD_SLAB.get()
+        );
+        tag(BlockTags.WOODEN_FENCES).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_FENCE.get(),
+                ArtilianBlocks.EMBERWOOD_FENCE.get()
+        );
+        tag(BlockTags.FENCE_GATES).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_FENCE_GATE.get(),
+                ArtilianBlocks.EMBERWOOD_FENCE_GATE.get()
+        );
+        tag(BlockTags.WOODEN_DOORS).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_DOOR.get(),
+                ArtilianBlocks.EMBERWOOD_DOOR.get()
+        );
+        tag(BlockTags.WOODEN_TRAPDOORS).add(
+                ArtilianBlocks.CRYSTAL_CANOPY_TRAPDOOR.get(),
+                ArtilianBlocks.EMBERWOOD_TRAPDOOR.get()
+        );
+        tag(BlockTags.STAIRS).add(ArtilianBlocks.STARLIGHT_SLATE_STAIRS.get());
+        tag(BlockTags.SLABS).add(ArtilianBlocks.STARLIGHT_SLATE_SLAB.get());
+        tag(BlockTags.WALLS).add(ArtilianBlocks.STARLIGHT_SLATE_WALL.get());
         tag(BlockTags.MINEABLE_WITH_HOE).add(
                 ArtilianBlocks.CRYSTAL_CANOPY_LEAVES.get(),
                 ArtilianBlocks.EMBERWOOD_LEAVES.get()

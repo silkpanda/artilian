@@ -35,6 +35,7 @@ public class GameTestStructureProvider implements DataProvider {
             writeEmptyStructure(cachedOutput, "empty", 3, 3, 3);
             writeEmptyStructure(cachedOutput, "worldgen", 7, 7, 7);
             writeEmptyStructure(cachedOutput, "tnt_arena", 15, 15, 15);
+            writeEmptyStructure(cachedOutput, "structure_arena", 18, 22, 18);
         });
     }
 

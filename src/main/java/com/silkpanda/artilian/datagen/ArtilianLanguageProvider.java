@@ -87,6 +87,12 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addBlock(ArtilianBlocks.CRYSTAL_TURF, "Crystal Turf");
         this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_LOG, "Crystal Canopy Log");
         this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_PLANKS, "Crystal Canopy Planks");
+        this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_STAIRS, "Crystal Canopy Stairs");
+        this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_SLAB, "Crystal Canopy Slab");
+        this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_FENCE, "Crystal Canopy Fence");
+        this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_FENCE_GATE, "Crystal Canopy Fence Gate");
+        this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_DOOR, "Crystal Canopy Door");
+        this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_TRAPDOOR, "Crystal Canopy Trapdoor");
         this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_LEAVES, "Crystal Canopy Leaves");
         this.addBlock(ArtilianBlocks.CRYSTAL_CANOPY_SAPLING, "Crystal Canopy Sapling");
         this.addBlock(ArtilianBlocks.CRYSTAL_BLOOM, "Crystal Bloom");
@@ -95,6 +101,12 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addBlock(ArtilianBlocks.EMBER_TURF, "Ember Turf");
         this.addBlock(ArtilianBlocks.EMBERWOOD_LOG, "Emberwood Log");
         this.addBlock(ArtilianBlocks.EMBERWOOD_PLANKS, "Emberwood Planks");
+        this.addBlock(ArtilianBlocks.EMBERWOOD_STAIRS, "Emberwood Stairs");
+        this.addBlock(ArtilianBlocks.EMBERWOOD_SLAB, "Emberwood Slab");
+        this.addBlock(ArtilianBlocks.EMBERWOOD_FENCE, "Emberwood Fence");
+        this.addBlock(ArtilianBlocks.EMBERWOOD_FENCE_GATE, "Emberwood Fence Gate");
+        this.addBlock(ArtilianBlocks.EMBERWOOD_DOOR, "Emberwood Door");
+        this.addBlock(ArtilianBlocks.EMBERWOOD_TRAPDOOR, "Emberwood Trapdoor");
         this.addBlock(ArtilianBlocks.EMBERWOOD_LEAVES, "Emberwood Leaves");
         this.addBlock(ArtilianBlocks.EMBERWOOD_SAPLING, "Emberwood Sapling");
         this.addBlock(ArtilianBlocks.EMBER_BLOOM, "Ember Bloom");
@@ -102,6 +114,9 @@ public class ArtilianLanguageProvider extends LanguageProvider {
 
         this.addBlock(ArtilianBlocks.STARLIGHT_TURF, "Starlight Turf");
         this.addBlock(ArtilianBlocks.STARLIGHT_SLATE, "Starlight Slate");
+        this.addBlock(ArtilianBlocks.STARLIGHT_SLATE_STAIRS, "Starlight Slate Stairs");
+        this.addBlock(ArtilianBlocks.STARLIGHT_SLATE_SLAB, "Starlight Slate Slab");
+        this.addBlock(ArtilianBlocks.STARLIGHT_SLATE_WALL, "Starlight Slate Wall");
         this.addBlock(ArtilianBlocks.STARLIGHT_BLOSSOM, "Starlight Blossom");
         this.add("biome.artilian.starlight_highlands", "Starlight Highlands");
 
