@@ -14,7 +14,8 @@ public class ArtilianLootTableProvider extends LootTableProvider {
             PackOutput output,
             CompletableFuture<HolderLookup.Provider> registries) {
         super(output, Set.of(), List.of(
-                new SubProviderEntry(ArtilianBlockLootSubProvider::new, LootContextParamSets.BLOCK)
+                new SubProviderEntry(ArtilianBlockLootSubProvider::new, LootContextParamSets.BLOCK),
+                new SubProviderEntry(ArtilianEntityLootSubProvider::new, LootContextParamSets.ENTITY)
         ), registries);
     }
 }

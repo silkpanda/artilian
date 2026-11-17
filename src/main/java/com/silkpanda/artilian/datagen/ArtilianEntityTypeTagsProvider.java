@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.registry.ArtilianEntities;
 import com.silkpanda.artilian.registry.ArtilianTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -28,7 +29,10 @@ public class ArtilianEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 EntityType.STRAY,
                 EntityType.BOGGED,
                 EntityType.HUSK,
-                EntityType.BREEZE
+                EntityType.BREEZE,
+                ArtilianEntities.PRISM_SENTINEL.get(),
+                ArtilianEntities.CINDER_RAIDER.get(),
+                ArtilianEntities.ASTRAL_STALKER.get()
         );
     }
 }

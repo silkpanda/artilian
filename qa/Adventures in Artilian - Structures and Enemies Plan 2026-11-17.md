@@ -3,11 +3,11 @@
 Branch: `phase-2-stage-6-structures-and-enemies` (from `main` `d91a82d`).
 Relates to: `PLAN.md` Phase 2 Stage 6, `DESIGN.md`, `PRODUCT.md`.
 
-> **Status: Not started (plan drafted).** Record each stage's commit here.
+> **Status: Stage 1 complete (Stage 2 next).** Record each stage's commit here.
 >
 > | Stage | Done |
 > |---|---|
-> | 1 Custom structure enemies, GeckoLib art & pet battle integration | |
+> | 1 Custom structure enemies, GeckoLib art & pet battle integration | Pending commit — `StructureEnemyEntity`, `PrismSentinelEntity` (`CRYSTAL`/`EARTH`), `CinderRaiderEntity` (`FIRE`/`EARTH`), `AstralStalkerEntity` (`STARLIGHT`/`SHADOW`), `EnemyEvents`, parameterized `StructureEnemyModel`/`StructureEnemyRenderer`, `ArtilianEntityLootSubProvider`, spawn eggs, `artilian:structure_enemies` tag, `tools/art/make_structures_enemies_art.py`, `StructureEnemiesGameTests` (`93/93` green). Red-proof: omitted `PRISM_SENTINEL` from `ArtilianEntityTypeTagsProvider` -> `structureenemiesregisteredtaggedhaveeggsandelementaltypes` failed; restored green (`93/93`). |
 > | 2 Biome-specific structures, loot tables & worldgen | |
 > | 3 Client verification, evidence, docs & PR | |
 

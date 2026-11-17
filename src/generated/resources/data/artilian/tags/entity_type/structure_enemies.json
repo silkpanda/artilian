@@ -7,6 +7,9 @@
     "minecraft:stray",
     "minecraft:bogged",
     "minecraft:husk",
-    "minecraft:breeze"
+    "minecraft:breeze",
+    "artilian:prism_sentinel",
+    "artilian:cinder_raider",
+    "artilian:astral_stalker"
   ]
 }

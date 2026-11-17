@@ -62,6 +62,15 @@ public class ArtilianItems {
     public static final DeferredItem<DeferredSpawnEggItem> PEEPKIN_SPAWN_EGG =
             ITEMS.register("peepkin_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.PEEPKIN, 0x563892, 0xD946EF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> PRISM_SENTINEL_SPAWN_EGG =
+            ITEMS.register("prism_sentinel_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.PRISM_SENTINEL, 0x3A2F4D, 0x38D9C0, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> CINDER_RAIDER_SPAWN_EGG =
+            ITEMS.register("cinder_raider_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CINDER_RAIDER, 0x54221C, 0xFF9F38, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> ASTRAL_STALKER_SPAWN_EGG =
+            ITEMS.register("astral_stalker_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.ASTRAL_STALKER, 0x2B2338, 0xD946EF, new Item.Properties()));
 
     // Blocks
     public static final DeferredItem<BlockItem> SUNSTEEL_ORE_ITEM =
