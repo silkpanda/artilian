@@ -2,6 +2,9 @@ package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.chester.ChesterEntity;
+import com.silkpanda.artilian.enemy.AstralStalkerEntity;
+import com.silkpanda.artilian.enemy.CinderRaiderEntity;
+import com.silkpanda.artilian.enemy.PrismSentinelEntity;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
@@ -94,6 +97,31 @@ public class ArtilianEntities {
                     .eyeHeight(0.55F)
                     .clientTrackingRange(10)
                     .build("peepkin"));
+
+    /** Prism Sentinel: Crystal/Earth guardian of the Crystal Grove Shrine. */
+    public static final DeferredHolder<EntityType<?>, EntityType<PrismSentinelEntity>> PRISM_SENTINEL =
+            ENTITY_TYPES.register("prism_sentinel", () -> EntityType.Builder.of(PrismSentinelEntity::new, MobCategory.MONSTER)
+                    .sized(0.95F, 2.05F)
+                    .eyeHeight(1.75F)
+                    .clientTrackingRange(10)
+                    .build("prism_sentinel"));
+
+    /** Cinder Raider: Fire/Earth guardian of the Emberbloom Outpost. */
+    public static final DeferredHolder<EntityType<?>, EntityType<CinderRaiderEntity>> CINDER_RAIDER =
+            ENTITY_TYPES.register("cinder_raider", () -> EntityType.Builder.of(CinderRaiderEntity::new, MobCategory.MONSTER)
+                    .fireImmune()
+                    .sized(0.80F, 1.75F)
+                    .eyeHeight(1.45F)
+                    .clientTrackingRange(10)
+                    .build("cinder_raider"));
+
+    /** Astral Stalker: Starlight/Shadow guardian of the Starlight Watchtower. */
+    public static final DeferredHolder<EntityType<?>, EntityType<AstralStalkerEntity>> ASTRAL_STALKER =
+            ENTITY_TYPES.register("astral_stalker", () -> EntityType.Builder.of(AstralStalkerEntity::new, MobCategory.MONSTER)
+                    .sized(0.85F, 1.85F)
+                    .eyeHeight(1.55F)
+                    .clientTrackingRange(10)
+                    .build("astral_stalker"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

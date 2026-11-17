@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.registry.ArtilianTags;
 import com.silkpanda.artilian.worldgen.ArtilianBiomes;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -36,5 +37,9 @@ public class ArtilianBiomeTagsProvider extends BiomeTagsProvider {
                 ArtilianBiomes.EMBERBLOOM_MEADOWS,
                 ArtilianBiomes.STARLIGHT_HIGHLANDS
         );
+
+        tag(ArtilianTags.Biomes.HAS_CRYSTAL_GROVE_SHRINE).add(ArtilianBiomes.CRYSTAL_CANOPY_WOODS);
+        tag(ArtilianTags.Biomes.HAS_EMBERBLOOM_OUTPOST).add(ArtilianBiomes.EMBERBLOOM_MEADOWS);
+        tag(ArtilianTags.Biomes.HAS_STARLIGHT_WATCHTOWER).add(ArtilianBiomes.STARLIGHT_HIGHLANDS);
     }
 }

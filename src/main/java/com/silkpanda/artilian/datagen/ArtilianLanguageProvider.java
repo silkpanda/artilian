@@ -123,6 +123,13 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.GALECORN_SPAWN_EGG, "Galecorn Spawn Egg");
         this.addItem(ArtilianItems.EMBER_DRAKE_SPAWN_EGG, "Ember Drake Spawn Egg");
         this.addItem(ArtilianItems.PEEPKIN_SPAWN_EGG, "Peepkin Spawn Egg");
+        // Phase 2 Stage 6: Structure Enemies
+        this.addEntityType(ArtilianEntities.PRISM_SENTINEL, "Prism Sentinel");
+        this.addEntityType(ArtilianEntities.CINDER_RAIDER, "Cinder Raider");
+        this.addEntityType(ArtilianEntities.ASTRAL_STALKER, "Astral Stalker");
+        this.addItem(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG, "Prism Sentinel Spawn Egg");
+        this.addItem(ArtilianItems.CINDER_RAIDER_SPAWN_EGG, "Cinder Raider Spawn Egg");
+        this.addItem(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG, "Astral Stalker Spawn Egg");
         this.addItem(ArtilianItems.CAPTURE_CRYSTAL, "Capture Crystal");
         this.add("item.artilian.capture_crystal.filled", "Capture Crystal (%s)");
         this.add("item.artilian.capture_crystal.tooltip", "Captures Biome Pets — Right-click a wild pet!");

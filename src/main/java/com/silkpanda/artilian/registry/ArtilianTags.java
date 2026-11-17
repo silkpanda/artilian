@@ -6,8 +6,9 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.biome.Biome;
 
-/** Custom Artilian item, block, and entity tags. */
+/** Custom Artilian item, block, entity, and biome tags. */
 public final class ArtilianTags {
     private ArtilianTags() {}
 
@@ -22,5 +23,16 @@ public final class ArtilianTags {
                 TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("structure_enemies"));
 
         private EntityTypes() {}
+    }
+
+    public static final class Biomes {
+        public static final TagKey<Biome> HAS_CRYSTAL_GROVE_SHRINE =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/crystal_grove_shrine"));
+        public static final TagKey<Biome> HAS_EMBERBLOOM_OUTPOST =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/emberbloom_outpost"));
+        public static final TagKey<Biome> HAS_STARLIGHT_WATCHTOWER =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/starlight_watchtower"));
+
+        private Biomes() {}
     }
 }

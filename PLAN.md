@@ -6,14 +6,14 @@ Written 2026-11-15, resized the same day. This is the one plan for the repositor
 
 ## Now
 
-*Updated 2026-11-16 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
+*Updated 2026-11-17 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
 
 | | |
 |---|---|
-| **In progress** | Phase 2 Stage 5 (*Pet roster*) on `phase-2-stage-5-main` (rebased onto `main` `d9ee782` after PR #2 merged Zaphox, Galecorn, and spawn eggs): adds **Ember Drake** (`DRAGON / FIRE`) and **Peepkin** (`SHADOW / STARLIGHT`) with GeckoLib models/textures/animations, biome spawns, `ember_drake_spawn_egg` and `peepkin_spawn_egg`, `PetRosterGameTests` coverage, `Alex`/`Steve` public-repo sanitization, local-path cleanup, and the `.github/workflows/tests.yml` `Personal-info guard`. |
-| **Next** | Merge PR #1 (`phase-2-stage-5-main` → `main`) once CI is green; move on to Phase 2 Stage 6 (*Structures & enemies*: biome-specific structures and custom `artilian:structure_enemies`); run the family LAN co-op playtest (`deploy/README.md` / `build/libs/adventures-in-artilian-0.1.0.jar`) and sign off on Phase 1 Stage 6. |
-| **Waiting on the owner** | 1. Review and merge PR #1 (`phase-2-stage-5-main` → `main`) once CI is green (and confirm `PERSONAL_INFO_BLOCKLIST` secret is configured). 2. Have Steve pick official names for **Shadow Wisp** (`artilian:shadow_wisp`) and **Cinder Crag** (`artilian:cinder_crag`), and review **Zaphox**, **Galecorn**, **Ember Drake**, and **Peepkin** in-game with Alex & Steve. 3. Run the LAN co-op playtest with Alex and Steve and check off Phase 1 Stage 6 once approved. |
-| **Other work in flight** | Local branch `chore/2026-11-16-strip-identifiers` (superseded once PR #1 merges); unmerged older feature branches (`phase-1-stage-7-review-fixes`, `phase-2-stage-5-pet-roster`, `phase-2-stage-5-alice-pets`, `phase-2-stage-5-dragon-eye-pets`, `art/2026-11-15-crystal-fox-pass`, `art/2026-11-15-armor-pass`, `showcase/2026-11-15-curseforge`). Note: PR #2 (`d9ee782`) dropped `qa/FINDINGS.md` Phase 1 review notes and Phase 1 review-fix plan doc from `main`, which can be restored in a follow-up docs PR if desired. |
+| **In progress** | Phase 2 Stage 6 (*Structures & enemies*) on `phase-2-stage-6-structures-and-enemies` — all 3 stages complete and ready for PR merge into `main`: custom `artilian:structure_enemies` (*Prism Sentinel*, *Cinder Raider*, *Astral Stalker*), three biome structures (*Crystal Grove Shrine*, *Emberbloom Outpost*, *Starlight Watchtower* with chest loot + persistent guardians), `97/97` GameTests green, and live client screenshots in `qa/evidence/`. |
+| **Next** | Review and merge the Phase 2 Stage 6 PR (`phase-2-stage-6-structures-and-enemies` → `main`) once CI is green; move on to Phase 2 Stage 7 (*Art pass*: polish Phase 2 pets, blocks, and structure enemies against Alex & Steve's drawings and `DESIGN.md`); run the family LAN co-op playtest (`deploy/README.md`) and sign off on Phase 1 Stage 6. |
+| **Waiting on the owner** | 1. Have Steve pick official names for **Shadow Wisp** (`artilian:shadow_wisp`) and **Cinder Crag** (`artilian:cinder_crag`), and review **Zaphox**, **Galecorn**, **Ember Drake**, and **Peepkin** in-game with Alex & Steve. 2. Run the LAN co-op playtest with Alex and Steve and check off Phase 1 Stage 6 once approved. 3. Confirm `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is configured if not already set. |
+| **Other work in flight** | Unmerged/superseded local or remote branches: `phase-2-stage-5-main`, `chore/2026-11-16-strip-identifiers`, `phase-1-stage-7-review-fixes`, `phase-2-stage-5-pet-roster`, `phase-2-stage-5-alice-pets`, `phase-2-stage-5-dragon-eye-pets`, `art/2026-11-15-crystal-fox-pass`, `art/2026-11-15-armor-pass`, `showcase/2026-11-15-curseforge`. Note: PR #2 (`d9ee782`) dropped `qa/FINDINGS.md` Phase 1 review notes and Phase 1 review-fix plan doc from `main`, which can be restored in a follow-up docs PR if desired. |
 | **Loose ends** | `runData` may touch CRLF on `src/generated/**` with empty `git diff` — do not commit those. |
 
 ---
@@ -90,7 +90,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - [x] **Stage 3: Pet capture.** One pet end to end (**Crystal Fox**, `Crystal / Nature`) + expanded 11-element dual-element system (`PetElement`): **Capture Crystals**, **Biome Treats**, summon and recall, non-lethal fainting back into the crystal (red-proven GameTest + `P2-01`–`P2-03` probes).
 - [x] **Stage 4: Pet battle AI.** Summoned pets fight alongside the player, defend/assist owners, apply 11-element damage multipliers + signature combat perks, and target hostiles & `artilian:structure_enemies` (`P2-04` red-proven HELD).
 - [x] **Stage 5: Pet roster.** Biome-specific pets for all three biomes (**Crystal Fox**, **Shadow Wisp**, **Cinder Crag**, **Zaphox**, **Galecorn**), plus small dragon hatchling (**Ember Drake**) and eye-themed pet (**Peepkin**) so each kid meets their dimension's theme early.
-- [ ] **Stage 6: Structures & enemies.** Biome-specific structures and custom structure enemies.
+- [x] **Stage 6: Structures & enemies.** Biome-specific structures (*Crystal Grove Shrine*, *Emberbloom Outpost*, *Starlight Watchtower*) and custom `artilian:structure_enemies` (*Prism Sentinel*, *Cinder Raider*, *Astral Stalker*).
 - [ ] **Stage 7: Art pass.**
 - **Done When:** all checks green and a co-op playtest verifies pet capture, battling, fainting, and structure exploration.
 
