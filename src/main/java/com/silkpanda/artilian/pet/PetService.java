@@ -108,8 +108,9 @@ public final class PetService {
         if (!isValidBattleTarget(pet.getOwnerInLevel(), target)) {
             return false;
         }
+        PetElement attackElement = pet.attackElementAgainst(target);
         float baseDamage = (float) pet.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float multiplier = pet.getPrimaryElement().multiplierAgainst(target);
+        float multiplier = attackElement.multiplierAgainst(target);
         float finalDamage = Math.max(1.0F, baseDamage * multiplier);
 
         boolean hit = target.hurt(level.damageSources().mobAttack(pet), finalDamage);
@@ -118,7 +119,7 @@ public final class PetService {
         }
 
         pet.triggerAttackAnim();
-        level.sendParticles(pet.getPrimaryElement().particle(), target.getX(), target.getY(0.6), target.getZ(),
+        level.sendParticles(attackElement.particle(), target.getX(), target.getY(0.6), target.getZ(),
                 10, 0.25, 0.25, 0.25, 0.04);
 
         if (multiplier > PetElement.NEUTRAL) {
@@ -135,7 +136,7 @@ public final class PetService {
         }
 
         if (pet.tryConsumeSignatureCooldown()) {
-            pet.getPrimaryElement().applySignatureEffect(pet, target, level);
+            attackElement.applySignatureEffect(pet, target, level);
         }
         return true;
     }

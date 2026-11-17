@@ -154,6 +154,12 @@
         "weight": 3
       },
       {
+        "type": "artilian:prismling",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 1
+      },
+      {
         "type": "minecraft:fox",
         "maxCount": 4,
         "minCount": 2,

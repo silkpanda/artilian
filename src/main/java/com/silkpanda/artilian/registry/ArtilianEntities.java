@@ -10,6 +10,7 @@ import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
+import com.silkpanda.artilian.pet.PrismlingEntity;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
 import com.silkpanda.artilian.tnt.ArtilianPrimedTnt;
@@ -97,6 +98,14 @@ public class ArtilianEntities {
                     .eyeHeight(0.55F)
                     .clientTrackingRange(10)
                     .build("peepkin"));
+
+    /** Prismling: the legendary rainbow all-types pet for everyone, rare in all three Overworld biomes. */
+    public static final DeferredHolder<EntityType<?>, EntityType<PrismlingEntity>> PRISMLING =
+            ENTITY_TYPES.register("prismling", () -> EntityType.Builder.of(PrismlingEntity::new, MobCategory.CREATURE)
+                    .sized(1.6F, 2.0F)
+                    .eyeHeight(1.7F)
+                    .clientTrackingRange(10)
+                    .build("prismling"));
 
     /** Prism Sentinel: Crystal/Earth guardian of the Crystal Grove Shrine. */
     public static final DeferredHolder<EntityType<?>, EntityType<PrismSentinelEntity>> PRISM_SENTINEL =

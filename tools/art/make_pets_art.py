@@ -963,6 +963,105 @@ def make_peepkin():
     img.save(dest)
 
 
+def make_prismling():
+    """Prismling: the kids' rainbow legendary pet (qa/reference/pets/prismling-drawing-upright-2026-11-17.jpg).
+
+    Layout matches src/main/resources/assets/artilian/geo/entity/prismling.geo.json (box UV, 64x64).
+    """
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+
+    # The drawing's seven body stripes, left to right.
+    BANDS = [
+        (239, 68, 68, 255),    # red
+        (249, 115, 22, 255),   # orange
+        (250, 204, 21, 255),   # yellow
+        (20, 184, 166, 255),   # teal
+        (56, 189, 248, 255),   # sky blue
+        (168, 85, 247, 255),   # purple
+        (196, 181, 253, 255),  # lavender
+    ]
+    OUTLINE = (245, 158, 11, 255)   # the orange crayon outline
+    OUTLINE_DARK = (194, 110, 8, 255)
+    CREAM = (255, 247, 230, 255)
+    CREAM_SHADE = (236, 222, 196, 255)
+    EYE = (59, 42, 26, 255)
+    CUFF = (59, 130, 246, 255)
+    CUFF_HI = (147, 197, 253, 255)
+
+    def tint(color, amount):
+        r, g, b, a = color
+        if amount >= 0:
+            return (int(r + (255 - r) * amount), int(g + (255 - g) * amount), int(b + (255 - b) * amount), a)
+        k = 1 + amount
+        return (int(r * k), int(g * k), int(b * k), a)
+
+    def outlined(rect, inner, edge):
+        x, y, w, h = rect
+        fill(img, rect, inner)
+        for px in range(x, x + w):
+            put(img, px, y, edge)
+            put(img, px, y + h - 1, edge)
+        for py in range(y, y + h):
+            put(img, x, py, edge)
+            put(img, x + w - 1, py, edge)
+
+    # 1. Body [14, 6, 6] at [0, 0]: seven 2-pixel rainbow bands across front and back, orange rim.
+    bf = faces(0, 0, 14, 6, 6)
+    for face, order in (("front", BANDS), ("back", list(reversed(BANDS)))):
+        x, y, w, h = bf[face]
+        for i, color in enumerate(order):
+            fill(img, (x + i * 2, y, 2, h), color)
+            put(img, x + i * 2, y + 1, tint(color, 0.35))  # crayon highlight
+        for px in range(x, x + w):
+            put(img, px, y, OUTLINE)
+            put(img, px, y + h - 1, OUTLINE_DARK)
+    x, y, w, h = bf["top"]
+    for i, color in enumerate(BANDS):
+        fill(img, (x + i * 2, y, 2, h), tint(color, 0.25))
+    for px in range(x, x + w):
+        put(img, px, y, OUTLINE)
+        put(img, px, y + h - 1, OUTLINE)
+    x, y, w, h = bf["bottom"]
+    for i, color in enumerate(BANDS):
+        fill(img, (x + i * 2, y, 2, h), tint(color, -0.3))
+    # East strip sits next to the front's first band (red); west sits next to its last band (lavender).
+    outlined(bf["east"], BANDS[0], OUTLINE)
+    outlined(bf["west"], BANDS[-1], OUTLINE)
+
+    # 2. Head [6, 5, 6] at [40, 0]: cream box, orange rim, two dot eyes and a big U smile.
+    hf = faces(40, 0, 6, 5, 6)
+    for name, rect in hf.items():
+        outlined(rect, CREAM if name != "bottom" else CREAM_SHADE, OUTLINE)
+    fx, fy, _, _ = hf["front"]
+    fill(img, (fx + 1, fy + 1, 4, 3), CREAM)
+    put(img, fx + 1, fy + 1, EYE)
+    put(img, fx + 4, fy + 1, EYE)
+    put(img, fx + 1, fy + 2, OUTLINE)
+    put(img, fx + 4, fy + 2, OUTLINE)
+    put(img, fx + 2, fy + 3, OUTLINE)
+    put(img, fx + 3, fy + 3, OUTLINE)
+
+    # 3. Legs [4, 5, 4]: right leg red at [0, 14], left leg lavender at [16, 14].
+    for u, color in ((0, BANDS[0]), (16, BANDS[-1])):
+        smooth_coat(img, u, 14, 4, 5, 4, tint(color, 0.3), color, tint(color, -0.2), tint(color, -0.4))
+        lf = faces(u, 14, 4, 5, 4)
+        for name in ("front", "back", "east", "west"):
+            x, y, w, h = lf[name]
+            for px in range(x, x + w):
+                put(img, px, y + h - 1, OUTLINE_DARK)
+
+    # 4. Stick arms [6, 1, 1] at [32, 14], hand bar [1, 5, 1] at [48, 14], fingers [2, 1, 1] at [52, 14]: orange crayon.
+    for u, v, w, h, d in ((32, 14, 6, 1, 1), (48, 14, 1, 5, 1), (52, 14, 2, 1, 1)):
+        smooth_coat(img, u, v, w, h, d, tint(OUTLINE, 0.3), OUTLINE, OUTLINE_DARK, OUTLINE_DARK)
+
+    # 5. Blue cuffs [2, 3, 3] at [0, 24]: the blue ovals on each arm.
+    smooth_coat(img, 0, 24, 2, 3, 3, CUFF_HI, CUFF, tint(CUFF, -0.2), tint(CUFF, -0.4))
+
+    dest = OUT / "entity/prismling.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+
+
 def main():
     make_crystal_fox()
     make_shadow_wisp()
@@ -971,6 +1070,7 @@ def main():
     make_galecorn()
     make_ember_drake()
     make_peepkin()
+    make_prismling()
 
     item_dir = OUT / "item"
     item_dir.mkdir(parents=True, exist_ok=True)
@@ -981,7 +1081,7 @@ def main():
     )
     draw_crystal(GOLD_DARK, GOLD, GOLD_HI).save(item_dir / "capture_crystal_fainted.png")
     make_biome_treat().save(item_dir / "biome_treat.png")
-    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin).")
+    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin, Prismling).")
 
 
 if __name__ == "__main__":

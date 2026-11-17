@@ -7,6 +7,7 @@ import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
+import com.silkpanda.artilian.pet.PrismlingEntity;
 import com.silkpanda.artilian.pet.PetElement;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
@@ -22,9 +23,12 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -32,7 +36,9 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Drowned;
 import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
@@ -41,6 +47,7 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -636,6 +643,154 @@ public class PetRosterGameTests {
         phantom.discard();
         drake.discard();
         peepkin.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void prismlingIsAllTypesLegendarySizedAndSpawnsInAllThreeBiomes(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        PrismlingEntity prismling = ArtilianEntities.PRISMLING.get().create(level);
+        helper.assertTrue(prismling != null && prismling.isAllTypes(), "Prismling must be an all-types pet");
+
+        EntityType<?> prismType = ArtilianEntities.PRISMLING.get();
+        EntityType<?> peepType = ArtilianEntities.PEEPKIN.get();
+        helper.assertTrue(prismType.getHeight() >= peepType.getHeight() * 2.0F
+                        && prismType.getWidth() >= peepType.getWidth() * 2.0F,
+                "Legendary Prismling must be at least twice Peepkin's size, got "
+                        + prismType.getWidth() + "x" + prismType.getHeight());
+
+        Registry<Biome> biomes = level.registryAccess().registryOrThrow(Registries.BIOME);
+        for (var key : List.of(ArtilianBiomes.EMBERBLOOM_MEADOWS, ArtilianBiomes.STARLIGHT_HIGHLANDS,
+                ArtilianBiomes.CRYSTAL_CANOPY_WOODS)) {
+            boolean rareSpawn = biomes.getHolderOrThrow(key).value().getMobSettings()
+                    .getMobs(MobCategory.CREATURE).unwrap().stream()
+                    .anyMatch(d -> d.type == prismType && d.getWeight().asInt() == 1 && d.maxCount == 1);
+            helper.assertTrue(rareSpawn, "Prismling must be a rare (weight 1, single) spawn in " + key.location());
+        }
+
+        BlockPos spawnPos = helper.absolutePos(new BlockPos(7, 2, 7));
+        level.setBlockAndUpdate(spawnPos, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(spawnPos.above(), Blocks.AIR.defaultBlockState());
+        for (var ground : List.of(ArtilianBlocks.EMBER_TURF.get(), ArtilianBlocks.STARLIGHT_TURF.get(),
+                ArtilianBlocks.CRYSTAL_TURF.get(), ArtilianBlocks.STARLIGHT_SLATE.get())) {
+            level.setBlockAndUpdate(spawnPos.below(), ground.defaultBlockState());
+            helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                            ArtilianEntities.PRISMLING.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                    "Prismling must be allowed to spawn on " + ground.getDescriptionId());
+        }
+        level.setBlockAndUpdate(spawnPos.below(), Blocks.STONE.defaultBlockState());
+        helper.assertFalse(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.PRISMLING.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Prismling must not spawn on plain Stone");
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void prismlingAttacksWithTheBestElementAgainstEveryTarget(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "PrismlingBattle");
+        BlockPos pos = helper.absolutePos(new BlockPos(6, 1, 7));
+
+        PrismlingEntity prismling = ArtilianEntities.PRISMLING.get().create(level);
+        prismling.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        prismling.setOwner(player);
+        prismling.addAffinity(100);
+        level.addFreshEntity(prismling);
+
+        List<LivingEntity> targets = List.of(
+                EntityType.CREEPER.create(level),
+                EntityType.DROWNED.create(level),
+                EntityType.PHANTOM.create(level),
+                ArtilianEntities.EMBER_DRAKE.get().create(level),
+                ArtilianEntities.PEEPKIN.get().create(level),
+                ArtilianEntities.ZAPHOX.get().create(level));
+        for (LivingEntity target : targets) {
+            float best = PetElement.NEUTRAL;
+            for (PetElement element : PetElement.values()) {
+                best = Math.max(best, element.multiplierAgainst(target));
+            }
+            // Ties are broken at random, so pick many times: every pick must be a best-damage element.
+            for (int i = 0; i < 25; i++) {
+                PetElement chosen = prismling.attackElementAgainst(target);
+                helper.assertTrue(chosen.multiplierAgainst(target) == best,
+                        "Prismling picked " + chosen + " (" + chosen.multiplierAgainst(target) + "x) against "
+                                + target.getType().getDescriptionId() + " but the best element does " + best + "x");
+            }
+        }
+
+        Creeper creeper = EntityType.CREEPER.create(level);
+        creeper.moveTo(pos.getX() + 1.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(creeper);
+        float before = creeper.getHealth();
+        prismling.doHurtTarget(creeper);
+        float dealt = before - creeper.getHealth();
+        helper.assertTrue(dealt >= 7.45F,
+                "Prismling (5.0 base) must hit a Nature Creeper super-effectively for at least 7.5, got " + dealt);
+
+        creeper.discard();
+        prismling.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void prismlingTakesNeutralDamageFromEveryElement(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        PrismlingEntity prismling = ArtilianEntities.PRISMLING.get().create(level);
+        for (PetElement attacker : PetElement.values()) {
+            helper.assertTrue(attacker.multiplierAgainst(prismling) == PetElement.NEUTRAL,
+                    attacker + " must hit all-types Prismling for neutral 1.0x, got "
+                            + attacker.multiplierAgainst(prismling) + "x");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void prismlingCapturesBefriendsSummonsAndFaintsSafelyIntoCrystal(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "PrismlingRoster");
+
+        PrismlingEntity wild = ArtilianEntities.PRISMLING.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(7, 1, 7));
+        wild.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(wild);
+
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.BIOME_TREAT.get(), 4));
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        helper.assertTrue(wild.isBefriended(), "Two Biome Treats should befriend Prismling");
+
+        ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        CapturedPetData data = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(data != null && data.entityType().equals(ArtilianEntities.PRISMLING.getId()),
+                "Capture Crystal should store Prismling");
+
+        List<Component> tooltip = new ArrayList<>();
+        crystal.getItem().appendHoverText(crystal, Item.TooltipContext.EMPTY, tooltip, TooltipFlag.NORMAL);
+        boolean allTypesBadge = tooltip.stream()
+                .filter(line -> line.getContents() instanceof TranslatableContents tc
+                        && tc.getKey().equals("tooltip.artilian.pet.elements"))
+                .map(line -> ((TranslatableContents) line.getContents()).getArgs()[0])
+                .anyMatch(arg -> arg instanceof Component badge
+                        && badge.getContents() instanceof TranslatableContents badgeKey
+                        && badgeKey.getKey().equals("element.artilian.all_types"));
+        helper.assertTrue(allTypesBadge, "Prismling's crystal must show the All Types badge");
+
+        crystal.use(level, player, InteractionHand.MAIN_HAND);
+        List<? extends PrismlingEntity> summoned = level.getEntities(
+                ArtilianEntities.PRISMLING.get(), e -> e.isAlive() && e.isOwner(player));
+        helper.assertTrue(summoned.size() == 1, "Expected 1 summoned Prismling");
+        PrismlingEntity pet = summoned.get(0);
+        pet.hurt(level.damageSources().mobAttack(pet), 999.0F);
+
+        helper.assertFalse(pet.isAlive(), "Fainted Prismling should withdraw from the world");
+        CapturedPetData fainted = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(fainted != null && fainted.fainted()
+                        && Math.abs(CaptureCrystalItem.getVisualState(crystal) - 0.25F) < 0.01F,
+                "Fainted Prismling must safely return to its crystal in fainted state");
+
         helper.succeed();
     }
 }

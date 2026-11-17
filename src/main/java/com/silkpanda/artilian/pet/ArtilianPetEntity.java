@@ -90,6 +90,11 @@ public abstract class ArtilianPetEntity extends PathfinderMob implements Element
         return Optional.empty();
     }
 
+    /** Element this pet attacks {@code target} with. Defaults to the primary element. */
+    public PetElement attackElementAgainst(LivingEntity target) {
+        return this.getPrimaryElement();
+    }
+
     public SoundEvent getHappySound() {
         return SoundEvents.AMETHYST_BLOCK_CHIME;
     }

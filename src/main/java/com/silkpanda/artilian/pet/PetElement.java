@@ -153,6 +153,9 @@ public enum PetElement implements StringRepresentable {
     /** Resolves an entity's elemental typing for Artilian pets, custom elemental mobs, and vanilla monsters. */
     public static Optional<ElementPair> elementsOf(LivingEntity entity) {
         if (entity instanceof ElementalMob elemental) {
+            if (elemental.isAllTypes()) {
+                return Optional.empty();
+            }
             return Optional.of(new ElementPair(elemental.getPrimaryElement(), elemental.getSecondaryElement()));
         }
         if (entity instanceof Blaze || entity instanceof MagmaCube || entity instanceof Ghast

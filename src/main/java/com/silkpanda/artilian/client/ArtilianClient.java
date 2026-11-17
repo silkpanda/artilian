@@ -38,6 +38,7 @@ public final class ArtilianClient {
         event.registerEntityRenderer(ArtilianEntities.GALECORN.get(), GalecornRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.EMBER_DRAKE.get(), EmberDrakeRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.PEEPKIN.get(), PeepkinRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.PRISMLING.get(), PrismlingRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.PRISM_SENTINEL.get(),
                 ctx -> new StructureEnemyRenderer<>(ctx, "prism_sentinel", 0.55F));
         event.registerEntityRenderer(ArtilianEntities.CINDER_RAIDER.get(),

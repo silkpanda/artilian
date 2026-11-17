@@ -63,6 +63,9 @@ public class ArtilianItems {
     public static final DeferredItem<DeferredSpawnEggItem> PEEPKIN_SPAWN_EGG =
             ITEMS.register("peepkin_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.PEEPKIN, 0x563892, 0xD946EF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> PRISMLING_SPAWN_EGG =
+            ITEMS.register("prismling_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.PRISMLING, 0xF472B6, 0x38BDF8, new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> PRISM_SENTINEL_SPAWN_EGG =
             ITEMS.register("prism_sentinel_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.PRISM_SENTINEL, 0x3A2F4D, 0x38D9C0, new Item.Properties()));
