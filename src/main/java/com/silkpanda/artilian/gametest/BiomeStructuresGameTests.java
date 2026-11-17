@@ -13,6 +13,7 @@ import com.silkpanda.artilian.worldgen.ArtilianStructures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -24,6 +25,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
@@ -35,14 +38,27 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Phase 2 Stage 6 Stage 2: Biome-specific structures, chest loot tables, and guardian spawns. */
 @GameTestHolder(ArtilianMod.MODID)
 @PrefixGameTestTemplate(false)
 public class BiomeStructuresGameTests {
+    private static final Set<Block> BANNED_TEMPLATE_BLOCKS = Set.of(
+            Blocks.LAVA,
+            Blocks.FIRE,
+            Blocks.SOUL_FIRE,
+            Blocks.TNT,
+            Blocks.COMMAND_BLOCK,
+            Blocks.CHAIN_COMMAND_BLOCK,
+            Blocks.REPEATING_COMMAND_BLOCK,
+            Blocks.SPAWNER,
+            Blocks.STRUCTURE_BLOCK
+    );
 
-    @GameTest(template = "tnt_arena")
+    @GameTest(template = "structure_arena")
     public static void biomeStructuresAndSetsRegisteredForMatchingBiomes(GameTestHelper helper) {
         var registries = helper.getLevel().registryAccess();
         Registry<StructureTemplatePool> pools = registries.registryOrThrow(Registries.TEMPLATE_POOL);
@@ -81,7 +97,7 @@ public class BiomeStructuresGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "tnt_arena")
+    @GameTest(template = "structure_arena")
     public static void crystalGroveShrinePlacesChestLootAndPrismSentinels(GameTestHelper helper) {
         verifyTemplatePlacement(
                 helper,
@@ -92,7 +108,7 @@ public class BiomeStructuresGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "tnt_arena")
+    @GameTest(template = "structure_arena")
     public static void emberbloomOutpostPlacesChestLootAndCinderRaiders(GameTestHelper helper) {
         verifyTemplatePlacement(
                 helper,
@@ -103,7 +119,7 @@ public class BiomeStructuresGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = "tnt_arena")
+    @GameTest(template = "structure_arena")
     public static void starlightWatchtowerPlacesChestLootAndAstralStalkers(GameTestHelper helper) {
         verifyTemplatePlacement(
                 helper,
@@ -159,6 +175,10 @@ public class BiomeStructuresGameTests {
         StructureTemplate template = level.getStructureManager().get(templateId).orElse(null);
         helper.assertTrue(template != null, "Missing structure template NBT: " + templateId);
 
+        Vec3i size = template.getSize();
+        helper.assertTrue(size.getX() <= 16 && size.getY() <= 20 && size.getZ() <= 16,
+                "Structure template " + templateId + " exceeds 16x20x16 size limit: " + size);
+
         BlockPos origin = helper.absolutePos(new BlockPos(1, 1, 1));
         StructurePlaceSettings settings = new StructurePlaceSettings()
                 .setIgnoreEntities(false)
@@ -166,10 +186,23 @@ public class BiomeStructuresGameTests {
         boolean placed = template.placeInWorld(level, origin, origin, settings, level.random, 2);
         helper.assertTrue(placed, "Failed to place structure template: " + templateId);
 
-        BlockPos chestPos = origin.offset(4, 1, 2);
-        helper.assertTrue(level.getBlockEntity(chestPos) instanceof ChestBlockEntity,
-                "Expected reward chest at " + chestPos + " inside " + templateId);
-        ChestBlockEntity chest = (ChestBlockEntity) level.getBlockEntity(chestPos);
+        List<ChestBlockEntity> chests = new ArrayList<>();
+        for (int dx = 0; dx < size.getX(); dx++) {
+            for (int dy = 0; dy < size.getY(); dy++) {
+                for (int dz = 0; dz < size.getZ(); dz++) {
+                    BlockPos pos = origin.offset(dx, dy, dz);
+                    Block block = level.getBlockState(pos).getBlock();
+                    helper.assertFalse(BANNED_TEMPLATE_BLOCKS.contains(block),
+                            "Structure template " + templateId + " contains banned block " + block + " at " + pos);
+                    if (level.getBlockEntity(pos) instanceof ChestBlockEntity chestEntity) {
+                        chests.add(chestEntity);
+                    }
+                }
+            }
+        }
+        helper.assertTrue(chests.size() == 1,
+                "Expected exactly 1 reward chest inside " + templateId + ", found " + chests.size());
+        ChestBlockEntity chest = chests.get(0);
         helper.assertTrue(chestLootKey.equals(chest.getLootTable()),
                 "Expected chest loot table " + chestLootKey.location() + ", got " + chest.getLootTable());
 
@@ -187,7 +220,10 @@ public class BiomeStructuresGameTests {
         helper.assertTrue(hasTreat && hasCrystal,
                 "Expected " + chestLootKey.location() + " chest to contain Biome Treats and Capture Crystals");
 
-        AABB bounds = new AABB(origin).inflate(10.0);
+        AABB bounds = new AABB(
+                origin.getX(), origin.getY(), origin.getZ(),
+                origin.getX() + size.getX(), origin.getY() + size.getY(), origin.getZ() + size.getZ()
+        ).inflate(2.0);
         List<T> guardians = level.getEntitiesOfClass(guardianClass, bounds);
         helper.assertTrue(guardians.size() >= 2,
                 "Expected at least 2 " + guardianType + " guardians inside " + templateId + ", found " + guardians.size());

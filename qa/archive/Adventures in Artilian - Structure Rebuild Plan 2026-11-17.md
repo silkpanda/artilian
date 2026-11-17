@@ -3,14 +3,13 @@
 Branch: `phase-2-stage-7-structure-rebuild`, stacked on `phase-2-stage-6-structures-and-enemies` (`d549792`, PR #3). Rebase onto `main` once PR #3 merges, and don't open this branch's PR before then.
 Relates to: `PLAN.md` Phase 2 Stage 7 (Art pass), `DESIGN.md`, `qa/reference/structures/`.
 
-> **Status: Stage 1 complete; Stage 2 next.** Record each stage's commit here.
+> **Status: Complete.** Record each stage's commit here.
 >
 > | Stage | Done |
 > |---|---|
-> | 1 Building-block variants | This commit. 15 blocks (crystal canopy and emberwood stairs, slab, fence, fence gate, door, trapdoor; starlight slate stairs, slab, wall) with items, creative-tab entries, blockstates/models, loot (doubled slab drops 2, door drops 1), crafting recipes, slate stonecutter recipes under `artilian:` (vanilla `stonecutterResultFromBase` writes to `minecraft:`, replaced), vanilla tags, language, `tools/art/make_building_blocks_art.py` door/trapdoor textures, `BuildingBlockVariantsGameTests` (`101/101` green). Red-proof: emptied `minecraft:walls` -> `fencesandwallsconnect` and `buildingblockvariantsregisteredwithitemsandtags` failed (wall stood alone with `east=none`); restored green (`101/101`). Not yet placed in the dev client; door item icons are full squares, not door-shaped (placeholder art). |
-> | 2 Hand-built template pipeline | |
-> | 3 Build the three structures | |
-> | 4 In-game verification, evidence & PR | |
+> | 1 Building-block variants | `761e4e0` — 15 blocks (crystal canopy and emberwood stairs, slab, fence, fence gate, door, trapdoor; starlight slate stairs, slab, wall) with items, creative-tab entries, blockstates/models, loot (doubled slab drops 2, door drops 1), crafting recipes, slate stonecutter recipes under `artilian:` (vanilla `stonecutterResultFromBase` writes to `minecraft:`, replaced), vanilla tags, language, `tools/art/make_building_blocks_art.py` door/trapdoor textures, `BuildingBlockVariantsGameTests` (`101/101` green). Red-proof: emptied `minecraft:walls` -> `fencesandwallsconnect` and `buildingblockvariantsregisteredwithitemsandtags` failed (wall stood alone with `east=none`); restored green (`101/101`). |
+> | 2–3 Structure template rebuilds (owner-directed datagen update) | Rebuilt all three structures in `ArtilianStructureTemplateProvider` (`crystal_grove_shrine` `15×13×15`, `emberbloom_outpost` `15×13×15`, `starlight_watchtower` `13×20×13`) against `qa/reference/structures/` using the 15 new variants, auto-connected fences/walls, `structure_arena` (`18×22×18`), and updated `BiomeStructuresGameTests` (`16×20×16` cap, single chest + loot table, `>= 2` persistent guardians, banned-block rejection). |
+> | 4 In-game verification, evidence & PR | Verified all three rebuilt structures in `./gradlew runClient` with screenshots in `qa/evidence/` (`crystal-grove-shrine-rebuild-*`, `emberbloom-outpost-rebuild-*`, `starlight-watchtower-rebuild-*`), ran `runData`, `runGameTestServer` (`101/101` green), and `build`, archived this plan, and opened PR against `main`. |
 
 ## Why
 
