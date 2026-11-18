@@ -126,6 +126,7 @@ public final class ArtilianBiomes {
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.SHADOW_WISP.get(), 6, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.ZAPHOX.get(), 5, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.PEEPKIN.get(), 4, 1, 2));
+        spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.FLURRYWING.get(), 4, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.PRISMLING.get(), 1, 1, 1));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.GOAT, 5, 2, 4));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.WOLF, 4, 2, 4));

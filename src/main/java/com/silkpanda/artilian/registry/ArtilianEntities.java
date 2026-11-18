@@ -8,6 +8,7 @@ import com.silkpanda.artilian.enemy.PrismSentinelEntity;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
+import com.silkpanda.artilian.pet.FlurrywingEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
@@ -106,6 +107,14 @@ public class ArtilianEntities {
                     .eyeHeight(3.3F)
                     .clientTrackingRange(10)
                     .build("prismling"));
+
+    /** Flurrywing: the kids' four-winged snow-fairy snowman, Ice / Air, about 2.75 blocks tall, Starlight Highlands only. */
+    public static final DeferredHolder<EntityType<?>, EntityType<FlurrywingEntity>> FLURRYWING =
+            ENTITY_TYPES.register("flurrywing", () -> EntityType.Builder.of(FlurrywingEntity::new, MobCategory.CREATURE)
+                    .sized(1.3F, 2.75F)
+                    .eyeHeight(2.3F)
+                    .clientTrackingRange(10)
+                    .build("flurrywing"));
 
     /** Prism Sentinel: Crystal/Earth guardian of the Crystal Grove Shrine. */
     public static final DeferredHolder<EntityType<?>, EntityType<PrismSentinelEntity>> PRISM_SENTINEL =
