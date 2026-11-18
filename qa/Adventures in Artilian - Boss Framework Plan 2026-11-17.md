@@ -3,12 +3,12 @@
 Branch: `phase-3-stage-1-boss-framework` (from `main` at `9a1655b`).
 Relates to: `PLAN.md` Phase 3 Stage 1, `PRODUCT.md` (hard constraint: telegraphed boss attacks), `DESIGN.md` (Clear Telegraphs, Boss / Danger Telegraph `#FF4D5A`, clean boss bars), `enemy/StructureEnemyEntity.java` (the pattern this extends), `safety/KidSafeTargets.java`.
 
-> **Status: Stage 1 complete; Stage 2 next.** Record each stage's commit here.
+> **Status: Stages 1–2 complete; Stage 3 next.** Record each stage's commit here.
 >
 > | Stage | Done |
 > |---|---|
 > | 1 Boss base, boss bar, arena safety | Built by OpenCode (Kylan), reviewed and fixed by Claude Code, commit `Boss Framework Stage 1`. `boss/ArtilianBossEntity` (48-block range-managed `ServerBossEvent`, `NOTCHED_10`, progress tracks health, never despawns, persistent after `finalizeSpawn`, knockback resistance 0.8), `boss/TrainingGolemEntity` (Earth, 120 health, test-only: no egg, tab entry, spawns or loot), `artilian:bosses` tag, pet target filter includes it, placeholder art from `tools/art/make_bosses_art.py`. `PetRosterGameTests.everyLivingEntityHasSpawnEgg` now exempts the golem. Review fixes: tests switched from vanilla mock players (left on the server player list) to `CustomTntGameTests.spawnSurvivalPlayer` / `removeTestPlayer`; `start/stopSeenByPlayer` now call `super`. Red-proven: range check always true turned `bossBarAddsNearbyPlayersAndDropsFarOnes` red; `removeWhenFarAway` true turned `bossNeverDespawns` red (re-run by Claude Code); golem dropped from the tag turned `bossIsInBossTagAndPetsTargetIt` red. Restored: `105/105` green. |
-> | 2 Telegraphed attacks | |
+> | 2 Telegraphed attacks | Built by OpenCode, reviewed by Claude Code, commit `Boss Framework Stage 2`. `boss/TelegraphedAttack` (record; constructor rejects windup under 30 ticks, non-positive radius, negative damage), `ArtilianBossEntity` attack scheduler (one attack at a time, 60-tick cooldown, `HoldStillWhileTelegraphingGoal` at priority 0, `#FF4D5A` dust ring every 2 ticks, `NOTE_BLOCK_BELL` at 0.8 / 1.2 / 1.6, direct elemental damage only, skips bosses, spectators and creative players), Training Golem *Ground Slam* (40 ticks, radius 4, 8 Earth), telegraph animation stretched to 2.0 s. Six new GameTests incl. `telegraphDoesNotHurtOtherBosses`. Red-proven by Claude Code: floor check off turned `telegraphRefusesWindupUnderOneAndAHalfSeconds` red; damage at windup start turned `slamDealsNoDamageBeforeWindupEnds` and `slamMissesPlayerWhoStepsOut` red; `Level.explode` with `ExplosionInteraction.MOB` at impact turned `slamNeverBreaksBlocks` (and `telegraphDoesNotHurtOtherBosses`) red. Restored: `111/111` green. |
 > | 3 Boss Altar and rematches | |
 > | 4 Client verification, live evidence, PR | |
 

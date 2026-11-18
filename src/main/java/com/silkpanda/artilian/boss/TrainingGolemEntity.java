@@ -9,6 +9,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,8 +17,17 @@ import java.util.Optional;
  * No spawn egg, creative tab entry, natural spawn, or loot.
  */
 public class TrainingGolemEntity extends ArtilianBossEntity {
+    /** Ground Slam: 40-tick warning, 4-block radius, 8 Earth damage. */
+    public static final TelegraphedAttack GROUND_SLAM =
+            new TelegraphedAttack("ground_slam", 40, 4.0, 8.0F, PetElement.EARTH);
+
     public TrainingGolemEntity(EntityType<? extends TrainingGolemEntity> type, Level level) {
         super(type, level, "training_golem");
+    }
+
+    @Override
+    protected List<TelegraphedAttack> telegraphedAttacks() {
+        return List.of(GROUND_SLAM);
     }
 
     public static AttributeSupplier.Builder createAttributes() {

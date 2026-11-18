@@ -280,7 +280,7 @@
     },
     "animation.training_golem.telegraph": {
       "loop": false,
-      "animation_length": 1.5,
+      "animation_length": 2.0,
       "bones": {
         "body": {
           "rotation": {
@@ -289,7 +289,7 @@
               0,
               0
             ],
-            "1.5": [
+            "2.0": [
               -8,
               0,
               0
@@ -303,7 +303,7 @@
               0,
               6
             ],
-            "1.5": [
+            "2.0": [
               -120,
               0,
               14
@@ -317,7 +317,7 @@
               0,
               -6
             ],
-            "1.5": [
+            "2.0": [
               -120,
               0,
               -14

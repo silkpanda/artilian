@@ -110,19 +110,19 @@ def make_animations(entity_id):
                     },
                 },
             },
-            # Stage 2 will trigger this: both arms rise over 1.5 s, no loop.
+            # Triggered during the Ground Slam windup: both arms rise over 2.0 s (40 ticks), no loop.
             f"{p}.telegraph": {
                 "loop": False,
-                "animation_length": 1.5,
+                "animation_length": 2.0,
                 "bones": {
                     "body": {
-                        "rotation": {"0.0": [0, 0, 0], "1.5": [-8, 0, 0]}
+                        "rotation": {"0.0": [0, 0, 0], "2.0": [-8, 0, 0]}
                     },
                     "arm_left": {
-                        "rotation": {"0.0": [0, 0, 6], "1.5": [-120, 0, 14]}
+                        "rotation": {"0.0": [0, 0, 6], "2.0": [-120, 0, 14]}
                     },
                     "arm_right": {
-                        "rotation": {"0.0": [0, 0, -6], "1.5": [-120, 0, -14]}
+                        "rotation": {"0.0": [0, 0, -6], "2.0": [-120, 0, -14]}
                     },
                 },
             },

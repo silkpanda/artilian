@@ -1,12 +1,15 @@
 package com.silkpanda.artilian.boss;
 
 import com.silkpanda.artilian.pet.ElementalMob;
-import net.minecraft.world.DifficultyInstance;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.BossEvent;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
@@ -17,6 +20,7 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
@@ -27,6 +31,9 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -36,6 +43,8 @@ import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Shared base for Artilian bosses. Adds a range-managed boss bar, persistence, and arena safety
@@ -46,13 +55,22 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
     /** Players inside this horizontal-and-vertical radius see the boss bar. */
     public static final double BOSS_BAR_RANGE = 48.0;
 
+    /** Minimum rest between telegraphed attacks, in ticks. */
+    public static final int DEFAULT_ATTACK_COOLDOWN = 60;
+
     private final AnimatableInstanceCache animCache = GeckoLibUtil.createInstanceCache(this);
     private final RawAnimation idleAnim;
     private final RawAnimation walkAnim;
     private final RawAnimation attackAnim;
-    /** Reserved for Stage 2 telegraphs; registered as a triggerable animation now. */
+    /** Reserved for telegraphs; registered as a triggerable animation. */
     private final RawAnimation telegraphAnim;
     private final ServerBossEvent bossEvent;
+
+    @Nullable
+    private TelegraphedAttack activeAttack;
+    private int telegraphTicks;
+    private Vec3 telegraphCenter = Vec3.ZERO;
+    private int attackCooldown;
 
     protected ArtilianBossEntity(EntityType<? extends ArtilianBossEntity> type, Level level, String animationKey) {
         super(type, level);
@@ -138,6 +156,96 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
         this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
     }
 
+    /** Attacks this boss can start. Subclasses supply their own; the base has none. */
+    protected List<TelegraphedAttack> telegraphedAttacks() {
+        return List.of();
+    }
+
+    public boolean isTelegraphing() {
+        return this.activeAttack != null;
+    }
+
+    /** Starts one attack: freeze in place, draw the ring, and begin the climbing bell. */
+    public boolean startTelegraph(TelegraphedAttack attack) {
+        if (this.isTelegraphing()) {
+            return false;
+        }
+        this.activeAttack = attack;
+        this.telegraphTicks = 0;
+        this.telegraphCenter = this.position();
+        this.getNavigation().stop();
+        Vec3 motion = this.getDeltaMovement();
+        this.setDeltaMovement(0.0, motion.y, 0.0);
+        this.triggerAnim("action", "telegraph");
+        this.playBell(0.8F);
+        return true;
+    }
+
+    /** Advances the current telegraph by one tick. No-op when no attack is running. */
+    public void tickTelegraph() {
+        TelegraphedAttack attack = this.activeAttack;
+        if (attack == null) {
+            return;
+        }
+        this.telegraphTicks++;
+        if (this.telegraphTicks % 2 == 0 && this.level() instanceof ServerLevel serverLevel) {
+            DustParticleOptions ringParticle =
+                    new DustParticleOptions(TelegraphedAttack.DANGER_RED, 1.5F);
+            for (int i = 0; i < 24; i++) {
+                double angle = i * (Math.PI * 2.0 / 24.0);
+                double x = this.telegraphCenter.x + Math.cos(angle) * attack.radius();
+                double z = this.telegraphCenter.z + Math.sin(angle) * attack.radius();
+                serverLevel.sendParticles(ringParticle, x, this.telegraphCenter.y + 0.1, z,
+                        1, 0.0, 0.0, 0.0, 0.0);
+            }
+        }
+        int third = attack.windupTicks() / 3;
+        if (this.telegraphTicks == third) {
+            this.playBell(1.2F);
+        }
+        if (this.telegraphTicks == 2 * third) {
+            this.playBell(1.6F);
+        }
+        this.getNavigation().stop();
+        if (this.telegraphTicks >= attack.windupTicks()) {
+            this.impact(attack);
+            this.activeAttack = null;
+            this.attackCooldown = DEFAULT_ATTACK_COOLDOWN;
+        }
+    }
+
+    private void playBell(float pitch) {
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
+                SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.HOSTILE, 2.0F, pitch);
+    }
+
+    /**
+     * Deals elemental damage inside the ring. Direct damage only: bosses never interact with blocks,
+     * whatever the mobGriefing rule says.
+     */
+    protected void impact(TelegraphedAttack attack) {
+        Vec3 center = this.telegraphCenter;
+        AABB area = new AABB(center, center).inflate(attack.radius(), 2.0, attack.radius());
+        double radiusSqr = attack.radius() * attack.radius();
+        for (LivingEntity target : this.level().getEntitiesOfClass(LivingEntity.class, area)) {
+            if (target == this || target instanceof ArtilianBossEntity
+                    || target.isSpectator() || (target instanceof Player player && player.isCreative())) {
+                continue;
+            }
+            double dx = target.getX() - center.x;
+            double dz = target.getZ() - center.z;
+            if (dx * dx + dz * dz > radiusSqr) {
+                continue;
+            }
+            target.hurt(this.damageSources().mobAttack(this),
+                    attack.damage() * attack.element().multiplierAgainst(target));
+        }
+        if (this.level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(attack.element().particle(), center.x, center.y + 0.1, center.z,
+                    24, 0.5, 0.1, 0.5, 0.05);
+        }
+    }
+
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
@@ -145,6 +253,23 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
             this.updateBossBarPlayers();
         }
         this.updateBossBarProgress();
+
+        if (this.isTelegraphing()) {
+            this.tickTelegraph();
+        } else if (this.attackCooldown > 0) {
+            this.attackCooldown--;
+        } else {
+            LivingEntity target = this.getTarget();
+            if (target != null && target.isAlive()) {
+                for (TelegraphedAttack attack : this.telegraphedAttacks()) {
+                    double range = attack.radius() + 1.0;
+                    if (this.distanceToSqr(target) <= range * range) {
+                        this.startTelegraph(attack);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -172,6 +297,7 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
 
     @Override
     protected void registerGoals() {
+        this.goalSelector.addGoal(0, new HoldStillWhileTelegraphingGoal());
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.15, false));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.85));
@@ -206,6 +332,23 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
 
     /** Subclass hook for mild, kid-readable elemental hit feedback. */
     protected void onElementalHit(LivingEntity target, ServerLevel level) {}
+
+    /** Locks movement, jumping and looking for the whole windup so the red ring stays put. */
+    private class HoldStillWhileTelegraphingGoal extends Goal {
+        HoldStillWhileTelegraphingGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK));
+        }
+
+        @Override
+        public boolean canUse() {
+            return ArtilianBossEntity.this.isTelegraphing();
+        }
+
+        @Override
+        public void tick() {
+            ArtilianBossEntity.this.getNavigation().stop();
+        }
+    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {

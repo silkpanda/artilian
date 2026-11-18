@@ -1,16 +1,21 @@
 package com.silkpanda.artilian.gametest;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.boss.TelegraphedAttack;
 import com.silkpanda.artilian.boss.TrainingGolemEntity;
+import com.silkpanda.artilian.pet.PetElement;
 import com.silkpanda.artilian.pet.PetService;
 import com.silkpanda.artilian.registry.ArtilianEntities;
 import com.silkpanda.artilian.registry.ArtilianTags;
+import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -102,6 +107,151 @@ public class BossFrameworkGameTests {
 
         golem.discard();
         CustomTntGameTests.removeTestPlayer(helper.getLevel(), player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "structure_arena")
+    public static void telegraphRefusesWindupUnderOneAndAHalfSeconds(GameTestHelper helper) {
+        boolean threw = false;
+        try {
+            new TelegraphedAttack("x", 29, 3.0, 1.0F, PetElement.EARTH);
+        } catch (IllegalArgumentException expected) {
+            threw = true;
+        }
+        helper.assertTrue(threw, "A 29-tick (under 1.5 s) windup must be rejected");
+
+        TelegraphedAttack allowed = new TelegraphedAttack("x", 30, 3.0, 1.0F, PetElement.EARTH);
+        helper.assertTrue(allowed.windupTicks() == 30, "A 30-tick windup must be accepted");
+        helper.succeed();
+    }
+
+    @GameTest(template = "structure_arena", timeoutTicks = 120)
+    public static void slamDealsNoDamageBeforeWindupEnds(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        TrainingGolemEntity golem = helper.spawn(ArtilianEntities.TRAINING_GOLEM.get(), 9, 1, 9);
+        golem.setNoAi(true);
+        ServerPlayer player = CustomTntGameTests.spawnSurvivalPlayer(
+                helper, "slam-timing", new Vec3(11.5, 1.0, 9.5)); // 2 blocks from the golem
+        float maxHealth = player.getMaxHealth();
+
+        // Fresh ServerPlayers have 60 ticks of spawn protection; let it lapse before damage is checked.
+        helper.runAfterDelay(61, () -> {
+            helper.assertTrue(golem.startTelegraph(TrainingGolemEntity.GROUND_SLAM),
+                    "Ground Slam must start when nothing else is telegraphing");
+            for (int tick = 0; tick < 39; tick++) {
+                golem.tickTelegraph();
+            }
+            helper.assertTrue(player.getHealth() == maxHealth,
+                    "No damage before the 40-tick windup ends: expected " + maxHealth
+                            + ", got " + player.getHealth());
+            helper.assertTrue(golem.isTelegraphing(), "Telegraph must still be active at tick 39");
+
+            golem.tickTelegraph();
+            golem.tickTelegraph();
+            helper.assertTrue(player.getHealth() < maxHealth,
+                    "Impact at tick 40 must damage a player inside the ring");
+            helper.assertFalse(golem.isTelegraphing(), "Telegraph must be over after impact");
+
+            golem.discard();
+            CustomTntGameTests.removeTestPlayer(level, player);
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "structure_arena", timeoutTicks = 120)
+    public static void slamMissesPlayerWhoStepsOut(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        TrainingGolemEntity golem = helper.spawn(ArtilianEntities.TRAINING_GOLEM.get(), 9, 1, 9);
+        golem.setNoAi(true);
+        ServerPlayer player = CustomTntGameTests.spawnSurvivalPlayer(
+                helper, "slam-dodge", new Vec3(11.5, 1.0, 9.5)); // 2 blocks from the golem
+        float maxHealth = player.getMaxHealth();
+
+        // Spawn protection must be over so a red-proof that damages early would go red here.
+        helper.runAfterDelay(61, () -> {
+            golem.startTelegraph(TrainingGolemEntity.GROUND_SLAM);
+            for (int tick = 0; tick < 30; tick++) {
+                golem.tickTelegraph();
+            }
+            player.moveTo(helper.absoluteVec(new Vec3(17.5, 1.0, 9.5))); // 8 blocks from the golem
+            for (int tick = 0; tick < 15; tick++) {
+                golem.tickTelegraph();
+            }
+            helper.assertTrue(player.getHealth() == maxHealth,
+                    "A player outside the ring at impact must take no damage: got " + player.getHealth());
+
+            golem.discard();
+            CustomTntGameTests.removeTestPlayer(level, player);
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "structure_arena")
+    public static void slamNeverBreaksBlocks(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        level.getGameRules().getRule(GameRules.RULE_MOBGRIEFING).set(true, level.getServer());
+
+        BlockPos stonePos = new BlockPos(11, 1, 9);
+        BlockPos glassPos = new BlockPos(9, 1, 11);
+        BlockPos chestPos = new BlockPos(11, 1, 11);
+        helper.setBlock(stonePos, Blocks.STONE);
+        helper.setBlock(glassPos, Blocks.GLASS);
+        helper.setBlock(chestPos, Blocks.CHEST);
+
+        TrainingGolemEntity golem = helper.spawn(ArtilianEntities.TRAINING_GOLEM.get(), 9, 1, 9);
+        golem.setNoAi(true);
+        golem.startTelegraph(TrainingGolemEntity.GROUND_SLAM);
+        for (int tick = 0; tick < 45; tick++) {
+            golem.tickTelegraph();
+        }
+
+        helper.assertBlockPresent(Blocks.STONE, stonePos);
+        helper.assertBlockPresent(Blocks.GLASS, glassPos);
+        helper.assertBlockPresent(Blocks.CHEST, chestPos);
+
+        golem.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "structure_arena", timeoutTicks = 100)
+    public static void bossHoldsStillDuringWindup(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        TrainingGolemEntity golem = helper.spawn(ArtilianEntities.TRAINING_GOLEM.get(), 9, 1, 9);
+        // AI on: the hold-still goal must beat melee and strolling during the windup.
+        ServerPlayer player = CustomTntGameTests.spawnSurvivalPlayer(
+                helper, "windup-watcher", new Vec3(15.5, 1.0, 9.5)); // 6 blocks: outside slam, inside follow range
+
+        helper.assertTrue(golem.startTelegraph(TrainingGolemEntity.GROUND_SLAM),
+                "Ground Slam must start with AI enabled");
+        Vec3 start = golem.position();
+        helper.runAfterDelay(20, () -> {
+            double moved = Math.hypot(golem.getX() - start.x, golem.getZ() - start.z);
+            helper.assertTrue(moved < 0.05, "Boss drifted " + moved + " blocks during the windup");
+            helper.assertTrue(golem.isTelegraphing(), "Boss must still be telegraphing after 20 ticks");
+            golem.discard();
+            CustomTntGameTests.removeTestPlayer(level, player);
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "structure_arena")
+    public static void telegraphDoesNotHurtOtherBosses(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        TrainingGolemEntity striker = helper.spawn(ArtilianEntities.TRAINING_GOLEM.get(), 9, 1, 9);
+        TrainingGolemEntity other = helper.spawn(ArtilianEntities.TRAINING_GOLEM.get(), 11, 1, 9);
+        striker.setNoAi(true);
+        other.setNoAi(true);
+        float otherMaxHealth = other.getMaxHealth();
+
+        striker.startTelegraph(TrainingGolemEntity.GROUND_SLAM);
+        for (int tick = 0; tick < 41; tick++) {
+            striker.tickTelegraph();
+        }
+        helper.assertTrue(other.getHealth() == otherMaxHealth,
+                "A boss must never damage another boss: got " + other.getHealth() + " health");
+
+        striker.discard();
+        other.discard();
         helper.succeed();
     }
 }
