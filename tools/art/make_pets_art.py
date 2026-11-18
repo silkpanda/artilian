@@ -2214,6 +2214,10 @@ def make_zapkin():
 def main():
     import sys
 
+    if "--zapkin" in sys.argv:
+        make_zapkin()
+        print("Generated Zapkin 64x64 texture and glowmask.")
+        return
     if "--frogduck" in sys.argv:
         make_frogduck()
         print("Generated Frogduck 128x64 texture.")
@@ -2248,7 +2252,7 @@ def main():
     )
     draw_crystal(GOLD_DARK, GOLD, GOLD_HI).save(item_dir / "capture_crystal_fainted.png")
     make_biome_treat().save(item_dir / "biome_treat.png")
-    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin, Prismling, Flurrywing).")
+    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin, Prismling, Flurrywing, Sunbeam, Frogduck, Zapkin).")
 
 
 if __name__ == "__main__":
