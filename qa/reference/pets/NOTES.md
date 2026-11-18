@@ -1,7 +1,7 @@
 # Pet drawing notes
 
 The kids' direction for each drawing, recorded when the drawing was filed.
-Prismling and Flurrywing have their own plans; the rest are not built yet.
+All five pets (Prismling, Flurrywing, Sunbeam, Frogduck, and Zapkin) are documented in `PLAN.md` under Phase 2 Stage 6.
 
 ## lightning-guy-drawing-2026-11-17.jpg
 

@@ -38,11 +38,11 @@ The first build downloads Minecraft, NeoForge, and JDK 21, so give it several mi
 adventures-in-artilian/
 ├── .github/                  # CI workflow (tests.yml) and PR template
 ├── deploy/                   # Family co-op JAR packaging & install guide
-├── qa/                       # Per-feature stage plans (archive/ for completed) & QA findings
+├── qa/                       # QA findings (FINDINGS.md), verification screenshots (evidence/), and reference drawings (reference/)
 ├── security/                 # Ownership & anti-griefing security findings
 ├── AGENTS.md / CLAUDE.md     # Agent operating rules
 ├── DESIGN.md                 # Visual tokens, cartoony style & HUD rules
-├── PLAN.md                   # Master phased roadmap & session Now handoff
+├── PLAN.md                   # Single consolidated phased & staged plan + session Now handoff
 ├── PRODUCT.md                # Product spec, Alex & Steve wishlists, constraints
 └── TECH_DEBT.md              # Code health register
 ```

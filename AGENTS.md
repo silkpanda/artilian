@@ -7,8 +7,8 @@ Instructions for every coding agent working in this repo (**Claude Code**, **Ant
 
 - `README.md`: setup and how to run it. Read it first.
 - `PRODUCT.md`: who it's for and what it must do.
-- `PLAN.md`: where each phase stands. Its **Now** section says what's happening right now.
-- `qa/`: one plan per feature, built in stages. Finished plans move to `qa/archive/`.
+- `PLAN.md`: the single consolidated plan organized by phases and stages within each phase (sub-stage tables, decisions, red-proofs, evidence), plus the **Now** section showing what is happening right now.
+- `qa/`: QA findings (`qa/FINDINGS.md`), client verification screenshots (`qa/evidence/`), and reference drawings/specs (`qa/reference/`).
 - `DESIGN.md`: visual direction, UI colors, HUD/entity style rules. Read it before building any screen or model.
 - `qa/FINDINGS.md`, `security/FINDINGS.md`, `TECH_DEBT.md`: the registers. Log a finding the moment it's found.
 - `deploy/README.md`: how mod JARs are packaged and distributed for family co-op play.
@@ -24,7 +24,7 @@ Instructions for every coding agent working in this repo (**Claude Code**, **Ant
 ```
 
 ## Who does what
-- **Claude Code, Antigravity, and OpenCode** collaborate across phases on feature branches: pick up the active task from `PLAN.md`'s **Now** section, author or follow the stage plan in `qa/`, implement on a dedicated branch/worktree, and verify all Gradle checks before opening a PR.
+- **Claude Code, Antigravity, and OpenCode** collaborate across phases on feature branches: pick up the active task from `PLAN.md`'s **Now** section, follow or expand the relevant Phase & Stage directly inside `PLAN.md`, implement on a dedicated branch/worktree, and verify all Gradle checks before opening a PR.
 
 ## Start and end of every session
 - **Start:** read the **Now** section near the top of `PLAN.md` before anything else. It says what's in progress, what's next, and what's waiting on the owner. If it disagrees with git (`git status`, `git worktree list`, open PRs), trust git and say so.
@@ -32,8 +32,8 @@ Instructions for every coding agent working in this repo (**Claude Code**, **Ant
 - Short questions that change nothing don't need an update.
 
 ## How work is done here
-1. **Plan first.** A feature gets a plan in `qa/`, copied from `qa/FEATURE-PLAN.md`, with numbered stages. Build one stage at a time, and record what each stage actually did in the plan's status table.
-2. **Tests prove the rule.** For each new rule or control (e.g., Chester UUID ownership, non-lethal pet fainting, TNT block-damage config), write the GameTest/unit test, switch the control off, confirm the test goes red, and switch it back on. The plan's status table says which tests turned red.
+1. **Plan first.** Every stage (and sub-stage) lives directly in `PLAN.md` under its Phase. Build one stage at a time, and record what each stage actually did (commits, red-proofs, evidence) in `PLAN.md`.
+2. **Tests prove the rule.** For each new rule or control (e.g., Chester UUID ownership, non-lethal pet fainting, TNT block-damage config), write the GameTest/unit test, switch the control off, confirm the test goes red, and switch it back on. Record which tests turned red in that stage's entry in `PLAN.md`.
 3. **Check it in-game** (`./gradlew runClient` / LAN co-op) for anything a player sees, hears, or interacts with.
 4. **Security & ownership gate.** Anything that touches player inventory ownership (Chester), server permissions/commands, or world protection (custom TNT griefing controls) gets probes/GameTests that are red-proven first and then HELD, and an entry in `security/FINDINGS.md`.
 5. **Commits** look like `<Feature> Stage 2: <what changed, in plain words>`, or `Plan: ...` for plan-only changes. One branch per feature, merged into `main` by pull request once CI is green. Fill in every section of the PR template.
