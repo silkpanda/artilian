@@ -42,6 +42,7 @@ public final class ArtilianClient {
         event.registerEntityRenderer(ArtilianEntities.FLURRYWING.get(), FlurrywingRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.SUNBEAM.get(), SunbeamRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.FROGDUCK.get(), FrogduckRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.ZAPKIN.get(), ZapkinRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.PRISM_SENTINEL.get(),
                 ctx -> new StructureEnemyRenderer<>(ctx, "prism_sentinel", 0.55F));
         event.registerEntityRenderer(ArtilianEntities.CINDER_RAIDER.get(),

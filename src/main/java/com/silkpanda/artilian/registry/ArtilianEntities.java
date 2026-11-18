@@ -15,6 +15,7 @@ import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
 import com.silkpanda.artilian.pet.SunbeamEntity;
+import com.silkpanda.artilian.pet.ZapkinEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
 import com.silkpanda.artilian.tnt.ArtilianPrimedTnt;
 import net.minecraft.core.registries.Registries;
@@ -133,6 +134,13 @@ public class ArtilianEntities {
                     .eyeHeight(0.75F)
                     .clientTrackingRange(10)
                     .build("frogduck"));
+    /** Zapkin: kid-drawn Electric buddy native to Starlight Highlands. */
+    public static final DeferredHolder<EntityType<?>, EntityType<ZapkinEntity>> ZAPKIN =
+            ENTITY_TYPES.register("zapkin", () -> EntityType.Builder.of(ZapkinEntity::new, MobCategory.CREATURE)
+                    .sized(0.95F, 1.55F)
+                    .eyeHeight(1.10F)
+                    .clientTrackingRange(10)
+                    .build("zapkin"));
 
     /** Prism Sentinel: Crystal/Earth guardian of the Crystal Grove Shrine. */
     public static final DeferredHolder<EntityType<?>, EntityType<PrismSentinelEntity>> PRISM_SENTINEL =

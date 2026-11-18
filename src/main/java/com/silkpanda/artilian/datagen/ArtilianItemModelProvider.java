@@ -27,6 +27,7 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.withExistingParent("flurrywing_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("sunbeam_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("frogduck_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("zapkin_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("prism_sentinel_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("cinder_raider_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("astral_stalker_spawn_egg", mcLoc("item/template_spawn_egg"));

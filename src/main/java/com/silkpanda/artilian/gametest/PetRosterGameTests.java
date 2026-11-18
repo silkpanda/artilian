@@ -14,6 +14,7 @@ import com.silkpanda.artilian.pet.PrismlingEntity;
 import com.silkpanda.artilian.pet.PetElement;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
 import com.silkpanda.artilian.pet.SunbeamEntity;
+import com.silkpanda.artilian.pet.ZapkinEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
 import com.silkpanda.artilian.registry.ArtilianDataComponents;
@@ -1299,6 +1300,116 @@ public class PetRosterGameTests {
                 "ELECTRIC vs WATER Frogduck must be 1.5x, got " + incomingMult);
 
         frogduck.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void zapkinIsPureElectricSizedAndSpawnsInStarlightHighlands(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ZapkinEntity zapkin = ArtilianEntities.ZAPKIN.get().create(level);
+        helper.assertTrue(zapkin != null
+                        && zapkin.getPrimaryElement() == PetElement.ELECTRIC
+                        && zapkin.getSecondaryElement().isEmpty(),
+                "Zapkin must be pure ELECTRIC");
+        helper.assertTrue(zapkin.getBbHeight() >= 1.4F && zapkin.getBbHeight() <= 1.8F,
+                "Zapkin height must be ~1.55 blocks, got " + zapkin.getBbHeight());
+
+        Registry<Biome> biomes = level.registryAccess().registryOrThrow(Registries.BIOME);
+        Holder<Biome> starlight = biomes.getHolderOrThrow(ArtilianBiomes.STARLIGHT_HIGHLANDS);
+        Holder<Biome> crystalWoods = biomes.getHolderOrThrow(ArtilianBiomes.CRYSTAL_CANOPY_WOODS);
+        boolean inStarlight = starlight.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.ZAPKIN.get());
+        boolean inWoods = crystalWoods.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.ZAPKIN.get());
+        helper.assertTrue(inStarlight && !inWoods,
+                "Zapkin must spawn in Starlight Highlands only");
+
+        BlockPos spawnPos = helper.absolutePos(new BlockPos(7, 2, 7));
+        level.setBlockAndUpdate(spawnPos, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(spawnPos.above(), Blocks.AIR.defaultBlockState());
+
+        level.setBlockAndUpdate(spawnPos.below(), ArtilianBlocks.STARLIGHT_TURF.get().defaultBlockState());
+        helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.ZAPKIN.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Zapkin must be allowed to spawn on Starlight Turf");
+
+        level.setBlockAndUpdate(spawnPos.below(), ArtilianBlocks.STARLIGHT_SLATE.get().defaultBlockState());
+        helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.ZAPKIN.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Zapkin must be allowed to spawn on Starlight Slate");
+
+        level.setBlockAndUpdate(spawnPos.below(), Blocks.STONE.defaultBlockState());
+        helper.assertFalse(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.ZAPKIN.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Zapkin must not spawn on plain stone");
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void zapkinBattlesWithElectricMatchups(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "ZapkinBattle");
+
+        ZapkinEntity zapkin = ArtilianEntities.ZAPKIN.get().create(level);
+        BlockPos zapPos = helper.absolutePos(new BlockPos(6, 1, 7));
+        zapkin.moveTo(zapPos.getX() + 0.5, zapPos.getY(), zapPos.getZ() + 0.5, 0.0F, 0.0F);
+        zapkin.setOwner(player);
+        zapkin.addAffinity(100);
+        level.addFreshEntity(zapkin);
+
+        Drowned drowned = EntityType.DROWNED.create(level);
+        drowned.moveTo(zapPos.getX() + 1.2, zapPos.getY(), zapPos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(drowned);
+        float before = drowned.getHealth();
+        zapkin.doHurtTarget(drowned);
+        float damage = before - drowned.getHealth();
+        helper.assertTrue(damage > 6.0F,
+                "Zapkin (4.5 base, ELECTRIC) vs Water Drowned should deal 1.5x (> 6.0 after armor), got " + damage);
+
+        drowned.discard();
+        zapkin.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void zapkinCapturesBefriendsSummonsAndFaintsSafelyIntoCrystal(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "ZapkinRoster");
+
+        ZapkinEntity wild = ArtilianEntities.ZAPKIN.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(6, 1, 7));
+        wild.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(wild);
+
+        ItemStack treats = new ItemStack(ArtilianItems.BIOME_TREAT.get(), 4);
+        player.setItemInHand(InteractionHand.MAIN_HAND, treats);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        helper.assertTrue(wild.isBefriended(), "Two Biome Treats should befriend Zapkin");
+
+        ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        CapturedPetData data = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(data != null
+                        && data.primaryElement() == PetElement.ELECTRIC
+                        && data.secondaryElement().isEmpty()
+                        && data.entityType().equals(ArtilianEntities.ZAPKIN.getId()),
+                "Capture Crystal should store Zapkin identity and pure ELECTRIC element");
+
+        crystal.use(level, player, InteractionHand.MAIN_HAND);
+        List<ZapkinEntity> summoned = level.getEntitiesOfClass(ZapkinEntity.class, wild.getBoundingBox().inflate(10.0));
+        helper.assertTrue(summoned.size() == 1, "Capture Crystal must summon Zapkin");
+
+        ZapkinEntity active = summoned.get(0);
+        active.hurt(level.damageSources().mobAttack(active), 999.0F);
+        helper.assertFalse(active.isAlive(), "Fainted Zapkin should withdraw from the world");
+        CapturedPetData fainted = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(fainted != null && fainted.fainted()
+                        && Math.abs(CaptureCrystalItem.getVisualState(crystal) - 0.25F) < 0.01F,
+                "Fainted Zapkin must safely return to its crystal in fainted state");
+
         helper.succeed();
     }
 }

@@ -2001,6 +2001,126 @@ def make_frogduck():
     img.save(dest)
 
 
+def make_zapkin():
+    """64x64 texture + glowmask for Zapkin (kid-drawn yellow-and-red lightning buddy)."""
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+
+    pal = {
+        "Y": (250, 204, 21, 255),
+        "H": (254, 240, 138, 255),
+        "W": (255, 251, 235, 255),
+        "R": (220, 38, 38, 255),
+        "D": (153, 27, 27, 255),
+        "O": (249, 115, 22, 255),
+    }
+
+    def outline_box(target, u, v, w, h, d, fill_col, edge_col, hi_col=None):
+        rects = faces(u, v, w, h, d)
+        for name, (rx, ry, rw, rh) in rects.items():
+            for px in range(rx, rx + rw):
+                for py in range(ry, ry + rh):
+                    is_edge = (px == rx or px == rx + rw - 1 or py == ry or py == ry + rh - 1)
+                    if is_edge:
+                        put(target, px, py, edge_col)
+                    elif hi_col is not None and (py == ry + 1 or (name == "top" and px == rx + 1)):
+                        put(target, px, py, hi_col)
+                    else:
+                        put(target, px, py, fill_col)
+
+    # Head [8, 6, 7] at (0, 0)
+    outline_box(img, 0, 0, 8, 6, 7, pal["Y"], pal["R"], pal["H"])
+    head_front = [
+        "RRRRRRRR",
+        "RWHRRHWR",
+        "RYHRRHYR",
+        "RYYYYYYR",
+        "RYRYYRYR",
+        "RRDRRDRR",
+    ]
+    paint_geo_box(img, 0, 0, 8, 6, 7, {"front": head_front}, pal)
+    head_glow = [
+        "........",
+        ".WH..HW.",
+        ".YH..HY.",
+        "........",
+        "........",
+        "........",
+    ]
+    paint_geo_box(glow, 0, 0, 8, 6, 7, {"front": head_glow}, pal)
+
+    # Brow flare [9, 2, 2] at (30, 0)
+    outline_box(img, 30, 0, 9, 2, 2, pal["R"], pal["D"], pal["O"])
+
+    # Lightning head spikes: bright yellow fill with crisp red outer edge
+    for (u, v, w, h, d) in [
+        (30, 5, 2, 3, 2),
+        (39, 5, 2, 2, 2),
+        (48, 5, 2, 3, 2),
+        (56, 5, 2, 2, 2),
+        (30, 11, 2, 3, 2),
+        (39, 11, 2, 3, 2),
+        (48, 11, 2, 2, 2),
+    ]:
+        rects = faces(u, v, w, h, d)
+        for name, (rx, ry, rw, rh) in rects.items():
+            for px in range(rx, rx + rw):
+                for py in range(ry, ry + rh):
+                    col = pal["R"] if (px == rx and name in ("front", "back")) else pal["H"]
+                    if py == ry and name in ("front", "back"):
+                        col = pal["W"]
+                    put(img, px, py, col)
+                    put(glow, px, py, pal["H"])
+
+    # Torso waist [6, 3, 4] at (0, 18) & chest [7, 4, 5] at (20, 18)
+    outline_box(img, 0, 18, 6, 3, 4, pal["Y"], pal["R"], pal["H"])
+    outline_box(img, 20, 18, 7, 4, 5, pal["Y"], pal["R"], pal["H"])
+    chest_front = [
+        "RRRRRRR",
+        "RYYWYYR",
+        "RYWRWYR",
+        "RRRRRRR",
+    ]
+    paint_geo_box(img, 20, 18, 7, 4, 5, {"front": chest_front}, pal)
+    chest_glow = [
+        ".......",
+        "...W...",
+        "..W.W..",
+        ".......",
+    ]
+    paint_geo_box(glow, 20, 18, 7, 4, 5, {"front": chest_glow}, pal)
+
+    # Arms [4, 2, 2] at (45, 18) and (45, 23): yellow core with red top/bottom edge
+    for av in (18, 23):
+        for name, (rx, ry, rw, rh) in faces(45, av, 4, 2, 2).items():
+            for px in range(rx, rx + rw):
+                for py in range(ry, ry + rh):
+                    put(img, px, py, pal["R"] if py == ry else pal["Y"])
+
+    # Legs [2, 5, 2] at (0, 26) and (10, 26): yellow core with red left/right outer edge
+    for lu in (0, 10):
+        for name, (rx, ry, rw, rh) in faces(lu, 26, 2, 5, 2).items():
+            for px in range(rx, rx + rw):
+                for py in range(ry, ry + rh):
+                    put(img, px, py, pal["R"] if (px == rx or py == ry + rh - 1) else pal["Y"])
+
+    # Feet [3, 2, 4] at (0, 34) and (15, 34)
+    outline_box(img, 0, 34, 3, 2, 4, pal["Y"], pal["R"], pal["H"])
+    outline_box(img, 15, 34, 3, 2, 4, pal["Y"], pal["R"], pal["H"])
+
+    # Round yellow-and-red orb hands: core [4, 4, 4] + ring [3, 3, 5]
+    for (cu, ru) in [(0, 41), (32, 41)]:
+        outline_box(img, cu, 41, 4, 4, 4, pal["H"], pal["R"], pal["W"])
+        outline_box(glow, cu, 41, 4, 4, 4, pal["H"], (0, 0, 0, 0), pal["W"])
+    for ru in (16, 48):
+        outline_box(img, ru, 41, 3, 3, 5, pal["Y"], pal["R"], pal["H"])
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "zapkin.png")
+    glow.save(entity_dir / "zapkin_glowmask.png")
+
+
 def main():
     import sys
 
@@ -2027,6 +2147,7 @@ def main():
     make_flurrywing()
     make_sunbeam()
     make_frogduck()
+    make_zapkin()
 
     item_dir = OUT / "item"
     item_dir.mkdir(parents=True, exist_ok=True)
