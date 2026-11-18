@@ -2002,118 +2002,201 @@ def make_frogduck():
 
 
 def make_zapkin():
-    """64x64 texture + glowmask for Zapkin (kid-drawn yellow-and-red lightning buddy)."""
-    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
-    glow = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    """128x128 texture + glowmask for Zapkin (sleek storm-navy, electric-cyan, neon-yellow & plasma-red electric buddy)."""
+    img = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
 
     pal = {
-        "Y": (250, 204, 21, 255),
-        "H": (254, 240, 138, 255),
-        "W": (255, 251, 235, 255),
-        "R": (220, 38, 38, 255),
-        "D": (153, 27, 27, 255),
-        "O": (249, 115, 22, 255),
+        "N": (30, 38, 66, 255),      # Storm navy armor
+        "S": (18, 23, 42, 255),      # Deep slate shadow
+        "B": (49, 64, 108, 255),     # Steel-blue highlight
+        "Y": (250, 204, 21, 255),    # High-voltage electric yellow
+        "H": (254, 240, 138, 255),   # Bright spark yellow
+        "W": (255, 253, 240, 255),   # White-hot plasma core
+        "C": (56, 189, 248, 255),    # Electric sky cyan
+        "K": (125, 249, 255, 255),   # Neon cyan glow
+        "R": (239, 68, 68, 255),     # Charged crimson-red plasma
+        "O": (249, 115, 22, 255),    # Hot amber-orange edge
     }
 
-    def outline_box(target, u, v, w, h, d, fill_col, edge_col, hi_col=None):
-        rects = faces(u, v, w, h, d)
-        for name, (rx, ry, rw, rh) in rects.items():
+    def box_fill(target, u, v, w, h, d, fill_col, edge_col, hi_col=None):
+        for name, (rx, ry, rw, rh) in faces(u, v, w, h, d).items():
             for px in range(rx, rx + rw):
                 for py in range(ry, ry + rh):
                     is_edge = (px == rx or px == rx + rw - 1 or py == ry or py == ry + rh - 1)
                     if is_edge:
                         put(target, px, py, edge_col)
-                    elif hi_col is not None and (py == ry + 1 or (name == "top" and px == rx + 1)):
+                    elif hi_col is not None and (py == ry + 1 or name == "top"):
                         put(target, px, py, hi_col)
                     else:
                         put(target, px, py, fill_col)
 
-    # Head [8, 6, 7] at (0, 0)
-    outline_box(img, 0, 0, 8, 6, 7, pal["Y"], pal["R"], pal["H"])
-    head_front = [
-        "RRRRRRRR",
-        "RWHRRHWR",
-        "RYHRRHYR",
-        "RYYYYYYR",
-        "RYRYYRYR",
-        "RRDRRDRR",
-    ]
-    paint_geo_box(img, 0, 0, 8, 6, 7, {"front": head_front}, pal)
-    head_glow = [
-        "........",
-        ".WH..HW.",
-        ".YH..HY.",
-        "........",
-        "........",
-        "........",
-    ]
-    paint_geo_box(glow, 0, 0, 8, 6, 7, {"front": head_glow}, pal)
+    # Head cranium [7, 5, 7] at (0, 0)
+    box_fill(img, 0, 0, 7, 5, 7, pal["N"], pal["S"], pal["B"])
+    # Electric yellow stripe along top & back of cranium
+    paint_geo_box(img, 0, 0, 7, 5, 7, {
+        "top": [
+            "SSBBBSS",
+            "SYYYYYS",
+            "SYHHHYH",
+            "SYHHHYH",
+            "SYYYYYS",
+            "SYCYCYS",
+            "SSBBBSS",
+        ],
+        "back": [
+            "SYYYYYS",
+            "SYHHHYH",
+            "SSCYCSS",
+            "SSCYCSS",
+            "SSSSSSS",
+        ],
+    }, pal)
+    paint_geo_box(glow, 0, 0, 7, 5, 7, {
+        "top": [
+            ".......",
+            ".YYYYY.",
+            ".YHHHY.",
+            ".YHHHY.",
+            ".YYYYY.",
+            "..C.C..",
+            ".......",
+        ],
+    }, pal)
 
-    # Brow flare [9, 2, 2] at (30, 0)
-    outline_box(img, 30, 0, 9, 2, 2, pal["R"], pal["D"], pal["O"])
+    # Sleek storm-visor face plate [7, 4, 1] at (28, 0)
+    box_fill(img, 28, 0, 7, 4, 1, pal["S"], pal["B"])
+    visor_front = [
+        "BBBBBBB",
+        "SKWKWKS",
+        "SKCKCKS",
+        "SRYYRYS",
+    ]
+    paint_geo_box(img, 28, 0, 7, 4, 1, {"front": visor_front}, pal)
+    visor_glow = [
+        ".......",
+        ".KW.WK.",
+        ".KC.CK.",
+        "..YY.Y.",
+    ]
+    paint_geo_box(glow, 28, 0, 7, 4, 1, {"front": visor_glow}, pal)
 
-    # Lightning head spikes: bright yellow fill with crisp red outer edge
-    for (u, v, w, h, d) in [
-        (30, 5, 2, 3, 2),
-        (39, 5, 2, 2, 2),
-        (48, 5, 2, 3, 2),
-        (56, 5, 2, 2, 2),
-        (30, 11, 2, 3, 2),
-        (39, 11, 2, 3, 2),
-        (48, 11, 2, 2, 2),
+    # Cheek lightning fins [2, 3, 2] at (44, 0) and (52, 0)
+    for cu in (44, 52):
+        box_fill(img, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
+        box_fill(glow, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
+
+    # Three jagged lightning head spikes (glowing electric yellow -> white-hot tips!)
+    for (u, v, w, h, d, tip_col) in [
+        (0, 14, 2, 3, 2, pal["Y"]),
+        (8, 14, 1, 2, 1, pal["W"]),
+        (14, 14, 2, 3, 2, pal["Y"]),
+        (22, 14, 1, 3, 1, pal["W"]),
+        (28, 14, 2, 3, 2, pal["Y"]),
+        (36, 14, 2, 3, 2, pal["H"]),
+        (44, 14, 1, 3, 1, pal["W"]),
     ]:
-        rects = faces(u, v, w, h, d)
-        for name, (rx, ry, rw, rh) in rects.items():
+        for name, (rx, ry, rw, rh) in faces(u, v, w, h, d).items():
             for px in range(rx, rx + rw):
                 for py in range(ry, ry + rh):
-                    col = pal["R"] if (px == rx and name in ("front", "back")) else pal["H"]
-                    if py == ry and name in ("front", "back"):
-                        col = pal["W"]
-                    put(img, px, py, col)
-                    put(glow, px, py, pal["H"])
+                    c = pal["W"] if py == ry else (pal["O"] if (py == ry + rh - 1 and h >= 3) else pal["H"])
+                    if tip_col == pal["W"]:
+                        c = pal["W"] if py == ry else pal["H"]
+                    put(img, px, py, c)
+                    put(glow, px, py, c)
 
-    # Torso waist [6, 3, 4] at (0, 18) & chest [7, 4, 5] at (20, 18)
-    outline_box(img, 0, 18, 6, 3, 4, pal["Y"], pal["R"], pal["H"])
-    outline_box(img, 20, 18, 7, 4, 5, pal["Y"], pal["R"], pal["H"])
-    chest_front = [
-        "RRRRRRR",
-        "RYYWYYR",
-        "RYWRWYR",
-        "RRRRRRR",
-    ]
-    paint_geo_box(img, 20, 18, 7, 4, 5, {"front": chest_front}, pal)
-    chest_glow = [
-        ".......",
-        "...W...",
-        "..W.W..",
-        ".......",
-    ]
-    paint_geo_box(glow, 20, 18, 7, 4, 5, {"front": chest_glow}, pal)
+    # Waist [5, 3, 4] at (0, 26) — dark slate with glowing cyan energy belt
+    box_fill(img, 0, 26, 5, 3, 4, pal["S"], pal["N"])
+    paint_geo_box(img, 0, 26, 5, 3, 4, {
+        "front": ["SSSSS", "CKWKC", "SSSSS"],
+        "back":  ["SSSSS", "CKCKC", "SSSSS"],
+    }, pal)
+    paint_geo_box(glow, 0, 26, 5, 3, 4, {
+        "front": [".....", "CKWKC", "....."],
+        "back":  [".....", "CKCKC", "....."],
+    }, pal)
 
-    # Arms [4, 2, 2] at (45, 18) and (45, 23): yellow core with red top/bottom edge
-    for av in (18, 23):
-        for name, (rx, ry, rw, rh) in faces(45, av, 4, 2, 2).items():
+    # Chest [8, 4, 5] at (18, 26) — storm-navy armor with yellow/cyan circuit seams
+    box_fill(img, 18, 26, 8, 4, 5, pal["N"], pal["S"], pal["B"])
+    paint_geo_box(img, 18, 26, 8, 4, 5, {
+        "front": [
+            "SBBBBBBBS"[:8],
+            "NYYNNYYN",
+            "NCNNNNNC",
+            "SSSSSSSS",
+        ],
+        "back": [
+            "SBBBBBBBS"[:8],
+            "NCNNNNNC",
+            "NYYNNYYN",
+            "SSSSSSSS",
+        ],
+    }, pal)
+    paint_geo_box(glow, 18, 26, 8, 4, 5, {
+        "front": ["........", ".YY..YY.", ".C....C.", "........"],
+        "back":  ["........", ".C....C.", ".YY..YY.", "........"],
+    }, pal)
+
+    # Chest lightning core [4, 3, 1] at (44, 26)
+    box_fill(img, 44, 26, 4, 3, 1, pal["H"], pal["R"], pal["W"])
+    paint_geo_box(img, 44, 26, 4, 3, 1, {"front": ["RRWR", "RWHR", "RWRR"]}, pal)
+    paint_geo_box(glow, 44, 26, 4, 3, 1, {"front": ["..W.", ".WH.", ".W.."]}, pal)
+
+    # Shoulders [3, 2, 4] at (56, 26) & (70, 26) — crimson-trimmed storm pauldrons with yellow stripes
+    for su in (56, 70):
+        box_fill(img, su, 26, 3, 2, 4, pal["N"], pal["R"], pal["Y"])
+        paint_geo_box(glow, su, 26, 3, 2, 4, {"top": ["...", ".Y.", ".Y.", "..."]}, pal)
+
+    # Back Tesla coils [2, 5, 2] at (84, 26) & (92, 26)
+    for cu in (84, 92):
+        for name, (rx, ry, rw, rh) in faces(cu, 26, 2, 5, 2).items():
             for px in range(rx, rx + rw):
                 for py in range(ry, ry + rh):
-                    put(img, px, py, pal["R"] if py == ry else pal["Y"])
+                    row = py - ry
+                    c = pal["W"] if row == 0 else (pal["K"] if row in (1, 3) else pal["N"])
+                    put(img, px, py, c)
+                    if row in (0, 1, 3):
+                        put(glow, px, py, c)
 
-    # Legs [2, 5, 2] at (0, 26) and (10, 26): yellow core with red left/right outer edge
-    for lu in (0, 10):
-        for name, (rx, ry, rw, rh) in faces(lu, 26, 2, 5, 2).items():
-            for px in range(rx, rx + rw):
-                for py in range(ry, ry + rh):
-                    put(img, px, py, pal["R"] if (px == rx or py == ry + rh - 1) else pal["Y"])
+    # Arms [3, 2, 2] + cuffs [2, 2, 2]
+    for au in (0, 20):
+        box_fill(img, au, 38, 3, 2, 2, pal["N"], pal["S"], pal["C"])
+    for cu in (10, 30):
+        box_fill(img, cu, 38, 2, 2, 2, pal["R"], pal["O"], pal["Y"])
+        box_fill(glow, cu, 38, 2, 2, 2, pal["Y"], (0, 0, 0, 0), pal["W"])
 
-    # Feet [3, 2, 4] at (0, 34) and (15, 34)
-    outline_box(img, 0, 34, 3, 2, 4, pal["Y"], pal["R"], pal["H"])
-    outline_box(img, 15, 34, 3, 2, 4, pal["Y"], pal["R"], pal["H"])
+    # Electric Plasma Orb Hands: white-hot/yellow core [3, 3, 3] + crimson-red & cyan energy rings!
+    for ou in (0, 44):
+        box_fill(img, ou, 44, 3, 3, 3, pal["H"], pal["Y"], pal["W"])
+        box_fill(glow, ou, 44, 3, 3, 3, pal["H"], pal["Y"], pal["W"])
+    for ru in (12, 56):
+        box_fill(img, ru, 44, 4, 1, 5, pal["R"], pal["O"], pal["Y"])
+        box_fill(glow, ru, 44, 4, 1, 5, pal["R"], pal["O"], pal["Y"])
+    for ru in (30, 74):
+        box_fill(img, ru, 44, 1, 4, 5, pal["C"], pal["K"], pal["W"])
+        box_fill(glow, ru, 44, 1, 4, 5, pal["C"], pal["K"], pal["W"])
 
-    # Round yellow-and-red orb hands: core [4, 4, 4] + ring [3, 3, 5]
-    for (cu, ru) in [(0, 41), (32, 41)]:
-        outline_box(img, cu, 41, 4, 4, 4, pal["H"], pal["R"], pal["W"])
-        outline_box(glow, cu, 41, 4, 4, 4, pal["H"], (0, 0, 0, 0), pal["W"])
-    for ru in (16, 48):
-        outline_box(img, ru, 41, 3, 3, 5, pal["Y"], pal["R"], pal["H"])
+    # Legs [2, 5, 3] at (0, 56) & (24, 56) — storm-navy greaves with glowing yellow/cyan bolts
+    for lu in (0, 24):
+        box_fill(img, lu, 56, 2, 5, 3, pal["N"], pal["S"], pal["B"])
+        paint_geo_box(img, lu, 56, 2, 5, 3, {
+            "front": ["YY", "NY", "YN", "YY", "RR"],
+            "east":  ["NYY", "NNY", "YNN", "NYY", "RRR"],
+            "west":  ["NYY", "NNY", "YNN", "NYY", "RRR"],
+        }, pal)
+        paint_geo_box(glow, lu, 56, 2, 5, 3, {
+            "front": ["YY", ".Y", "Y.", "YY", ".."],
+        }, pal)
+
+    # Boots/feet [3, 2, 4] at (10, 56) & (34, 56)
+    for fu in (10, 34):
+        box_fill(img, fu, 56, 3, 2, 4, pal["S"], pal["R"], pal["Y"])
+        paint_geo_box(glow, fu, 56, 3, 2, 4, {"front": ["YYY", "..."]}, pal)
+
+    # Floating static sparks [1, 2, 1] at (50, 56) & (56, 56)
+    for su in (50, 56):
+        box_fill(img, su, 56, 1, 2, 1, pal["K"], pal["W"])
+        box_fill(glow, su, 56, 1, 2, 1, pal["K"], pal["W"])
 
     entity_dir = OUT / "entity"
     entity_dir.mkdir(parents=True, exist_ok=True)
