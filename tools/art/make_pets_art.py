@@ -2086,22 +2086,29 @@ def make_zapkin():
         box_fill(img, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
         box_fill(glow, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
 
-    # Three jagged lightning head spikes (glowing electric yellow -> white-hot tips!)
-    for (u, v, w, h, d, tip_col) in [
-        (0, 14, 2, 3, 2, pal["Y"]),
-        (8, 14, 1, 2, 1, pal["W"]),
-        (14, 14, 2, 3, 2, pal["Y"]),
-        (22, 14, 1, 3, 1, pal["W"]),
-        (28, 14, 2, 3, 2, pal["Y"]),
-        (36, 14, 2, 3, 2, pal["H"]),
-        (44, 14, 1, 3, 1, pal["W"]),
+    # Three sharp Z-kink lightning head bolts: blazing electric yellow + white-hot core (no orange candy-corn stripes!)
+    for (u, v, w, h, d, is_tip) in [
+        (0, 14, 1, 3, 1, False),
+        (6, 14, 2, 1, 1, False),
+        (14, 14, 1, 3, 1, True),
+        (20, 14, 1, 3, 1, False),
+        (26, 14, 2, 1, 1, False),
+        (34, 14, 1, 3, 1, True),
+        (40, 14, 1, 3, 1, False),
+        (46, 14, 3, 1, 1, False),
+        (56, 14, 1, 3, 1, False),
+        (62, 14, 2, 1, 1, False),
+        (70, 14, 1, 3, 1, True),
     ]:
         for name, (rx, ry, rw, rh) in faces(u, v, w, h, d).items():
             for px in range(rx, rx + rw):
                 for py in range(ry, ry + rh):
-                    c = pal["W"] if py == ry else (pal["O"] if (py == ry + rh - 1 and h >= 3) else pal["H"])
-                    if tip_col == pal["W"]:
-                        c = pal["W"] if py == ry else pal["H"]
+                    if is_tip and py == ry:
+                        c = pal["W"]
+                    elif name in ("front", "back"):
+                        c = pal["H"] if is_tip else pal["Y"]
+                    else:
+                        c = pal["W"] if is_tip else pal["H"]
                     put(img, px, py, c)
                     put(glow, px, py, c)
 
