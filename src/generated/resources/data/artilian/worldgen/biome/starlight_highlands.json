@@ -135,16 +135,16 @@
         "weight": 4
       },
       {
-        "type": "artilian:zapkin",
-        "maxCount": 2,
-        "minCount": 1,
-        "weight": 4
-      },
-      {
         "type": "artilian:prismling",
         "maxCount": 1,
         "minCount": 1,
         "weight": 1
+      },
+      {
+        "type": "artilian:zapkin",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 4
       },
       {
         "type": "minecraft:goat",
