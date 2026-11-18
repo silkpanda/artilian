@@ -1,0 +1,166 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.frogduck.idle": {
+			"loop": true,
+			"animation_length": 2.0,
+			"bones": {
+				"body": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"1.0": [0, 0.35, 0],
+						"2.0": [0, 0, 0]
+					}
+				},
+				"duck_head": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.5": [4, 6, 0],
+						"1.5": [-3, -6, 0],
+						"2.0": [0, 0, 0]
+					}
+				},
+				"duck_wing_left": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"1.0": [0, 0, -10],
+						"2.0": [0, 0, 0]
+					}
+				},
+				"duck_wing_right": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"1.0": [0, 0, 10],
+						"2.0": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.frogduck.walk": {
+			"loop": true,
+			"animation_length": 0.6,
+			"bones": {
+				"body": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.15": [0, 1.2, 0],
+						"0.3": [0, 0, 0],
+						"0.45": [0, 1.2, 0],
+						"0.6": [0, 0, 0]
+					}
+				},
+				"leg_front_left": {
+					"rotation": {
+						"0.0": [22, 0, 0],
+						"0.3": [-22, 0, 0],
+						"0.6": [22, 0, 0]
+					}
+				},
+				"leg_front_right": {
+					"rotation": {
+						"0.0": [-22, 0, 0],
+						"0.3": [22, 0, 0],
+						"0.6": [-22, 0, 0]
+					}
+				},
+				"leg_back_left": {
+					"rotation": {
+						"0.0": [-22, 0, 0],
+						"0.3": [22, 0, 0],
+						"0.6": [-22, 0, 0]
+					}
+				},
+				"leg_back_right": {
+					"rotation": {
+						"0.0": [22, 0, 0],
+						"0.3": [-22, 0, 0],
+						"0.6": [22, 0, 0]
+					}
+				},
+				"duck_wing_left": {
+					"rotation": {
+						"0.0": [0, 0, 12],
+						"0.3": [0, 0, -18],
+						"0.6": [0, 0, 12]
+					}
+				},
+				"duck_wing_right": {
+					"rotation": {
+						"0.0": [0, 0, -12],
+						"0.3": [0, 0, 18],
+						"0.6": [0, 0, -12]
+					}
+				}
+			}
+		},
+		"animation.frogduck.sit": {
+			"loop": true,
+			"animation_length": 2.0,
+			"bones": {
+				"body": {
+					"position": [0, -1.0, 0]
+				},
+				"leg_front_left": {
+					"rotation": [-15, 0, -10]
+				},
+				"leg_front_right": {
+					"rotation": [-15, 0, 10]
+				},
+				"leg_back_left": {
+					"rotation": [15, 0, -10]
+				},
+				"leg_back_right": {
+					"rotation": [15, 0, 10]
+				},
+				"duck_wing_left": {
+					"rotation": [0, 0, 28]
+				},
+				"duck_wing_right": {
+					"rotation": [0, 0, -28]
+				},
+				"duck_head": {
+					"rotation": {
+						"0.0": [5, 0, 0],
+						"1.0": [10, 0, 0],
+						"2.0": [5, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.frogduck.attack": {
+			"animation_length": 0.45,
+			"bones": {
+				"body": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.15": [0, 2.0, -2.0],
+						"0.3": [0, 0.5, -1.0],
+						"0.45": [0, 0, 0]
+					},
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.15": [-12, 0, 0],
+						"0.3": [14, 0, 0],
+						"0.45": [0, 0, 0]
+					}
+				},
+				"duck_wing_left": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.15": [0, 0, -35],
+						"0.3": [0, 0, 20],
+						"0.45": [0, 0, 0]
+					}
+				},
+				"duck_wing_right": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.15": [0, 0, 35],
+						"0.3": [0, 0, -20],
+						"0.45": [0, 0, 0]
+					}
+				}
+			}
+		}
+	}
+}

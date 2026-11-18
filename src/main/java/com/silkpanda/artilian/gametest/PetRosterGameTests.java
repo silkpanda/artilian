@@ -7,6 +7,7 @@ import com.silkpanda.artilian.pet.CapturedPetData;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
 import com.silkpanda.artilian.pet.FlurrywingEntity;
+import com.silkpanda.artilian.pet.FrogduckEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
@@ -1165,5 +1166,139 @@ public class PetRosterGameTests {
         for (int dy = -1; dy <= 1; dy++) {
             level.setBlockAndUpdate(chest.above(dy), Blocks.AIR.defaultBlockState());
         }
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void frogduckIsWaterNatureAndSpawnsInCrystalCanopyWoods(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        FrogduckEntity frogduck = ArtilianEntities.FROGDUCK.get().create(level);
+        helper.assertTrue(frogduck != null
+                        && frogduck.getPrimaryElement() == PetElement.WATER
+                        && frogduck.getSecondaryElement().equals(Optional.of(PetElement.NATURE)),
+                "Frogduck must be WATER / NATURE dual-element");
+        helper.assertTrue(Math.abs(frogduck.getBbWidth() - 1.25F) < 0.05F
+                        && Math.abs(frogduck.getBbHeight() - 1.35F) < 0.05F,
+                "Frogduck hitbox must be 1.25 x 1.35, got " + frogduck.getBbWidth() + " x " + frogduck.getBbHeight());
+
+        Registry<Biome> biomes = level.registryAccess().registryOrThrow(Registries.BIOME);
+        Holder<Biome> woods = biomes.getHolderOrThrow(ArtilianBiomes.CRYSTAL_CANOPY_WOODS);
+        Holder<Biome> meadows = biomes.getHolderOrThrow(ArtilianBiomes.EMBERBLOOM_MEADOWS);
+        Holder<Biome> highlands = biomes.getHolderOrThrow(ArtilianBiomes.STARLIGHT_HIGHLANDS);
+        boolean inWoods = woods.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.FROGDUCK.get());
+        boolean inMeadows = meadows.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.FROGDUCK.get());
+        boolean inHighlands = highlands.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.FROGDUCK.get());
+        helper.assertTrue(inWoods && !inMeadows && !inHighlands,
+                "Frogduck must spawn in Crystal Canopy Woods only");
+
+        BlockPos spawnPos = helper.absolutePos(new BlockPos(7, 2, 7));
+        level.setBlockAndUpdate(spawnPos, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(spawnPos.above(), Blocks.AIR.defaultBlockState());
+
+        level.setBlockAndUpdate(spawnPos.below(), ArtilianBlocks.CRYSTAL_TURF.get().defaultBlockState());
+        helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.FROGDUCK.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Frogduck must be allowed to spawn on Crystal Turf");
+
+        level.setBlockAndUpdate(spawnPos.below(), Blocks.STONE.defaultBlockState());
+        helper.assertFalse(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.FROGDUCK.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Frogduck must not spawn on plain Stone");
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void frogduckBreathesUnderwaterAndResistsShortHops(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        FrogduckEntity frogduck = ArtilianEntities.FROGDUCK.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(7, 1, 7));
+        frogduck.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(frogduck);
+
+        helper.assertFalse(frogduck.canDrownInFluidType(net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value()),
+                "Amphibious Frogduck must not drown in water");
+        helper.assertFalse(frogduck.causeFallDamage(4.0F, 1.0F, level.damageSources().fall()),
+                "Frogduck must take zero fall damage from a short 4-block hop");
+        helper.assertTrue(frogduck.getHealth() == frogduck.getMaxHealth(),
+                "Frogduck must remain at full health after a short hop");
+
+        frogduck.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void frogduckCapturesBefriendsSummonsAndFaintsSafelyIntoCrystal(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "FrogduckRoster");
+
+        FrogduckEntity wild = ArtilianEntities.FROGDUCK.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(7, 1, 7));
+        wild.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(wild);
+
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.BIOME_TREAT.get(), 4));
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        helper.assertTrue(wild.isBefriended(), "Two Biome Treats should befriend Frogduck");
+
+        ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        CapturedPetData data = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(data != null
+                        && data.primaryElement() == PetElement.WATER
+                        && data.secondaryElement().equals(Optional.of(PetElement.NATURE))
+                        && data.entityType().equals(ArtilianEntities.FROGDUCK.getId()),
+                "Capture Crystal should store Frogduck identity and WATER / NATURE elements");
+
+        crystal.use(level, player, InteractionHand.MAIN_HAND);
+        List<? extends FrogduckEntity> summoned = level.getEntities(
+                ArtilianEntities.FROGDUCK.get(), e -> e.isAlive() && e.isOwner(player));
+        helper.assertTrue(summoned.size() == 1, "Expected 1 summoned Frogduck");
+        FrogduckEntity pet = summoned.get(0);
+        pet.hurt(level.damageSources().mobAttack(pet), 999.0F);
+
+        helper.assertFalse(pet.isAlive(), "Fainted Frogduck should withdraw from the world");
+        CapturedPetData fainted = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(fainted != null && fainted.fainted()
+                        && Math.abs(CaptureCrystalItem.getVisualState(crystal) - 0.25F) < 0.01F,
+                "Fainted Frogduck must safely return to its crystal in fainted state");
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void frogduckBattlesWithWaterNatureMatchups(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "FrogduckBattle");
+
+        FrogduckEntity frogduck = ArtilianEntities.FROGDUCK.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(7, 1, 7));
+        frogduck.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        frogduck.setOwner(player);
+        frogduck.addAffinity(100);
+        level.addFreshEntity(frogduck);
+
+        // WATER is 1.5x against FIRE (Blaze)
+        var blaze = EntityType.BLAZE.create(level);
+        blaze.moveTo(pos.getX() + 1.2, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(blaze);
+        float before = blaze.getHealth();
+        frogduck.doHurtTarget(blaze);
+        float dealt = before - blaze.getHealth();
+        helper.assertTrue(Math.abs(dealt - 6.75F) < 0.05F,
+                "Frogduck (4.5 base, WATER) vs FIRE Blaze must deal 6.75 (1.5x), got " + dealt);
+        blaze.discard();
+
+        // ELECTRIC is 1.5x against WATER Frogduck
+        float incomingMult = PetElement.ELECTRIC.multiplierAgainst(frogduck);
+        helper.assertTrue(Math.abs(incomingMult - 1.5F) < 0.001F,
+                "ELECTRIC vs WATER Frogduck must be 1.5x, got " + incomingMult);
+
+        frogduck.discard();
+        helper.succeed();
     }
 }

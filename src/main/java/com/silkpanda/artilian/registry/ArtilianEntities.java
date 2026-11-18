@@ -9,6 +9,7 @@ import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
 import com.silkpanda.artilian.pet.FlurrywingEntity;
+import com.silkpanda.artilian.pet.FrogduckEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
@@ -124,6 +125,14 @@ public class ArtilianEntities {
                     .eyeHeight(3.3F)
                     .clientTrackingRange(10)
                     .build("sunbeam"));
+
+    /** Frogduck: the kids' amphibious teal frog with an orange duck on its head, Water / Nature, Crystal Canopy Woods. */
+    public static final DeferredHolder<EntityType<?>, EntityType<FrogduckEntity>> FROGDUCK =
+            ENTITY_TYPES.register("frogduck", () -> EntityType.Builder.of(FrogduckEntity::new, MobCategory.CREATURE)
+                    .sized(1.25F, 1.35F)
+                    .eyeHeight(0.75F)
+                    .clientTrackingRange(10)
+                    .build("frogduck"));
 
     /** Prism Sentinel: Crystal/Earth guardian of the Crystal Grove Shrine. */
     public static final DeferredHolder<EntityType<?>, EntityType<PrismSentinelEntity>> PRISM_SENTINEL =

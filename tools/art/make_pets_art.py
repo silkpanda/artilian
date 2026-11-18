@@ -1905,9 +1905,109 @@ def make_sunbeam():
     geo_path.write_text(json.dumps(geo, indent="\t") + "\n", encoding="utf-8")
 
 
+def make_frogduck():
+    """Frogduck: the kids' amphibious teal frog with an orange duck on its head (qa/reference/pets/frog-duck-drawing-2026-11-17.jpg).
+
+    Layout matches src/main/resources/assets/artilian/geo/entity/frogduck.geo.json (box UV, 128x64).
+    """
+    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+
+    TEAL_HI = (94, 234, 212, 255)
+    TEAL = (20, 184, 166, 255)
+    TEAL_DEEP = (13, 148, 136, 255)
+    TEAL_OUTLINE = (15, 118, 110, 255)
+    FACE = (186, 248, 240, 255)
+    BROWN = (120, 53, 15, 255)
+    BROWN_HI = (146, 64, 14, 255)
+    CLAW = (224, 252, 248, 255)
+
+    ORANGE_HI = (253, 186, 116, 255)
+    ORANGE = (249, 115, 22, 255)
+    ORANGE_DEEP = (234, 88, 12, 255)
+    ORANGE_OUTLINE = (194, 65, 12, 255)
+    GOLD_BILL = (251, 191, 36, 255)
+
+    def paint_box(box, base, side, top_c, outline_c):
+        f = faces(*box)
+        for face, (x, y, fw, fh) in f.items():
+            color = {"top": top_c, "bottom": outline_c, "east": side, "west": side}.get(face, base)
+            fill(img, (x, y, fw, fh), color)
+            if face in ("front", "back", "east", "west"):
+                for py in range(y, y + fh):
+                    put(img, x, py, outline_c)
+                    put(img, x + fw - 1, py, outline_c)
+                for px in range(x, x + fw):
+                    put(img, px, y + fh - 1, outline_c)
+
+    # 1. Teal frog body & hump
+    TORSO = (0, 0, 12, 8, 10)
+    HUMP = (46, 0, 10, 1, 8)
+    FACE_PLATE = (46, 10, 8, 7, 1)
+    paint_box(TORSO, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
+    paint_box(HUMP, TEAL_HI, TEAL, TEAL_HI, TEAL_OUTLINE)
+    paint_box(FACE_PLATE, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
+
+    # Face in the middle of the body: brown eyes, two teal dots, brown cloud below them.
+    fx, fy, fw, fh = faces(*FACE_PLATE)["front"]
+    fill(img, (fx + 1, fy + 1, fw - 2, fh - 2), FACE)
+    # Two round brown eyes
+    fill(img, (fx + 1, fy + 1, 2, 2), BROWN)
+    fill(img, (fx + 5, fy + 1, 2, 2), BROWN)
+    put(img, fx + 1, fy + 1, BROWN_HI)
+    put(img, fx + 5, fy + 1, BROWN_HI)
+    # Two teal nostril dots
+    put(img, fx + 2, fy + 3, TEAL_OUTLINE)
+    put(img, fx + 5, fy + 3, TEAL_OUTLINE)
+    # Brown cloud shape below them
+    fill(img, (fx + 2, fy + 4, 4, 2), BROWN)
+    put(img, fx + 1, fy + 5, BROWN_HI)
+    put(img, fx + 6, fy + 5, BROWN_HI)
+    put(img, fx + 3, fy + 4, BROWN_HI)
+    put(img, fx + 4, fy + 4, BROWN_HI)
+
+    # 2. Four legs with clawed feet
+    for leg in ((0, 20, 3, 5, 3), (32, 20, 3, 5, 3), (0, 30, 3, 4, 3), (32, 30, 3, 4, 3)):
+        paint_box(leg, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
+    for foot in ((14, 20, 4, 1, 4), (46, 20, 4, 1, 4), (14, 30, 4, 1, 4), (46, 30, 4, 1, 4)):
+        paint_box(foot, TEAL_DEEP, TEAL_OUTLINE, TEAL, TEAL_OUTLINE)
+    for face, rect in faces(66, 10, 1, 1, 1).items():
+        fill(img, rect, CLAW)
+
+    # 3. Orange duck on top of its head (part of the same creature)
+    DUCK_CHEST = (84, 0, 5, 3, 5)
+    DUCK_CREST = (106, 0, 2, 2, 1)
+    DUCK_HEAD = (84, 10, 5, 4, 4)
+    DUCK_BILL = (104, 10, 3, 1, 1)
+    paint_box(DUCK_CHEST, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
+    paint_box(DUCK_CREST, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
+    paint_box(DUCK_HEAD, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
+    for face, rect in faces(*DUCK_BILL).items():
+        fill(img, rect, GOLD_BILL)
+    # Duck slit eyes
+    dx, dy, _, _ = faces(*DUCK_HEAD)["front"]
+    put(img, dx + 1, dy + 1, BROWN)
+    put(img, dx + 1, dy + 2, BROWN)
+    put(img, dx + 3, dy + 1, BROWN)
+    put(img, dx + 3, dy + 2, BROWN)
+
+    # Outstretched orange duck wings
+    for wing in ((66, 20, 6, 2, 2), (66, 26, 6, 2, 2)):
+        paint_box(wing, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
+    for tip in ((84, 20, 3, 1, 1), (84, 26, 3, 1, 1)):
+        paint_box(tip, ORANGE_HI, ORANGE, ORANGE_HI, ORANGE_OUTLINE)
+
+    dest = OUT / "entity/frogduck.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+
+
 def main():
     import sys
 
+    if "--frogduck" in sys.argv:
+        make_frogduck()
+        print("Generated Frogduck 128x64 texture.")
+        return
     if "--sunbeam" in sys.argv:
         make_sunbeam()
         print("Generated Sunbeam 128x128 texture and glowmask.")
@@ -1926,6 +2026,7 @@ def main():
     make_prismling()
     make_flurrywing()
     make_sunbeam()
+    make_frogduck()
 
     item_dir = OUT / "item"
     item_dir.mkdir(parents=True, exist_ok=True)
