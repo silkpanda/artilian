@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.pet;
 
 import com.silkpanda.artilian.registry.ArtilianDataComponents;
+import com.silkpanda.artilian.registry.ArtilianEntities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -94,8 +95,10 @@ public class CaptureCrystalItem extends Item {
                     .withStyle(ChatFormatting.AQUA));
             return;
         }
-        tooltip.add(Component.translatable("tooltip.artilian.pet.elements",
-                PetElement.formatBadge(data.primaryElement(), data.secondaryElement())));
+        Component badge = data.entityType().equals(EntityType.getKey(ArtilianEntities.PRISMLING.get()))
+                ? Component.translatable("element.artilian.all_types").withStyle(style -> style.withColor(0xF472B6))
+                : PetElement.formatBadge(data.primaryElement(), data.secondaryElement());
+        tooltip.add(Component.translatable("tooltip.artilian.pet.elements", badge));
         if (data.fainted()) {
             tooltip.add(Component.translatable("tooltip.artilian.crystal.fainted", data.ownerName())
                     .withStyle(ChatFormatting.GOLD));

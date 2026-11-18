@@ -131,6 +131,7 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         // Phase 2 Stage 5: Early Dimension-Theme Pets (Dragon Hatchling & Eye-Themed Pet)
         this.addEntityType(ArtilianEntities.EMBER_DRAKE, "Ember Drake");
         this.addEntityType(ArtilianEntities.PEEPKIN, "Peepkin");
+        this.addEntityType(ArtilianEntities.PRISMLING, "Prismling");
         this.addItem(ArtilianItems.CRYSTAL_FOX_SPAWN_EGG, "Crystal Fox Spawn Egg");
         this.addItem(ArtilianItems.SHADOW_WISP_SPAWN_EGG, "Shadow Wisp Spawn Egg");
         this.addItem(ArtilianItems.CINDER_CRAG_SPAWN_EGG, "Cinder Crag Spawn Egg");
@@ -138,6 +139,7 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.GALECORN_SPAWN_EGG, "Galecorn Spawn Egg");
         this.addItem(ArtilianItems.EMBER_DRAKE_SPAWN_EGG, "Ember Drake Spawn Egg");
         this.addItem(ArtilianItems.PEEPKIN_SPAWN_EGG, "Peepkin Spawn Egg");
+        this.addItem(ArtilianItems.PRISMLING_SPAWN_EGG, "Prismling Spawn Egg");
         // Phase 2 Stage 6: Structure Enemies
         this.addEntityType(ArtilianEntities.PRISM_SENTINEL, "Prism Sentinel");
         this.addEntityType(ArtilianEntities.CINDER_RAIDER, "Cinder Raider");
@@ -167,6 +169,7 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("element.artilian.starlight", "Starlight");
         this.add("element.artilian.shadow", "Shadow");
         this.add("element.artilian.dragon", "Dragon");
+        this.add("element.artilian.all_types", "All Types");
 
         this.add("message.artilian.pet.affinity", "%s likes you! (%s%% befriended)");
         this.add("message.artilian.pet.befriended", "%s is befriended! Use a Capture Crystal to catch it!");

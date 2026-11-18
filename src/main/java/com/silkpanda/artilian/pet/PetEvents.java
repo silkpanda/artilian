@@ -26,6 +26,7 @@ public final class PetEvents {
             event.put(ArtilianEntities.GALECORN.get(), GalecornEntity.createAttributes().build());
             event.put(ArtilianEntities.EMBER_DRAKE.get(), EmberDrakeEntity.createAttributes().build());
             event.put(ArtilianEntities.PEEPKIN.get(), PeepkinEntity.createAttributes().build());
+            event.put(ArtilianEntities.PRISMLING.get(), PrismlingEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -77,6 +78,13 @@ public final class PetEvents {
                     SpawnPlacementTypes.ON_GROUND,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     PeepkinEntity::checkEyePetSpawnRules,
+                    RegisterSpawnPlacementsEvent.Operation.REPLACE
+            );
+            event.register(
+                    ArtilianEntities.PRISMLING.get(),
+                    SpawnPlacementTypes.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    PrismlingEntity::checkPrismlingSpawnRules,
                     RegisterSpawnPlacementsEvent.Operation.REPLACE
             );
         }

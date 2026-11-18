@@ -12,4 +12,9 @@ public interface ElementalMob {
     default Optional<PetElement> getSecondaryElement() {
         return Optional.empty();
     }
+
+    /** True for legendary all-types pets: they attack with their best element and take neutral damage from every element. */
+    default boolean isAllTypes() {
+        return false;
+    }
 }

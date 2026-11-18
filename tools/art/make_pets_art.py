@@ -963,7 +963,396 @@ def make_peepkin():
     img.save(dest)
 
 
+def make_prismling():
+    """Prismling: the kids' rainbow legendary pet reimagined as a towering elemental guardian.
+
+    Layout matches src/main/resources/assets/artilian/geo/entity/prismling.geo.json (256x128),
+    plus an emissive _glowmask.png for the stoic glowing visor eyes, forehead crest, blue cuffs,
+    rainbow crystal veins, and eight crisp 16x16 floating elemental symbols.
+    """
+    img = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
+
+    # The drawing's seven body stripes, left to right.
+    BANDS = [
+        (239, 68, 68, 255),    # red
+        (249, 115, 22, 255),   # orange
+        (250, 204, 21, 255),   # yellow
+        (20, 184, 166, 255),   # teal
+        (56, 189, 248, 255),   # sky blue
+        (168, 85, 247, 255),   # purple
+        (196, 181, 253, 255),  # lavender
+    ]
+    OUTLINE_HI = (253, 196, 72, 255)
+    OUTLINE = (245, 158, 11, 255)
+    OUTLINE_DARK = (194, 102, 8, 255)
+    OUTLINE_DEEP = (132, 60, 6, 255)
+
+    IVORY_HI = (250, 244, 232, 255)
+    IVORY = (236, 226, 204, 255)
+    IVORY_SHADE = (198, 184, 158, 255)
+    IVORY_DEEP = (158, 144, 122, 255)
+    VISOR = (30, 24, 44, 255)
+    VISOR_RIM = (54, 44, 78, 255)
+    EYE_GLOW = (125, 249, 255, 255)
+    EYE_CORE = (245, 255, 255, 255)
+
+    CUFF_HI = (147, 224, 255, 255)
+    CUFF = (59, 130, 246, 255)
+    CUFF_SHADE = (37, 99, 235, 255)
+    CUFF_DEEP = (29, 64, 175, 255)
+
+    def tint(color, amount):
+        r, g, b, a = color
+        if amount >= 0:
+            return (int(r + (255 - r) * amount), int(g + (255 - g) * amount), int(b + (255 - b) * amount), a)
+        k = 1 + amount
+        return (int(r * k), int(g * k), int(b * k), a)
+
+    def shade_box(u, v, w, h, d, hi, base, shade, deep, target=img):
+        f = faces(u, v, w, h, d)
+        for name, rect in f.items():
+            x, y, rw, rh = rect
+            col = hi if name == "top" else deep if name == "bottom" else base if name in ("front", "back") else shade
+            fill(target, rect, col)
+            if name in ("front", "back", "east", "west"):
+                for px in range(x, x + rw):
+                    put(target, px, y, hi)
+                    put(target, px, y + rh - 1, deep)
+                for py in range(y + 1, y + rh - 1):
+                    put(target, x, py, tint(col, 0.15))
+                    put(target, x + rw - 1, py, shade)
+            elif name == "top":
+                for px in range(x, x + rw):
+                    put(target, px, y, tint(hi, 0.25))
+
+    def paint_rainbow_band(target, x, y, band_w, h, color, is_top=False, is_bottom=False, add_glow=False):
+        for dx in range(band_w):
+            for dy in range(h):
+                if is_top:
+                    c = tint(color, 0.35 if dy == 0 else 0.20)
+                elif is_bottom:
+                    c = tint(color, -0.32)
+                else:
+                    if dy == 0:
+                        c = tint(color, 0.32)
+                    elif dy == h - 1:
+                        c = tint(color, -0.25)
+                    elif dx == 0:
+                        c = tint(color, 0.18)
+                    elif dx == band_w - 1:
+                        c = tint(color, -0.14)
+                    elif dy in (2, 3) and dx == 1:
+                        c = tint(color, 0.45)
+                    else:
+                        c = color
+                put(target, x + dx, y + dy, c)
+        if add_glow and not is_top and not is_bottom:
+            for dy in (2, 3, 5):
+                put(glow, x + 1, y + dy, tint(color, 0.5))
+
+    # 1. Body rainbow core [28, 10, 10] at [0, 0] + center chest prism [12, 8, 1] at [0, 106].
+    bf = faces(0, 0, 28, 10, 10)
+    for face, order in (("front", BANDS), ("back", list(reversed(BANDS)))):
+        fx, fy, fw, fh = bf[face]
+        for i, color in enumerate(order):
+            paint_rainbow_band(img, fx + i * 4, fy, 4, fh, color, add_glow=True)
+    tx, ty, tw, th = bf["top"]
+    for i, color in enumerate(BANDS):
+        paint_rainbow_band(img, tx + i * 4, ty, 4, th, color, is_top=True)
+    bx, by, bw, bh = bf["bottom"]
+    for i, color in enumerate(BANDS):
+        paint_rainbow_band(img, bx + i * 4, by, 4, bh, color, is_bottom=True)
+    for side_name, col in (("east", BANDS[0]), ("west", BANDS[-1])):
+        sx, sy, sw, sh = bf[side_name]
+        fill(img, (sx, sy, sw, sh), col)
+        for py in range(sy, sy + sh):
+            put(img, sx, py, tint(col, 0.2))
+            put(img, sx + sw - 1, py, tint(col, -0.2))
+
+    cf = faces(0, 106, 12, 8, 1)
+    for face, order in (("front", BANDS[2:5]), ("back", list(reversed(BANDS[2:5])))):
+        cx, cy, cw, ch = cf[face]
+        for i, color in enumerate(order):
+            paint_rainbow_band(img, cx + i * 4, cy, 4, ch, tint(color, 0.12), add_glow=True)
+        for px in range(cx, cx + cw):
+            put(img, px, cy, OUTLINE_HI)
+            put(img, px, cy + ch - 1, OUTLINE_DARK)
+    fill(img, cf["top"], OUTLINE_HI)
+    fill(img, cf["bottom"], OUTLINE_DARK)
+    fill(img, cf["east"], OUTLINE)
+    fill(img, cf["west"], OUTLINE)
+
+    # 2. Shoulder armor [32, 4, 12] at [0, 21], waist [24, 3, 10] at [0, 70], side pillars [2, 10, 11] at [0, 84], pauldrons [6, 3, 10] at [28, 84].
+    shade_box(0, 21, 32, 4, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    sf = faces(0, 21, 32, 4, 12)
+    for face, order in (("front", BANDS), ("back", list(reversed(BANDS)))):
+        sx, sy, _, _ = sf[face]
+        for i, color in enumerate(order):
+            fill(img, (sx + 2 + i * 4, sy + 3, 4, 1), tint(color, 0.1))
+    shade_box(0, 70, 24, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(0, 84, 2, 10, 11, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(28, 84, 6, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+
+    # 3. Stoic Guardian Head [12, 10, 11] at [78, 0] + crown [14, 3, 12] at [76, 38] + cheek rails [2, 9, 12] at [84, 54] + crest & horns.
+    shade_box(78, 0, 12, 10, 11, IVORY_HI, IVORY, IVORY_SHADE, IVORY_DEEP)
+    hf = faces(78, 0, 12, 10, 11)
+    fx, fy, fw, fh = hf["front"]
+    fill(img, (fx, fy, fw, fh), IVORY)
+    for px in range(fx, fx + fw):
+        put(img, px, fy, IVORY_DEEP)
+        put(img, px, fy + fh - 1, OUTLINE_DARK)
+    # Deep visor recess across eyes
+    fill(img, (fx + 1, fy + 2, 10, 3), VISOR)
+    for px in range(fx + 1, fx + 11):
+        put(img, px, fy + 1, VISOR_RIM)
+    # Angular glowing guardian eyes
+    for ex in (fx + 2, fx + 7):
+        fill(img, (ex, fy + 2, 3, 2), EYE_GLOW)
+        put(img, ex + 1, fy + 2, EYE_CORE)
+        fill(glow, (ex, fy + 2, 3, 2), EYE_GLOW)
+        put(glow, ex + 1, fy + 2, EYE_CORE)
+    # Stoic sculpted faceplate & golden jaw line (no smiley face)
+    fill(img, (fx + 1, fy + 5, 10, 4), IVORY)
+    fill(img, (fx + 2, fy + 6, 8, 1), IVORY_SHADE)
+    fill(img, (fx + 4, fy + 7, 4, 1), IVORY_DEEP)
+    fill(img, (fx + 3, fy + 8, 6, 1), OUTLINE_DARK)
+    put(img, fx + 1, fy + 6, IVORY_DEEP)
+    put(img, fx + 10, fy + 6, IVORY_DEEP)
+
+    shade_box(76, 38, 14, 3, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(84, 54, 2, 9, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(90, 96, 3, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    # Glowing crystal core on forehead crest
+    cf_crest = faces(90, 96, 3, 4, 2)["front"]
+    fill(img, (cf_crest[0] + 1, cf_crest[1] + 1, 1, 2), EYE_CORE)
+    fill(glow, (cf_crest[0] + 1, cf_crest[1] + 1, 1, 2), EYE_GLOW)
+    shade_box(90, 104, 2, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+
+    # 4. Pillar Legs [9, 9, 9]: right red [0, 38], left lavender [38, 38], plus armored soles [10, 2, 10].
+    for u, color in ((0, BANDS[0]), (38, BANDS[-1])):
+        shade_box(u, 38, 9, 9, 9, tint(color, 0.3), color, tint(color, -0.18), tint(color, -0.35))
+        lf = faces(u, 38, 9, 9, 9)
+        lx, ly, lw, _ = lf["front"]
+        fill(img, (lx, ly, lw, 2), OUTLINE_DARK)
+        fill(img, (lx + 2, ly + 3, 5, 2), tint(color, 0.28))
+    shade_box(0, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(42, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    for u, color in ((0, BANDS[0]), (42, BANDS[-1])):
+        bx, by, bw, bh = faces(u, 57, 10, 2, 10)["bottom"]
+        fill(img, (bx + 1, by + 1, bw - 2, bh - 2), tint(color, -0.22))
+
+    # 5. Arms, 3-pronged hands & glowing octagonal blue cuffs.
+    for u, v, w, h, d in (
+        (62, 91, 4, 4, 4),
+        (62, 84, 10, 3, 3),
+        (90, 82, 3, 8, 3),
+        (104, 82, 5, 2, 2),
+        (104, 88, 4, 2, 2),
+    ):
+        shade_box(u, v, w, h, d, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+
+    for u, v, w, h, d in ((28, 100, 4, 6, 6), (50, 100, 3, 7, 5), (68, 100, 3, 5, 7)):
+        shade_box(u, v, w, h, d, CUFF_HI, CUFF, CUFF_SHADE, CUFF_DEEP)
+        cf_cuff = faces(u, v, w, h, d)
+        for face_name in ("front", "back", "east", "west", "top"):
+            cx, cy, cw, ch = cf_cuff[face_name]
+            mid_x = cx + cw // 2
+            for py in range(cy + 1, cy + max(2, ch - 1)):
+                put(img, mid_x, py, CUFF_HI)
+                put(glow, mid_x, py, CUFF_HI)
+
+    # 6. Eight crisp 16x16 pixel-art Elemental Symbols (u = 128..255, v = 0..15).
+    SYM_PALETTE = {
+        "Y": (253, 224, 71, 255),   # bright electric yellow
+        "W": (255, 255, 255, 255),  # pure white highlight
+        "A": (217, 119, 6, 255),    # amber outline
+        "O": (249, 115, 22, 255),   # orange
+        "R": (220, 38, 38, 255),    # crimson fire
+        "D": (127, 29, 29, 255),    # dark crimson
+        "P": (168, 85, 247, 255),   # shadow purple
+        "V": (88, 28, 135, 255),    # deep violet
+        "M": (232, 121, 249, 255),  # twilight magenta
+        "G": (250, 204, 21, 255),   # sun gold
+        "C": (125, 249, 255, 255),  # frost / starlight cyan
+        "B": (56, 189, 248, 255),   # ice blue
+        "I": (14, 116, 144, 255),   # deep ice teal
+        "T": (56, 217, 192, 255),   # crystal teal
+        "E": (34, 197, 94, 255),    # nature emerald
+        "L": (21, 128, 61, 255),    # deep leaf green
+        "S": (148, 163, 184, 255),  # silver slate
+        "K": (120, 88, 64, 255),    # earth bronze
+        "N": (78, 54, 38, 255),     # dark earth
+    }
+    GLOW_CHARS = set("YWOMGCBTES")
+
+    SYMBOLS = {
+        128: [  # Lightning bolt
+            "........AAAA....",
+            ".......AAWWAA...",
+            "......AAWWYYA...",
+            ".....AAWWYYAA...",
+            "....AAWWYYAA....",
+            "...AAWWYYAA.....",
+            "..AAWWYYYYAAAA..",
+            "..AAYYYYWWYYAA..",
+            "....AAAAYYWWAA..",
+            "......AAYYWWAA..",
+            ".....AAYYWWAA...",
+            "....AAYYWWAA....",
+            "...AAYYWWAA.....",
+            "..AAYYWWAA......",
+            "..AAYYAAA.......",
+            "...AAA..........",
+        ],
+        144: [  # Fire flame
+            ".......DD.......",
+            "......DRRD......",
+            ".....DRRORD.....",
+            "....DRROOORD....",
+            "....DROYYORD....",
+            "...DRROYYOORD...",
+            "...DROYYWYYRD...",
+            "..DRROYYWYYORD..",
+            "..DROOYYWYYOORD.",
+            "..DROYYYYYYOORD.",
+            "..DRROYYYYOORRD.",
+            "...DRROOOOORRD..",
+            "...DDRROOORRDD..",
+            "....DDRRRRRDD...",
+            ".....DDDDDDD....",
+            "................",
+        ],
+        160: [  # Shadow crescent + glowing twilight eye/orb
+            ".....VVVVVV.....",
+            "...VVPPPPPPVV...",
+            "..VPPPMMMMPPV...",
+            ".VPPPM....VPV...",
+            ".VPPM..MM..VV...",
+            "VPPPM.MWWM......",
+            "VPPPM.MWWM......",
+            "VPPPM..MM.......",
+            "VPPMM...........",
+            ".VPPM.....VV....",
+            ".VPPPM...VPV....",
+            "..VPPPMMPPPVV...",
+            "...VVPPPPPPVV...",
+            ".....VVVVVV.....",
+            "................",
+            "................",
+        ],
+        176: [  # Radiant Sun
+            ".......AA.......",
+            "..A....GG....A..",
+            "...A..AGGG..A...",
+            "....AAGYYGAA....",
+            "....AGYYYYGA....",
+            "..AAGYYWWYYGAA..",
+            "..AGYYWWWWYYGA..",
+            ".AGGYWWWWWWYGGA.",
+            "..AGYYWWWWYYGA..",
+            "..AAGYYWWYYGAA..",
+            "....AGYYYYGA....",
+            "....AAGYYGAA....",
+            "...A..AGGG..A...",
+            "..A....GG....A..",
+            ".......AA.......",
+            "................",
+        ],
+        192: [  # Frost snowflake
+            ".......II.......",
+            ".....IICCII.....",
+            "..I..ICWWCI..I..",
+            "..IC.IIBBI.CI...",
+            "...ICBBBBBBCI...",
+            ".IIBBBBWWBBBBII.",
+            ".ICCBBWWWWBBCCI.",
+            "..IIWWWWWWWWII..",
+            ".ICCBBWWWWBBCCI.",
+            ".IIBBBBWWBBBBII.",
+            "...ICBBBBBBCI...",
+            "..IC.IIBBI.CI...",
+            "..I..ICWWCI..I..",
+            ".....IICCII.....",
+            ".......II.......",
+            "................",
+        ],
+        208: [  # Crystal prism
+            ".......II.......",
+            "......ITTI......",
+            ".....ITWWTI.....",
+            "....ITWWCCTI....",
+            "...ITWCCCTTTI...",
+            "..ITWCCTTTTTTI..",
+            ".ITWCCTTTTTTBTI.",
+            ".ITCCTTTTTTBBTI.",
+            "..ITTTTTTTBBTI..",
+            "...ITTTTTBBTI...",
+            "....ITTTBBTI....",
+            ".....ITBBTI.....",
+            "......IBBI......",
+            ".......II.......",
+            "................",
+            "................",
+        ],
+        224: [  # Nature leaf
+            "..........LLLL..",
+            "........LLEEEEL.",
+            ".......LEEEWWEL.",
+            "......LEEEWEEEL.",
+            ".....LEEEWEEEEL.",
+            "....LEEEWEEEEEL.",
+            "...LEEEWEEEEEL..",
+            "..LEEEWEEEEEL...",
+            "..LEEWEEEEEL....",
+            "..LEEWWEEEL.....",
+            "..LLEEEEEL......",
+            "...LLEEEL.......",
+            "..LL.LLL........",
+            ".LL.............",
+            "................",
+            "................",
+        ],
+        240: [  # Earth mountain / ore peak
+            ".......NN.......",
+            "......NSSN......",
+            ".....NSWWSSN....",
+            "....NSSWWSSKN...",
+            "...NSSSSSSKKKN..",
+            "...NSKKKKKKKRN..",
+            "..NKKKWWWWKKKRN.",
+            "..NKKKWWCCKKKRN.",
+            ".NKKKKCCCCKKKKRN",
+            ".NKKKKKKKKKKKKRN",
+            "NKKKKKKNNKKKKKKN",
+            "NNNNNNNNNNNNNNNN",
+            "................",
+            "................",
+            "................",
+            "................",
+        ],
+    }
+
+    for u0, rows in SYMBOLS.items():
+        paint_grid(img, u0, 0, rows, SYM_PALETTE)
+        for ry, row in enumerate(rows):
+            for rx, ch in enumerate(row):
+                if ch in GLOW_CHARS and ch in SYM_PALETTE:
+                    put(glow, u0 + rx, ry, SYM_PALETTE[ch])
+
+    dest = OUT / "entity/prismling.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+    glow.save(OUT / "entity/prismling_glowmask.png")
+
+
 def main():
+    import sys
+
+    if "--prismling" in sys.argv:
+        make_prismling()
+        print("Generated Prismling 128x128 texture and glowmask.")
+        return
     make_crystal_fox()
     make_shadow_wisp()
     make_cinder_crag()
@@ -971,6 +1360,7 @@ def main():
     make_galecorn()
     make_ember_drake()
     make_peepkin()
+    make_prismling()
 
     item_dir = OUT / "item"
     item_dir.mkdir(parents=True, exist_ok=True)
@@ -981,7 +1371,7 @@ def main():
     )
     draw_crystal(GOLD_DARK, GOLD, GOLD_HI).save(item_dir / "capture_crystal_fainted.png")
     make_biome_treat().save(item_dir / "biome_treat.png")
-    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin).")
+    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin, Prismling).")
 
 
 if __name__ == "__main__":
