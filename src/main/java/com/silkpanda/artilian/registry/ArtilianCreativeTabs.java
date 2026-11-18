@@ -31,6 +31,7 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.PEEPKIN_SPAWN_EGG.get());
                         output.accept(ArtilianItems.PRISMLING_SPAWN_EGG.get());
                         output.accept(ArtilianItems.FLURRYWING_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.SUNBEAM_SPAWN_EGG.get());
                         output.accept(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG.get());
                         output.accept(ArtilianItems.CINDER_RAIDER_SPAWN_EGG.get());
                         output.accept(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG.get());

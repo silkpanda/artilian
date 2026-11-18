@@ -157,3 +157,13 @@ Template for an entry:
 - **Impact:** Without unified friendly-entity exclusion across battle target acquisition and melee execution, co-op players or companions could injure siblings, Chester chests, village traders, or allied pets.
 - **Fix:** `PetService#isValidBattleTarget` rejects all `Player`, `ChesterEntity`, `ArmorStand`, `AbstractVillager`, non-hostile `AbstractGolem`, tamed/befriended pets, and baby animals, enforced identically by `ArtilianPetEntity#canAttack`, target goals, and `PetService#performElementalAttack`. Stage 2 on `phase-2-stage-4-pet-battle-ai`.
 - **Proof:** GameTest `PetSecurityProbes.p2_04_tamedPetNeverAttacksPlayersChesterVillagersOrAlliedPets`. EXPLOITED (`EXPLOITED P2-04: pet target filter allowed entity.artilian.chester`) when friendly entity checks were bypassed in `PetService#isValidBattleTarget`; HELD with checks restored (`68/68` tests passing).
+
+---
+
+### P2-05 — Sunbeam's sun-aura light replaces a real block or is left behind in the world — FIXED
+- **Severity:** High
+- **Where:** `pet/SunbeamEntity.java` (`updatePlacedLight`, `clearPlacedLight`, `remove`)
+- **Attack:** Sunbeam moves its chest over a solid block, or is removed from the world (recalled, fainted, unloaded, discarded) while its light block is still placed.
+- **Impact:** Without the air check, the aura would overwrite terrain, floors, or builds with `minecraft:light`; without the removal cleanup, it would leave stray permanent light blocks in the world.
+- **Fix:** `updatePlacedLight()` places a level-15 `minecraft:light` only when the chest target `isAir()`, tracks just that one `BlockPos`, and clears it first whenever the target changes. `clearPlacedLight()` removes the block only if it is still `Blocks.LIGHT`, and `remove(RemovalReason)` clears it on every removal path. The position is saved with the entity (`SunbeamPlacedLight`), so a Sunbeam saved while lit (server stop, chunk unload) still clears its old light after reload.
+- **Proof:** GameTest `PetRosterGameTests.sunbeamLightOnlyReplacesAirAndIsRemovedWithIt` (failure messages begin `EXPLOITED P2-05:`). EXPLOITED — turned red detail: TBD by reviewer. HELD with the air check and removal cleanup in place (TBD by reviewer).

@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.gametest;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.pet.ArtilianPetEntity;
 import com.silkpanda.artilian.pet.CaptureCrystalItem;
 import com.silkpanda.artilian.pet.CapturedPetData;
 import com.silkpanda.artilian.pet.CinderCragEntity;
@@ -11,6 +12,7 @@ import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
 import com.silkpanda.artilian.pet.PetElement;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
+import com.silkpanda.artilian.pet.SunbeamEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
 import com.silkpanda.artilian.registry.ArtilianDataComponents;
@@ -28,6 +30,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
@@ -36,6 +39,7 @@ import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Drowned;
 import net.minecraft.world.entity.monster.Phantom;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -44,6 +48,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -925,5 +930,240 @@ public class PetRosterGameTests {
         creeper.discard();
         flurrywing.discard();
         helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void sunsteelElementMatchups(GameTestHelper helper) {
+        for (PetElement strong : List.of(PetElement.SHADOW, PetElement.ICE, PetElement.DRAGON)) {
+            helper.assertTrue(Math.abs(PetElement.SUNSTEEL.multiplierAgainst(strong) - 1.5F) < 0.001F,
+                    "Sunsteel must be 1.5x strong vs " + strong);
+        }
+        for (PetElement resisted : List.of(PetElement.FIRE, PetElement.EARTH)) {
+            helper.assertTrue(Math.abs(PetElement.SUNSTEEL.multiplierAgainst(resisted) - 0.75F) < 0.001F,
+                    "Sunsteel must be 0.75x resisted vs " + resisted);
+        }
+        helper.assertTrue(PetElement.SUNSTEEL.multiplierAgainst(PetElement.WATER) == 1.0F,
+                "Sunsteel must be neutral vs Water");
+        helper.assertTrue(PetElement.WATER.multiplierAgainst(PetElement.SUNSTEEL) == 1.5F,
+                "Water must be 1.5x strong vs Sunsteel (rust)");
+        helper.assertTrue(PetElement.ELECTRIC.multiplierAgainst(PetElement.SUNSTEEL) == 1.5F,
+                "Electric must be 1.5x strong vs Sunsteel (conducts)");
+        helper.assertTrue(PetElement.SHADOW.multiplierAgainst(PetElement.SUNSTEEL) == 0.75F,
+                "Shadow must be 0.75x resisted vs Sunsteel");
+        helper.assertTrue(PetElement.ICE.multiplierAgainst(PetElement.SUNSTEEL) == 0.75F,
+                "Ice must be 0.75x resisted vs Sunsteel");
+        helper.assertTrue(PetElement.FIRE.multiplierAgainst(PetElement.SUNSTEEL) == 1.0F,
+                "Fire must be neutral vs Sunsteel");
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void sunbeamIsSunsteelLegendaryGhastSizedAndSpawnsInEmberbloom(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        SunbeamEntity sunbeam = ArtilianEntities.SUNBEAM.get().create(level);
+        helper.assertTrue(sunbeam != null
+                        && sunbeam.getPrimaryElement() == PetElement.SUNSTEEL
+                        && sunbeam.getSecondaryElement().isEmpty()
+                        && !sunbeam.isAllTypes(),
+                "Sunbeam must be a pure Sunsteel legendary with no secondary and no all-types rule");
+        helper.assertTrue(sunbeam.getAttributeValue(Attributes.MAX_HEALTH) == 30.0,
+                "Legendary Sunbeam must have 30 max health, got " + sunbeam.getAttributeValue(Attributes.MAX_HEALTH));
+
+        EntityType<?> sunbeamType = ArtilianEntities.SUNBEAM.get();
+        helper.assertTrue(sunbeamType.getHeight() >= 4.0F && sunbeamType.getWidth() >= 3.0F,
+                "Sunbeam must be ghast-sized (at least 3.0 x 4.0), got "
+                        + sunbeamType.getWidth() + "x" + sunbeamType.getHeight());
+
+        Registry<Biome> biomes = level.registryAccess().registryOrThrow(Registries.BIOME);
+        boolean inEmberbloom = biomes.getHolderOrThrow(ArtilianBiomes.EMBERBLOOM_MEADOWS).value().getMobSettings()
+                .getMobs(MobCategory.CREATURE).unwrap().stream()
+                .anyMatch(d -> d.type == sunbeamType && d.getWeight().asInt() == 1 && d.minCount == 1 && d.maxCount == 1);
+        helper.assertTrue(inEmberbloom, "Emberbloom Meadows must include Sunbeam at weight 1, group 1");
+        for (var key : List.of(ArtilianBiomes.STARLIGHT_HIGHLANDS, ArtilianBiomes.CRYSTAL_CANOPY_WOODS)) {
+            boolean elsewhere = biomes.getHolderOrThrow(key).value().getMobSettings()
+                    .getMobs(MobCategory.CREATURE).unwrap().stream().anyMatch(d -> d.type == sunbeamType);
+            helper.assertFalse(elsewhere, "Sunbeam must only spawn in Emberbloom Meadows, found in " + key.location());
+        }
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void sunbeamHoversAndTakesNoFallDamage(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        SunbeamEntity sunbeam = ArtilianEntities.SUNBEAM.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(7, 1, 7));
+        sunbeam.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(sunbeam);
+
+        float before = sunbeam.getHealth();
+        boolean hurt = sunbeam.causeFallDamage(10.0F, 1.0F, level.damageSources().fall());
+        helper.assertFalse(hurt, "Hovering Sunbeam must report no fall damage");
+        helper.assertTrue(sunbeam.getHealth() == before,
+                "Sunbeam dropped from 10 blocks must land at full health, went " + before + " -> " + sunbeam.getHealth());
+
+        sunbeam.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void sunbeamAuraHealsOwnerAndOwnersPetsOnly(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer owner = ChesterTestSupport.playerInTestArea(helper, "SunbeamOwner");
+        ServerPlayer stranger = ChesterTestSupport.playerInTestArea(helper, "SunbeamStranger");
+
+        SunbeamEntity sunbeam = ArtilianEntities.SUNBEAM.get().create(level);
+        BlockPos sunbeamPos = helper.absolutePos(new BlockPos(2, 1, 2));
+        sunbeam.moveTo(sunbeamPos.getX() + 0.5, sunbeamPos.getY(), sunbeamPos.getZ() + 0.5, 0.0F, 0.0F);
+        sunbeam.setOwner(owner);
+        level.addFreshEntity(sunbeam);
+
+        FlurrywingEntity ownPet = ArtilianEntities.FLURRYWING.get().create(level);
+        BlockPos ownPos = helper.absolutePos(new BlockPos(3, 1, 3));
+        ownPet.moveTo(ownPos.getX() + 0.5, ownPos.getY(), ownPos.getZ() + 0.5, 0.0F, 0.0F);
+        ownPet.setOwner(owner);
+        level.addFreshEntity(ownPet);
+
+        FlurrywingEntity otherPet = ArtilianEntities.FLURRYWING.get().create(level);
+        BlockPos otherPos = helper.absolutePos(new BlockPos(2, 1, 4));
+        otherPet.moveTo(otherPos.getX() + 0.5, otherPos.getY(), otherPos.getZ() + 0.5, 0.0F, 0.0F);
+        otherPet.setOwner(stranger);
+        level.addFreshEntity(otherPet);
+
+        float halfHealth = ownPet.getMaxHealth() / 2.0F;
+        ownPet.setHealth(halfHealth);
+        otherPet.setHealth(halfHealth);
+
+        sunbeam.applySunAura();
+
+        helper.assertTrue(owner.hasEffect(MobEffects.REGENERATION),
+                "Sunbeam's aura must give its owner Regeneration");
+        helper.assertTrue(ownPet.getHealth() > halfHealth,
+                "Sunbeam's aura must heal its owner's pet, stayed at " + ownPet.getHealth());
+        helper.assertTrue(otherPet.getHealth() == halfHealth,
+                "Sunbeam's aura must never heal another player's pet, went to " + otherPet.getHealth());
+        helper.assertFalse(stranger.hasEffect(MobEffects.REGENERATION),
+                "Sunbeam's aura must never regenerate another player");
+
+        sunbeam.setSitting(true);
+        owner.removeEffect(MobEffects.REGENERATION);
+        ownPet.setHealth(halfHealth);
+        otherPet.setHealth(halfHealth);
+
+        sunbeam.applySunAura();
+
+        helper.assertFalse(owner.hasEffect(MobEffects.REGENERATION),
+                "A sitting Sunbeam's aura must not regenerate its owner");
+        helper.assertTrue(ownPet.getHealth() == halfHealth,
+                "A sitting Sunbeam's aura must not heal any pet");
+        helper.assertTrue(otherPet.getHealth() == halfHealth,
+                "A sitting Sunbeam's aura must not heal another player's pet");
+
+        sunbeam.discard();
+        ownPet.discard();
+        otherPet.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void sunbeamLightOnlyReplacesAirAndIsRemovedWithIt(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        SunbeamEntity sunbeam = ArtilianEntities.SUNBEAM.get().create(level);
+        BlockPos start = helper.absolutePos(new BlockPos(5, 3, 5));
+        sunbeam.moveTo(start.getX() + 0.5, start.getY(), start.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(sunbeam);
+
+        for (int i = 0; i < 10 && sunbeam.getPlacedLight() == null; i++) {
+            clearChestAir(level, sunbeam);
+            sunbeam.tick();
+        }
+        BlockPos firstLight = sunbeam.getPlacedLight();
+        helper.assertTrue(firstLight != null && level.getBlockState(firstLight).is(Blocks.LIGHT),
+                "EXPLOITED P2-05: Sunbeam must place a light block into air at its chest");
+        helper.assertTrue(level.getBlockState(firstLight).getValue(LightBlock.LEVEL) == SunbeamEntity.LIGHT_LEVEL,
+                "EXPLOITED P2-05: the placed light block must be level 15");
+
+        // A real block at the chest target must never be replaced by the aura.
+        BlockPos stoneSpot = helper.absolutePos(new BlockPos(7, 3, 5));
+        sunbeam.moveTo(stoneSpot.getX() + 0.5, stoneSpot.getY(), stoneSpot.getZ() + 0.5, 0.0F, 0.0F);
+        BlockPos chest = BlockPos.containing(sunbeam.getX(), sunbeam.getY(0.6), sunbeam.getZ());
+        level.setBlockAndUpdate(chest, Blocks.STONE.defaultBlockState());
+        sunbeam.tick();
+        helper.assertTrue(level.getBlockState(chest).is(Blocks.STONE),
+                "EXPLOITED P2-05: sun aura replaced a real block with light at " + chest);
+
+        // Back in open air, then removal must clean up exactly the light it placed.
+        BlockPos airSpot = helper.absolutePos(new BlockPos(3, 3, 5));
+        sunbeam.moveTo(airSpot.getX() + 0.5, airSpot.getY(), airSpot.getZ() + 0.5, 0.0F, 0.0F);
+        for (int i = 0; i < 10 && sunbeam.getPlacedLight() == null; i++) {
+            clearChestAir(level, sunbeam);
+            sunbeam.tick();
+        }
+        BlockPos secondLight = sunbeam.getPlacedLight();
+        helper.assertTrue(secondLight != null && level.getBlockState(secondLight).is(Blocks.LIGHT),
+                "EXPLOITED P2-05: Sunbeam must re-place its light after returning to air");
+
+        // A save while lit must remember the light, so a reloaded Sunbeam can still clear it.
+        net.minecraft.nbt.CompoundTag saved = new net.minecraft.nbt.CompoundTag();
+        sunbeam.addAdditionalSaveData(saved);
+        SunbeamEntity reloaded = ArtilianEntities.SUNBEAM.get().create(level);
+        reloaded.readAdditionalSaveData(saved);
+        helper.assertTrue(secondLight.equals(reloaded.getPlacedLight()),
+                "EXPLOITED P2-05: a saved Sunbeam forgot its light at " + secondLight + " and would orphan it on reload");
+
+        sunbeam.discard();
+        helper.assertTrue(level.getBlockState(secondLight).is(Blocks.AIR),
+                "EXPLOITED P2-05: light block left behind after Sunbeam was removed at " + secondLight);
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void sunbeamCapturesBefriendsSummonsAndFaintsSafelyIntoCrystal(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "SunbeamRoster");
+
+        SunbeamEntity wild = ArtilianEntities.SUNBEAM.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(7, 1, 7));
+        wild.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(wild);
+
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.BIOME_TREAT.get(), 4));
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        helper.assertTrue(wild.isBefriended(), "Two Biome Treats should befriend Sunbeam");
+
+        ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        CapturedPetData data = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(data != null
+                        && data.primaryElement() == PetElement.SUNSTEEL
+                        && data.secondaryElement().isEmpty()
+                        && data.entityType().equals(ArtilianEntities.SUNBEAM.getId()),
+                "Capture Crystal should store Sunbeam identity and pure Sunsteel typing");
+
+        crystal.use(level, player, InteractionHand.MAIN_HAND);
+        List<? extends SunbeamEntity> summoned = level.getEntities(
+                ArtilianEntities.SUNBEAM.get(), e -> e.isAlive() && e.isOwner(player));
+        helper.assertTrue(summoned.size() == 1, "Expected 1 summoned Sunbeam");
+        SunbeamEntity pet = summoned.get(0);
+        pet.hurt(level.damageSources().mobAttack(pet), 999.0F);
+
+        helper.assertFalse(pet.isAlive(), "Fainted Sunbeam should withdraw from the world");
+        CapturedPetData fainted = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(fainted != null && fainted.fainted()
+                        && Math.abs(CaptureCrystalItem.getVisualState(crystal) - 0.25F) < 0.01F,
+                "Fainted Sunbeam must safely return to its crystal in fainted state");
+
+        helper.succeed();
+    }
+
+    /** Keeps a three-block window of air around the chest target while a Sunbeam test tick settles. */
+    private static void clearChestAir(ServerLevel level, SunbeamEntity sunbeam) {
+        BlockPos chest = BlockPos.containing(sunbeam.getX(), sunbeam.getY(0.6), sunbeam.getZ());
+        for (int dy = -1; dy <= 1; dy++) {
+            level.setBlockAndUpdate(chest.above(dy), Blocks.AIR.defaultBlockState());
+        }
     }
 }

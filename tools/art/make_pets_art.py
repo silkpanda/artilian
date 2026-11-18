@@ -1470,9 +1470,160 @@ def make_flurrywing():
     img.save(dest)
 
 
+def make_sunbeam():
+    """Sunbeam: the kids' legendary Sunsteel creature (qa/reference/pets/sunsteel-drawing-2026-11-17.jpg).
+
+    Layout matches src/main/resources/assets/artilian/geo/entity/sunbeam.geo.json (box UV, 128x128),
+    exported from tools/art/models/sunbeam.bbmodel. Each entry is (u, v, w, h, d).
+    Writes sunbeam.png and sunbeam_glowmask.png (sun core, flame streamer, wing spikes).
+    """
+    img = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+
+    SUN_HI = (255, 240, 170, 255)
+    SUN = (251, 191, 36, 255)           # #FBBF24, the Sunsteel element color
+    ORANGE = (251, 146, 60, 255)        # #FB923C, the drawing's crayon
+    ORANGE_DEEP = (234, 108, 24, 255)
+    OUTLINE = (194, 65, 12, 255)        # #C2410C burnt-orange crayon line
+    OUTLINE_DARK = (140, 44, 10, 255)
+    FACE = (255, 222, 140, 255)
+    EYE_WHITE = (255, 250, 232, 255)
+    PUPIL = (74, 30, 8, 255)
+    CORE_WHITE = (255, 253, 235, 255)
+    FLAME_Y = (253, 224, 71, 255)
+    FLAME_O = (249, 115, 22, 255)
+    FLAME_R = (239, 68, 38, 255)
+
+    TORSO = (0, 0, 12, 11, 7)
+    FLAP = (40, 0, 2, 4, 3)
+    CORE = (52, 0, 6, 5, 2)
+    NECK = (70, 0, 4, 2, 4)
+    HEAD = {"head_core": (0, 20, 12, 10, 10), "head_band": (46, 20, 14, 6, 8),
+            "head_cap": (0, 42, 10, 2, 8), "head_chin": (38, 42, 10, 1, 8)}
+    LEGS = [(90, 0, 4, 5, 3), (90, 10, 4, 5, 3)]
+    FEET = [(106, 0, 4, 1, 5), (106, 10, 4, 1, 5)]
+    STREAMER = [((40, 9, 4, 5, 1), FLAME_Y, FLAME_O), ((52, 9, 5, 4, 1), FLAME_O, FLAME_R)]
+    TIPS = [(66, 9, 1, 3, 1), (72, 9, 1, 2, 1), (78, 9, 1, 3, 1)]
+    WING_SLABS = [(66, 54, 4, 6, 1), (0, 54, 5, 8, 1), (14, 54, 4, 12, 1), (26, 54, 4, 14, 1), (38, 54, 3, 14, 1)]
+    SPIKES = [(48, 54, 1, 4, 1), (54, 54, 4, 1, 1), (54, 58, 3, 1, 1), (48, 61, 1, 3, 1)]
+
+    def rimmed(box, base, side, top_color=None, target=img):
+        f = faces(*box)
+        for face, (x, y, fw, fh) in f.items():
+            color = {"top": top_color or SUN_HI, "bottom": OUTLINE, "east": side, "west": side}.get(face, base)
+            for py in range(y, y + fh):
+                for px in range(x, x + fw):
+                    put(target, px, py, color)
+            if face in ("front", "back", "east", "west"):
+                for py in range(y, y + fh):
+                    put(target, x, py, OUTLINE)
+                    put(target, x + fw - 1, py, OUTLINE)
+                for px in range(x, x + fw):
+                    put(target, px, y + fh - 1, OUTLINE_DARK)
+
+    # 1. Sunsteel body: gold front, orange sides, crayon-line rim, a faint plate seam.
+    rimmed(TORSO, SUN, ORANGE)
+    x, y, fw, fh = faces(*TORSO)["front"]
+    for px in range(x + 1, x + fw - 1):
+        put(img, px, y, OUTLINE)
+        if px % 3 == 0:
+            put(img, px, y + 1, SUN_HI)
+    for face in ("front", "back"):
+        x, y, fw, fh = faces(*TORSO)[face]
+        for py in range(y + 2, y + fh - 1, 3):
+            put(img, x + 2, py, ORANGE_DEEP)
+            put(img, x + fw - 3, py, ORANGE_DEEP)
+    rimmed(FLAP, ORANGE, ORANGE_DEEP)
+    rimmed(NECK, ORANGE, ORANGE_DEEP)
+    for box in LEGS:
+        rimmed(box, ORANGE, ORANGE_DEEP)
+    for box in FEET:
+        rimmed(box, ORANGE_DEEP, OUTLINE, top_color=ORANGE)
+
+    # 2. Round head: warm face, crayon rim on the band and caps so the silhouette reads round.
+    for name, box in HEAD.items():
+        rimmed(box, SUN, ORANGE, top_color=SUN_HI)
+    x, y, fw, fh = faces(*HEAD["head_core"])["front"]
+    fill(img, (x + 1, y, fw - 2, fh - 1), FACE)
+    # Two round eyes with dark pupils, then the wide V grin from the drawing.
+    for ex in (x + 2, x + 7):
+        fill(img, (ex, y + 2, 3, 3), EYE_WHITE)
+        put(img, ex, y + 2, FACE)
+        put(img, ex + 2, y + 2, FACE)
+        put(img, ex, y + 4, FACE)
+        put(img, ex + 2, y + 4, FACE)
+        put(img, ex + 1, y + 3, PUPIL)
+        put(img, ex + 2, y + 3, PUPIL)
+        put(img, ex + 1, y + 1, OUTLINE)
+    for px, py in ((x + 2, y + 6), (x + 9, y + 6), (x + 3, y + 7), (x + 4, y + 7),
+                   (x + 7, y + 7), (x + 8, y + 7), (x + 5, y + 8), (x + 6, y + 8)):
+        put(img, px, py, PUPIL)
+    # Rosy-gold cheeks.
+    put(img, x + 1, y + 6, ORANGE)
+    put(img, x + 10, y + 6, ORANGE)
+
+    # 3. Sun core on the chest: white-hot center, gold ring. Glows.
+    for target in (img, glow):
+        f = faces(*CORE)
+        for face, rect in f.items():
+            fill(target, rect, SUN)
+        x, y, fw, fh = f["front"]
+        fill(target, (x + 1, y + 1, fw - 2, fh - 2), FLAME_Y)
+        fill(target, (x + 2, y + 1, fw - 4, fh - 2), CORE_WHITE)
+        for px, py in ((x, y), (x + fw - 1, y), (x, y + fh - 1), (x + fw - 1, y + fh - 1)):
+            put(target, px, py, ORANGE)
+
+    # 4. Flame streamer: yellow at the core, orange, red-orange strand tips, crayon streaks. Glows.
+    for target in (img, glow):
+        for box, top, bottom in STREAMER:
+            for face, (x, y, fw, fh) in faces(*box).items():
+                for py in range(y, y + fh):
+                    t = (py - y) / max(1, fh - 1)
+                    for px in range(x, x + fw):
+                        color = top if t < 0.5 else bottom
+                        if (px * 3 + py) % 4 == 0:
+                            color = FLAME_O if color != FLAME_O else FLAME_Y
+                        put(target, px, py, color)
+        for box in TIPS:
+            for face, rect in faces(*box).items():
+                fill(target, rect, FLAME_R)
+
+    # 5. Wings: orange membrane, burnt struts on every slab seam, crayon top and bottom edges.
+    for box in WING_SLABS:
+        f = faces(*box)
+        for face in ("top", "bottom", "east", "west"):
+            fill(img, f[face], OUTLINE)
+        for face in ("front", "back"):
+            x, y, fw, fh = f[face]
+            for py in range(y, y + fh):
+                for px in range(x, x + fw):
+                    color = ORANGE if (px + py // 2) % 5 else ORANGE_DEEP
+                    if py - y < 2:
+                        color = SUN
+                    put(img, px, py, color)
+                put(img, x, py, OUTLINE)
+            for px in range(x, x + fw):
+                put(img, px, y, OUTLINE)
+                put(img, px, y + fh - 1, OUTLINE)
+    # Spiky claw tips: bright Sunsteel, and they glow.
+    for box in SPIKES:
+        for face, rect in faces(*box).items():
+            fill(img, rect, SUN)
+            fill(glow, rect, SUN)
+
+    dest = OUT / "entity/sunbeam.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+    glow.save(OUT / "entity/sunbeam_glowmask.png")
+
+
 def main():
     import sys
 
+    if "--sunbeam" in sys.argv:
+        make_sunbeam()
+        print("Generated Sunbeam 128x128 texture and glowmask.")
+        return
     if "--prismling" in sys.argv:
         make_prismling()
         print("Generated Prismling 128x128 texture and glowmask.")
@@ -1486,6 +1637,7 @@ def main():
     make_peepkin()
     make_prismling()
     make_flurrywing()
+    make_sunbeam()
 
     item_dir = OUT / "item"
     item_dir.mkdir(parents=True, exist_ok=True)

@@ -56,7 +56,8 @@ public enum PetElement implements StringRepresentable {
     CRYSTAL("crystal", 0x38D9C0, ParticleTypes.END_ROD),
     STARLIGHT("starlight", 0x8B7CFF, ParticleTypes.GLOW),
     SHADOW("shadow", 0xD946EF, ParticleTypes.PORTAL),
-    DRAGON("dragon", 0x10B981, ParticleTypes.DRAGON_BREATH);
+    DRAGON("dragon", 0x10B981, ParticleTypes.DRAGON_BREATH),
+    SUNSTEEL("sunsteel", 0xFBBF24, ParticleTypes.WAX_ON);
 
     public static final float SUPER_EFFECTIVE = 1.5F;
     public static final float NEUTRAL = 1.0F;
@@ -76,16 +77,17 @@ public enum PetElement implements StringRepresentable {
 
     static {
         FIRE.matchups(EnumSet.of(NATURE, ICE, CRYSTAL), EnumSet.of(WATER, EARTH, DRAGON));
-        WATER.matchups(EnumSet.of(FIRE, EARTH), EnumSet.of(NATURE, ELECTRIC));
+        WATER.matchups(EnumSet.of(FIRE, EARTH, SUNSTEEL), EnumSet.of(NATURE, ELECTRIC));
         NATURE.matchups(EnumSet.of(WATER, EARTH), EnumSet.of(FIRE, ICE, AIR));
-        ELECTRIC.matchups(EnumSet.of(WATER, AIR), EnumSet.of(EARTH, CRYSTAL));
-        ICE.matchups(EnumSet.of(NATURE, AIR, DRAGON), EnumSet.of(FIRE, EARTH));
+        ELECTRIC.matchups(EnumSet.of(WATER, AIR, SUNSTEEL), EnumSet.of(EARTH, CRYSTAL));
+        ICE.matchups(EnumSet.of(NATURE, AIR, DRAGON), EnumSet.of(FIRE, EARTH, SUNSTEEL));
         AIR.matchups(EnumSet.of(NATURE), EnumSet.of(ELECTRIC, ICE, CRYSTAL));
         EARTH.matchups(EnumSet.of(FIRE, ELECTRIC, CRYSTAL), EnumSet.of(WATER, NATURE, ICE));
         CRYSTAL.matchups(EnumSet.of(ELECTRIC, AIR, SHADOW), EnumSet.of(EARTH, FIRE));
         STARLIGHT.matchups(EnumSet.of(SHADOW, DRAGON), EnumSet.of(CRYSTAL));
-        SHADOW.matchups(EnumSet.of(STARLIGHT, NATURE), EnumSet.of(CRYSTAL, STARLIGHT));
+        SHADOW.matchups(EnumSet.of(STARLIGHT, NATURE), EnumSet.of(CRYSTAL, STARLIGHT, SUNSTEEL));
         DRAGON.matchups(EnumSet.of(FIRE, WATER, NATURE, ELECTRIC), EnumSet.of(ICE, STARLIGHT, DRAGON));
+        SUNSTEEL.matchups(EnumSet.of(SHADOW, ICE, DRAGON), EnumSet.of(FIRE, EARTH));
     }
 
     PetElement(String serializedName, int colorRgb, ParticleOptions particle) {
@@ -232,6 +234,10 @@ public enum PetElement implements StringRepresentable {
             case DRAGON -> {
                 target.igniteForSeconds(2.0F);
                 target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60, 0));
+            }
+            case SUNSTEEL -> {
+                target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60, 0));
+                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 0));
             }
         }
     }

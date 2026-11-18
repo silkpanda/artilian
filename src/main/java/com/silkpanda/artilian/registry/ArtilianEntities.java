@@ -13,6 +13,7 @@ import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
+import com.silkpanda.artilian.pet.SunbeamEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
 import com.silkpanda.artilian.tnt.ArtilianPrimedTnt;
 import net.minecraft.core.registries.Registries;
@@ -115,6 +116,14 @@ public class ArtilianEntities {
                     .eyeHeight(2.3F)
                     .clientTrackingRange(10)
                     .build("flurrywing"));
+
+    /** Sunbeam: the legendary Sunsteel sun pet, ghast-tall, rare in Emberbloom Meadows. */
+    public static final DeferredHolder<EntityType<?>, EntityType<SunbeamEntity>> SUNBEAM =
+            ENTITY_TYPES.register("sunbeam", () -> EntityType.Builder.of(SunbeamEntity::new, MobCategory.CREATURE)
+                    .sized(3.0F, 4.0F)
+                    .eyeHeight(3.3F)
+                    .clientTrackingRange(10)
+                    .build("sunbeam"));
 
     /** Prism Sentinel: Crystal/Earth guardian of the Crystal Grove Shrine. */
     public static final DeferredHolder<EntityType<?>, EntityType<PrismSentinelEntity>> PRISM_SENTINEL =

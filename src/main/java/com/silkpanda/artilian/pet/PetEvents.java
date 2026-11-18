@@ -28,6 +28,7 @@ public final class PetEvents {
             event.put(ArtilianEntities.PEEPKIN.get(), PeepkinEntity.createAttributes().build());
             event.put(ArtilianEntities.PRISMLING.get(), PrismlingEntity.createAttributes().build());
             event.put(ArtilianEntities.FLURRYWING.get(), FlurrywingEntity.createAttributes().build());
+            event.put(ArtilianEntities.SUNBEAM.get(), SunbeamEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -93,6 +94,13 @@ public final class PetEvents {
                     SpawnPlacementTypes.ON_GROUND,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     FlurrywingEntity::checkFlurrywingSpawnRules,
+                    RegisterSpawnPlacementsEvent.Operation.REPLACE
+            );
+            event.register(
+                    ArtilianEntities.SUNBEAM.get(),
+                    SpawnPlacementTypes.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    SunbeamEntity::checkSunbeamSpawnRules,
                     RegisterSpawnPlacementsEvent.Operation.REPLACE
             );
         }

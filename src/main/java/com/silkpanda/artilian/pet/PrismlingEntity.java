@@ -28,7 +28,7 @@ import java.util.List;
  * Prismling: the first legendary pet, drawn by the kids as "a rainbow legendary pet that is all types."
  * A pet for everyone, found rarely in all three Overworld biomes.
  *
- * <p>All-types rule: each hit uses whichever of the 11 elements does the most damage against the target,
+ * <p>All-types rule: each hit uses whichever of the 12 elements does the most damage against the target,
  * and every element hits Prismling for neutral damage (see {@link ElementalMob#isAllTypes()}).
  * {@link #getPrimaryElement()} is only a storage fallback for capture crystals.
  */
