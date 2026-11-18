@@ -1,13 +1,10 @@
 package com.silkpanda.artilian.boss;
 
 import com.silkpanda.artilian.pet.ElementalMob;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -177,7 +174,7 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
         Vec3 motion = this.getDeltaMovement();
         this.setDeltaMovement(0.0, motion.y, 0.0);
         this.triggerAnim("action", "telegraph");
-        this.playBell(0.8F);
+        this.playBell(BossTelegraphs.PITCH_START);
         return true;
     }
 
@@ -188,23 +185,9 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
             return;
         }
         this.telegraphTicks++;
-        if (this.telegraphTicks % 2 == 0 && this.level() instanceof ServerLevel serverLevel) {
-            DustParticleOptions ringParticle =
-                    new DustParticleOptions(TelegraphedAttack.DANGER_RED, 1.5F);
-            for (int i = 0; i < 24; i++) {
-                double angle = i * (Math.PI * 2.0 / 24.0);
-                double x = this.telegraphCenter.x + Math.cos(angle) * attack.radius();
-                double z = this.telegraphCenter.z + Math.sin(angle) * attack.radius();
-                serverLevel.sendParticles(ringParticle, x, this.telegraphCenter.y + 0.1, z,
-                        1, 0.0, 0.0, 0.0, 0.0);
-            }
-        }
-        int third = attack.windupTicks() / 3;
-        if (this.telegraphTicks == third) {
-            this.playBell(1.2F);
-        }
-        if (this.telegraphTicks == 2 * third) {
-            this.playBell(1.6F);
+        if (this.level() instanceof ServerLevel serverLevel) {
+            BossTelegraphs.tick(serverLevel, this.telegraphCenter, attack.radius(),
+                    this.telegraphTicks, attack.windupTicks());
         }
         this.getNavigation().stop();
         if (this.telegraphTicks >= attack.windupTicks()) {
@@ -215,8 +198,7 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
     }
 
     private void playBell(float pitch) {
-        this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
-                SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.HOSTILE, 2.0F, pitch);
+        BossTelegraphs.bell(this.level(), this.getX(), this.getY(), this.getZ(), pitch);
     }
 
     /**

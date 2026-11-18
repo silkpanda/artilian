@@ -1,5 +1,6 @@
 package com.silkpanda.artilian.registry;
 
+import com.silkpanda.artilian.boss.BossSummonItem;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
@@ -277,6 +278,14 @@ public class ArtilianItems {
                 new Item.Properties().durability(type.getDurability(durabilityMultiplier)),
                 set));
     }
+
+    // Boss Framework Stage 3
+    public static final DeferredItem<BlockItem> BOSS_ALTAR_ITEM =
+            ITEMS.registerSimpleBlockItem("boss_altar", ArtilianBlocks.BOSS_ALTAR);
+    /** Summons the test-only Training Golem; kept out of the creative tab like the golem. */
+    public static final DeferredItem<BossSummonItem> GOLEM_CORE =
+            ITEMS.register("golem_core", () -> new BossSummonItem(ArtilianEntities.TRAINING_GOLEM,
+                    new Item.Properties().stacksTo(16)));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

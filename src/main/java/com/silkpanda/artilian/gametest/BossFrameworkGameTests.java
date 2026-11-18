@@ -2,6 +2,16 @@ package com.silkpanda.artilian.gametest;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.boss.TelegraphedAttack;
+import com.silkpanda.artilian.boss.BossAltarBlockEntity;
+import com.silkpanda.artilian.registry.ArtilianBlocks;
+import com.silkpanda.artilian.registry.ArtilianItems;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import java.util.List;
 import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.pet.PetElement;
 import com.silkpanda.artilian.pet.PetService;
@@ -253,5 +263,125 @@ public class BossFrameworkGameTests {
         striker.discard();
         other.discard();
         helper.succeed();
+    }
+
+    // ---- Stage 3: Boss Altar and rematches ----
+
+    static final BlockPos ALTAR = new BlockPos(9, 1, 9);
+
+    /** Places an altar and returns its absolute position. */
+    static BlockPos placeAltar(GameTestHelper helper) {
+        helper.setBlock(ALTAR, ArtilianBlocks.BOSS_ALTAR.get());
+        return helper.absolutePos(ALTAR);
+    }
+
+    /** Right-clicks the altar with whatever the player holds in the main hand, the way a real click does. */
+    public static void useAltar(GameTestHelper helper, ServerPlayer player, BlockPos absAltar) {
+        BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(absAltar).add(0.0, 0.5, 0.0), Direction.UP, absAltar, false);
+        helper.getLevel().getBlockState(absAltar)
+                .useItemOn(player.getMainHandItem(), helper.getLevel(), player, InteractionHand.MAIN_HAND, hit);
+    }
+
+    public static List<TrainingGolemEntity> golemsNear(GameTestHelper helper, BlockPos absAltar) {
+        return helper.getLevel().getEntitiesOfClass(TrainingGolemEntity.class, new AABB(absAltar).inflate(6.0));
+    }
+
+    static void cleanUp(GameTestHelper helper, BlockPos absAltar, ServerPlayer player) {
+        // Removing the altar drops any countdown still running, so nothing spawns after the test ends.
+        helper.getLevel().removeBlock(absAltar, false);
+        golemsNear(helper, absAltar).forEach(TrainingGolemEntity::discard);
+        CustomTntGameTests.removeTestPlayer(helper.getLevel(), player);
+    }
+
+    /**
+     * Runs a check and, if it fails, removes this test's golems and player before the failure
+     * propagates. A summoned boss left behind wanders into neighbouring test arenas and fails
+     * unrelated tests (it broke the Crystal Fox defend test during red-proofing).
+     */
+    static void checkOrCleanUp(GameTestHelper helper, BlockPos absAltar, ServerPlayer player, Runnable check) {
+        try {
+            check.run();
+        } catch (RuntimeException | AssertionError failure) {
+            cleanUp(helper, absAltar, player);
+            throw failure;
+        }
+    }
+
+    @GameTest(template = "structure_arena", timeoutTicks = 100)
+    public static void altarSummonsBossAfterCountdown(GameTestHelper helper) {
+        BlockPos altar = placeAltar(helper);
+        ServerPlayer player = CustomTntGameTests.spawnSurvivalPlayer(helper, "altar-summoner", new Vec3(17.5, 1.0, 9.5));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.GOLEM_CORE.get(), 3));
+
+        useAltar(helper, player, altar);
+        checkOrCleanUp(helper, altar, player, () -> helper.assertTrue(player.getMainHandItem().getCount() == 2,
+                "Using the altar must consume exactly one Golem Core, have " + player.getMainHandItem().getCount()));
+        helper.runAfterDelay(BossAltarBlockEntity.COUNTDOWN_TICKS - 1, () -> checkOrCleanUp(helper, altar, player, () -> helper.assertTrue(
+                golemsNear(helper, altar).isEmpty(), "No boss may appear before the 60-tick countdown ends")));
+        helper.runAfterDelay(BossAltarBlockEntity.COUNTDOWN_TICKS + 1, () -> checkOrCleanUp(helper, altar, player, () -> {
+            helper.assertTrue(golemsNear(helper, altar).size() == 1,
+                    "Exactly one boss after the countdown, found " + golemsNear(helper, altar).size());
+            cleanUp(helper, altar, player);
+            helper.succeed();
+        }));
+    }
+
+    @GameTest(template = "structure_arena", timeoutTicks = 180)
+    public static void altarRefusesSecondSummonWhileBossAlive(GameTestHelper helper) {
+        BlockPos altar = placeAltar(helper);
+        ServerPlayer player = CustomTntGameTests.spawnSurvivalPlayer(helper, "altar-greedy", new Vec3(17.5, 1.0, 9.5));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.GOLEM_CORE.get(), 2));
+
+        useAltar(helper, player, altar);
+        helper.runAfterDelay(BossAltarBlockEntity.COUNTDOWN_TICKS + 1, () -> checkOrCleanUp(helper, altar, player, () -> {
+            helper.assertTrue(golemsNear(helper, altar).size() == 1, "The first summon must produce a boss");
+            useAltar(helper, player, altar);
+            helper.assertTrue(player.getMainHandItem().getCount() == 1,
+                    "A refused summon must not consume the core, have " + player.getMainHandItem().getCount());
+        }));
+        helper.runAfterDelay(2 * BossAltarBlockEntity.COUNTDOWN_TICKS + 4, () -> checkOrCleanUp(helper, altar, player, () -> {
+            helper.assertTrue(golemsNear(helper, altar).size() == 1,
+                    "Only one boss per altar while it lives, found " + golemsNear(helper, altar).size());
+            cleanUp(helper, altar, player);
+            helper.succeed();
+        }));
+    }
+
+    @GameTest(template = "structure_arena", timeoutTicks = 180)
+    public static void altarAllowsRematchAfterBossDies(GameTestHelper helper) {
+        BlockPos altar = placeAltar(helper);
+        ServerPlayer player = CustomTntGameTests.spawnSurvivalPlayer(helper, "altar-rematch", new Vec3(17.5, 1.0, 9.5));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.GOLEM_CORE.get(), 2));
+
+        useAltar(helper, player, altar);
+        helper.runAfterDelay(BossAltarBlockEntity.COUNTDOWN_TICKS + 1, () -> checkOrCleanUp(helper, altar, player, () -> {
+            List<TrainingGolemEntity> first = golemsNear(helper, altar);
+            helper.assertTrue(first.size() == 1, "The first summon must produce a boss");
+            first.get(0).kill();
+            useAltar(helper, player, altar);
+            helper.assertTrue(player.getMainHandItem().isEmpty(),
+                    "With the boss dead, the rematch must consume the second core");
+        }));
+        helper.runAfterDelay(2 * BossAltarBlockEntity.COUNTDOWN_TICKS + 4, () -> checkOrCleanUp(helper, altar, player, () -> {
+            long living = golemsNear(helper, altar).stream().filter(TrainingGolemEntity::isAlive).count();
+            helper.assertTrue(living == 1, "The rematch must summon a new boss, found " + living + " alive");
+            cleanUp(helper, altar, player);
+            helper.succeed();
+        }));
+    }
+
+    @GameTest(template = "structure_arena", timeoutTicks = 100)
+    public static void altarIgnoresWrongItem(GameTestHelper helper) {
+        BlockPos altar = placeAltar(helper);
+        ServerPlayer player = CustomTntGameTests.spawnSurvivalPlayer(helper, "altar-stick", new Vec3(17.5, 1.0, 9.5));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STICK, 4));
+
+        useAltar(helper, player, altar);
+        checkOrCleanUp(helper, altar, player, () -> helper.assertTrue(player.getMainHandItem().getCount() == 4, "A stick must not be consumed by the altar"));
+        helper.runAfterDelay(BossAltarBlockEntity.COUNTDOWN_TICKS + 2, () -> checkOrCleanUp(helper, altar, player, () -> {
+            helper.assertTrue(golemsNear(helper, altar).isEmpty(), "A stick must summon nothing");
+            cleanUp(helper, altar, player);
+            helper.succeed();
+        }));
     }
 }

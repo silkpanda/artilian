@@ -1,6 +1,7 @@
 """Generates the placeholder GeckoLib model, animations, and texture for Phase 3 Stage 1 boss:
 
   - training_golem (test-only boss; stone gray with moss and glowing yellow eyes)
+  - boss_altar block (dark slate with a #FF4D5A rune) and golem_core item (moss-flecked stone orb)
 
 Run from the project root:
     python tools/art/make_bosses_art.py
@@ -264,9 +265,55 @@ def build_training_golem():
     )
 
 
+DANGER_RED = (255, 77, 90, 255)
+
+
+def build_boss_altar():
+    img = Image.new("RGBA", (16, 16), (40, 38, 52, 255))
+    # Mottled slate: a fixed pattern so reruns produce the same file.
+    for y in range(16):
+        for x in range(16):
+            if (x * 7 + y * 13) % 11 == 0:
+                put(img, x, y, (54, 51, 70, 255))
+            elif (x * 5 + y * 3) % 17 == 0:
+                put(img, x, y, (30, 28, 40, 255))
+    # Frame
+    for i in range(16):
+        for x, y in ((i, 0), (i, 15), (0, i), (15, i)):
+            put(img, x, y, (24, 22, 32, 255))
+    # Rune: a red diamond with a dot, the same red as the boss telegraph ring.
+    for x, y in ((7, 3), (8, 3), (5, 5), (10, 5), (4, 7), (11, 7), (4, 8), (11, 8),
+                 (5, 10), (10, 10), (7, 12), (8, 12), (6, 4), (9, 4), (6, 11), (9, 11)):
+        put(img, x, y, DANGER_RED)
+    fill(img, (7, 7, 2, 2), DANGER_RED)
+    (ASSETS / "textures/block").mkdir(parents=True, exist_ok=True)
+    img.save(ASSETS / "textures/block/boss_altar.png")
+
+
+def build_golem_core():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    center = 7.5
+    for y in range(16):
+        for x in range(16):
+            d = ((x - center) ** 2 + (y - center) ** 2) ** 0.5
+            if d <= 6.0:
+                shade = (128, 124, 118, 255) if (x + y) < 15 else (98, 94, 90, 255)
+                if d > 5.0:
+                    shade = (70, 68, 66, 255)
+                put(img, x, y, shade)
+    fill(img, (4, 5, 3, 2), (92, 128, 70, 255))
+    fill(img, (9, 9, 2, 2), (92, 128, 70, 255))
+    fill(img, (7, 7, 2, 2), (255, 214, 92, 255))
+    put(img, 5, 4, (176, 172, 166, 255))
+    (ASSETS / "textures/item").mkdir(parents=True, exist_ok=True)
+    img.save(ASSETS / "textures/item/golem_core.png")
+
+
 def main():
     build_training_golem()
-    print("Generated boss art: training_golem.")
+    build_boss_altar()
+    build_golem_core()
+    print("Generated boss art: training_golem, boss_altar, golem_core.")
 
 
 if __name__ == "__main__":

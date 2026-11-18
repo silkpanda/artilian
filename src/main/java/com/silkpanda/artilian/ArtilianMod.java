@@ -5,6 +5,7 @@ import com.silkpanda.artilian.config.ArtilianConfig;
 import com.silkpanda.artilian.mana.ManaSyncPayload;
 import com.silkpanda.artilian.registry.ArtilianArmorMaterials;
 import com.silkpanda.artilian.registry.ArtilianAttachments;
+import com.silkpanda.artilian.registry.ArtilianBlockEntities;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
 import com.silkpanda.artilian.registry.ArtilianCreativeTabs;
 import com.silkpanda.artilian.registry.ArtilianDataComponents;
@@ -33,6 +34,7 @@ public class ArtilianMod {
     public ArtilianMod(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.COMMON, ArtilianConfig.COMMON_SPEC);
         ArtilianBlocks.register(modEventBus);
+        ArtilianBlockEntities.register(modEventBus);
         ArtilianArmorMaterials.register(modEventBus);
         ArtilianDataComponents.register(modEventBus);
         ArtilianItems.register(modEventBus);

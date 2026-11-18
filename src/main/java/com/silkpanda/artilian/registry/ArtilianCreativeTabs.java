@@ -101,6 +101,7 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.STARLIGHT_SLATE_SLAB_ITEM.get());
                         output.accept(ArtilianItems.STARLIGHT_SLATE_WALL_ITEM.get());
                         output.accept(ArtilianItems.STARLIGHT_BLOSSOM_ITEM.get());
+                        output.accept(ArtilianItems.BOSS_ALTAR_ITEM.get());
                     })
                     .build());
 
