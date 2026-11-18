@@ -1,6 +1,6 @@
 ## What
 
-Plan: `qa/[plan file]`. Stages in this PR:
+Plan: `PLAN.md` Phase [X] Stage [Y]. Stages in this PR:
 
 - **Stage [N]:** [what changed, in plain words]
 

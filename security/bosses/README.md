@@ -1,6 +1,6 @@
 # Boss World-Protection Probes (`P3-01`)
 
-Anti-spam probe for the Boss Altar (`PLAN.md` Phase 3 Stage 1, `qa/Adventures in Artilian - Boss Framework Plan 2026-11-17.md` Stage 3).
+Anti-spam probe for the Boss Altar (`PLAN.md` Phase 3 Stage 1, Sub-stage 3).
 The probe is a NeoForge GameTest and was red-proven (`EXPLOITED` with its control switched off, then `HELD` with the control on). See [`security/FINDINGS.md`](../FINDINGS.md) for full details.
 
 ## Running the probes
