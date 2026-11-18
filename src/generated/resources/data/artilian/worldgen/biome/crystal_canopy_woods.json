@@ -154,6 +154,12 @@
         "weight": 3
       },
       {
+        "type": "artilian:frogduck",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 4
+      },
+      {
         "type": "artilian:prismling",
         "maxCount": 1,
         "minCount": 1,

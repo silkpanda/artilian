@@ -150,6 +150,12 @@
         "weight": 5
       },
       {
+        "type": "artilian:sunbeam",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 1
+      },
+      {
         "type": "artilian:prismling",
         "maxCount": 1,
         "minCount": 1,

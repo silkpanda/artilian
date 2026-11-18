@@ -133,6 +133,9 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addEntityType(ArtilianEntities.PEEPKIN, "Peepkin");
         this.addEntityType(ArtilianEntities.PRISMLING, "Prismling");
         this.addEntityType(ArtilianEntities.FLURRYWING, "Flurrywing");
+        this.addEntityType(ArtilianEntities.SUNBEAM, "Sunbeam");
+        this.addEntityType(ArtilianEntities.FROGDUCK, "Frogduck");
+        this.addEntityType(ArtilianEntities.ZAPKIN, "Zapkin");
         this.addItem(ArtilianItems.CRYSTAL_FOX_SPAWN_EGG, "Crystal Fox Spawn Egg");
         this.addItem(ArtilianItems.SHADOW_WISP_SPAWN_EGG, "Shadow Wisp Spawn Egg");
         this.addItem(ArtilianItems.CINDER_CRAG_SPAWN_EGG, "Cinder Crag Spawn Egg");
@@ -142,10 +145,19 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.PEEPKIN_SPAWN_EGG, "Peepkin Spawn Egg");
         this.addItem(ArtilianItems.PRISMLING_SPAWN_EGG, "Prismling Spawn Egg");
         this.addItem(ArtilianItems.FLURRYWING_SPAWN_EGG, "Flurrywing Spawn Egg");
+        this.addItem(ArtilianItems.SUNBEAM_SPAWN_EGG, "Sunbeam Spawn Egg");
+        this.addItem(ArtilianItems.FROGDUCK_SPAWN_EGG, "Frogduck Spawn Egg");
+        this.addItem(ArtilianItems.ZAPKIN_SPAWN_EGG, "Zapkin Spawn Egg");
         // Phase 2 Stage 6: Structure Enemies
         this.addEntityType(ArtilianEntities.PRISM_SENTINEL, "Prism Sentinel");
         this.addEntityType(ArtilianEntities.CINDER_RAIDER, "Cinder Raider");
         this.addEntityType(ArtilianEntities.ASTRAL_STALKER, "Astral Stalker");
+        // Phase 3 Stage 1: Boss framework test boss
+        this.addEntityType(ArtilianEntities.TRAINING_GOLEM, "Training Golem");
+        // Phase 3 Stage 1: Boss Altar
+        this.addBlock(ArtilianBlocks.BOSS_ALTAR, "Boss Altar");
+        this.addItem(ArtilianItems.GOLEM_CORE, "Golem Core");
+        this.add("message.artilian.boss_altar.busy", "This altar's boss is still out there!");
         this.addItem(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG, "Prism Sentinel Spawn Egg");
         this.addItem(ArtilianItems.CINDER_RAIDER_SPAWN_EGG, "Cinder Raider Spawn Egg");
         this.addItem(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG, "Astral Stalker Spawn Egg");
@@ -171,6 +183,7 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("element.artilian.starlight", "Starlight");
         this.add("element.artilian.shadow", "Shadow");
         this.add("element.artilian.dragon", "Dragon");
+        this.add("element.artilian.sunsteel", "Sunsteel");
         this.add("element.artilian.all_types", "All Types");
 
         this.add("message.artilian.pet.affinity", "%s likes you! (%s%% befriended)");

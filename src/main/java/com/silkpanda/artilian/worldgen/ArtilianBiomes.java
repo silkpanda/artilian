@@ -59,6 +59,7 @@ public final class ArtilianBiomes {
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.CRYSTAL_FOX.get(), 6, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.GALECORN.get(), 4, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.PEEPKIN.get(), 3, 1, 2));
+        spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.FROGDUCK.get(), 4, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.PRISMLING.get(), 1, 1, 1));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.FOX, 4, 2, 4));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.RABBIT, 4, 2, 3));
@@ -92,6 +93,7 @@ public final class ArtilianBiomes {
         BiomeDefaultFeatures.farmAnimals(spawns);
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.GALECORN.get(), 6, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.EMBER_DRAKE.get(), 5, 1, 2));
+        spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.SUNBEAM.get(), 1, 1, 1));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.PRISMLING.get(), 1, 1, 1));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.HORSE, 3, 2, 4));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.DONKEY, 2, 1, 2));
@@ -128,6 +130,7 @@ public final class ArtilianBiomes {
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.PEEPKIN.get(), 4, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.FLURRYWING.get(), 4, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.PRISMLING.get(), 1, 1, 1));
+        spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.ZAPKIN.get(), 4, 1, 2));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.GOAT, 5, 2, 4));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.WOLF, 4, 2, 4));
         spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.FOX, 3, 1, 3));

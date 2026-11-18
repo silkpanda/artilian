@@ -31,7 +31,8 @@ public class ArtilianBlockTagsProvider extends BlockTagsProvider {
                 ArtilianBlocks.STARLIGHT_SLATE.get(),
                 ArtilianBlocks.STARLIGHT_SLATE_STAIRS.get(),
                 ArtilianBlocks.STARLIGHT_SLATE_SLAB.get(),
-                ArtilianBlocks.STARLIGHT_SLATE_WALL.get()
+                ArtilianBlocks.STARLIGHT_SLATE_WALL.get(),
+                ArtilianBlocks.BOSS_ALTAR.get()
         );
 
         tag(BlockTags.NEEDS_STONE_TOOL).add(

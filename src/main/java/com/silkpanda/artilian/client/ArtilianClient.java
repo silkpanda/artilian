@@ -40,12 +40,17 @@ public final class ArtilianClient {
         event.registerEntityRenderer(ArtilianEntities.PEEPKIN.get(), PeepkinRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.PRISMLING.get(), PrismlingRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.FLURRYWING.get(), FlurrywingRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.SUNBEAM.get(), SunbeamRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.FROGDUCK.get(), FrogduckRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.ZAPKIN.get(), ZapkinRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.PRISM_SENTINEL.get(),
                 ctx -> new StructureEnemyRenderer<>(ctx, "prism_sentinel", 0.55F));
         event.registerEntityRenderer(ArtilianEntities.CINDER_RAIDER.get(),
                 ctx -> new StructureEnemyRenderer<>(ctx, "cinder_raider", 0.45F));
         event.registerEntityRenderer(ArtilianEntities.ASTRAL_STALKER.get(),
                 ctx -> new StructureEnemyRenderer<>(ctx, "astral_stalker", 0.48F));
+        event.registerEntityRenderer(ArtilianEntities.TRAINING_GOLEM.get(),
+                ctx -> new TrainingGolemRenderer<>(ctx, "training_golem", 1.0F));
     }
 
     @SubscribeEvent

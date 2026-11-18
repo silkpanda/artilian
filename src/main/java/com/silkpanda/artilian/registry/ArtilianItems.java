@@ -1,5 +1,6 @@
 package com.silkpanda.artilian.registry;
 
+import com.silkpanda.artilian.boss.BossSummonItem;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
@@ -69,6 +70,15 @@ public class ArtilianItems {
     public static final DeferredItem<DeferredSpawnEggItem> FLURRYWING_SPAWN_EGG =
             ITEMS.register("flurrywing_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.FLURRYWING, 0xFFFFFF, 0x7DF9FF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> SUNBEAM_SPAWN_EGG =
+            ITEMS.register("sunbeam_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.SUNBEAM, 0xFB923C, 0xFDE68A, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> FROGDUCK_SPAWN_EGG =
+            ITEMS.register("frogduck_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.FROGDUCK, 0x14B8A6, 0xF97316, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> ZAPKIN_SPAWN_EGG =
+            ITEMS.register("zapkin_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.ZAPKIN, 0xFACC15, 0xDC2626, new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> PRISM_SENTINEL_SPAWN_EGG =
             ITEMS.register("prism_sentinel_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.PRISM_SENTINEL, 0x3A2F4D, 0x38D9C0, new Item.Properties()));
@@ -268,6 +278,14 @@ public class ArtilianItems {
                 new Item.Properties().durability(type.getDurability(durabilityMultiplier)),
                 set));
     }
+
+    // Boss Framework Stage 3
+    public static final DeferredItem<BlockItem> BOSS_ALTAR_ITEM =
+            ITEMS.registerSimpleBlockItem("boss_altar", ArtilianBlocks.BOSS_ALTAR);
+    /** Summons the test-only Training Golem; kept out of the creative tab like the golem. */
+    public static final DeferredItem<BossSummonItem> GOLEM_CORE =
+            ITEMS.register("golem_core", () -> new BossSummonItem(ArtilianEntities.TRAINING_GOLEM,
+                    new Item.Properties().stacksTo(16)));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

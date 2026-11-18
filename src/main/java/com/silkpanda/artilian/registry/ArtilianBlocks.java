@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.boss.BossAltarBlock;
 import com.silkpanda.artilian.tnt.ArtilianTntBlock;
 import com.silkpanda.artilian.tnt.TntVariant;
 import com.silkpanda.artilian.worldgen.ArtilianTreeGrowers;
@@ -230,6 +231,15 @@ public class ArtilianBlocks {
                     BlockBehaviour.Properties.ofFullCopy(Blocks.DANDELION)
                             .mapColor(MapColor.COLOR_LIGHT_BLUE)
                             .lightLevel(state -> 10)));
+
+    // Boss Framework Stage 3
+    public static final DeferredBlock<BossAltarBlock> BOSS_ALTAR = BLOCKS.register("boss_altar",
+            () -> new BossAltarBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .instrument(NoteBlockInstrument.BASEDRUM)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F, 1200.0F)
+                    .lightLevel(state -> 5)));
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);

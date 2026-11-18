@@ -29,6 +29,7 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
         this.add(ArtilianEntities.PRISM_SENTINEL.get(), guardianTable(Items.AMETHYST_SHARD, 1, 2));
         this.add(ArtilianEntities.CINDER_RAIDER.get(), guardianTable(ArtilianItems.RAW_SUNSTEEL.get(), 1, 2));
         this.add(ArtilianEntities.ASTRAL_STALKER.get(), guardianTable(ArtilianItems.STARLIGHT_CRYSTAL.get(), 1, 1));
+        this.add(ArtilianEntities.TRAINING_GOLEM.get(), LootTable.lootTable());
     }
 
     private static LootTable.Builder guardianTable(ItemLike primaryDrop, int min, int max) {
@@ -48,7 +49,8 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
         return Stream.of(
                 ArtilianEntities.PRISM_SENTINEL.get(),
                 ArtilianEntities.CINDER_RAIDER.get(),
-                ArtilianEntities.ASTRAL_STALKER.get()
+                ArtilianEntities.ASTRAL_STALKER.get(),
+                ArtilianEntities.TRAINING_GOLEM.get()
         );
     }
 }

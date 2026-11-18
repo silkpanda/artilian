@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.enemy.AstralStalkerEntity;
 import com.silkpanda.artilian.enemy.CinderRaiderEntity;
@@ -9,10 +10,13 @@ import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
 import com.silkpanda.artilian.pet.FlurrywingEntity;
+import com.silkpanda.artilian.pet.FrogduckEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
+import com.silkpanda.artilian.pet.SunbeamEntity;
+import com.silkpanda.artilian.pet.ZapkinEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
 import com.silkpanda.artilian.tnt.ArtilianPrimedTnt;
 import net.minecraft.core.registries.Registries;
@@ -116,6 +120,29 @@ public class ArtilianEntities {
                     .clientTrackingRange(10)
                     .build("flurrywing"));
 
+    /** Sunbeam: the legendary Sunsteel sun pet, ghast-tall, rare in Emberbloom Meadows. */
+    public static final DeferredHolder<EntityType<?>, EntityType<SunbeamEntity>> SUNBEAM =
+            ENTITY_TYPES.register("sunbeam", () -> EntityType.Builder.of(SunbeamEntity::new, MobCategory.CREATURE)
+                    .sized(3.0F, 4.0F)
+                    .eyeHeight(3.3F)
+                    .clientTrackingRange(10)
+                    .build("sunbeam"));
+
+    /** Frogduck: the kids' amphibious teal frog with an orange duck on its head, Water / Nature, Crystal Canopy Woods. */
+    public static final DeferredHolder<EntityType<?>, EntityType<FrogduckEntity>> FROGDUCK =
+            ENTITY_TYPES.register("frogduck", () -> EntityType.Builder.of(FrogduckEntity::new, MobCategory.CREATURE)
+                    .sized(1.25F, 1.35F)
+                    .eyeHeight(0.75F)
+                    .clientTrackingRange(10)
+                    .build("frogduck"));
+    /** Zapkin: kid-drawn Electric buddy native to Starlight Highlands. */
+    public static final DeferredHolder<EntityType<?>, EntityType<ZapkinEntity>> ZAPKIN =
+            ENTITY_TYPES.register("zapkin", () -> EntityType.Builder.of(ZapkinEntity::new, MobCategory.CREATURE)
+                    .sized(0.95F, 1.55F)
+                    .eyeHeight(1.10F)
+                    .clientTrackingRange(10)
+                    .build("zapkin"));
+
     /** Prism Sentinel: Crystal/Earth guardian of the Crystal Grove Shrine. */
     public static final DeferredHolder<EntityType<?>, EntityType<PrismSentinelEntity>> PRISM_SENTINEL =
             ENTITY_TYPES.register("prism_sentinel", () -> EntityType.Builder.of(PrismSentinelEntity::new, MobCategory.MONSTER)
@@ -140,6 +167,14 @@ public class ArtilianEntities {
                     .eyeHeight(1.55F)
                     .clientTrackingRange(10)
                     .build("astral_stalker"));
+
+    /** Test-only boss for the boss framework. Not in the creative tab and has no spawn egg. */
+    public static final DeferredHolder<EntityType<?>, EntityType<TrainingGolemEntity>> TRAINING_GOLEM =
+            ENTITY_TYPES.register("training_golem", () -> EntityType.Builder.of(TrainingGolemEntity::new, MobCategory.MONSTER)
+                    .sized(1.6F, 2.6F)
+                    .eyeHeight(2.2F)
+                    .clientTrackingRange(10)
+                    .build("training_golem"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

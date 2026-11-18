@@ -73,6 +73,7 @@ public class ArtilianBlockStateProvider extends BlockStateProvider {
 
         turfBlock(ArtilianBlocks.STARLIGHT_TURF, "starlight_turf", modLoc("block/starlight_slate"));
         simpleCube(ArtilianBlocks.STARLIGHT_SLATE);
+        simpleBlockWithItem(ArtilianBlocks.BOSS_ALTAR.get(), cubeAll(ArtilianBlocks.BOSS_ALTAR.get()));
         slateVariants(
                 ArtilianBlocks.STARLIGHT_SLATE_STAIRS,
                 ArtilianBlocks.STARLIGHT_SLATE_SLAB,

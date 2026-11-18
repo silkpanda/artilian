@@ -42,8 +42,8 @@ public class PetCaptureGameTests {
 
     @GameTest(template = "empty")
     public static void petElementMatchupsAndDualElementMultipliersWork(GameTestHelper helper) {
-        helper.assertTrue(PetElement.values().length == 11,
-                "Expected 11 PetElements in expanded element system, got " + PetElement.values().length);
+        helper.assertTrue(PetElement.values().length == 12,
+                "Expected 12 PetElements in expanded element system, got " + PetElement.values().length);
         for (PetElement element : PetElement.values()) {
             helper.assertTrue(element.particle() != null, "Missing particle for element " + element);
             helper.assertTrue(element.colorRgb() != 0, "Missing color for element " + element);

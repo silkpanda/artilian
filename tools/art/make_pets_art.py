@@ -1470,9 +1470,762 @@ def make_flurrywing():
     img.save(dest)
 
 
+def make_sunbeam():
+    """Sunbeam: the kids' legendary Sunsteel guardian (qa/reference/pets/sunsteel-drawing-2026-11-17.jpg).
+
+    Art pass v2:
+    - Creature-like Sunsteel guardian head: dark recessed visor, angled glowing solar eyes,
+      forehead sun-diamond, 3D armored beak/jaw-crest (no human smiley face), and 5-ray solar crown
+    - Sculpted Sunsteel breastplate & layered chest chevron (no permanent chest orb/streamer)
+    - Attack-only `chest_beam` bone (hidden at scale 0 in idle/walk/sit, blasts forward in attack)
+    - Four articulated spiky solar wing-arms with 3-pronged starburst claws & chunky greaves
+
+    Writes sunbeam.geo.json, sunbeam.png, and sunbeam_glowmask.png from a single UV layout.
+    """
+    import json
+
+    img = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+
+    # Rich Sunsteel & solar-plasma palette
+    WHITE_HOT = (255, 253, 236, 255)
+    SUN_HI = (254, 224, 102, 255)
+    GOLD = (245, 168, 24, 255)
+    GOLD_MID = (217, 119, 16, 255)
+    BRONZE = (164, 76, 18, 255)
+    BRONZE_DEEP = (112, 48, 12, 255)
+    SEAM = (86, 36, 10, 255)
+    VISOR = (42, 20, 10, 255)
+    VISOR_SHADE = (28, 12, 6, 255)
+
+    FLAME_Y = (253, 224, 71, 255)
+    FLAME_O = (249, 115, 22, 255)
+
+    # Box UV definitions: (u, v, w, h, d) — zero overlaps on 128x128
+    CHEST = (0, 0, 12, 9, 8)
+    CHEST_PLATE = (42, 0, 10, 6, 1)
+    PELVIS = (66, 0, 10, 3, 7)
+    FLAP = (102, 0, 2, 5, 3)
+    NECK = (102, 9, 5, 2, 5)
+
+    HEAD_CORE = (0, 19, 12, 9, 10)
+    HEAD_BAND = (46, 19, 14, 5, 8)
+    HEAD_CAP = (92, 19, 10, 2, 8)
+    HEAD_CHIN = (46, 33, 10, 1, 8)
+    SNOUT = (84, 33, 6, 3, 2)
+    CROWN_RAY = (102, 33, 2, 5, 2)
+    CROWN_RAY_SM = (112, 33, 2, 4, 2)
+
+    BEAM_CORE = (0, 42, 4, 4, 14)
+    BEAM_FLARE = (38, 42, 6, 6, 1)
+
+    THIGH = (0, 60, 4, 3, 4)
+    SHIN = (18, 60, 4, 3, 3)
+    BOOT = (34, 60, 4, 2, 6)
+
+    PAULDRON_UP = (0, 70, 5, 5, 6)
+    ARM_UP = (24, 70, 8, 3, 3)
+    FORE_UP = (48, 70, 8, 3, 3)
+    SPIKE_LG = (72, 70, 5, 1, 1)
+    SPIKE_MD = (86, 70, 4, 1, 1)
+
+    PAULDRON_LO = (0, 84, 4, 4, 4)
+    ARM_LO = (18, 84, 8, 3, 3)
+    FORE_LO = (42, 84, 7, 2, 2)
+    SPIKE_SM = (62, 84, 3, 1, 1)
+
+    def plate(box, hi, base, shade, deep, target=img, rim=SEAM):
+        """Beveled Sunsteel armor plate with top highlight, side shading, and dark seam trim."""
+        for face, (x, y, fw, fh) in faces(*box).items():
+            for py in range(y, y + fh):
+                t = (py - y) / max(1, fh - 1)
+                for px in range(x, x + fw):
+                    if face == "top":
+                        color = hi
+                    elif face == "bottom":
+                        color = deep
+                    elif face in ("east", "west"):
+                        color = shade if t < 0.75 else deep
+                    else:
+                        color = hi if t < 0.18 else (base if t < 0.78 else shade)
+                    put(target, px, py, color)
+            if face in ("front", "back", "east", "west") and fw >= 3 and fh >= 3:
+                for py in range(y, y + fh):
+                    put(target, x, py, rim)
+                    put(target, x + fw - 1, py, rim)
+                for px in range(x, x + fw):
+                    put(target, px, y + fh - 1, rim)
+                    if fh >= 5:
+                        put(target, px, y, rim)
+
+    def flat(box, color, target):
+        for rect in faces(*box).values():
+            fill(target, rect, color)
+
+    # 1. Armor plates
+    plate(CHEST, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(CHEST_PLATE, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(FLAP, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(PELVIS, GOLD, BRONZE, BRONZE_DEEP, SEAM)
+    plate(NECK, BRONZE, BRONZE_DEEP, BRONZE_DEEP, SEAM)
+
+    plate(THIGH, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(SHIN, GOLD, BRONZE, BRONZE_DEEP, SEAM)
+    plate(BOOT, SUN_HI, GOLD, GOLD_MID, BRONZE_DEEP)
+
+    plate(PAULDRON_UP, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(ARM_UP, GOLD, BRONZE, BRONZE_DEEP, SEAM)
+    plate(FORE_UP, SUN_HI, GOLD, GOLD_MID, BRONZE)
+
+    plate(PAULDRON_LO, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(ARM_LO, GOLD, BRONZE, BRONZE_DEEP, SEAM)
+    plate(FORE_LO, SUN_HI, GOLD, GOLD_MID, BRONZE)
+
+    # Sculpted Sunsteel breastplate chevron & recessed sternum seam (no permanent orb)
+    cx, cy, cw, ch = faces(*CHEST_PLATE)["front"]
+    for i in range(4):
+        put(img, cx + 1 + i, cy + 1 + i, SEAM)
+        put(img, cx + cw - 2 - i, cy + 1 + i, SEAM)
+        put(img, cx + 1 + i, cy + i, SUN_HI)
+        put(img, cx + cw - 2 - i, cy + i, SUN_HI)
+    for py in range(cy + 3, cy + ch - 1):
+        put(img, cx + cw // 2 - 1, py, BRONZE)
+        put(img, cx + cw // 2, py, BRONZE)
+    # Subtle glowing solar-forge vents along the upper chest flanks
+    for target in (img, glow):
+        put(target, cx + 1, cy + 2, FLAME_Y)
+        put(target, cx + cw - 2, cy + 2, FLAME_Y)
+
+    # Backplate solar spine & shoulder vents
+    bx, by, bw, bh = faces(*CHEST)["back"]
+    for py in range(by + 1, by + bh - 1):
+        put(img, bx + bw // 2 - 1, py, SEAM)
+        put(img, bx + bw // 2, py, SEAM)
+        if py % 2 == 0:
+            for target in (img, glow):
+                put(target, bx + bw // 2 - 2, py, FLAME_Y)
+                put(target, bx + bw // 2 + 1, py, FLAME_Y)
+
+    # Pelvis belt buckle
+    px0, py0, pw, ph = faces(*PELVIS)["front"]
+    fill(img, (px0 + pw // 2 - 2, py0, 4, ph), GOLD)
+    for target in (img, glow):
+        fill(target, (px0 + pw // 2 - 1, py0 + 1, 2, 1), FLAME_Y)
+
+    # Pauldron ridge + glowing wing conduits
+    for box in (PAULDRON_UP, PAULDRON_LO):
+        for face in ("front", "back", "east", "west"):
+            x, y, fw, fh = faces(*box)[face]
+            for px in range(x + 1, x + fw - 1):
+                put(img, px, y + 2, BRONZE)
+    for box in (ARM_UP, FORE_UP, ARM_LO):
+        for face in ("front", "back", "top"):
+            x, y, fw, fh = faces(*box)[face]
+            for px in range(x + 1, x + fw - 1):
+                for target in (img, glow):
+                    put(target, px, y + fh // 2, FLAME_Y if box == FORE_UP else FLAME_O)
+    for face in ("front", "back", "top"):
+        x, y, fw, fh = faces(*FORE_LO)[face]
+        for px in range(x + 1, x + fw - 1):
+            for target in (img, glow):
+                put(target, px, y, FLAME_Y)
+
+    # Boot glowing ankle trim
+    x, y, fw, fh = faces(*BOOT)["front"]
+    for target in (img, glow):
+        fill(target, (x + 1, y, fw - 2, 1), FLAME_Y)
+
+    # 2. Creature Head: gold helm, dark recessed visor, angled glowing solar eyes, forehead sun-gem, armored snout
+    plate(HEAD_CORE, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(HEAD_BAND, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(HEAD_CAP, WHITE_HOT, SUN_HI, GOLD, GOLD_MID)
+    plate(HEAD_CHIN, GOLD, GOLD_MID, BRONZE, BRONZE_DEEP)
+    plate(SNOUT, SUN_HI, GOLD, GOLD_MID, BRONZE)
+
+    # Snout beak-ridge detail
+    sx0, sy0, sw, sh = faces(*SNOUT)["front"]
+    fill(img, (sx0 + 1, sy0 + 1, sw - 2, 1), BRONZE)
+    put(img, sx0 + sw // 2 - 1, sy0, WHITE_HOT)
+    put(img, sx0 + sw // 2, sy0, WHITE_HOT)
+
+    # Side ear-crests glow softly on HEAD_BAND east/west
+    for face in ("east", "west"):
+        x, y, fw, fh = faces(*HEAD_BAND)[face]
+        for target in (img, glow):
+            fill(target, (x + fw // 2 - 1, y + 1, 2, fh - 2), FLAME_Y)
+
+    # Dark Sunsteel visor recess on HEAD_CORE front
+    hx, hy, hw, hh = faces(*HEAD_CORE)["front"]
+    fill(img, (hx + 1, hy + 1, hw - 2, hh - 2), VISOR)
+    for px in range(hx + 1, hx + hw - 1):
+        put(img, px, hy + 1, VISOR_SHADE)
+
+    # Forehead sun-diamond (honoring the 3rd circle in the kid's drawing)
+    for target in (img, glow):
+        put(target, hx + hw // 2 - 1, hy + 1, FLAME_Y)
+        put(target, hx + hw // 2, hy + 1, FLAME_Y)
+        put(target, hx + hw // 2 - 1, hy + 2, WHITE_HOT)
+        put(target, hx + hw // 2, hy + 2, WHITE_HOT)
+
+    # Angled glowing creature eyes (fierce yet noble, no human sclera/pupils)
+    # Left eye slopes down-right, right eye slopes down-left
+    for target in (img, glow):
+        # Left eye
+        put(target, hx + 2, hy + 3, FLAME_O)
+        put(target, hx + 3, hy + 3, FLAME_Y)
+        put(target, hx + 2, hy + 4, FLAME_Y)
+        put(target, hx + 3, hy + 4, WHITE_HOT)
+        put(target, hx + 4, hy + 4, WHITE_HOT)
+        # Right eye
+        put(target, hx + hw - 3, hy + 3, FLAME_O)
+        put(target, hx + hw - 4, hy + 3, FLAME_Y)
+        put(target, hx + hw - 3, hy + 4, FLAME_Y)
+        put(target, hx + hw - 4, hy + 4, WHITE_HOT)
+        put(target, hx + hw - 5, hy + 4, WHITE_HOT)
+
+    # 3. Solar Crown Rays behind/above the head (glowing!)
+    for box in (CROWN_RAY, CROWN_RAY_SM):
+        for target in (img, glow):
+            for face, (x, y, fw, fh) in faces(*box).items():
+                for py in range(y, y + fh):
+                    t = (py - y) / max(1, fh - 1)
+                    color = WHITE_HOT if t < 0.35 else (FLAME_Y if t < 0.75 else FLAME_O)
+                    for px in range(x, x + fw):
+                        put(target, px, py, color)
+
+    # 4. Spiky Solar Starburst Claws (glowing white-hot -> gold!)
+    for box in (SPIKE_LG, SPIKE_MD, SPIKE_SM):
+        for target in (img, glow):
+            for face, (x, y, fw, fh) in faces(*box).items():
+                for py in range(y, y + fh):
+                    for px in range(x, x + fw):
+                        put(target, px, py, WHITE_HOT if px == x else (FLAME_Y if px < x + fw - 1 else FLAME_O))
+
+    # 5. Attack-only Chest Solar Beam (hidden at scale 0 in idle/walk/sit)
+    for target in (img, glow):
+        flat(BEAM_CORE, FLAME_Y, target)
+        for face, (x, y, fw, fh) in faces(*BEAM_CORE).items():
+            if fw >= 3 and fh >= 3:
+                fill(target, (x + 1, y + 1, fw - 2, fh - 2), WHITE_HOT)
+        for face, (x, y, fw, fh) in faces(*BEAM_FLARE).items():
+            fill(target, (x, y, fw, fh), FLAME_O)
+            if fw >= 4 and fh >= 4:
+                fill(target, (x + 1, y + 1, fw - 2, fh - 2), FLAME_Y)
+            if fw >= 6 and fh >= 6:
+                fill(target, (x + 2, y + 2, fw - 4, fh - 4), WHITE_HOT)
+
+    # Save textures
+    dest = OUT / "entity/sunbeam.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+    glow.save(OUT / "entity/sunbeam_glowmask.png")
+
+    # 6. Write matching sunbeam.geo.json so UVs and geometry can never drift
+    def cube(origin, box, mirror=False, pivot=None, rotation=None):
+        c = {
+            "origin": origin,
+            "size": [box[2], box[3], box[4]],
+            "uv": [box[0], box[1]],
+        }
+        if mirror:
+            c["mirror"] = True
+        if pivot is not None:
+            c["pivot"] = pivot
+        if rotation is not None:
+            c["rotation"] = rotation
+        return c
+
+    def wing_upper_bones(side):
+        s = -1 if side == "left" else 1
+        mir = side == "right"
+        arm_name = f"wing_{side}_upper"
+        tip_name = f"wing_{side}_upper_tip"
+
+        def ox(x, w):
+            return [x if s < 0 else -x - w]
+
+        return [
+            {
+                "name": arm_name,
+                "parent": "body",
+                "pivot": [6 * s, 18, 0],
+                "rotation": [0, 0, 10 * s],
+                "cubes": [
+                    cube([ox(-10, 5)[0], 15, -3], PAULDRON_UP, mirror=mir),
+                    cube([ox(-17, 8)[0], 16, -1], ARM_UP, mirror=mir),
+                ],
+            },
+            {
+                "name": tip_name,
+                "parent": arm_name,
+                "pivot": [17 * s, 18, 0],
+                "rotation": [0, 0, 32 * s],
+                "cubes": [
+                    cube([ox(-24, 8)[0], 16, -1], FORE_UP, mirror=mir),
+                    cube([ox(-29, 5)[0], 17, 0], SPIKE_LG, mirror=mir),
+                    cube(
+                        [ox(-27, 4)[0], 19, 0], SPIKE_MD, mirror=mir,
+                        pivot=[24 * s, 19, 0.5], rotation=[0, 0, 36 * s],
+                    ),
+                    cube(
+                        [ox(-27, 4)[0], 16, 0], SPIKE_MD, mirror=mir,
+                        pivot=[24 * s, 16, 0.5], rotation=[0, 0, -36 * s],
+                    ),
+                ],
+            },
+        ]
+
+    def wing_lower_bones(side):
+        s = -1 if side == "left" else 1
+        mir = side == "right"
+        arm_name = f"wing_{side}_lower"
+        tip_name = f"wing_{side}_lower_tip"
+
+        def ox(x, w):
+            return x if s < 0 else -x - w
+
+        return [
+            {
+                "name": arm_name,
+                "parent": "body",
+                "pivot": [6 * s, 10.5, 1.5],
+                "rotation": [0, -14 * s, -18 * s],
+                "cubes": [
+                    cube([ox(-9, 4), 8.5, -0.5], PAULDRON_LO, mirror=mir),
+                    cube([ox(-16, 8), 9, 0.5], ARM_LO, mirror=mir),
+                ],
+            },
+            {
+                "name": tip_name,
+                "parent": arm_name,
+                "pivot": [16 * s, 10.5, 1.5],
+                "rotation": [0, 0, 26 * s],
+                "cubes": [
+                    cube([ox(-22, 7), 9.5, 0.5], FORE_LO, mirror=mir),
+                    cube([ox(-26, 4), 10, 0.5], SPIKE_MD, mirror=mir),
+                    cube(
+                        [ox(-25, 3), 11, 0.5], SPIKE_SM, mirror=mir,
+                        pivot=[22 * s, 11, 1.0], rotation=[0, 0, 38 * s],
+                    ),
+                    cube(
+                        [ox(-25, 3), 9, 0.5], SPIKE_SM, mirror=mir,
+                        pivot=[22 * s, 9.5, 1.0], rotation=[0, 0, -38 * s],
+                    ),
+                ],
+            },
+        ]
+
+    geo = {
+        "format_version": "1.12.0",
+        "minecraft:geometry": [
+            {
+                "description": {
+                    "identifier": "geometry.sunbeam",
+                    "texture_width": 128,
+                    "texture_height": 128,
+                    "visible_bounds_width": 7,
+                    "visible_bounds_height": 4.5,
+                    "visible_bounds_offset": [0, 2.0, 0],
+                },
+                "bones": [
+                    {"name": "root", "pivot": [0, 0, 0]},
+                    {
+                        "name": "body",
+                        "parent": "root",
+                        "pivot": [0, 8, 0],
+                        "cubes": [
+                            cube([-5, 7, -3.5], PELVIS),
+                            cube([-6, 10, -4], CHEST),
+                            cube([-5, 12, -4.8], CHEST_PLATE),
+                            cube([6, 10, -1.5], FLAP),
+                        ],
+                    },
+                    {
+                        "name": "chest_beam",
+                        "parent": "body",
+                        "pivot": [0, 14.5, -5],
+                        "cubes": [
+                            cube([-3, 11.5, -5.5], BEAM_FLARE),
+                            cube([-2, 12.5, -19.5], BEAM_CORE),
+                        ],
+                    },
+                    {
+                        "name": "neck",
+                        "parent": "body",
+                        "pivot": [0, 19, 0],
+                        "cubes": [cube([-2.5, 19, -2.5], NECK)],
+                    },
+                    {
+                        "name": "head",
+                        "parent": "body",
+                        "pivot": [0, 21, 0],
+                        "cubes": [
+                            cube([-6, 21, -5], HEAD_CORE),
+                            cube([-7, 23, -4], HEAD_BAND),
+                            cube([-5, 30, -4], HEAD_CAP),
+                            cube([-5, 20, -4], HEAD_CHIN),
+                            cube([-3, 21, -6.2], SNOUT),
+                            # 5-ray solar crown fanning visibly above and around the head
+                            cube([-1, 31, 1], CROWN_RAY, pivot=[0, 27, 2], rotation=[0, 0, 0]),
+                            cube([-1, 31, 1], CROWN_RAY_SM, pivot=[0, 26, 2], rotation=[0, 0, -28]),
+                            cube([-1, 31, 1], CROWN_RAY_SM, pivot=[0, 26, 2], rotation=[0, 0, 28]),
+                            cube([-1, 30, 1], CROWN_RAY_SM, pivot=[0, 25, 2], rotation=[0, 0, -56]),
+                            cube([-1, 30, 1], CROWN_RAY_SM, pivot=[0, 25, 2], rotation=[0, 0, 56]),
+                        ],
+                    },
+                    *wing_upper_bones("left"),
+                    *wing_upper_bones("right"),
+                    *wing_lower_bones("left"),
+                    *wing_lower_bones("right"),
+                    {
+                        "name": "leg_left",
+                        "parent": "body",
+                        "pivot": [-3, 7, 0],
+                        "cubes": [
+                            cube([-5, 5, -2], THIGH),
+                            cube([-5, 2, -1], SHIN),
+                            cube([-5, 0, -3.5], BOOT),
+                        ],
+                    },
+                    {
+                        "name": "leg_right",
+                        "parent": "body",
+                        "pivot": [3, 7, 0],
+                        "cubes": [
+                            cube([1, 5, -2], THIGH, mirror=True),
+                            cube([1, 2, -1], SHIN, mirror=True),
+                            cube([1, 0, -3.5], BOOT, mirror=True),
+                        ],
+                    },
+                ],
+            }
+        ],
+    }
+    geo_path = Path("src/main/resources/assets/artilian/geo/entity/sunbeam.geo.json")
+    geo_path.write_text(json.dumps(geo, indent="\t") + "\n", encoding="utf-8")
+
+
+def make_frogduck():
+    """Frogduck: the kids' amphibious teal frog with an orange duck on its head (qa/reference/pets/frog-duck-drawing-2026-11-17.jpg).
+
+    Layout matches src/main/resources/assets/artilian/geo/entity/frogduck.geo.json (box UV, 128x64).
+    """
+    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+
+    TEAL_HI = (94, 234, 212, 255)
+    TEAL = (20, 184, 166, 255)
+    TEAL_DEEP = (13, 148, 136, 255)
+    TEAL_OUTLINE = (15, 118, 110, 255)
+    FACE = (186, 248, 240, 255)
+    BROWN = (120, 53, 15, 255)
+    BROWN_HI = (146, 64, 14, 255)
+    CLAW = (224, 252, 248, 255)
+
+    ORANGE_HI = (253, 186, 116, 255)
+    ORANGE = (249, 115, 22, 255)
+    ORANGE_DEEP = (234, 88, 12, 255)
+    ORANGE_OUTLINE = (194, 65, 12, 255)
+    GOLD_BILL = (251, 191, 36, 255)
+
+    def paint_box(box, base, side, top_c, outline_c):
+        f = faces(*box)
+        for face, (x, y, fw, fh) in f.items():
+            color = {"top": top_c, "bottom": outline_c, "east": side, "west": side}.get(face, base)
+            fill(img, (x, y, fw, fh), color)
+            if face in ("front", "back", "east", "west"):
+                for py in range(y, y + fh):
+                    put(img, x, py, outline_c)
+                    put(img, x + fw - 1, py, outline_c)
+                for px in range(x, x + fw):
+                    put(img, px, y + fh - 1, outline_c)
+
+    # 1. Teal frog body & hump
+    TORSO = (0, 0, 12, 8, 10)
+    HUMP = (46, 0, 10, 1, 8)
+    FACE_PLATE = (46, 10, 8, 7, 1)
+    paint_box(TORSO, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
+    paint_box(HUMP, TEAL_HI, TEAL, TEAL_HI, TEAL_OUTLINE)
+    paint_box(FACE_PLATE, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
+
+    # Face in the middle of the body: brown eyes, two teal dots, brown cloud below them.
+    fx, fy, fw, fh = faces(*FACE_PLATE)["front"]
+    fill(img, (fx + 1, fy + 1, fw - 2, fh - 2), FACE)
+    # Two round brown eyes
+    fill(img, (fx + 1, fy + 1, 2, 2), BROWN)
+    fill(img, (fx + 5, fy + 1, 2, 2), BROWN)
+    put(img, fx + 1, fy + 1, BROWN_HI)
+    put(img, fx + 5, fy + 1, BROWN_HI)
+    # Two teal nostril dots
+    put(img, fx + 2, fy + 3, TEAL_OUTLINE)
+    put(img, fx + 5, fy + 3, TEAL_OUTLINE)
+    # Brown cloud shape below them
+    fill(img, (fx + 2, fy + 4, 4, 2), BROWN)
+    put(img, fx + 1, fy + 5, BROWN_HI)
+    put(img, fx + 6, fy + 5, BROWN_HI)
+    put(img, fx + 3, fy + 4, BROWN_HI)
+    put(img, fx + 4, fy + 4, BROWN_HI)
+
+    # 2. Four legs with clawed feet
+    for leg in ((0, 20, 3, 5, 3), (32, 20, 3, 5, 3), (0, 30, 3, 4, 3), (32, 30, 3, 4, 3)):
+        paint_box(leg, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
+    for foot in ((14, 20, 4, 1, 4), (46, 20, 4, 1, 4), (14, 30, 4, 1, 4), (46, 30, 4, 1, 4)):
+        paint_box(foot, TEAL_DEEP, TEAL_OUTLINE, TEAL, TEAL_OUTLINE)
+    for face, rect in faces(66, 10, 1, 1, 1).items():
+        fill(img, rect, CLAW)
+
+    # 3. Orange duck on top of its head (part of the same creature)
+    DUCK_CHEST = (84, 0, 5, 3, 5)
+    DUCK_CREST = (106, 0, 2, 2, 1)
+    DUCK_HEAD = (84, 10, 5, 4, 4)
+    DUCK_BILL = (104, 10, 3, 1, 1)
+    paint_box(DUCK_CHEST, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
+    paint_box(DUCK_CREST, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
+    paint_box(DUCK_HEAD, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
+    for face, rect in faces(*DUCK_BILL).items():
+        fill(img, rect, GOLD_BILL)
+    # Duck slit eyes
+    dx, dy, _, _ = faces(*DUCK_HEAD)["front"]
+    put(img, dx + 1, dy + 1, BROWN)
+    put(img, dx + 1, dy + 2, BROWN)
+    put(img, dx + 3, dy + 1, BROWN)
+    put(img, dx + 3, dy + 2, BROWN)
+
+    # Outstretched orange duck wings
+    for wing in ((66, 20, 6, 2, 2), (66, 26, 6, 2, 2)):
+        paint_box(wing, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
+    for tip in ((84, 20, 3, 1, 1), (84, 26, 3, 1, 1)):
+        paint_box(tip, ORANGE_HI, ORANGE, ORANGE_HI, ORANGE_OUTLINE)
+
+    dest = OUT / "entity/frogduck.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    img.save(dest)
+
+
+def make_zapkin():
+    """128x128 texture + glowmask for Zapkin (sleek storm-navy, electric-cyan, neon-yellow & plasma-red electric buddy)."""
+    img = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+
+    pal = {
+        "N": (30, 38, 66, 255),      # Storm navy armor
+        "S": (18, 23, 42, 255),      # Deep slate shadow
+        "B": (49, 64, 108, 255),     # Steel-blue highlight
+        "Y": (250, 204, 21, 255),    # High-voltage electric yellow
+        "H": (254, 240, 138, 255),   # Bright spark yellow
+        "W": (255, 253, 240, 255),   # White-hot plasma core
+        "C": (56, 189, 248, 255),    # Electric sky cyan
+        "K": (125, 249, 255, 255),   # Neon cyan glow
+        "R": (239, 68, 68, 255),     # Charged crimson-red plasma
+        "O": (249, 115, 22, 255),    # Hot amber-orange edge
+    }
+
+    def box_fill(target, u, v, w, h, d, fill_col, edge_col, hi_col=None):
+        for name, (rx, ry, rw, rh) in faces(u, v, w, h, d).items():
+            for px in range(rx, rx + rw):
+                for py in range(ry, ry + rh):
+                    is_edge = (px == rx or px == rx + rw - 1 or py == ry or py == ry + rh - 1)
+                    if is_edge:
+                        put(target, px, py, edge_col)
+                    elif hi_col is not None and (py == ry + 1 or name == "top"):
+                        put(target, px, py, hi_col)
+                    else:
+                        put(target, px, py, fill_col)
+
+    # Head cranium [7, 5, 7] at (0, 0)
+    box_fill(img, 0, 0, 7, 5, 7, pal["N"], pal["S"], pal["B"])
+    # Electric yellow stripe along top & back of cranium
+    paint_geo_box(img, 0, 0, 7, 5, 7, {
+        "top": [
+            "SSBBBSS",
+            "SYYYYYS",
+            "SYHHHYH",
+            "SYHHHYH",
+            "SYYYYYS",
+            "SYCYCYS",
+            "SSBBBSS",
+        ],
+        "back": [
+            "SYYYYYS",
+            "SYHHHYH",
+            "SSCYCSS",
+            "SSCYCSS",
+            "SSSSSSS",
+        ],
+    }, pal)
+    paint_geo_box(glow, 0, 0, 7, 5, 7, {
+        "top": [
+            ".......",
+            ".YYYYY.",
+            ".YHHHY.",
+            ".YHHHY.",
+            ".YYYYY.",
+            "..C.C..",
+            ".......",
+        ],
+    }, pal)
+
+    # Sleek storm-visor face plate [7, 4, 1] at (28, 0)
+    box_fill(img, 28, 0, 7, 4, 1, pal["S"], pal["B"])
+    visor_front = [
+        "BBBBBBB",
+        "SKWKWKS",
+        "SKCKCKS",
+        "SRYYRYS",
+    ]
+    paint_geo_box(img, 28, 0, 7, 4, 1, {"front": visor_front}, pal)
+    visor_glow = [
+        ".......",
+        ".KW.WK.",
+        ".KC.CK.",
+        "..YY.Y.",
+    ]
+    paint_geo_box(glow, 28, 0, 7, 4, 1, {"front": visor_glow}, pal)
+
+    # Cheek lightning fins [2, 3, 2] at (44, 0) and (52, 0)
+    for cu in (44, 52):
+        box_fill(img, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
+        box_fill(glow, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
+
+    # Three sharp Z-kink lightning head bolts: blazing electric yellow + white-hot core (no orange candy-corn stripes!)
+    for (u, v, w, h, d, is_tip) in [
+        (0, 14, 1, 3, 1, False),
+        (6, 14, 2, 1, 1, False),
+        (14, 14, 1, 3, 1, True),
+        (20, 14, 1, 3, 1, False),
+        (26, 14, 2, 1, 1, False),
+        (34, 14, 1, 3, 1, True),
+        (40, 14, 1, 3, 1, False),
+        (46, 14, 3, 1, 1, False),
+        (56, 14, 1, 3, 1, False),
+        (62, 14, 2, 1, 1, False),
+        (70, 14, 1, 3, 1, True),
+    ]:
+        for name, (rx, ry, rw, rh) in faces(u, v, w, h, d).items():
+            for px in range(rx, rx + rw):
+                for py in range(ry, ry + rh):
+                    if is_tip and py == ry:
+                        c = pal["W"]
+                    elif name in ("front", "back"):
+                        c = pal["H"] if is_tip else pal["Y"]
+                    else:
+                        c = pal["W"] if is_tip else pal["H"]
+                    put(img, px, py, c)
+                    put(glow, px, py, c)
+
+    # Waist [5, 3, 4] at (0, 26) — dark slate with glowing cyan energy belt
+    box_fill(img, 0, 26, 5, 3, 4, pal["S"], pal["N"])
+    paint_geo_box(img, 0, 26, 5, 3, 4, {
+        "front": ["SSSSS", "CKWKC", "SSSSS"],
+        "back":  ["SSSSS", "CKCKC", "SSSSS"],
+    }, pal)
+    paint_geo_box(glow, 0, 26, 5, 3, 4, {
+        "front": [".....", "CKWKC", "....."],
+        "back":  [".....", "CKCKC", "....."],
+    }, pal)
+
+    # Chest [8, 4, 5] at (18, 26) — storm-navy armor with yellow/cyan circuit seams
+    box_fill(img, 18, 26, 8, 4, 5, pal["N"], pal["S"], pal["B"])
+    paint_geo_box(img, 18, 26, 8, 4, 5, {
+        "front": [
+            "SBBBBBBBS"[:8],
+            "NYYNNYYN",
+            "NCNNNNNC",
+            "SSSSSSSS",
+        ],
+        "back": [
+            "SBBBBBBBS"[:8],
+            "NCNNNNNC",
+            "NYYNNYYN",
+            "SSSSSSSS",
+        ],
+    }, pal)
+    paint_geo_box(glow, 18, 26, 8, 4, 5, {
+        "front": ["........", ".YY..YY.", ".C....C.", "........"],
+        "back":  ["........", ".C....C.", ".YY..YY.", "........"],
+    }, pal)
+
+    # Chest lightning core [4, 3, 1] at (44, 26)
+    box_fill(img, 44, 26, 4, 3, 1, pal["H"], pal["R"], pal["W"])
+    paint_geo_box(img, 44, 26, 4, 3, 1, {"front": ["RRWR", "RWHR", "RWRR"]}, pal)
+    paint_geo_box(glow, 44, 26, 4, 3, 1, {"front": ["..W.", ".WH.", ".W.."]}, pal)
+
+    # Shoulders [3, 2, 4] at (56, 26) & (70, 26) — crimson-trimmed storm pauldrons with yellow stripes
+    for su in (56, 70):
+        box_fill(img, su, 26, 3, 2, 4, pal["N"], pal["R"], pal["Y"])
+        paint_geo_box(glow, su, 26, 3, 2, 4, {"top": ["...", ".Y.", ".Y.", "..."]}, pal)
+
+    # Back Tesla coils [2, 5, 2] at (84, 26) & (92, 26)
+    for cu in (84, 92):
+        for name, (rx, ry, rw, rh) in faces(cu, 26, 2, 5, 2).items():
+            for px in range(rx, rx + rw):
+                for py in range(ry, ry + rh):
+                    row = py - ry
+                    c = pal["W"] if row == 0 else (pal["K"] if row in (1, 3) else pal["N"])
+                    put(img, px, py, c)
+                    if row in (0, 1, 3):
+                        put(glow, px, py, c)
+
+    # Arms [3, 2, 2] + cuffs [2, 2, 2]
+    for au in (0, 20):
+        box_fill(img, au, 38, 3, 2, 2, pal["N"], pal["S"], pal["C"])
+    for cu in (10, 30):
+        box_fill(img, cu, 38, 2, 2, 2, pal["R"], pal["O"], pal["Y"])
+        box_fill(glow, cu, 38, 2, 2, 2, pal["Y"], (0, 0, 0, 0), pal["W"])
+
+    # Electric Plasma Orb Hands: white-hot/yellow core [3, 3, 3] + crimson-red & cyan energy rings!
+    for ou in (0, 44):
+        box_fill(img, ou, 44, 3, 3, 3, pal["H"], pal["Y"], pal["W"])
+        box_fill(glow, ou, 44, 3, 3, 3, pal["H"], pal["Y"], pal["W"])
+    for ru in (12, 56):
+        box_fill(img, ru, 44, 4, 1, 5, pal["R"], pal["O"], pal["Y"])
+        box_fill(glow, ru, 44, 4, 1, 5, pal["R"], pal["O"], pal["Y"])
+    for ru in (30, 74):
+        box_fill(img, ru, 44, 1, 4, 5, pal["C"], pal["K"], pal["W"])
+        box_fill(glow, ru, 44, 1, 4, 5, pal["C"], pal["K"], pal["W"])
+
+    # Legs [2, 5, 3] at (0, 56) & (24, 56) — storm-navy greaves with glowing yellow/cyan bolts
+    for lu in (0, 24):
+        box_fill(img, lu, 56, 2, 5, 3, pal["N"], pal["S"], pal["B"])
+        paint_geo_box(img, lu, 56, 2, 5, 3, {
+            "front": ["YY", "NY", "YN", "YY", "RR"],
+            "east":  ["NYY", "NNY", "YNN", "NYY", "RRR"],
+            "west":  ["NYY", "NNY", "YNN", "NYY", "RRR"],
+        }, pal)
+        paint_geo_box(glow, lu, 56, 2, 5, 3, {
+            "front": ["YY", ".Y", "Y.", "YY", ".."],
+        }, pal)
+
+    # Boots/feet [3, 2, 4] at (10, 56) & (34, 56)
+    for fu in (10, 34):
+        box_fill(img, fu, 56, 3, 2, 4, pal["S"], pal["R"], pal["Y"])
+        paint_geo_box(glow, fu, 56, 3, 2, 4, {"front": ["YYY", "..."]}, pal)
+
+    # Floating static sparks [1, 2, 1] at (50, 56) & (56, 56)
+    for su in (50, 56):
+        box_fill(img, su, 56, 1, 2, 1, pal["K"], pal["W"])
+        box_fill(glow, su, 56, 1, 2, 1, pal["K"], pal["W"])
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "zapkin.png")
+    glow.save(entity_dir / "zapkin_glowmask.png")
+
+
 def main():
     import sys
 
+    if "--zapkin" in sys.argv:
+        make_zapkin()
+        print("Generated Zapkin 64x64 texture and glowmask.")
+        return
+    if "--frogduck" in sys.argv:
+        make_frogduck()
+        print("Generated Frogduck 128x64 texture.")
+        return
+    if "--sunbeam" in sys.argv:
+        make_sunbeam()
+        print("Generated Sunbeam 128x128 texture and glowmask.")
+        return
     if "--prismling" in sys.argv:
         make_prismling()
         print("Generated Prismling 128x128 texture and glowmask.")
@@ -1486,6 +2239,9 @@ def main():
     make_peepkin()
     make_prismling()
     make_flurrywing()
+    make_sunbeam()
+    make_frogduck()
+    make_zapkin()
 
     item_dir = OUT / "item"
     item_dir.mkdir(parents=True, exist_ok=True)
@@ -1496,7 +2252,7 @@ def main():
     )
     draw_crystal(GOLD_DARK, GOLD, GOLD_HI).save(item_dir / "capture_crystal_fainted.png")
     make_biome_treat().save(item_dir / "biome_treat.png")
-    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin, Prismling, Flurrywing).")
+    print("Generated pet textures (Crystal Fox, Shadow Wisp, Cinder Crag, Zaphox, Galecorn, Ember Drake, Peepkin, Prismling, Flurrywing, Sunbeam, Frogduck, Zapkin).")
 
 
 if __name__ == "__main__":

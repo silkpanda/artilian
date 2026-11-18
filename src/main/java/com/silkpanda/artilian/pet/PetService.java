@@ -92,7 +92,8 @@ public final class PetService {
         if (candidate instanceof Animal animal && animal.isBaby()) {
             return false;
         }
-        return candidate instanceof Enemy || candidate.getType().is(ArtilianTags.EntityTypes.STRUCTURE_ENEMIES);
+        return candidate instanceof Enemy || candidate.getType().is(ArtilianTags.EntityTypes.STRUCTURE_ENEMIES)
+                || candidate.getType().is(ArtilianTags.EntityTypes.BOSSES);
     }
 
     /**

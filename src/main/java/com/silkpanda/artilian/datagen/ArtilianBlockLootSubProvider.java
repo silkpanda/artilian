@@ -68,6 +68,7 @@ public class ArtilianBlockLootSubProvider extends BlockLootSubProvider {
         add(ArtilianBlocks.STARLIGHT_TURF.get(),
                 block -> createSingleItemTableWithSilkTouch(block, Blocks.DIRT));
         dropSelf(ArtilianBlocks.STARLIGHT_SLATE.get());
+        dropSelf(ArtilianBlocks.BOSS_ALTAR.get());
         dropSelf(ArtilianBlocks.STARLIGHT_SLATE_STAIRS.get());
         add(ArtilianBlocks.STARLIGHT_SLATE_SLAB.get(), block -> createSlabItemTable(block));
         dropSelf(ArtilianBlocks.STARLIGHT_SLATE_WALL.get());
