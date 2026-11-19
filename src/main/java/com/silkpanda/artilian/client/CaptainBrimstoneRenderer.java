@@ -9,7 +9,8 @@ import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 public class CaptainBrimstoneRenderer extends GeoEntityRenderer<CaptainBrimstoneEntity> {
     public CaptainBrimstoneRenderer(EntityRendererProvider.Context context) {
         super(context, new TrainingGolemModel<>("captain_brimstone"));
-        this.shadowRadius = 1.25F;
+        this.shadowRadius = 1.9F;
+        this.withScale(1.65F);
         this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 }

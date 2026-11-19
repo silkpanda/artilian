@@ -186,11 +186,11 @@ public class ArtilianEntities {
                     .clientTrackingRange(12)
                     .build("crystal_colossus"));
 
-    /** Captain Brimstone: magma-forged Fire/Shadow pirate captain boss of Emberbloom Meadows. */
+    /** Captain Brimstone: magma-forged Fire/Shadow pirate galleon-walker boss of Emberbloom Meadows. */
     public static final DeferredHolder<EntityType<?>, EntityType<CaptainBrimstoneEntity>> CAPTAIN_BRIMSTONE =
             ENTITY_TYPES.register("captain_brimstone", () -> EntityType.Builder.of(CaptainBrimstoneEntity::new, MobCategory.MONSTER)
-                    .sized(2.0F, 3.4F)
-                    .eyeHeight(2.85F)
+                    .sized(2.8F, 4.2F)
+                    .eyeHeight(3.2F)
                     .clientTrackingRange(12)
                     .build("captain_brimstone"));
 
