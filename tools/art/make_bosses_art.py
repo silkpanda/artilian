@@ -1062,6 +1062,426 @@ def build_prism_core():
     img.save(ASSETS / "textures/item/prism_core.png")
 
 
+def build_captain_brimstone():
+    """Magma-forged pirate captain boss: 256x128 UV-non-overlapping sheet, tricorne hat,
+    furnace-rib chest core, hand-cannon right arm, cutlass left arm, and ember glowmask.
+    """
+    eid = "captain_brimstone"
+    img = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
+
+    # Charred Nether-Iron & Coal-Slate anchor palette (6-8 stop ramp)
+    IRON_VOID = (18, 13, 18, 255)
+    IRON_DEEP = (28, 21, 27, 255)
+    IRON_DARK = (40, 30, 38, 255)
+    IRON_MID = (56, 43, 52, 255)
+    IRON_HI = (78, 61, 72, 255)
+    IRON_RIM = (102, 82, 94, 255)
+
+    # Crimson-Oxide pirate greatcoat palette
+    COAT_DEEP = (52, 16, 22, 255)
+    COAT_DARK = (76, 24, 30, 255)
+    COAT_MID = (104, 34, 40, 255)
+    COAT_HI = (132, 48, 52, 255)
+
+    # Sunsteel Gold metallic trim palette
+    GOLD_DEEP = (128, 72, 20, 255)
+    GOLD_DARK = (176, 108, 32, 255)
+    GOLD_MID = (224, 152, 52, 255)
+    GOLD_HI = (255, 208, 96, 255)
+    GOLD_SPEC = (255, 240, 176, 255)
+
+    # Cutlass steel & ash beard
+    STEEL_DARK = (62, 68, 82, 255)
+    STEEL_MID = (108, 118, 138, 255)
+    STEEL_HI = (168, 182, 204, 255)
+    BEARD_DARK = (54, 48, 52, 255)
+    BEARD_MID = (86, 78, 84, 255)
+    BEARD_HI = (124, 114, 120, 255)
+
+    # Magma / Ember glowmask palette
+    MAGMA_ROOT = (138, 34, 12, 255)
+    MAGMA_MID = (224, 78, 20, 255)
+    MAGMA_HOT = (255, 142, 38, 255)
+    MAGMA_BRIGHT = (255, 198, 76, 255)
+    MAGMA_CORE = (255, 242, 178, 255)
+
+    # Non-overlapping 256x128 UV layout: (u, v, w, h, d) -> footprint 2*(d+w) x (d+h)
+    COAT_UPPER = (0, 0, 14, 12, 10)        # 48x22
+    WAIST = (50, 0, 12, 6, 9)              # 42x15
+    BELT = (94, 0, 14, 3, 10)              # 48x13
+    COLLAR = (144, 0, 15, 4, 10)           # 50x14
+    COAT_TAIL_L = (196, 0, 6, 8, 2)        # 16x10
+    COAT_TAIL_R = (214, 0, 6, 8, 2)        # 16x10
+    COAT_TAIL_B = (196, 12, 12, 8, 2)      # 28x10
+
+    HEAD_SKULL = (0, 24, 10, 10, 10)       # 40x20
+    HEAD_BROW = (42, 24, 12, 3, 4)         # 32x7
+    HEAD_JAW = (42, 33, 8, 3, 7)           # 30x10
+    BEARD_MAIN = (76, 24, 8, 7, 3)         # 22x10
+    HAT_CROWN = (100, 24, 12, 6, 12)       # 48x18
+    HAT_BRIM_F = (150, 24, 14, 2, 5)       # 38x7
+    HAT_BRIM_S = (190, 24, 3, 4, 14)       # 34x18
+    HAT_CREST = (150, 34, 4, 4, 2)         # 12x6
+    HAT_PLUME = (166, 34, 3, 7, 4)         # 14x11
+
+    PAULDRON_L = (0, 46, 8, 7, 10)         # 36x17
+    PAULDRON_R = (38, 46, 8, 7, 10)        # 36x17
+    RIB_BAR = (76, 46, 6, 2, 2)            # 16x4
+    FURNACE_CORE = (94, 46, 6, 8, 3)       # 18x11
+    BUCKLE = (114, 46, 5, 4, 2)            # 14x6
+    ARM_UPPER_L = (130, 46, 6, 10, 6)      # 24x16
+    ARM_UPPER_R = (156, 46, 6, 10, 6)      # 24x16
+    FOREARM_L = (182, 46, 7, 12, 7)        # 28x19
+    CANNON_BODY = (212, 46, 8, 13, 8)      # 32x21
+
+    THIGH_L = (0, 68, 6, 8, 6)             # 24x14
+    THIGH_R = (26, 68, 6, 8, 6)            # 24x14
+    BOOT_L = (52, 68, 7, 9, 8)             # 30x17
+    BOOT_R = (84, 68, 7, 9, 8)             # 30x17
+    KNEE_GUARD = (116, 68, 4, 5, 3)        # 14x8
+    TOE_CAP = (132, 68, 7, 3, 3)           # 20x6
+    CUTLASS_HILT = (154, 68, 4, 3, 4)      # 16x7
+    CUTLASS_BLADE = (172, 68, 2, 13, 4)    # 12x17
+    CANNON_RIM = (186, 68, 9, 3, 9)        # 36x12
+    CANNON_BORE = (224, 68, 6, 2, 6)       # 24x8
+
+    all_uv_boxes = [
+        COAT_UPPER, WAIST, BELT, COLLAR, COAT_TAIL_L, COAT_TAIL_R, COAT_TAIL_B,
+        HEAD_SKULL, HEAD_BROW, HEAD_JAW, BEARD_MAIN, HAT_CROWN, HAT_BRIM_F, HAT_BRIM_S,
+        HAT_CREST, HAT_PLUME, PAULDRON_L, PAULDRON_R, RIB_BAR, FURNACE_CORE, BUCKLE,
+        ARM_UPPER_L, ARM_UPPER_R, FOREARM_L, CANNON_BODY, THIGH_L, THIGH_R, BOOT_L,
+        BOOT_R, KNEE_GUARD, TOE_CAP, CUTLASS_HILT, CUTLASS_BLADE, CANNON_RIM, CANNON_BORE,
+    ]
+    occupied = set()
+    for u, v, w, h, d in all_uv_boxes:
+        uw, uh = 2 * (d + w), d + h
+        assert u + uw <= 256 and v + uh <= 128, f"UV box {(u, v, w, h, d)} out of 256x128 bounds"
+        for px in range(u, u + uw):
+            for py in range(v, v + uh):
+                assert (px, py) not in occupied, f"UV overlap at {(px, py)} in box {(u, v, w, h, d)}"
+                occupied.add((px, py))
+
+    def paint_shaded_box(box, pal_hi, pal_mid, pal_dark, pal_deep, seed=1,
+                         seams=True, ember_pores=0, gold_trim_bottom=False):
+        u, v, w, h, d = box
+        for face, (fx, fy, fw, fh) in faces(u, v, w, h, d).items():
+            for dy in range(fh):
+                py = fy + dy
+                ty = dy / max(1, fh - 1)
+                for dx in range(fw):
+                    px = fx + dx
+                    hv = _h(px, py, seed)
+                    if face == "top":
+                        col = pal_hi if hv > 110 else pal_mid
+                    elif face == "bottom":
+                        col = pal_deep
+                    elif face in ("east", "west"):
+                        col = _lerp_color(pal_mid, pal_dark, 0.25 + 0.55 * ty)
+                    else:
+                        col = _lerp_color(pal_hi, pal_dark, 0.15 + 0.65 * ty)
+
+                    if seams and hv < 48:
+                        col = _lerp_color(col, pal_deep, 0.55)
+                    elif hv > 205:
+                        col = _lerp_color(col, pal_hi, 0.35)
+
+                    if fw >= 4 and fh >= 4:
+                        if dy == 0 and face != "bottom":
+                            col = _lerp_color(col, pal_hi, 0.4)
+                        elif dy == fh - 1:
+                            col = _lerp_color(col, pal_deep, 0.55)
+                        elif dx == 0 or dx == fw - 1:
+                            col = _lerp_color(col, pal_deep, 0.4)
+
+                    if gold_trim_bottom and face not in ("top", "bottom") and dy >= fh - 2 and fh >= 4:
+                        col = GOLD_MID if dy == fh - 2 else GOLD_DARK
+
+                    put(img, px, py, col)
+
+                    if ember_pores > 0 and face not in ("top", "bottom") and 1 <= dx < fw - 1 and 1 <= dy < fh - 1:
+                        ph = _h(px * 3, py * 5, seed + 41)
+                        if ph < ember_pores:
+                            ecol = MAGMA_HOT if ph % 2 == 0 else MAGMA_BRIGHT
+                            put(img, px, py, ecol)
+                            put(glow, px, py, ecol)
+
+    # Coat, waist, collar, coat-tails
+    paint_shaded_box(COAT_UPPER, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=101, ember_pores=8)
+    paint_shaded_box(WAIST, COAT_MID, COAT_DARK, COAT_DEEP, IRON_VOID, seed=102)
+    paint_shaded_box(COLLAR, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=103)
+    paint_shaded_box(BELT, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=104)
+    paint_shaded_box(COAT_TAIL_L, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=105, gold_trim_bottom=True)
+    paint_shaded_box(COAT_TAIL_R, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=106, gold_trim_bottom=True)
+    paint_shaded_box(COAT_TAIL_B, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=107, gold_trim_bottom=True)
+
+    # Gold coat buttons down the front of COAT_UPPER
+    cfx, cfy, cfw, cfh = faces(*COAT_UPPER)["front"]
+    for by in (2, 5, 8):
+        for bx in (2, cfw - 3):
+            put(img, cfx + bx, cfy + by, GOLD_HI)
+            put(img, cfx + bx, cfy + by + 1, GOLD_DARK)
+
+    # Belt buckle & furnace core + iron ribs
+    paint_shaded_box(BUCKLE, GOLD_SPEC, GOLD_HI, GOLD_MID, GOLD_DEEP, seed=108)
+    paint_shaded_box(RIB_BAR, IRON_RIM, IRON_HI, IRON_DARK, IRON_VOID, seed=109)
+    paint_shaded_box(FURNACE_CORE, MAGMA_CORE, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_ROOT, seed=110)
+    for face, rect in faces(*FURNACE_CORE).items():
+        fill(glow, rect, MAGMA_HOT)
+    fcfx, fcfy, fcfw, fcfh = faces(*FURNACE_CORE)["front"]
+    fill(img, (fcfx + 1, fcfy + 2, max(1, fcfw - 2), max(1, fcfh - 4)), MAGMA_CORE)
+    fill(glow, (fcfx + 1, fcfy + 2, max(1, fcfw - 2), max(1, fcfh - 4)), MAGMA_CORE)
+
+    # Head, brow, jaw, beard, tricorne hat
+    paint_shaded_box(HEAD_SKULL, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=111, ember_pores=10)
+    paint_shaded_box(HEAD_BROW, IRON_RIM, IRON_HI, IRON_DARK, IRON_VOID, seed=112)
+    paint_shaded_box(HEAD_JAW, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=113)
+    paint_shaded_box(BEARD_MAIN, BEARD_HI, BEARD_MID, BEARD_DARK, IRON_VOID, seed=114)
+    # Ember-tipped beard bottom row
+    bfx, bfy, bfw, bfh = faces(*BEARD_MAIN)["front"]
+    for dx in range(bfw):
+        if dx % 2 == 0:
+            put(img, bfx + dx, bfy + bfh - 1, MAGMA_HOT)
+            put(glow, bfx + dx, bfy + bfh - 1, MAGMA_HOT)
+
+    # Recessed glowing magma eye sockets on HEAD_SKULL front
+    hfx, hfy, hfw, hfh = faces(*HEAD_SKULL)["front"]
+    for ex in (hfx + 2, hfx + hfw - 4):
+        fill(img, (ex, hfy + 4, 2, 2), MAGMA_BRIGHT)
+        fill(glow, (ex, hfy + 4, 2, 2), MAGMA_BRIGHT)
+        put(img, ex + (0 if ex < hfx + 5 else 1), hfy + 4, MAGMA_CORE)
+        put(glow, ex + (0 if ex < hfx + 5 else 1), hfy + 4, MAGMA_CORE)
+
+    # Tricorne hat + gold trim + skull crest + ember plume
+    paint_shaded_box(HAT_CROWN, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=115)
+    paint_shaded_box(HAT_BRIM_F, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=116, gold_trim_bottom=True)
+    paint_shaded_box(HAT_BRIM_S, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=117, gold_trim_bottom=True)
+    paint_shaded_box(HAT_CREST, GOLD_SPEC, GOLD_HI, GOLD_MID, GOLD_DEEP, seed=118)
+    crfx, crfy, crfw, crfh = faces(*HAT_CREST)["front"]
+    put(img, crfx + 1, crfy + 1, MAGMA_BRIGHT)
+    put(img, crfx + 2, crfy + 1, MAGMA_BRIGHT)
+    put(glow, crfx + 1, crfy + 1, MAGMA_BRIGHT)
+    put(glow, crfx + 2, crfy + 1, MAGMA_BRIGHT)
+    paint_shaded_box(HAT_PLUME, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_MID, MAGMA_ROOT, seed=119)
+    for face, rect in faces(*HAT_PLUME).items():
+        if face in ("front", "top", "east", "west"):
+            fill(glow, rect, MAGMA_HOT)
+
+    # Pauldrons, arms, cutlass, cannon, legs, boots
+    paint_shaded_box(PAULDRON_L, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=120)
+    paint_shaded_box(PAULDRON_R, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=121)
+    paint_shaded_box(ARM_UPPER_L, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=122)
+    paint_shaded_box(ARM_UPPER_R, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=123)
+    paint_shaded_box(FOREARM_L, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=124, gold_trim_bottom=True)
+    paint_shaded_box(CANNON_BODY, IRON_RIM, IRON_MID, IRON_DARK, IRON_VOID, seed=125, ember_pores=12)
+    paint_shaded_box(CANNON_RIM, GOLD_SPEC, GOLD_HI, GOLD_MID, GOLD_DEEP, seed=126)
+    paint_shaded_box(CANNON_BORE, MAGMA_CORE, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_ROOT, seed=127)
+    for face, rect in faces(*CANNON_BORE).items():
+        fill(glow, rect, MAGMA_BRIGHT)
+
+    paint_shaded_box(CUTLASS_HILT, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=128)
+    paint_shaded_box(CUTLASS_BLADE, STEEL_HI, STEEL_MID, STEEL_DARK, IRON_VOID, seed=129)
+    cbfx, cbfy, cbfw, cbfh = faces(*CUTLASS_BLADE)["front"]
+    for dy in range(1, cbfh - 1, 2):
+        put(img, cbfx, cbfy + dy, MAGMA_HOT)
+        put(glow, cbfx, cbfy + dy, MAGMA_HOT)
+
+    paint_shaded_box(THIGH_L, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=130)
+    paint_shaded_box(THIGH_R, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=131)
+    paint_shaded_box(BOOT_L, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=132, gold_trim_bottom=True)
+    paint_shaded_box(BOOT_R, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=133, gold_trim_bottom=True)
+    paint_shaded_box(KNEE_GUARD, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=134)
+    paint_shaded_box(TOE_CAP, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=135)
+
+    bones = [
+        {"name": "root", "pivot": [0, 0, 0]},
+        {
+            "name": "body",
+            "parent": "root",
+            "pivot": [0, 17, 0],
+            "cubes": [
+                # Tapered greatcoat torso & waist
+                {"origin": [-6.0, 17, -4.5], "size": [12, 6, 9], "uv": [50, 0]},
+                {"origin": [-7.0, 23, -5.0], "size": [14, 12, 10], "uv": [0, 0]},
+                {"origin": [-7.0, 21, -5.0], "size": [14, 3, 10], "uv": [94, 0]},
+                {"origin": [-2.5, 20.5, -5.8], "size": [5, 4, 2], "uv": [114, 46]},
+                # Raised pirate coat collar
+                {"origin": [-7.5, 34, -4.5], "size": [15, 4, 10], "uv": [144, 0]},
+                # Flared greatcoat tails
+                {"origin": [3.0, 10, -3.5], "size": [6, 8, 2], "pivot": [6.0, 18, -2.5], "rotation": [0, 0, -10], "uv": [196, 0]},
+                {"origin": [-9.0, 10, -3.5], "size": [6, 8, 2], "pivot": [-6.0, 18, -2.5], "rotation": [0, 0, 10], "uv": [214, 0]},
+                {"origin": [-6.0, 10, 3.8], "size": [12, 8, 2], "pivot": [0, 18, 4.8], "rotation": [12, 0, 0], "uv": [196, 12]},
+                # Hollowed chest furnace core + 3D iron rib bars
+                {"origin": [-3.0, 25, -5.6], "size": [6, 8, 3], "pivot": [0, 29, -5.6], "rotation": [0, 0, 8], "uv": [94, 46]},
+                {"origin": [-3.0, 31, -6.2], "size": [6, 2, 2], "uv": [76, 46]},
+                {"origin": [-3.0, 27, -6.2], "size": [6, 2, 2], "uv": [76, 46]},
+            ],
+        },
+        {
+            "name": "head",
+            "parent": "body",
+            "pivot": [0, 36, 0],
+            "cubes": [
+                {"origin": [-5.0, 36, -5.0], "size": [10, 10, 10], "uv": [0, 24]},
+                {"origin": [-6.0, 43, -5.8], "size": [12, 3, 4], "pivot": [0, 44, -4.5], "rotation": [8, 0, 0], "uv": [42, 24]},
+                {"origin": [-4.0, 35, -5.6], "size": [8, 3, 7], "uv": [42, 33]},
+                {"origin": [-4.0, 30, -6.2], "size": [8, 7, 3], "pivot": [0, 36, -5.0], "rotation": [-8, 0, 0], "uv": [76, 24]},
+                # 3-flap angled Tricorne Hat + crown + skull crest + ember plume
+                {"origin": [-6.0, 45, -6.0], "size": [12, 6, 12], "uv": [100, 24]},
+                {"origin": [-7.0, 45, -9.5], "size": [14, 2, 5], "pivot": [0, 45, -5.5], "rotation": [-18, 0, 0], "uv": [150, 24]},
+                {"origin": [5.5, 45, -7.0], "size": [3, 4, 14], "pivot": [6.0, 45, 0], "rotation": [0, 0, 24], "uv": [190, 24]},
+                {"origin": [-8.5, 45, -7.0], "size": [3, 4, 14], "pivot": [-6.0, 45, 0], "rotation": [0, 0, -24], "uv": [190, 24]},
+                {"origin": [-2.0, 47, -7.2], "size": [4, 4, 2], "uv": [150, 34]},
+                {"origin": [-1.5, 48, 3.5], "size": [3, 7, 4], "pivot": [0, 49, 5.0], "rotation": [-28, 0, 0], "uv": [166, 34]},
+            ],
+        },
+        {
+            "name": "shoulder_left",
+            "parent": "body",
+            "pivot": [10.5, 34, 0],
+            "cubes": [
+                {"origin": [6.5, 30, -5.0], "size": [8, 7, 10], "pivot": [10.0, 34, 0], "rotation": [0, 0, 12], "uv": [0, 46]},
+            ],
+        },
+        {
+            "name": "shoulder_right",
+            "parent": "body",
+            "pivot": [-10.5, 34, 0],
+            "cubes": [
+                {"origin": [-14.5, 30, -5.0], "size": [8, 7, 10], "pivot": [-10.0, 34, 0], "rotation": [0, 0, -12], "uv": [38, 46]},
+            ],
+        },
+        {
+            "name": "arm_left",
+            "parent": "body",
+            "pivot": [11.5, 32, 0],
+            "cubes": [
+                # Cutlass arm: coat upper arm, iron bracer, gold guard, notched steel cutlass blade
+                {"origin": [8.5, 22, -3.0], "size": [6, 10, 6], "uv": [130, 46]},
+                {"origin": [8.0, 11, -3.5], "size": [7, 12, 7], "uv": [182, 46]},
+                {"origin": [9.5, 9, -5.5], "size": [4, 3, 4], "uv": [154, 68]},
+                {"origin": [10.5, 1, -7.5], "size": [2, 13, 4], "pivot": [11.5, 10, -5.5], "rotation": [-52, 0, 0], "uv": [172, 68]},
+            ],
+        },
+        {
+            "name": "arm_right",
+            "parent": "body",
+            "pivot": [-11.5, 32, 0],
+            "cubes": [
+                # Heavy iron hand-cannon gauntlet
+                {"origin": [-14.5, 22, -3.0], "size": [6, 10, 6], "uv": [156, 46]},
+                {"origin": [-15.5, 10, -4.0], "size": [8, 13, 8], "uv": [212, 46]},
+                {"origin": [-16.0, 8, -4.5], "size": [9, 3, 9], "uv": [186, 68]},
+                {"origin": [-14.5, 7, -3.0], "size": [6, 2, 6], "uv": [224, 68]},
+            ],
+        },
+        {
+            "name": "leg_left",
+            "parent": "root",
+            "pivot": [4.5, 17, 0],
+            "cubes": [
+                {"origin": [1.5, 9, -3.0], "size": [6, 8, 6], "uv": [0, 68]},
+                {"origin": [1.0, 0, -4.0], "size": [7, 9, 8], "uv": [52, 68]},
+                {"origin": [2.5, 8, -5.2], "size": [4, 5, 3], "pivot": [4.5, 10, -4.0], "rotation": [16, 0, 0], "uv": [116, 68]},
+                {"origin": [1.0, 0, -6.2], "size": [7, 3, 3], "uv": [132, 68]},
+            ],
+        },
+        {
+            "name": "leg_right",
+            "parent": "root",
+            "pivot": [-4.5, 17, 0],
+            "cubes": [
+                {"origin": [-7.5, 9, -3.0], "size": [6, 8, 6], "uv": [26, 68]},
+                {"origin": [-8.0, 0, -4.0], "size": [7, 9, 8], "uv": [84, 68]},
+                {"origin": [-6.5, 8, -5.2], "size": [4, 5, 3], "pivot": [-4.5, 10, -4.0], "rotation": [16, 0, 0], "uv": [116, 68]},
+                {"origin": [-8.0, 0, -6.2], "size": [7, 3, 3], "uv": [132, 68]},
+            ],
+        },
+    ]
+
+    geo = {
+        "format_version": "1.12.0",
+        "minecraft:geometry": [
+            {
+                "description": {
+                    "identifier": f"geometry.{eid}",
+                    "texture_width": 256,
+                    "texture_height": 128,
+                    "visible_bounds_width": 4.2,
+                    "visible_bounds_height": 4.2,
+                    "visible_bounds_offset": [0, 1.9, 0],
+                },
+                "bones": bones,
+            }
+        ],
+    }
+
+    (ASSETS / "textures/entity").mkdir(parents=True, exist_ok=True)
+    (ASSETS / "geo/entity").mkdir(parents=True, exist_ok=True)
+    (ASSETS / "animations/entity").mkdir(parents=True, exist_ok=True)
+
+    img.save(ASSETS / f"textures/entity/{eid}.png")
+    glow.save(ASSETS / f"textures/entity/{eid}_glowmask.png")
+    (ASSETS / f"geo/entity/{eid}.geo.json").write_text(json.dumps(geo, indent=2) + "\n", encoding="utf-8")
+    (ASSETS / f"animations/entity/{eid}.animation.json").write_text(
+        json.dumps(make_animations(eid), indent=2) + "\n", encoding="utf-8"
+    )
+
+
+def build_brimstone_compass():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    iron = (44, 34, 42, 255)
+    gold = (232, 168, 56, 255)
+    face = (28, 22, 28, 255)
+    ember = (255, 120, 32, 255)
+    core = (255, 228, 128, 255)
+    for y in range(2, 14):
+        for x in range(2, 14):
+            dx = x - 7.5
+            dy = y - 7.5
+            d2 = dx * dx + dy * dy
+            if d2 <= 30:
+                if d2 >= 21:
+                    put(img, x, y, gold if (x + y) % 2 == 0 else iron)
+                else:
+                    put(img, x, y, face)
+    # Top ring + glowing ember needle
+    for rx, ry in ((7, 1), (8, 1)):
+        put(img, rx, ry, gold)
+    for nx, ny in ((7, 4), (8, 4), (7, 5), (8, 5), (7, 6), (8, 6)):
+        put(img, nx, ny, core if ny == 4 else ember)
+    for sx, sy in ((7, 9), (8, 9), (7, 10), (8, 10)):
+        put(img, sx, sy, (124, 36, 40, 255))
+    fill(img, (7, 7, 2, 2), gold)
+    (ASSETS / "textures/item").mkdir(parents=True, exist_ok=True)
+    img.save(ASSETS / "textures/item/brimstone_compass.png")
+
+
+def build_brimstone_doubloon():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    gold_dark = (148, 84, 22, 255)
+    gold = (238, 174, 58, 255)
+    gold_hi = (255, 228, 120, 255)
+    ember = (255, 108, 28, 255)
+    core = (255, 212, 92, 255)
+    for y in range(2, 14):
+        for x in range(2, 14):
+            d2 = (x - 7.5) ** 2 + (y - 7.5) ** 2
+            if d2 <= 32:
+                if d2 >= 23:
+                    put(img, x, y, gold_dark)
+                elif x + y < 14:
+                    put(img, x, y, gold_hi)
+                else:
+                    put(img, x, y, gold)
+    # Embossed ember flame emblem in center
+    for fx, fy in ((7, 5), (8, 5), (6, 6), (7, 6), (8, 6), (9, 6), (6, 7), (9, 7), (7, 8), (8, 8), (7, 9), (8, 9)):
+        put(img, fx, fy, ember)
+    fill(img, (7, 6, 2, 2), core)
+    (ASSETS / "textures/item").mkdir(parents=True, exist_ok=True)
+    img.save(ASSETS / "textures/item/brimstone_doubloon.png")
+
+
 def main():
     build_training_golem()
     build_boss_altar()
@@ -1069,7 +1489,10 @@ def main():
     build_crystal_colossus()
     build_colossus_heart()
     build_prism_core()
-    print("Generated boss art: training_golem, boss_altar, golem_core, crystal_colossus, colossus_heart, prism_core.")
+    build_captain_brimstone()
+    build_brimstone_compass()
+    build_brimstone_doubloon()
+    print("Generated boss art: training_golem, boss_altar, golem_core, crystal_colossus, colossus_heart, prism_core, captain_brimstone, brimstone_compass, brimstone_doubloon.")
 
 
 if __name__ == "__main__":
