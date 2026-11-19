@@ -36,6 +36,8 @@ public final class ArtilianTags {
                 TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/starlight_watchtower"));
         public static final TagKey<Biome> HAS_CRYSTAL_COLOSSUS_ARENA =
                 TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/crystal_colossus_arena"));
+        public static final TagKey<Biome> HAS_BRIMSTONE_BASTION =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/brimstone_bastion"));
 
         private Biomes() {}
     }

@@ -399,13 +399,13 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
   | Sub-stage | Commit | Summary & Verification |
   |---|---|---|
-  | 1 Reference spec, Art Brief & Boss Art | Pending | `qa/reference/bosses/captain-brimstone.md`, `build_captain_brimstone` / `build_brimstone_compass` / `build_brimstone_doubloon` in `tools/art/make_bosses_art.py` (`256×128` UV-checked sheet, `.geo.json`, `.animation.json`, `_glowmask.png`, item icons). |
-  | 2 Entity, 3 attacks, Broadside, Items & Tests | Pending | `CaptainBrimstoneEntity`, `CaptainBrimstoneRenderer`, `ArtilianEntities`, `ArtilianItems`, datagen (loot, recipes, models, lang, tags), and `CaptainBrimstoneGameTests`. |
-  | 3 Brimstone Bastion Arena, `P3-03` & Client Check | Pending | `artilian:brimstone_bastion` worldgen + chest loot + arena GameTests + `BossSecurityProbes.p3_03_*` + live `./gradlew runClient` screenshots in `qa/evidence/`. |
+  | 1 Reference spec, Art Brief & Boss Art | `09633cd` | `qa/reference/bosses/captain-brimstone.md`, `build_captain_brimstone` / `build_brimstone_compass` / `build_brimstone_doubloon` in `tools/art/make_bosses_art.py` (`256×128` UV-checked sheet, `.geo.json`, `.animation.json`, `_glowmask.png`, item icons). |
+  | 2 Entity, 3 attacks, Broadside, Items & Tests | `a3dab7e` | `CaptainBrimstoneEntity`, `CaptainBrimstoneRenderer`, `ArtilianEntities`, `ArtilianItems`, datagen (loot, recipes, models, lang, tags), and 5 `CaptainBrimstoneGameTests` (`150/150`). Red-proof: `telegraphCenterFor` forced to `this.position()` → `powderKegTossLocksTargetPositionAndCanBeDodged` red. |
+  | 3 Brimstone Bastion Arena, `P3-03` & Client Check | This commit | `artilian:brimstone_bastion` worldgen + chest loot + 2 arena GameTests + `BossSecurityProbes.p3_03_captainBrimstoneNeverBreaksBlocksOrAltarOrIgnitesTerrainOrHarmsChester` (`153/153`). Red-proof: `ExplosionInteraction.MOB` (`fire=true`) on impact → `P3-03` failed. |
 
-- **Tests & Red-proofs (`CaptainBrimstoneGameTests`):** Planned for Sub-stages 2–3 (attributes/elements/tag/loot, Powder Keg Toss target-lock & dodge, Broadside Phase 2 unlock & NBT persistence, Boss Altar summon & cross-summon lock, GeckoLib asset verification, Emberbloom Meadows arena exclusivity & template safety).
-- **Security Gate (`BossSecurityProbes.p3_03_*`, `security/bosses/README.md`, `security/FINDINGS.md`):**
-  - `P3-03`: Under `mobGriefing = true` and `ArtilianConfig` destructive mode `true`, all 3 Captain Brimstone attacks (`POWDER_KEG_TOSS` aimed over `BOSS_ALTAR`/`CHEST`/`Chester`, `CUTLASS_CLEAVE`, and Broadside `BROADSIDE_BARRAGE`) break zero blocks/altars/chests, set zero fire blocks, and deal `0` damage to `ChesterEntity`.
+- **Tests & Red-proofs (`CaptainBrimstoneGameTests`):** `153/153` green (7 `CaptainBrimstoneGameTests` + `P3-03`). Red-proofs recorded above.
+- **Security Gate (`BossSecurityProbes.p3_03_captainBrimstoneNeverBreaksBlocksOrAltarOrIgnitesTerrainOrHarmsChester`, `security/bosses/README.md`, `security/FINDINGS.md`):**
+  - `P3-03`: Under `mobGriefing = true` and `ArtilianConfig` destructive mode `true`, all 3 Captain Brimstone attacks (`POWDER_KEG_TOSS` aimed over `BOSS_ALTAR`/`CHEST`/`EMBERWOOD_PLANKS`/`Chester`, `CUTLASS_CLEAVE`, and Broadside `BROADSIDE_BARRAGE`) break zero blocks/altars/chests, set zero fire blocks, and deal `0` damage to `ChesterEntity` (`HELD` in `153/153` suite).
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies the Captain Brimstone fight and Brimstone Bastion arena.
 
 ### Phase 3 — Stage 4: Tier 3 Arsenal
@@ -453,9 +453,9 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ---
 
-## Security Gates Summary (`P1-01`–`P3-02`)
+## Security Gates Summary (`P1-01`–`P3-03`)
 
-All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`145/145`** GameTests passing.
+All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`153/153`** GameTests passing.
 
 | IDs | Phase / Stage | Area | GameTest Class | Index |
 |---|---|---|---|---|
@@ -463,7 +463,7 @@ All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on)
 | `P1-07`–`P1-10` | Phase 1 Stage 4 | `allowDestructiveCustomTnt` default off, Cluster Quarry & safe TNTs | `TntSecurityProbes` | `security/tnt/README.md` |
 | `P2-01`–`P2-04` | Phase 2 Stages 3–4 | Pet crystal ownership, non-lethal fainting, anti-duplication, battle safety | `PetSecurityProbes` | `security/pets/README.md` |
 | `P2-05` | Phase 2 Stage 6C | Sunbeam chest `minecraft:light` air-only placement & removal cleanup | `PetRosterGameTests` | `security/FINDINGS.md` |
-| `P3-01`–`P3-02` | Phase 3 Stages 1–2 | Boss Altar anti-spam & Crystal Colossus non-griefing / Chester safety | `BossSecurityProbes` | `security/bosses/README.md` |
+| `P3-01`–`P3-03` | Phase 3 Stages 1–3 | Boss Altar anti-spam & Crystal Colossus / Captain Brimstone non-griefing / Chester safety | `BossSecurityProbes` | `security/bosses/README.md` |
 
 ---
 

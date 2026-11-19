@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 95826455,
+    "separation": 12,
+    "spacing": 26
+  },
+  "structures": [
+    {
+      "structure": "artilian:brimstone_bastion",
+      "weight": 1
+    }
+  ]
+}
