@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | Phase 3 Stage 2 (*The Crystal Colossus*) complete (`145/145` GameTests, `runData`, `build`, and live `./gradlew runClient` screenshots verified with clean `run/logs/latest.log`) on branch `phase-3-stage-2-crystal-colossus` (from `main` at `d2afceb`, after PR #8 merged). Owner signed off on Phase 2 art on 2026-11-19. |
-| **Next** | 1. Push `phase-3-stage-2-crystal-colossus` and open/merge PR #9 once owner says go. 2. Begin **Phase 3 — Stage 3 (*Captain Brimstone*)**. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
-| **Waiting on the owner** | 1. Confirm when ready to push & merge `phase-3-stage-2-crystal-colossus`. 2. In-game look & screenshot when home for **Boss Framework** (*Training Golem* + *Boss Altar*, `qa/evidence/`). 3. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 4. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 5. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 6. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | None (`main` and `phase-3-stage-2-crystal-colossus` only; not pushed yet). |
+| **In progress** | Phase 3 Stage 2 (*The Crystal Colossus*) complete (`145/145` GameTests, `runData`, `build`, and live `./gradlew runClient` screenshots verified with clean `run/logs/latest.log`) on PR #10 (`phase-3-stage-2-crystal-colossus`, merged with `main` after PR #9 Art Gate). Owner signed off on Phase 2 art on 2026-11-19. |
+| **Next** | 1. Merge PR #10 (`phase-3-stage-2-crystal-colossus`) once CI is green. 2. Implement `TD-01` (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`) or begin **Phase 3 — Stage 3 (*Captain Brimstone*)** with a reference spec + Art Brief + dedicated art sub-stage. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
+| **Waiting on the owner** | 1. Merge PR #10 (`phase-3-stage-2-crystal-colossus`) once CI is green. 2. In-game look & screenshot when home for **Boss Framework** (*Training Golem* + *Boss Altar*, `qa/evidence/`). 3. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 4. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 5. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 6. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | None (`main` and PR #10 `phase-3-stage-2-crystal-colossus` only). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -52,11 +52,12 @@ Sizes are ballparks in evenings of work, corrected as stages finish.
 
 Nobody on this project is an artist and there is no budget for commissions. The approach:
 
-1. **The owner and the kids describe; the agent builds.** Each creature starts as a description from the owner or a drawing from Alex or Steve (`qa/reference/`). The drawing or description is the art spec, recorded in that stage's section here.
-2. **Structure first.** Before modeling a kind of creature (walker, flyer, boss), research bone layouts, animation sets, and texture sheet sizes; keep the art original.
-3. **Original models and textures.** Agents author GeckoLib `.geo.json`, `.animation.json`, and deterministic Python Pillow generators (`tools/art/make_*.py`) or Blockbench sources (`tools/art/models/*.bbmodel`). Vanilla shapes/textures may be referenced (e.g., sleeping Chester matches the vanilla oak chest). Other mods' models/textures are never copied.
-4. **Open-licensed assets are fine** when the license allows reuse; record source and license under the stage.
-5. **Art pass per phase.** The final stage of each phase revisits placeholders against the kids' drawings and `DESIGN.md`.
+1. **The owner and the kids describe; the agent builds.** Each creature starts as a description from the owner or a drawing from Alex or Steve (`qa/reference/`). If no kid drawing exists (e.g., bosses), collect or write a short silhouette/reference spec in `qa/reference/` before modeling.
+2. **Write an Art Brief before modeling.** Before writing `.geo.json` or texture code for a new creature, boss, or structure, record a 5-line brief in that stage's section: target height/scale, silhouette inspiration, dark structural anchor + accent palette, key 3D recessed/angled features, and `_glowmask.png` zones.
+3. **Pass-1 quality, not throwaway placeholders.** Do not cram flagship entity/boss art into a giant Stage 1 gameplay + GameTest commit where it degrades into flat boxes (`paint_box` / single-color faces). Give art its own dedicated sub-stage (or build and inspect the model first) and meet the **3D Entity, Boss & Structure Art Standard** in `DESIGN.md` on pass 1.
+4. **Original models and textures.** Agents author GeckoLib `.geo.json`, `.animation.json`, and deterministic Python Pillow generators (`tools/art/make_*.py`) or Blockbench sources (`tools/art/models/*.bbmodel`). Vanilla shapes/textures may be referenced (e.g., sleeping Chester matches the vanilla oak chest). Other mods' models/textures are never copied.
+5. **Open-licensed assets are fine** when the license allows reuse; record source and license under the stage.
+6. **Art pass per phase.** The final stage of each phase still polishes consistency and animation feel across the phase, but should no longer need full silhouette/texture redos.
 
 ---
 
