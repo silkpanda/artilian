@@ -85,6 +85,10 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("block.artilian.frost_nova_tnt.tooltip", "Safe Blast — Freezes foes and turns water to ice!");
         this.addBlock(ArtilianBlocks.CLUSTER_QUARRY_TNT, "Cluster Quarry TNT");
         this.add("block.artilian.cluster_quarry_tnt.tooltip", "Quarry Blast — Safe unless enabled in config!");
+        this.addBlock(ArtilianBlocks.STARLIGHT_GRAVITY_TNT, "Starlight Gravity TNT");
+        this.add("block.artilian.starlight_gravity_tnt.tooltip", "Safe Blast — Pulls foes inward and floats them!");
+        this.addBlock(ArtilianBlocks.BRIMSTONE_METEOR_TNT, "Brimstone Meteor TNT");
+        this.add("block.artilian.brimstone_meteor_tnt.tooltip", "Meteor Blast — Safe unless enabled in config!");
         this.add("message.artilian.tnt.safe_mode", "Safe Blast Mode is ON — no blocks broken!");
 
         this.addItem(ArtilianItems.SPARK_WAND, "Spark Wand");
@@ -93,6 +97,10 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("item.artilian.heart_bloom_staff.tooltip", "30 Mana — Heals and shields friends nearby!");
         this.addItem(ArtilianItems.ZEPHYR_DASH_WAND, "Zephyr Dash Wand");
         this.add("item.artilian.zephyr_dash_wand.tooltip", "25 Mana — Sky dash with Slow Falling!");
+        this.addItem(ArtilianItems.PRISM_NOVA_STAFF, "Prism Nova Staff");
+        this.add("item.artilian.prism_nova_staff.tooltip", "40 Mana — Radiant starlight shockwave!");
+        this.addItem(ArtilianItems.BRIMSTONE_METEOR_STAFF, "Brimstone Meteor Staff");
+        this.add("item.artilian.brimstone_meteor_staff.tooltip", "45 Mana — Calls a safe fiery meteor!");
         this.add("message.artilian.mana.not_enough", "Need %s Mana (have %s)");
         this.add("hud.artilian.mana", "%s / %s");
 

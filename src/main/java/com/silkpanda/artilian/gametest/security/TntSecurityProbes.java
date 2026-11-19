@@ -5,6 +5,8 @@ import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.chester.ChesterService;
 import com.silkpanda.artilian.config.ArtilianConfig;
 import com.silkpanda.artilian.gametest.CustomTntGameTests;
+import com.silkpanda.artilian.mana.ManaData;
+import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
 import com.silkpanda.artilian.registry.ArtilianEntities;
 import com.silkpanda.artilian.registry.ArtilianItems;
@@ -16,8 +18,11 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -274,6 +279,66 @@ public class TntSecurityProbes {
                     "EXPLOITED P1-10: Cluster Quarry harmed Chester");
         } finally {
             ArtilianConfig.setTestOverride(null);
+            level.getEntitiesOfClass(ArtilianPrimedTnt.class, arenaBox).forEach(ArtilianPrimedTnt::discard);
+            chester.discard();
+            CustomTntGameTests.removeTestPlayer(level, steve);
+        }
+        helper.succeed();
+    }
+
+    /**
+     * P3-04: Tier 3 Staves (Prism Nova, Brimstone Meteor) and Boss TNTs (Starlight Gravity, Brimstone Meteor)
+     * spare players, Chester, villagers, and tamed pets, and break zero blocks under default config.
+     */
+    @GameTest(template = "tnt_arena", timeoutTicks = 80)
+    public static void p3_04_tier3StavesAndBrimstoneTntRespectKidSafeAndDestructiveConfig(GameTestHelper helper) {
+        helper.assertFalse(ArtilianConfig.isDestructiveTntAllowed(),
+                "Default config must disable destructive custom TNTs");
+        ServerLevel level = helper.getLevel();
+        List<BlockPos> shell = buildVulnerableShell(helper);
+        BlockPos chestPos = new BlockPos(7, 2, 4);
+        helper.setBlock(chestPos, Blocks.CHEST);
+
+        ServerPlayer steve = CustomTntGameTests.spawnSurvivalPlayer(helper, "SteveTier3", new Vec3(7.5, 2.0, 7.5));
+        ManaData.get(steve).setMana(100);
+
+        ChesterEntity chester = new ChesterEntity(ArtilianEntities.CHESTER.get(), level);
+        Vec3 allyPos = helper.absoluteVec(new Vec3(6.5, 2.0, 7.5));
+        chester.setPos(allyPos.x, allyPos.y, allyPos.z);
+        chester.setOwner(steve);
+        level.addFreshEntity(chester);
+
+        Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new BlockPos(8, 2, 7));
+        CrystalFoxEntity pet = helper.spawnWithNoFreeWill(ArtilianEntities.CRYSTAL_FOX.get(), new BlockPos(7, 2, 8));
+        pet.setOwner(steve);
+        Zombie foe = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(7, 2, 6));
+
+        AABB arenaBox = new AABB(helper.absolutePos(new BlockPos(0, 0, 0))).minmax(
+                new AABB(helper.absolutePos(new BlockPos(14, 14, 14))));
+        try {
+            steve.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.PRISM_NOVA_STAFF.get()));
+            steve.getItemInHand(InteractionHand.MAIN_HAND).use(level, steve, InteractionHand.MAIN_HAND);
+            helper.assertTrue(foe.getHealth() < foe.getMaxHealth(),
+                    "Prism Nova Staff should damage hostile Zombie");
+
+            Vec3 center = helper.absoluteVec(new Vec3(7.5, 2.0, 7.5));
+            ArtilianPrimedTnt meteorTnt = new ArtilianPrimedTnt(
+                    level, center.x, center.y, center.z, steve, TntVariant.BRIMSTONE_METEOR);
+            meteorTnt.setFuse(1);
+            level.addFreshEntity(meteorTnt);
+            meteorTnt.tick();
+
+            assertShellIntact(helper, shell, "P3-04");
+            helper.assertBlockPresent(Blocks.CHEST, chestPos);
+            helper.assertTrue(steve.getHealth() == steve.getMaxHealth(),
+                    "EXPLOITED P3-04: Tier 3 arsenal harmed player");
+            helper.assertTrue(chester.isAlive() && chester.getHealth() == chester.getMaxHealth(),
+                    "EXPLOITED P3-04: Tier 3 arsenal harmed Chester");
+            helper.assertTrue(villager.isAlive() && villager.getHealth() == villager.getMaxHealth(),
+                    "EXPLOITED P3-04: Tier 3 arsenal harmed Villager");
+            helper.assertTrue(pet.isAlive() && pet.getHealth() == pet.getMaxHealth(),
+                    "EXPLOITED P3-04: Tier 3 arsenal harmed tamed pet");
+        } finally {
             level.getEntitiesOfClass(ArtilianPrimedTnt.class, arenaBox).forEach(ArtilianPrimedTnt::discard);
             chester.discard();
             CustomTntGameTests.removeTestPlayer(level, steve);

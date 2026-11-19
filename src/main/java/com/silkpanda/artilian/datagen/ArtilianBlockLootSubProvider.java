@@ -34,6 +34,8 @@ public class ArtilianBlockLootSubProvider extends BlockLootSubProvider {
         dropSelf(ArtilianBlocks.BOUNCE_TNT.get());
         dropSelf(ArtilianBlocks.FROST_NOVA_TNT.get());
         dropSelf(ArtilianBlocks.CLUSTER_QUARRY_TNT.get());
+        dropSelf(ArtilianBlocks.STARLIGHT_GRAVITY_TNT.get());
+        dropSelf(ArtilianBlocks.BRIMSTONE_METEOR_TNT.get());
 
         add(ArtilianBlocks.CRYSTAL_TURF.get(),
                 block -> createSingleItemTableWithSilkTouch(block, Blocks.DIRT));

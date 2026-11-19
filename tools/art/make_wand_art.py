@@ -43,6 +43,10 @@ PALETTE = {
     "U": (224, 198, 255, 255),   # Violet crystal core
     "F": (244, 248, 255, 255),   # Crisp feather white
     "f": (180, 169, 200, 255),   # #B4A9C8 Soft Lavender Grey feather shade
+    # Brimstone Meteor Staff (Ember / Crimson / Gold)
+    "R": (255, 77, 90, 255),     # #FF4D5A Brimstone coral-red
+    "r": (174, 34, 42, 255),     # Shaded crimson
+    "M": (249, 115, 22, 255),    # #F97316 Ember orange
 }
 
 
@@ -119,11 +123,51 @@ ZEPHYR_DASH_WAND = [
     "..OO............",
 ]
 
+PRISM_NOVA_STAFF = [
+    ".........KKDD...",
+    "........KVBBHD..",
+    ".......KVVBBCHD.",
+    "......KVVUUCCHD.",
+    ".....KVVUVUCCCTD",
+    "......KVVvCCCTD.",
+    "......OGGYCTTD..",
+    ".....OSGgOGDD...",
+    "....OSsO..OO....",
+    "...OSsO.........",
+    "..OSsO..........",
+    ".OGgO...........",
+    ".OSSO...........",
+    "OGgO............",
+    ".OO.............",
+    "................",
+]
+
+BRIMSTONE_METEOR_STAFF = [
+    "..........rrOO..",
+    "........rrMRRO..",
+    ".......rMMYYRRO.",
+    "......rMGYGYMRr.",
+    ".....rMMGGGGMRr.",
+    ".....rRMGYYMRr..",
+    "......OOGGYOr...",
+    ".....OSGgOrr....",
+    "....OSsO........",
+    "...OSsO.........",
+    "..OSsO..........",
+    ".OWwO...........",
+    ".OWwO...........",
+    "OGgO............",
+    ".OO.............",
+    "................",
+]
+
 
 def main():
     paint(SPARK_WAND, "spark_wand.png")
     paint(HEART_BLOOM_STAFF, "heart_bloom_staff.png")
     paint(ZEPHYR_DASH_WAND, "zephyr_dash_wand.png")
+    paint(PRISM_NOVA_STAFF, "prism_nova_staff.png")
+    paint(BRIMSTONE_METEOR_STAFF, "brimstone_meteor_staff.png")
 
 
 if __name__ == "__main__":

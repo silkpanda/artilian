@@ -42,7 +42,21 @@ public enum TntVariant implements StringRepresentable {
             ChatFormatting.GOLD,
             "block.artilian.cluster_quarry_tnt.tooltip",
             new DustParticleOptions(new Vector3f(1.000F, 0.624F, 0.220F), 1.4F),
-            ArtilianBlocks.CLUSTER_QUARRY_TNT);
+            ArtilianBlocks.CLUSTER_QUARRY_TNT),
+    STARLIGHT_GRAVITY(
+            "starlight_gravity_tnt",
+            false,
+            ChatFormatting.LIGHT_PURPLE,
+            "block.artilian.starlight_gravity_tnt.tooltip",
+            new DustParticleOptions(new Vector3f(0.851F, 0.275F, 0.937F), 1.4F),
+            ArtilianBlocks.STARLIGHT_GRAVITY_TNT),
+    BRIMSTONE_METEOR(
+            "brimstone_meteor_tnt",
+            true,
+            ChatFormatting.RED,
+            "block.artilian.brimstone_meteor_tnt.tooltip",
+            new DustParticleOptions(new Vector3f(1.000F, 0.302F, 0.353F), 1.5F),
+            ArtilianBlocks.BRIMSTONE_METEOR_TNT);
 
     private final String serializedName;
     private final boolean destructiveCapable;

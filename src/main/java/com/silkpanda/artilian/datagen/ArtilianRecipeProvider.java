@@ -81,6 +81,8 @@ public class ArtilianRecipeProvider extends RecipeProvider {
         customTntRecipe(output, ArtilianBlocks.BOUNCE_TNT.get(), Items.SLIME_BALL, ArtilianItems.SUNSTEEL_INGOT.get());
         customTntRecipe(output, ArtilianBlocks.FROST_NOVA_TNT.get(), Items.SNOWBALL, ArtilianItems.STARLIGHT_CRYSTAL.get());
         customTntRecipe(output, ArtilianBlocks.CLUSTER_QUARRY_TNT.get(), ArtilianItems.STARLIGHT_CRYSTAL.get(), ArtilianItems.SUNSTEEL_INGOT.get());
+        customTntRecipe(output, ArtilianBlocks.STARLIGHT_GRAVITY_TNT.get(), ArtilianItems.PRISM_CORE.get(), ArtilianItems.STARLIGHT_CRYSTAL.get());
+        customTntRecipe(output, ArtilianBlocks.BRIMSTONE_METEOR_TNT.get(), ArtilianItems.BRIMSTONE_DOUBLOON.get(), Items.BLAZE_POWDER);
 
         wandRecipes(output);
 
@@ -331,6 +333,26 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .define('F', Items.FEATHER)
                 .define('S', Items.STICK)
                 .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.PRISM_NOVA_STAFF.get())
+                .pattern(" PC")
+                .pattern(" SP")
+                .pattern("S  ")
+                .define('P', ArtilianItems.PRISM_CORE.get())
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('S', Items.STICK)
+                .unlockedBy("has_prism_core", has(ArtilianItems.PRISM_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.BRIMSTONE_METEOR_STAFF.get())
+                .pattern(" DB")
+                .pattern(" SD")
+                .pattern("S  ")
+                .define('D', ArtilianItems.BRIMSTONE_DOUBLOON.get())
+                .define('B', Items.BLAZE_POWDER)
+                .define('S', Items.STICK)
+                .unlockedBy("has_brimstone_doubloon", has(ArtilianItems.BRIMSTONE_DOUBLOON.get()))
                 .save(output);
     }
 

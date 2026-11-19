@@ -79,6 +79,8 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.handheldItem(ArtilianItems.SPARK_WAND.get());
         this.handheldItem(ArtilianItems.HEART_BLOOM_STAFF.get());
         this.handheldItem(ArtilianItems.ZEPHYR_DASH_WAND.get());
+        this.handheldItem(ArtilianItems.PRISM_NOVA_STAFF.get());
+        this.handheldItem(ArtilianItems.BRIMSTONE_METEOR_STAFF.get());
 
         this.basicItem(ArtilianItems.CRYSTAL_CANOPY_DOOR_ITEM.get());
         this.basicItem(ArtilianItems.EMBERWOOD_DOOR_ITEM.get());

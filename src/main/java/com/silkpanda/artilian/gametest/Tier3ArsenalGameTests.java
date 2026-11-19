@@ -1,19 +1,27 @@
 package com.silkpanda.artilian.gametest;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.chester.ChesterEntity;
+import com.silkpanda.artilian.config.ArtilianConfig;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
+import com.silkpanda.artilian.mana.ManaData;
+import com.silkpanda.artilian.registry.ArtilianEntities;
 import com.silkpanda.artilian.registry.ArtilianItems;
+import com.silkpanda.artilian.tnt.ArtilianPrimedTnt;
+import com.silkpanda.artilian.tnt.TntVariant;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +29,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -143,6 +152,116 @@ public class Tier3ArsenalGameTests {
                                 .is(ArtilianItems.PRISMATIC_HELMET.get()),
                 "Prismatic Helmet recipe should craft from Prism Core + Brimstone Doubloon");
 
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void prismNovaStaffDamagesAndGlowsFoesWhileSparingAllies(GameTestHelper helper) {
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "Alex");
+        ManaData.get(player).setMana(100);
+
+        Zombie foe = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(2, 1, 2));
+        Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new BlockPos(2, 1, 1));
+        ChesterEntity chester = new ChesterEntity(ArtilianEntities.CHESTER.get(), helper.getLevel());
+        Vec3 chesterPos = helper.absoluteVec(new Vec3(1.5, 1.0, 2.5));
+        chester.setPos(chesterPos.x, chesterPos.y, chesterPos.z);
+        chester.setOwner(player);
+        helper.getLevel().addFreshEntity(chester);
+
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.PRISM_NOVA_STAFF.get()));
+        player.getItemInHand(InteractionHand.MAIN_HAND).use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+
+        helper.assertTrue(ManaData.get(player).getMana() == 60,
+                "Prism Nova Staff should cost 40 Mana, remaining: " + ManaData.get(player).getMana());
+        helper.assertTrue(foe.getHealth() < foe.getMaxHealth(),
+                "Prism Nova Staff must damage nearby hostile mobs");
+        helper.assertTrue(foe.hasEffect(MobEffects.GLOWING),
+                "Prism Nova Staff must apply Glowing to hit foes");
+        helper.assertTrue(villager.getHealth() == villager.getMaxHealth(),
+                "Prism Nova Staff must spare villagers");
+        helper.assertTrue(chester.getHealth() == chester.getMaxHealth(),
+                "Prism Nova Staff must spare Chester");
+
+        chester.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void brimstoneMeteorStaffStrikesAimedTargetWithoutBreakingBlocks(GameTestHelper helper) {
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "Steve");
+        ManaData.get(player).setMana(100);
+        BlockPos glassPos = new BlockPos(4, 1, 2);
+        helper.setBlock(glassPos, Blocks.GLASS);
+
+        Zombie foe = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(4, 2, 2));
+        Vec3 toFoe = foe.getEyePosition().subtract(player.getEyePosition()).normalize();
+        float yaw = (float) (Math.atan2(-toFoe.x, toFoe.z) * (180.0 / Math.PI));
+        float pitch = (float) (-Math.asin(toFoe.y) * (180.0 / Math.PI));
+        player.setYRot(yaw);
+        player.setXRot(pitch);
+
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ArtilianItems.BRIMSTONE_METEOR_STAFF.get()));
+        player.getItemInHand(InteractionHand.MAIN_HAND).use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+
+        helper.assertTrue(ManaData.get(player).getMana() == 55,
+                "Brimstone Meteor Staff should cost 45 Mana, remaining: " + ManaData.get(player).getMana());
+        helper.assertTrue(foe.getHealth() < foe.getMaxHealth() && foe.getRemainingFireTicks() > 0,
+                "Brimstone Meteor Staff must damage and ignite aimed foe");
+        helper.assertBlockPresent(Blocks.GLASS, glassPos);
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void starlightGravityTntPullsAndFloatsFoesSafely(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        helper.setBlock(new BlockPos(2, 1, 2), Blocks.STONE);
+        Zombie foe = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(4, 2, 2));
+        Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new BlockPos(1, 2, 2));
+
+        Vec3 center = helper.absoluteVec(new Vec3(2.5, 2.0, 2.5));
+        ArtilianPrimedTnt tnt = new ArtilianPrimedTnt(level, center.x, center.y, center.z, null, TntVariant.STARLIGHT_GRAVITY);
+        tnt.setFuse(1);
+        level.addFreshEntity(tnt);
+        tnt.tick();
+
+        helper.assertBlockPresent(Blocks.STONE, new BlockPos(2, 1, 2));
+        helper.assertTrue(foe.hasEffect(MobEffects.LEVITATION) && foe.hasEffect(MobEffects.GLOWING),
+                "Starlight Gravity TNT should apply Levitation and Glowing to foes");
+        helper.assertTrue(foe.getHealth() < foe.getMaxHealth(),
+                "Starlight Gravity TNT should damage foes");
+        helper.assertTrue(!villager.hasEffect(MobEffects.LEVITATION) && villager.getHealth() == villager.getMaxHealth(),
+                "Starlight Gravity TNT must spare villagers");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void brimstoneMeteorTntHonorsDestructiveConfig(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos stonePos = new BlockPos(2, 1, 2);
+        helper.setBlock(stonePos, Blocks.STONE);
+        Zombie foe = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(3, 2, 2));
+
+        Vec3 center = helper.absoluteVec(new Vec3(2.5, 2.0, 2.5));
+        ArtilianPrimedTnt safeTnt = new ArtilianPrimedTnt(level, center.x, center.y, center.z, null, TntVariant.BRIMSTONE_METEOR);
+        safeTnt.setFuse(1);
+        level.addFreshEntity(safeTnt);
+        safeTnt.tick();
+
+        helper.assertBlockPresent(Blocks.STONE, stonePos);
+        helper.assertTrue(foe.getHealth() < foe.getMaxHealth() && foe.getRemainingFireTicks() > 0,
+                "Brimstone Meteor TNT in safe mode should still damage and ignite foes");
+
+        try {
+            ArtilianConfig.setTestOverride(true);
+            ArtilianPrimedTnt hotTnt = new ArtilianPrimedTnt(level, center.x, center.y, center.z, null, TntVariant.BRIMSTONE_METEOR);
+            hotTnt.setFuse(1);
+            level.addFreshEntity(hotTnt);
+            hotTnt.tick();
+            helper.assertFalse(helper.getBlockState(stonePos).is(Blocks.STONE),
+                    "Brimstone Meteor TNT should break stone when allowDestructiveCustomTnt is true");
+        } finally {
+            ArtilianConfig.setTestOverride(null);
+        }
         helper.succeed();
     }
 }

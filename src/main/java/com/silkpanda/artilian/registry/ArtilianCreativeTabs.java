@@ -68,9 +68,13 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.BOUNCE_TNT_ITEM.get());
                         output.accept(ArtilianItems.FROST_NOVA_TNT_ITEM.get());
                         output.accept(ArtilianItems.CLUSTER_QUARRY_TNT_ITEM.get());
+                        output.accept(ArtilianItems.STARLIGHT_GRAVITY_TNT_ITEM.get());
+                        output.accept(ArtilianItems.BRIMSTONE_METEOR_TNT_ITEM.get());
                         output.accept(ArtilianItems.SPARK_WAND.get());
                         output.accept(ArtilianItems.HEART_BLOOM_STAFF.get());
                         output.accept(ArtilianItems.ZEPHYR_DASH_WAND.get());
+                        output.accept(ArtilianItems.PRISM_NOVA_STAFF.get());
+                        output.accept(ArtilianItems.BRIMSTONE_METEOR_STAFF.get());
                         output.accept(ArtilianItems.CRYSTAL_TURF_ITEM.get());
                         output.accept(ArtilianItems.CRYSTAL_CANOPY_LOG_ITEM.get());
                         output.accept(ArtilianItems.CRYSTAL_CANOPY_PLANKS_ITEM.get());

@@ -115,6 +115,10 @@ public class ArtilianItems {
             ITEMS.registerSimpleBlockItem("frost_nova_tnt", ArtilianBlocks.FROST_NOVA_TNT);
     public static final DeferredItem<BlockItem> CLUSTER_QUARRY_TNT_ITEM =
             ITEMS.registerSimpleBlockItem("cluster_quarry_tnt", ArtilianBlocks.CLUSTER_QUARRY_TNT);
+    public static final DeferredItem<BlockItem> STARLIGHT_GRAVITY_TNT_ITEM =
+            ITEMS.registerSimpleBlockItem("starlight_gravity_tnt", ArtilianBlocks.STARLIGHT_GRAVITY_TNT);
+    public static final DeferredItem<BlockItem> BRIMSTONE_METEOR_TNT_ITEM =
+            ITEMS.registerSimpleBlockItem("brimstone_meteor_tnt", ArtilianBlocks.BRIMSTONE_METEOR_TNT);
 
     // Crystal Canopy Woods blocks
     public static final DeferredItem<BlockItem> CRYSTAL_TURF_ITEM =
@@ -200,6 +204,12 @@ public class ArtilianItems {
             () -> new ArtilianWandItem(WandSpell.HEART_BLOOM, new Item.Properties().stacksTo(1)));
     public static final DeferredItem<ArtilianWandItem> ZEPHYR_DASH_WAND = ITEMS.register("zephyr_dash_wand",
             () -> new ArtilianWandItem(WandSpell.ZEPHYR_DASH, new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<ArtilianWandItem> PRISM_NOVA_STAFF = ITEMS.register("prism_nova_staff",
+            () -> new ArtilianWandItem(WandSpell.PRISM_NOVA,
+                    new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+    public static final DeferredItem<ArtilianWandItem> BRIMSTONE_METEOR_STAFF = ITEMS.register("brimstone_meteor_staff",
+            () -> new ArtilianWandItem(WandSpell.BRIMSTONE_METEOR,
+                    new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
 
     // Raw & refined materials
     public static final DeferredItem<Item> RAW_SUNSTEEL =

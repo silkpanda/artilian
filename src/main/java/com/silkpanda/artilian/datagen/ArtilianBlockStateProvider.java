@@ -38,6 +38,8 @@ public class ArtilianBlockStateProvider extends BlockStateProvider {
         tntBlock(ArtilianBlocks.BOUNCE_TNT);
         tntBlock(ArtilianBlocks.FROST_NOVA_TNT);
         tntBlock(ArtilianBlocks.CLUSTER_QUARRY_TNT);
+        tntBlock(ArtilianBlocks.STARLIGHT_GRAVITY_TNT);
+        tntBlock(ArtilianBlocks.BRIMSTONE_METEOR_TNT);
 
         turfBlock(ArtilianBlocks.CRYSTAL_TURF, "crystal_turf", mcLoc("block/dirt"));
         woodSet(
