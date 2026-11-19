@@ -155,6 +155,17 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .define('X', ArtilianItems.SUNSTEEL_INGOT.get())
                 .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
                 .save(output);
+
+        // Phase 3 Stage 3: Captain Brimstone summon item
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ArtilianItems.BRIMSTONE_COMPASS.get())
+                .pattern(" S ")
+                .pattern("SBS")
+                .pattern(" E ")
+                .define('S', ArtilianItems.SUNSTEEL_INGOT.get())
+                .define('B', Items.BLAZE_POWDER)
+                .define('E', ArtilianBlocks.EMBER_BLOOM.get())
+                .unlockedBy("has_sunsteel_ingot", has(ArtilianItems.SUNSTEEL_INGOT.get()))
+                .save(output);
     }
 
     private static void slateStonecutting(RecipeOutput output, ItemLike result, ItemLike base, int count) {

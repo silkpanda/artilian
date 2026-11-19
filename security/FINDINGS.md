@@ -187,3 +187,13 @@ Template for an entry:
 - **Impact:** If any telegraphed boss attack used `Level#explode` with block interaction or omitted the `ChesterEntity` exclusion in `impact`, boss fights at an arena or base would break Boss Altars/chests/builds and injure Chester.
 - **Fix:** `ArtilianBossEntity#impact` explicitly skips `ChesterEntity` and applies direct elemental damage only, and `CrystalColossusEntity#onTelegraphImpact` emits particles, sounds, mild knockback, and status effects without any `Level#explode` or block mutation. Phase 3 Stage 2 (`Crystal Colossus Stage 2`) on `phase-3-stage-2-crystal-colossus`.
 - **Proof:** GameTest `BossSecurityProbes.p3_02_crystalColossusNeverBreaksBlocksOrAltarOrHarmsChester`. EXPLOITED (`EXPLOITED P3-02: Crystal Colossus destroyed or altered Chest`) when `Level.ExplosionInteraction.MOB` was injected into `CrystalColossusEntity#onTelegraphImpact`; HELD with the control on (`145/145` tests passing).
+
+---
+
+### P3-03 — Captain Brimstone attacks break world/altar blocks, ignite terrain, or harm Chester — FIXED
+- **Severity:** High
+- **Where:** `boss/ArtilianBossEntity.java` (`impact`), `boss/CaptainBrimstoneEntity.java` (`onTelegraphImpact`)
+- **Attack:** Under `mobGriefing = true` and `allowDestructiveCustomTnt = true`, Captain Brimstone fires `POWDER_KEG_TOSS` targeted directly onto a player's `ChesterEntity` beside a `Boss Altar`, `Chest`, and `Emberwood Planks`, followed by `CUTLASS_CLEAVE` and Broadside `BROADSIDE_BARRAGE`.
+- **Impact:** If any Fire/explosive boss attack used `Level#explode` with `fire=true` / block interaction or omitted the `ChesterEntity` exclusion in `impact`, boss fights at Brimstone Bastion or a player's base would break Boss Altars/chests, ignite wooden decks, and injure Chester.
+- **Fix:** `ArtilianBossEntity#impact` explicitly skips `ChesterEntity` and applies direct elemental damage only, and `CaptainBrimstoneEntity#onTelegraphImpact` emits particles, sounds, mild knockback, and entity-only ignite/weakness effects without any `Level#explode` or block/fire placement. Phase 3 Stage 3 (`phase-3-stage-3-captain-brimstone`).
+- **Proof:** GameTest `BossSecurityProbes.p3_03_captainBrimstoneNeverBreaksBlocksOrAltarOrIgnitesTerrainOrHarmsChester`. EXPLOITED when `Level.ExplosionInteraction.MOB` (`fire=true`) was injected into `CaptainBrimstoneEntity#onTelegraphImpact`; HELD with the control on (`153/153` tests passing).

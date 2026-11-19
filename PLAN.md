@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | Phase 3 Stage 2 (*The Crystal Colossus*) complete (`145/145` GameTests, `runData`, `build`, and live `./gradlew runClient` screenshots verified with clean `run/logs/latest.log`) on PR #10 (`phase-3-stage-2-crystal-colossus`, merged with `main` after PR #9 Art Gate). Owner signed off on Phase 2 art on 2026-11-19. |
-| **Next** | 1. Merge PR #10 (`phase-3-stage-2-crystal-colossus`) once CI is green. 2. Implement `TD-01` (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`) or begin **Phase 3 — Stage 3 (*Captain Brimstone*)** with a reference spec + Art Brief + dedicated art sub-stage. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
-| **Waiting on the owner** | 1. Merge PR #10 (`phase-3-stage-2-crystal-colossus`) once CI is green. 2. In-game look & screenshot when home for **Boss Framework** (*Training Golem* + *Boss Altar*, `qa/evidence/`). 3. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 4. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 5. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 6. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | None (`main` and PR #10 `phase-3-stage-2-crystal-colossus` only). |
+| **In progress** | **Phase 3 — Stage 3 (*Captain Brimstone*)** complete (`153/153` GameTests, `runData`, `build`, and live `./gradlew runClient` screenshots verified) on branch `phase-3-stage-3-captain-brimstone`, ready for PR into `main`. |
+| **Next** | 1. Push `phase-3-stage-3-captain-brimstone` and open/merge PR into `main` once CI is green. 2. Implement `TD-01` (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`) or begin **Phase 3 — Stage 4 (*Tier 3 Arsenal*)**. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
+| **Waiting on the owner** | 1. In-game look & screenshot when home for **Boss Framework** (*Training Golem* + *Boss Altar*, `qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 5. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | None (`main` and `phase-3-stage-3-captain-brimstone` only). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -320,8 +320,8 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | Stage | What ships | Status |
 |---|---|---|
 | 1 | Boss Framework (`ArtilianBossEntity`, `TelegraphedAttack`, `BossAltarBlock`, `P3-01`) | ⏳ Sub-stages 1–3 merged in PR #7 (`137/137`); Sub-stage 4 client check pending |
-| 2 | The Crystal Colossus (`CrystalColossusEntity`, `Crystal Colossus Arena`, `P3-02`) | ✅ Complete (code & client verified `145/145` on `phase-3-stage-2-crystal-colossus`) |
-| 3 | Captain Brimstone | ⏹ Pending |
+| 2 | The Crystal Colossus (`CrystalColossusEntity`, `Crystal Colossus Arena`, `P3-02`) | ✅ Complete (`145/145`, merged in PR #10) |
+| 3 | Captain Brimstone (`CaptainBrimstoneEntity`, `Brimstone Bastion`, `P3-03`) | ✅ Complete (`153/153`, client verified on `phase-3-stage-3-captain-brimstone`) |
 | 4 | Tier 3 Arsenal (weapons, armor, tools, advanced Staves & Boss TNTs) | ⏹ Pending |
 | 5 | Phase 3 Art Pass & Family Co-op Sign-Off | ⏹ Pending |
 
@@ -378,7 +378,35 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and owner verifies the Crystal Colossus fight and arena in `./gradlew runClient`.
 
 ### Phase 3 — Stage 3: Captain Brimstone
-- [ ] **Pending** — Second full custom boss building on `ArtilianBossEntity`, telegraphed attacks, arena & rematch altar, and boss drops.
+- [x] **Complete (`153/153` GameTests & Live Client Verified)** — Second full custom boss built on `ArtilianBossEntity` with three telegraphed attacks, Phase 2 *Brimstone Broadside*, an Emberbloom Meadows arena, rematch summoning, and boss drops for Phase 3 Stage 4 Tier 3 gear.
+- **Art Brief (`qa/reference/bosses/captain-brimstone.md`):**
+  1. **Target height/scale:** `2.4 × 3.4` hitbox (`~4.0` blocks tall to top of mast/Jolly-Roger flag).
+  2. **Silhouette inspiration (non-humanoid):** Living **Cursed Pirate Galleon-Walker** — curved dark-timber ship hull on 4 articulated iron crab/anchor legs, pointed bowsprit with skull figurehead, port & starboard broadside cannons, spoked ship's wheel, tall mast with tattered Crimson Jolly-Roger sail (skull & crossbones), and a Tricorne-hatted Pirate Skull-Captain with an eyepatch fused into the helm.
+  3. **Anchor & accent palette:** Charred Emberwood & Iron Hull (`#221518`–`#5A3228`), Crimson-Oxide Jolly-Roger sailcloth (`#5E1A22`–`#9A2C34`) with bone-white (`#E8DFD0`) skull emblem, anchored with Sunsteel Gold (`#B87424`–`#FFE08A`) trim.
+  4. **Key 3D recessed/angled features:** 4 angled crab-anchor legs, `25°` upward bowsprit + figurehead, flared gunwales with swiveling broadside cannons, spoked ship's wheel, and angled 3-flap Tricorne hat over a pirate skull with diagonal eyepatch.
+  5. **`_glowmask.png` zones:** Hull portholes, cannon bores, uncovered magma eye socket, bowsprit figurehead eyes, and crow's-nest mast lantern (`#FF6B1A` / `#FFB84D` / `#FFF2B2`).
+- **Why & Decisions:**
+  1. **`CaptainBrimstoneEntity` (`artilian:captain_brimstone`, `FIRE / SHADOW`):** `220` HP (`110` hearts), `6.0` armor, `0.23` speed, `2.0 × 3.4` hitbox, `RED` boss bar shifting to `YELLOW` on Phase 2 *Brimstone Broadside*. Weak to `WATER` and `STARLIGHT` so kids' *Splashy*, *Frogduck*, and *Crystal Fox* pets shine against it.
+  2. **Three telegraphed attacks (all `>= 35` ticks, zero block breaking):**
+     - **Powder Keg Toss (`40`t, radius `3.5`, `7.0` Fire):** locks onto the target's starting position (never chases mid-windup so kids can step out of the red ring) and detonates a non-destructive brimstone blast + brief `30`t burn.
+     - **Cutlass Cleave (`35`t, radius `4.0`, `7.5` Shadow):** boss-centered sweeping shockwave pushing targets outward + `Weakness I` (`40`t).
+     - **Broadside Barrage (`50`t, radius `6.5`, `8.5` Fire, Phase 2 Broadside only):** unlocks at `<= 50%` HP (`110` HP), shortens attack cooldown from `60`t to `45`t, turns the boss bar `YELLOW`, plays cannon/blaze roar + action-bar alert, and pulses a 6.5-block ember shockwave.
+  3. **Summoning & Trophy Progression:**
+     - **Brimstone Compass (`artilian:brimstone_compass`):** `BossSummonItem` crafted from `Sunsteel Ingot` + `Blaze Powder` + `Charcoal` (and 1 guaranteed in the arena prep chest) for summoning/rematching at any **Boss Altar**.
+     - **Brimstone Doubloon (`artilian:brimstone_doubloon`):** foil `BossTrophyItem` dropped (`2–3` guaranteed + `Sunsteel Ingot`, `Blaze Powder`, `Biome Treat`) for forging Phase 3 Stage 4 Tier 3 Fire/Brimstone gear.
+  4. **Brimstone Bastion (`artilian:brimstone_bastion`):** Open-air stepped charred-slate & emberwood pirate bastion arena in `EMBERBLOOM_MEADOWS` (`15×12×15`, wide cardinal stairs, 4 corner brazier/cannon pillars, central `Boss Altar` under open sky, prep chest with `Brimstone Compass` + `Biome Treats`, zero extra monster spawns, zero pre-spawned bosses, zero banned blocks).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Reference spec, Art Brief & Boss Art | `09633cd` | `qa/reference/bosses/captain-brimstone.md`, `build_captain_brimstone` / `build_brimstone_compass` / `build_brimstone_doubloon` in `tools/art/make_bosses_art.py` (`256×128` UV-checked sheet, `.geo.json`, `.animation.json`, `_glowmask.png`, item icons). |
+  | 2 Entity, 3 attacks, Broadside, Items & Tests | `a3dab7e` | `CaptainBrimstoneEntity`, `CaptainBrimstoneRenderer`, `ArtilianEntities`, `ArtilianItems`, datagen (loot, recipes, models, lang, tags), and 5 `CaptainBrimstoneGameTests` (`150/150`). Red-proof: `telegraphCenterFor` forced to `this.position()` → `powderKegTossLocksTargetPositionAndCanBeDodged` red. |
+  | 3 Brimstone Bastion Arena, `P3-03` & Client Check | `70f7183` + evidence | `artilian:brimstone_bastion` worldgen + chest loot + 2 arena GameTests + `BossSecurityProbes.p3_03_captainBrimstoneNeverBreaksBlocksOrAltarOrIgnitesTerrainOrHarmsChester` (`153/153`). Red-proof: `ExplosionInteraction.MOB` (`fire=true`) on impact → `P3-03` failed. Live `./gradlew runClient` verified (`qa/evidence/captain-brimstone-2026-11-19.png`, `qa/evidence/captain-brimstone-broadside-2026-11-19.png`). |
+
+- **Tests & Red-proofs (`CaptainBrimstoneGameTests`):** `153/153` green (7 `CaptainBrimstoneGameTests` + `P3-03`). Red-proofs recorded above.
+- **Security Gate (`BossSecurityProbes.p3_03_captainBrimstoneNeverBreaksBlocksOrAltarOrIgnitesTerrainOrHarmsChester`, `security/bosses/README.md`, `security/FINDINGS.md`):**
+  - `P3-03`: Under `mobGriefing = true` and `ArtilianConfig` destructive mode `true`, all 3 Captain Brimstone attacks (`POWDER_KEG_TOSS` aimed over `BOSS_ALTAR`/`CHEST`/`EMBERWOOD_PLANKS`/`Chester`, `CUTLASS_CLEAVE`, and Broadside `BROADSIDE_BARRAGE`) break zero blocks/altars/chests, set zero fire blocks, and deal `0` damage to `ChesterEntity` (`HELD` in `153/153` suite).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies the Captain Brimstone fight and Brimstone Bastion arena.
 
 ### Phase 3 — Stage 4: Tier 3 Arsenal
 - [ ] **Pending** — Boss-forged Tier 3 weapons, armor, tools, advanced Staves, and advanced TNTs (destructive variants strictly honor `allowDestructiveCustomTnt`).
@@ -425,9 +453,9 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ---
 
-## Security Gates Summary (`P1-01`–`P3-02`)
+## Security Gates Summary (`P1-01`–`P3-03`)
 
-All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`145/145`** GameTests passing.
+All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`153/153`** GameTests passing.
 
 | IDs | Phase / Stage | Area | GameTest Class | Index |
 |---|---|---|---|---|
@@ -435,7 +463,7 @@ All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on)
 | `P1-07`–`P1-10` | Phase 1 Stage 4 | `allowDestructiveCustomTnt` default off, Cluster Quarry & safe TNTs | `TntSecurityProbes` | `security/tnt/README.md` |
 | `P2-01`–`P2-04` | Phase 2 Stages 3–4 | Pet crystal ownership, non-lethal fainting, anti-duplication, battle safety | `PetSecurityProbes` | `security/pets/README.md` |
 | `P2-05` | Phase 2 Stage 6C | Sunbeam chest `minecraft:light` air-only placement & removal cleanup | `PetRosterGameTests` | `security/FINDINGS.md` |
-| `P3-01`–`P3-02` | Phase 3 Stages 1–2 | Boss Altar anti-spam & Crystal Colossus non-griefing / Chester safety | `BossSecurityProbes` | `security/bosses/README.md` |
+| `P3-01`–`P3-03` | Phase 3 Stages 1–3 | Boss Altar anti-spam & Crystal Colossus / Captain Brimstone non-griefing / Chester safety | `BossSecurityProbes` | `security/bosses/README.md` |
 
 ---
 

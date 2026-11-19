@@ -1062,6 +1062,517 @@ def build_prism_core():
     img.save(ASSETS / "textures/item/prism_core.png")
 
 
+def make_captain_brimstone_animations():
+    p = "animation.captain_brimstone"
+    return {
+        "format_version": "1.8.0",
+        "animations": {
+            f"{p}.idle": {
+                "loop": True,
+                "animation_length": 2.4,
+                "bones": {
+                    "body": {
+                        "position": {"0.0": [0, 0, 0], "1.2": [0, 0.8, 0], "2.4": [0, 0, 0]},
+                        "rotation": {"0.0": [0, 0, -1.5], "1.2": [1.5, 0, 1.5], "2.4": [0, 0, -1.5]},
+                    },
+                    "head": {
+                        "rotation": {"0.0": [0, -6, 0], "1.2": [3, 6, 0], "2.4": [0, -6, 0]},
+                    },
+                    "mast": {
+                        "rotation": {"0.0": [0, 0, -2], "1.2": [2, 0, 2], "2.4": [0, 0, -2]},
+                    },
+                    "arm_left": {
+                        "rotation": {"0.0": [0, 0, 0], "1.2": [-4, 0, 0], "2.4": [0, 0, 0]},
+                    },
+                    "arm_right": {
+                        "rotation": {"0.0": [0, 0, 0], "1.2": [-4, 0, 0], "2.4": [0, 0, 0]},
+                    },
+                },
+            },
+            f"{p}.walk": {
+                "loop": True,
+                "animation_length": 0.8,
+                "bones": {
+                    "body": {
+                        "position": {"0.0": [0, 0, 0], "0.4": [0, 1.0, 0], "0.8": [0, 0, 0]},
+                        "rotation": {"0.0": [2, 0, -4], "0.4": [2, 0, 4], "0.8": [2, 0, -4]},
+                    },
+                    "leg_left": {
+                        "rotation": {"0.0": [-22, 0, 0], "0.4": [22, 0, 0], "0.8": [-22, 0, 0]},
+                    },
+                    "leg_right": {
+                        "rotation": {"0.0": [22, 0, 0], "0.4": [-22, 0, 0], "0.8": [22, 0, 0]},
+                    },
+                    "leg_back_left": {
+                        "rotation": {"0.0": [22, 0, 0], "0.4": [-22, 0, 0], "0.8": [22, 0, 0]},
+                    },
+                    "leg_back_right": {
+                        "rotation": {"0.0": [-22, 0, 0], "0.4": [22, 0, 0], "0.8": [-22, 0, 0]},
+                    },
+                },
+            },
+            f"{p}.attack": {
+                "animation_length": 0.5,
+                "bones": {
+                    "body": {
+                        "rotation": {"0.0": [0, 0, 0], "0.18": [-8, 0, 0], "0.34": [10, 0, 0], "0.5": [0, 0, 0]},
+                    },
+                    "arm_left": {
+                        "position": {"0.0": [0, 0, 0], "0.18": [0, 0, 4], "0.5": [0, 0, 0]},
+                        "rotation": {"0.0": [0, 0, 0], "0.18": [-18, 0, 0], "0.5": [0, 0, 0]},
+                    },
+                    "arm_right": {
+                        "position": {"0.0": [0, 0, 0], "0.18": [0, 0, 4], "0.5": [0, 0, 0]},
+                        "rotation": {"0.0": [0, 0, 0], "0.18": [-18, 0, 0], "0.5": [0, 0, 0]},
+                    },
+                },
+            },
+            f"{p}.telegraph": {
+                "loop": False,
+                "animation_length": 2.0,
+                "bones": {
+                    "body": {
+                        "rotation": {"0.0": [0, 0, 0], "1.0": [-10, 0, 0], "1.8": [-14, 0, 0], "2.0": [6, 0, 0]},
+                    },
+                    "arm_left": {
+                        "rotation": {"0.0": [0, 0, 0], "1.0": [-28, 0, 0], "1.8": [-35, 0, 0], "2.0": [8, 0, 0]},
+                    },
+                    "arm_right": {
+                        "rotation": {"0.0": [0, 0, 0], "1.0": [-28, 0, 0], "1.8": [-35, 0, 0], "2.0": [8, 0, 0]},
+                    },
+                    "mast": {
+                        "rotation": {"0.0": [0, 0, 0], "1.0": [8, 0, 0], "2.0": [-6, 0, 0]},
+                    },
+                },
+            },
+        },
+    }
+
+
+def build_captain_brimstone():
+    """Non-humanoid Cursed Pirate Galleon-Walker: scuttling 4-legged ship hull, bowsprit skull
+    figurehead, broadside cannons, spoked ship's wheel, Tricorne pirate skull-captain with eyepatch,
+    and tall mast flying a Crimson Jolly-Roger skull & crossbones sail.
+    """
+    eid = "captain_brimstone"
+    img = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
+
+    # Dark weathered ship timber (6-stop ramp)
+    WOOD_VOID = (24, 14, 14, 255)
+    WOOD_DEEP = (40, 22, 20, 255)
+    WOOD_DARK = (62, 34, 28, 255)
+    WOOD_MID = (86, 48, 36, 255)
+    WOOD_HI = (114, 66, 48, 255)
+
+    # Charred iron hull bands & cannons
+    IRON_VOID = (16, 13, 18, 255)
+    IRON_DEEP = (28, 23, 30, 255)
+    IRON_DARK = (44, 37, 46, 255)
+    IRON_MID = (66, 56, 68, 255)
+    IRON_HI = (94, 82, 96, 255)
+
+    # Sunsteel Gold trim
+    GOLD_DEEP = (128, 72, 20, 255)
+    GOLD_DARK = (176, 108, 32, 255)
+    GOLD_MID = (224, 152, 52, 255)
+    GOLD_HI = (255, 208, 96, 255)
+
+    # Crimson Jolly-Roger sailcloth & bone-white skull
+    SAIL_DEEP = (68, 16, 22, 255)
+    SAIL_DARK = (102, 26, 34, 255)
+    SAIL_MID = (138, 38, 46, 255)
+    SAIL_HI = (168, 56, 60, 255)
+    BONE_DARK = (146, 136, 124, 255)
+    BONE_MID = (206, 196, 180, 255)
+    BONE_HI = (238, 230, 214, 255)
+
+    # Magma glowmask
+    MAGMA_ROOT = (138, 34, 12, 255)
+    MAGMA_HOT = (255, 142, 38, 255)
+    MAGMA_BRIGHT = (255, 198, 76, 255)
+    MAGMA_CORE = (255, 242, 178, 255)
+
+    # Non-overlapping 256x128 UV layout: (u, v, w, h, d) -> 2*(d+w) x (d+h)
+    HULL_MAIN = (0, 0, 22, 7, 24)         # 92x31 -> x:[0..92), y:[0..31)
+    HULL_KEEL = (94, 0, 16, 5, 26)         # 84x31 -> x:[94..178), y:[0..31)
+    QUARTERDECK = (180, 0, 20, 5, 9)       # 58x14 -> x:[180..238), y:[0..14)
+    BOWSPRIT = (180, 15, 3, 3, 14)         # 34x17 -> x:[180..214), y:[15..32)
+    FIGUREHEAD = (216, 15, 6, 6, 6)        # 24x12 -> x:[216..240), y:[15..27)
+
+    GUNWALE_RAIL = (0, 32, 24, 3, 2)       # 52x5 -> x:[0..52), y:[32..37)
+    MAST_POLE = (0, 38, 3, 26, 3)          # 12x29 -> x:[0..12), y:[38..67)
+    YARDARM = (14, 38, 20, 2, 2)           # 44x4 -> x:[14..58), y:[38..42)
+    SAIL_MAIN = (14, 43, 18, 14, 1)        # 38x15 -> x:[14..52), y:[43..58)
+    CROWS_NEST = (54, 43, 7, 3, 7)         # 28x10 -> x:[54..82), y:[43..53)
+    MAST_LANTERN = (84, 43, 3, 4, 3)       # 12x7 -> x:[84..96), y:[43..50)
+
+    SKULL_HEAD = (100, 34, 10, 9, 9)       # 38x18 -> x:[100..138), y:[34..52)
+    HAT_CROWN = (140, 34, 11, 5, 10)       # 42x15 -> x:[140..182), y:[34..49)
+    HAT_BRIM_F = (184, 34, 14, 2, 5)       # 38x7 -> x:[184..222), y:[34..41)
+    HAT_BRIM_S = (184, 42, 3, 4, 12)       # 30x16 -> x:[184..214), y:[42..58)
+    SHIPS_WHEEL = (216, 42, 10, 10, 2)     # 24x12 -> x:[216..240), y:[42..54)
+
+    CANNON_BARREL_L = (0, 68, 6, 6, 12)    # 36x18 -> x:[0..36), y:[68..86)
+    CANNON_BARREL_R = (38, 68, 6, 6, 12)   # 36x18 -> x:[38..74), y:[68..86)
+    CANNON_RIM = (76, 68, 7, 7, 3)         # 20x10 -> x:[76..96), y:[68..78)
+    CANNON_BORE = (76, 79, 4, 4, 2)        # 12x6 -> x:[76..88), y:[79..85)
+    CANNON_CARRIAGE = (98, 68, 6, 4, 7)    # 26x11 -> x:[98..124), y:[68..79)
+
+    LEG_FEMUR = (126, 68, 4, 10, 4)        # 16x14 -> x:[126..142), y:[68..82)
+    LEG_CLAW = (144, 68, 4, 11, 4)         # 16x15 -> x:[144..160), y:[68..83)
+    LEG_TIP = (162, 68, 5, 3, 5)           # 20x8 -> x:[162..182), y:[68..76)
+
+    all_uv_boxes = [
+        HULL_MAIN, HULL_KEEL, QUARTERDECK, BOWSPRIT, FIGUREHEAD,
+        GUNWALE_RAIL, MAST_POLE, YARDARM, SAIL_MAIN, CROWS_NEST, MAST_LANTERN,
+        SKULL_HEAD, HAT_CROWN, HAT_BRIM_F, HAT_BRIM_S, SHIPS_WHEEL,
+        CANNON_BARREL_L, CANNON_BARREL_R, CANNON_RIM, CANNON_BORE, CANNON_CARRIAGE,
+        LEG_FEMUR, LEG_CLAW, LEG_TIP,
+    ]
+    occupied = set()
+    for u, v, w, h, d in all_uv_boxes:
+        uw, uh = 2 * (d + w), d + h
+        assert u + uw <= 256 and v + uh <= 128, f"UV box {(u, v, w, h, d)} out of 256x128 bounds"
+        for px in range(u, u + uw):
+            for py in range(v, v + uh):
+                assert (px, py) not in occupied, f"UV overlap at {(px, py)} in box {(u, v, w, h, d)}"
+                occupied.add((px, py))
+
+    def paint_plank_box(box, pal_hi, pal_mid, pal_dark, pal_deep, seed=1,
+                        plank_lines=True, gold_top=False, portholes=False):
+        u, v, w, h, d = box
+        for face, (fx, fy, fw, fh) in faces(u, v, w, h, d).items():
+            for dy in range(fh):
+                py = fy + dy
+                ty = dy / max(1, fh - 1)
+                for dx in range(fw):
+                    px = fx + dx
+                    hv = _h(px, py, seed)
+                    if face == "top":
+                        col = pal_hi if hv > 110 else pal_mid
+                    elif face == "bottom":
+                        col = pal_deep
+                    elif face in ("east", "west"):
+                        col = _lerp_color(pal_mid, pal_dark, 0.25 + 0.55 * ty)
+                    else:
+                        col = _lerp_color(pal_hi, pal_dark, 0.15 + 0.65 * ty)
+
+                    if plank_lines and face != "bottom" and (dy % 3 == 2):
+                        col = _lerp_color(col, pal_deep, 0.5)
+                    elif hv < 45:
+                        col = _lerp_color(col, pal_deep, 0.45)
+                    elif hv > 205:
+                        col = _lerp_color(col, pal_hi, 0.35)
+
+                    if fw >= 4 and fh >= 4:
+                        if dy == 0 and face != "bottom":
+                            col = GOLD_MID if gold_top else _lerp_color(col, pal_hi, 0.4)
+                        elif dy == fh - 1:
+                            col = _lerp_color(col, pal_deep, 0.55)
+                        elif dx == 0 or dx == fw - 1:
+                            col = _lerp_color(col, pal_deep, 0.4)
+
+                    put(img, px, py, col)
+
+            # Glowing magma portholes along the hull sides
+            if portholes and face in ("east", "west") and fw >= 18 and fh >= 6:
+                for px_off in range(3, fw - 3, 5):
+                    fill(img, (fx + px_off, fy + 2, 2, 2), MAGMA_BRIGHT)
+                    fill(glow, (fx + px_off, fy + 2, 2, 2), MAGMA_BRIGHT)
+                    put(img, fx + px_off, fy + 2, MAGMA_CORE)
+                    put(glow, fx + px_off, fy + 2, MAGMA_CORE)
+                    # Gold ring around porthole
+                    for rx in (px_off - 1, px_off + 2):
+                        put(img, fx + rx, fy + 2, GOLD_DARK)
+                        put(img, fx + rx, fy + 3, GOLD_DARK)
+
+    # Hull, keel, quarterdeck, bowsprit, gunwale
+    paint_plank_box(HULL_MAIN, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=201, gold_top=True, portholes=True)
+    paint_plank_box(HULL_KEEL, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=202, plank_lines=False)
+    paint_plank_box(QUARTERDECK, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=203, gold_top=True)
+    paint_plank_box(GUNWALE_RAIL, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=204, gold_top=True)
+    paint_plank_box(BOWSPRIT, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=205)
+
+    # Bowsprit Skull Figurehead
+    paint_plank_box(FIGUREHEAD, BONE_HI, BONE_MID, BONE_DARK, IRON_VOID, seed=206, plank_lines=False)
+    fgx, fgy, fgw, fgh = faces(*FIGUREHEAD)["front"]
+    for ex in (fgx + 1, fgx + fgw - 2):
+        put(img, ex, fgy + 2, MAGMA_BRIGHT)
+        put(glow, ex, fgy + 2, MAGMA_BRIGHT)
+
+    # Mast, yardarm, crow's nest, glowing lantern
+    paint_plank_box(MAST_POLE, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=207)
+    paint_plank_box(YARDARM, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=208)
+    paint_plank_box(CROWS_NEST, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=209, gold_top=True)
+    paint_plank_box(MAST_LANTERN, MAGMA_CORE, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_ROOT, seed=210, plank_lines=False)
+    for face, rect in faces(*MAST_LANTERN).items():
+        fill(glow, rect, MAGMA_BRIGHT)
+
+    # Crimson Jolly-Roger Sail with bold Skull & Crossbones on front & back
+    paint_plank_box(SAIL_MAIN, SAIL_HI, SAIL_MID, SAIL_DARK, SAIL_DEEP, seed=211, plank_lines=False)
+    for face_name in ("front", "back"):
+        sfx, sfy, sfw, sfh = faces(*SAIL_MAIN)[face_name]
+        # Gold border hem on sail
+        fill(img, (sfx, sfy, sfw, 1), GOLD_MID)
+        fill(img, (sfx, sfy + sfh - 1, sfw, 1), GOLD_DARK)
+        # Pixel-art Skull & Crossbones centered on 18x14 sail
+        cx, cy = sfx + sfw // 2, sfy + sfh // 2 - 1
+        fill(img, (cx - 3, cy - 3, 6, 4), BONE_HI)
+        fill(img, (cx - 2, cy + 1, 4, 2), BONE_MID)
+        # Dark skull eyes & nose
+        put(img, cx - 2, cy - 1, IRON_VOID)
+        put(img, cx + 1, cy - 1, IRON_VOID)
+        put(img, cx - 1, cy + 1, IRON_VOID)
+        put(img, cx, cy + 1, IRON_VOID)
+        # Crossbones
+        for d in (-4, -3, 2, 3):
+            put(img, cx + d, cy + 3, BONE_HI)
+            put(img, cx + d, cy + 4, BONE_MID)
+            put(img, cx - d - 1, cy + 3, BONE_HI)
+
+    # Pirate Skull-Captain Head with Black Eyepatch + 1 Blazing Magma Eye + Tricorne Hat
+    paint_plank_box(SKULL_HEAD, BONE_HI, BONE_MID, BONE_DARK, IRON_VOID, seed=212, plank_lines=False)
+    skx, sky, skw, skh = faces(*SKULL_HEAD)["front"]
+    # Black eyepatch strap + patch over right eye (left side of front face)
+    for dx in range(skw):
+        put(img, skx + dx, sky + 2, IRON_VOID)
+    fill(img, (skx + 1, sky + 3, 3, 3), IRON_VOID)
+    # Blazing magma eye in left eye socket (right side of front face)
+    fill(img, (skx + skw - 4, sky + 3, 2, 2), MAGMA_BRIGHT)
+    fill(glow, (skx + skw - 4, sky + 3, 2, 2), MAGMA_BRIGHT)
+    put(img, skx + skw - 3, sky + 3, MAGMA_CORE)
+    put(glow, skx + skw - 3, sky + 3, MAGMA_CORE)
+    # Grinning skull teeth
+    for tx in range(skx + 2, skx + skw - 2, 2):
+        put(img, tx, sky + skh - 2, IRON_VOID)
+
+    paint_plank_box(HAT_CROWN, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=213, plank_lines=False)
+    paint_plank_box(HAT_BRIM_F, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=214, plank_lines=False, gold_top=True)
+    paint_plank_box(HAT_BRIM_S, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=215, plank_lines=False, gold_top=True)
+    hfx, hfy, hfw, hfh = faces(*HAT_CROWN)["front"]
+    fill(img, (hfx + hfw // 2 - 1, hfy + 1, 2, 2), GOLD_HI)
+
+    # Spoked Ship's Wheel
+    paint_plank_box(SHIPS_WHEEL, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=216, plank_lines=False)
+    for face_name in ("front", "back"):
+        wfx, wfy, wfw, wfh = faces(*SHIPS_WHEEL)[face_name]
+        fill(img, (wfx + 4, wfy + 4, 2, 2), GOLD_HI)
+        for s in range(0, 10, 3):
+            put(img, wfx + s, wfy + 4, GOLD_MID)
+            put(img, wfx + 4, wfy + s, GOLD_MID)
+
+    # Broadside Cannons + Carriages + 4 Crab-Anchor Legs
+    paint_plank_box(CANNON_BARREL_L, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=217, plank_lines=False)
+    paint_plank_box(CANNON_BARREL_R, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=218, plank_lines=False)
+    paint_plank_box(CANNON_RIM, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=219, plank_lines=False)
+    paint_plank_box(CANNON_BORE, MAGMA_CORE, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_ROOT, seed=220, plank_lines=False)
+    for face, rect in faces(*CANNON_BORE).items():
+        fill(glow, rect, MAGMA_BRIGHT)
+    paint_plank_box(CANNON_CARRIAGE, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=221)
+
+    paint_plank_box(LEG_FEMUR, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=222)
+    paint_plank_box(LEG_CLAW, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=223, plank_lines=False)
+    paint_plank_box(LEG_TIP, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=224, plank_lines=False)
+
+    bones = [
+        {"name": "root", "pivot": [0, 0, 0]},
+        {
+            "name": "body",
+            "parent": "root",
+            "pivot": [0, 14, 0],
+            "cubes": [
+                # Ship Keel & Main Pirate Galleon Hull
+                {"origin": [-8.0, 9, -13.0], "size": [16, 5, 26], "uv": [94, 0]},
+                {"origin": [-11.0, 14, -12.0], "size": [22, 7, 24], "uv": [0, 0]},
+                # Gunwale rails (port & starboard)
+                {"origin": [-12.0, 21, -13.0], "size": [24, 3, 2], "uv": [0, 32]},
+                {"origin": [-12.0, 21, 11.0], "size": [24, 3, 2], "uv": [0, 32]},
+                # Raised Quarterdeck Stern
+                {"origin": [-10.0, 21, 4.0], "size": [20, 5, 9], "uv": [180, 0]},
+                # Sweeping 25-deg Bowsprit & Skull Figurehead jutting forward (-Z)
+                {"origin": [-1.5, 19, -23.0], "size": [3, 3, 14], "pivot": [0, 20, -11], "rotation": [-25, 0, 0], "uv": [180, 15]},
+                {"origin": [-3.0, 21, -24.0], "size": [6, 6, 6], "pivot": [0, 20, -11], "rotation": [-25, 0, 0], "uv": [216, 15]},
+            ],
+        },
+        {
+            "name": "head",
+            "parent": "body",
+            "pivot": [0, 26, 7],
+            "cubes": [
+                # Spoked Ship's Wheel behind the Captain Skull
+                {"origin": [-5.0, 26, 9.0], "size": [10, 10, 2], "uv": [216, 42]},
+                # Pirate Skull-Captain with Eyepatch & Magma Eye
+                {"origin": [-5.0, 26, 1.0], "size": [10, 9, 9], "uv": [100, 34]},
+                # Sweeping 3-flap Tricorne Hat
+                {"origin": [-5.5, 34, 0.5], "size": [11, 5, 10], "uv": [140, 34]},
+                {"origin": [-7.0, 34, -3.5], "size": [14, 2, 5], "pivot": [0, 34, 1.0], "rotation": [-18, 0, 0], "uv": [184, 34]},
+                {"origin": [5.0, 34, -1.0], "size": [3, 4, 12], "pivot": [5.5, 34, 5.0], "rotation": [0, 0, 24], "uv": [184, 42]},
+                {"origin": [-8.0, 34, -1.0], "size": [3, 4, 12], "pivot": [-5.5, 34, 5.0], "rotation": [0, 0, -24], "uv": [184, 42]},
+            ],
+        },
+        {
+            "name": "mast",
+            "parent": "body",
+            "pivot": [0, 21, -2],
+            "cubes": [
+                # Tall Mainmast, Yardarm, Crimson Jolly-Roger Sail, Crow's Nest & Glowing Lantern
+                {"origin": [-1.5, 21, -3.5], "size": [3, 26, 3], "uv": [0, 38]},
+                {"origin": [-10.0, 42, -5.0], "size": [20, 2, 2], "uv": [14, 38]},
+                {"origin": [-9.0, 28, -4.8], "size": [18, 14, 1], "uv": [14, 43]},
+                {"origin": [-3.5, 45, -5.5], "size": [7, 3, 7], "uv": [54, 43]},
+                {"origin": [-1.5, 48, -3.5], "size": [3, 4, 3], "uv": [84, 43]},
+            ],
+        },
+        {
+            "name": "arm_left",
+            "parent": "body",
+            "pivot": [12.0, 22, -2],
+            "cubes": [
+                # Port Broadside Cannon on wooden carriage
+                {"origin": [9.0, 19, -5.5], "size": [6, 4, 7], "uv": [98, 68]},
+                {"origin": [9.0, 21, -8.5], "size": [6, 6, 12], "uv": [0, 68]},
+                {"origin": [8.5, 20.5, -10.5], "size": [7, 7, 3], "uv": [76, 68]},
+                {"origin": [10.0, 22, -11.5], "size": [4, 4, 2], "uv": [76, 79]},
+            ],
+        },
+        {
+            "name": "arm_right",
+            "parent": "body",
+            "pivot": [-12.0, 22, -2],
+            "cubes": [
+                # Starboard Broadside Cannon on wooden carriage
+                {"origin": [-15.0, 19, -5.5], "size": [6, 4, 7], "uv": [98, 68]},
+                {"origin": [-15.0, 21, -8.5], "size": [6, 6, 12], "uv": [38, 68]},
+                {"origin": [-15.5, 20.5, -10.5], "size": [7, 7, 3], "uv": [76, 68]},
+                {"origin": [-14.0, 22, -11.5], "size": [4, 4, 2], "uv": [76, 79]},
+            ],
+        },
+        {
+            "name": "leg_left",
+            "parent": "root",
+            "pivot": [10.0, 13, -7],
+            "cubes": [
+                {"origin": [9.0, 6, -9.0], "size": [4, 10, 4], "pivot": [10.0, 13, -7], "rotation": [-12, 0, -34], "uv": [126, 68]},
+                {"origin": [13.0, 0, -10.0], "size": [4, 11, 4], "pivot": [14.0, 9, -8], "rotation": [8, 0, 16], "uv": [144, 68]},
+                {"origin": [11.5, 0, -10.5], "size": [5, 3, 5], "uv": [162, 68]},
+            ],
+        },
+        {
+            "name": "leg_right",
+            "parent": "root",
+            "pivot": [-10.0, 13, -7],
+            "cubes": [
+                {"origin": [-13.0, 6, -9.0], "size": [4, 10, 4], "pivot": [-10.0, 13, -7], "rotation": [-12, 0, 34], "uv": [126, 68]},
+                {"origin": [-17.0, 0, -10.0], "size": [4, 11, 4], "pivot": [-14.0, 9, -8], "rotation": [8, 0, -16], "uv": [144, 68]},
+                {"origin": [-16.5, 0, -10.5], "size": [5, 3, 5], "uv": [162, 68]},
+            ],
+        },
+        {
+            "name": "leg_back_left",
+            "parent": "root",
+            "pivot": [10.0, 13, 7],
+            "cubes": [
+                {"origin": [9.0, 6, 5.0], "size": [4, 10, 4], "pivot": [10.0, 13, 7], "rotation": [12, 0, -34], "uv": [126, 68]},
+                {"origin": [13.0, 0, 6.0], "size": [4, 11, 4], "pivot": [14.0, 9, 8], "rotation": [-8, 0, 16], "uv": [144, 68]},
+                {"origin": [11.5, 0, 5.5], "size": [5, 3, 5], "uv": [162, 68]},
+            ],
+        },
+        {
+            "name": "leg_back_right",
+            "parent": "root",
+            "pivot": [-10.0, 13, 7],
+            "cubes": [
+                {"origin": [-13.0, 6, 5.0], "size": [4, 10, 4], "pivot": [-10.0, 13, 7], "rotation": [12, 0, 34], "uv": [126, 68]},
+                {"origin": [-17.0, 0, 6.0], "size": [4, 11, 4], "pivot": [-14.0, 9, 8], "rotation": [-8, 0, -16], "uv": [144, 68]},
+                {"origin": [-16.5, 0, 5.5], "size": [5, 3, 5], "uv": [162, 68]},
+            ],
+        },
+    ]
+
+    geo = {
+        "format_version": "1.12.0",
+        "minecraft:geometry": [
+            {
+                "description": {
+                    "identifier": f"geometry.{eid}",
+                    "texture_width": 256,
+                    "texture_height": 128,
+                    "visible_bounds_width": 4.8,
+                    "visible_bounds_height": 4.6,
+                    "visible_bounds_offset": [0, 2.0, 0],
+                },
+                "bones": bones,
+            }
+        ],
+    }
+
+    (ASSETS / "textures/entity").mkdir(parents=True, exist_ok=True)
+    (ASSETS / "geo/entity").mkdir(parents=True, exist_ok=True)
+    (ASSETS / "animations/entity").mkdir(parents=True, exist_ok=True)
+
+    img.save(ASSETS / f"textures/entity/{eid}.png")
+    glow.save(ASSETS / f"textures/entity/{eid}_glowmask.png")
+    (ASSETS / f"geo/entity/{eid}.geo.json").write_text(json.dumps(geo, indent=2) + "\n", encoding="utf-8")
+    (ASSETS / f"animations/entity/{eid}.animation.json").write_text(
+        json.dumps(make_captain_brimstone_animations(), indent=2) + "\n", encoding="utf-8"
+    )
+
+
+def build_brimstone_compass():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    iron = (44, 34, 42, 255)
+    gold = (232, 168, 56, 255)
+    face = (28, 22, 28, 255)
+    ember = (255, 120, 32, 255)
+    core = (255, 228, 128, 255)
+    for y in range(2, 14):
+        for x in range(2, 14):
+            dx = x - 7.5
+            dy = y - 7.5
+            d2 = dx * dx + dy * dy
+            if d2 <= 30:
+                if d2 >= 21:
+                    put(img, x, y, gold if (x + y) % 2 == 0 else iron)
+                else:
+                    put(img, x, y, face)
+    # Top ring + glowing ember needle
+    for rx, ry in ((7, 1), (8, 1)):
+        put(img, rx, ry, gold)
+    for nx, ny in ((7, 4), (8, 4), (7, 5), (8, 5), (7, 6), (8, 6)):
+        put(img, nx, ny, core if ny == 4 else ember)
+    for sx, sy in ((7, 9), (8, 9), (7, 10), (8, 10)):
+        put(img, sx, sy, (124, 36, 40, 255))
+    fill(img, (7, 7, 2, 2), gold)
+    (ASSETS / "textures/item").mkdir(parents=True, exist_ok=True)
+    img.save(ASSETS / "textures/item/brimstone_compass.png")
+
+
+def build_brimstone_doubloon():
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    gold_dark = (148, 84, 22, 255)
+    gold = (238, 174, 58, 255)
+    gold_hi = (255, 228, 120, 255)
+    ember = (255, 108, 28, 255)
+    core = (255, 212, 92, 255)
+    for y in range(2, 14):
+        for x in range(2, 14):
+            d2 = (x - 7.5) ** 2 + (y - 7.5) ** 2
+            if d2 <= 32:
+                if d2 >= 23:
+                    put(img, x, y, gold_dark)
+                elif x + y < 14:
+                    put(img, x, y, gold_hi)
+                else:
+                    put(img, x, y, gold)
+    # Embossed ember flame emblem in center
+    for fx, fy in ((7, 5), (8, 5), (6, 6), (7, 6), (8, 6), (9, 6), (6, 7), (9, 7), (7, 8), (8, 8), (7, 9), (8, 9)):
+        put(img, fx, fy, ember)
+    fill(img, (7, 6, 2, 2), core)
+    (ASSETS / "textures/item").mkdir(parents=True, exist_ok=True)
+    img.save(ASSETS / "textures/item/brimstone_doubloon.png")
+
+
 def main():
     build_training_golem()
     build_boss_altar()
@@ -1069,7 +1580,10 @@ def main():
     build_crystal_colossus()
     build_colossus_heart()
     build_prism_core()
-    print("Generated boss art: training_golem, boss_altar, golem_core, crystal_colossus, colossus_heart, prism_core.")
+    build_captain_brimstone()
+    build_brimstone_compass()
+    build_brimstone_doubloon()
+    print("Generated boss art: training_golem, boss_altar, golem_core, crystal_colossus, colossus_heart, prism_core, captain_brimstone, brimstone_compass, brimstone_doubloon.")
 
 
 if __name__ == "__main__":

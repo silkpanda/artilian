@@ -305,6 +305,22 @@ public class ArtilianItems {
                     "item.artilian.prism_core.tooltip",
                     ChatFormatting.LIGHT_PURPLE));
 
+    // Captain Brimstone (Phase 3 Stage 3)
+    public static final DeferredItem<DeferredSpawnEggItem> CAPTAIN_BRIMSTONE_SPAWN_EGG =
+            ITEMS.register("captain_brimstone_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CAPTAIN_BRIMSTONE, 0x3A2024, 0xFF7A1F, new Item.Properties()));
+    public static final DeferredItem<BossSummonItem> BRIMSTONE_COMPASS =
+            ITEMS.register("brimstone_compass", () -> new BossSummonItem(
+                    ArtilianEntities.CAPTAIN_BRIMSTONE,
+                    new Item.Properties().stacksTo(16).rarity(Rarity.RARE),
+                    "item.artilian.brimstone_compass.tooltip",
+                    ChatFormatting.GOLD));
+    public static final DeferredItem<BossTrophyItem> BRIMSTONE_DOUBLOON =
+            ITEMS.register("brimstone_doubloon", () -> new BossTrophyItem(
+                    new Item.Properties().stacksTo(16).rarity(Rarity.EPIC),
+                    "item.artilian.brimstone_doubloon.tooltip",
+                    ChatFormatting.RED));
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
     }

@@ -20,6 +20,9 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.basicItem(ArtilianItems.COLOSSUS_HEART.get());
         this.basicItem(ArtilianItems.PRISM_CORE.get());
         this.withExistingParent("crystal_colossus_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.basicItem(ArtilianItems.BRIMSTONE_COMPASS.get());
+        this.basicItem(ArtilianItems.BRIMSTONE_DOUBLOON.get());
+        this.withExistingParent("captain_brimstone_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("crystal_fox_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("shadow_wisp_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("cinder_crag_spawn_egg", mcLoc("item/template_spawn_egg"));

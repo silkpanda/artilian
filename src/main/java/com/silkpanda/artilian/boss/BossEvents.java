@@ -18,6 +18,7 @@ public final class BossEvents {
         public static void onAttributes(EntityAttributeCreationEvent event) {
             event.put(ArtilianEntities.TRAINING_GOLEM.get(), TrainingGolemEntity.createAttributes().build());
             event.put(ArtilianEntities.CRYSTAL_COLOSSUS.get(), CrystalColossusEntity.createAttributes().build());
+            event.put(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), CaptainBrimstoneEntity.createAttributes().build());
         }
     }
 }
