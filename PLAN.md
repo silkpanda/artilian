@@ -10,9 +10,9 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | Phase 3 Stage 2 (*The Crystal Colossus*) Sub-stages 1–2 code complete (`145/145` GameTests, `runData`, and `build` green) on branch `phase-3-stage-2-crystal-colossus` (from `main` at `d2afceb`, after PR #8 merged). Owner signed off on Phase 2 art on 2026-11-19. |
-| **Next** | 1. Push `phase-3-stage-2-crystal-colossus` and open a PR once the owner confirms (or after home client verification). 2. Owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) and **The Crystal Colossus** + *Crystal Colossus Arena* in `./gradlew runClient` and saves screenshots to `qa/evidence/`. 3. Begin **Phase 3 — Stage 3 (*Captain Brimstone*)**. |
-| **Waiting on the owner** | 1. In-game looks and screenshots when home for **Boss Framework** (*Training Golem* + *Boss Altar*) and **Crystal Colossus** + *Crystal Colossus Arena* (`qa/evidence/`). 2. Confirm when ready to push & merge `phase-3-stage-2-crystal-colossus`. 3. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 4. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 5. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 6. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **In progress** | Phase 3 Stage 2 (*The Crystal Colossus*) complete (`145/145` GameTests, `runData`, `build`, and live `./gradlew runClient` screenshots verified with clean `run/logs/latest.log`) on branch `phase-3-stage-2-crystal-colossus` (from `main` at `d2afceb`, after PR #8 merged). Owner signed off on Phase 2 art on 2026-11-19. |
+| **Next** | 1. Push `phase-3-stage-2-crystal-colossus` and open/merge PR #9 once owner says go. 2. Begin **Phase 3 — Stage 3 (*Captain Brimstone*)**. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
+| **Waiting on the owner** | 1. Confirm when ready to push & merge `phase-3-stage-2-crystal-colossus`. 2. In-game look & screenshot when home for **Boss Framework** (*Training Golem* + *Boss Altar*, `qa/evidence/`). 3. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 4. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 5. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 6. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | None (`main` and `phase-3-stage-2-crystal-colossus` only; not pushed yet). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
@@ -319,7 +319,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | Stage | What ships | Status |
 |---|---|---|
 | 1 | Boss Framework (`ArtilianBossEntity`, `TelegraphedAttack`, `BossAltarBlock`, `P3-01`) | ⏳ Sub-stages 1–3 merged in PR #7 (`137/137`); Sub-stage 4 client check pending |
-| 2 | The Crystal Colossus (`CrystalColossusEntity`, `Crystal Colossus Arena`, `P3-02`) | ⏳ Sub-stages 1–2 code complete (`145/145` on `phase-3-stage-2-crystal-colossus`); Sub-stage 3 client check pending |
+| 2 | The Crystal Colossus (`CrystalColossusEntity`, `Crystal Colossus Arena`, `P3-02`) | ✅ Complete (code & client verified `145/145` on `phase-3-stage-2-crystal-colossus`) |
 | 3 | Captain Brimstone | ⏹ Pending |
 | 4 | Tier 3 Arsenal (weapons, armor, tools, advanced Staves & Boss TNTs) | ⏹ Pending |
 | 5 | Phase 3 Art Pass & Family Co-op Sign-Off | ⏹ Pending |
@@ -345,7 +345,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   - `P3-01`: 20 uses in 20 ticks holding 20 Golem Cores summons exactly 1 boss and leaves 19 cores (`EXPLOITED` with `isBusy` off or stack consumed early; `HELD` in `137/137` suite).
 
 ### Phase 3 — Stage 2: The Crystal Colossus
-- [ ] **Sub-stages 1–2 Complete (`145/145`); Sub-stage 3 (Client Verification & Screenshot) Pending** — First full custom boss built on `ArtilianBossEntity` with three telegraphed attacks, Phase 2 *Crystal Overcharge*, an Overworld boss arena, rematch summoning, and boss drops for Phase 3 Stage 4 Tier 3 gear.
+- [x] **Complete (`145/145` GameTests & Live Client Verified)** — First full custom boss built on `ArtilianBossEntity` with three telegraphed attacks, Phase 2 *Crystal Overcharge*, an Overworld boss arena, rematch summoning, and boss drops for Phase 3 Stage 4 Tier 3 gear.
 - **Why & Decisions:**
   1. **`CrystalColossusEntity` (`artilian:crystal_colossus`, `CRYSTAL / STARLIGHT`):** `200` HP (`100` hearts), `8.0` armor, `0.21` speed, `2.2 × 3.8` hitbox (3.8-block towering armored crystal titan with orbiting `floating_shards` and `AutoGlowingGeoLayer` glowmask), `BLUE` boss bar shifting to `PURPLE` on Phase 2 Overcharge. Weak to `EARTH` and `FIRE` so kids' *Training Golem*-tier pets (*Cinder Crag*, *Ember Drake*, *Crystal Fox*) feel great against it.
   2. **Three telegraphed attacks (all `>= 40` ticks, zero block breaking):**
@@ -362,7 +362,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   |---|---|---|
   | 1 Entity, 3 attacks, Overcharge, items & art | `8ebd512` | `ArtilianBossEntity` multi-attack/target-ring hooks, `BossTrophyItem`, `CrystalColossusEntity`, `CrystalColossusRenderer`, `make_bosses_art.py`, datagen, and 5 `CrystalColossusGameTests` (`142/142`). Red-proofs: `telegraphCenterFor` forced to boss pos → `starlightSpireLocksTargetPositionAndCanBeDodged` red; `checkOvercharge` bypassed → `crystalColossusEntersOverchargeAtHalfHealthAndUnlocksPrismNova` red; `PRISM_CORE` pool omitted → `crystalColossusAttributesElementsTagEggAndLootTable` red. |
   | 2 Crystal Colossus Arena & `P3-02` | `fcf3cd1` | `artilian:crystal_colossus_arena` worldgen + chest loot + 2 arena GameTests + `BossSecurityProbes.p3_02_crystalColossusNeverBreaksBlocksOrAltarOrHarmsChester` (`145/145`). Red-proofs: `ExplosionInteraction.MOB` on impact → `P3-02` `EXPLOITED P3-02: Crystal Colossus destroyed or altered Chest`; `CRYSTAL_CANOPY_WOODS` omitted from `HAS_CRYSTAL_COLOSSUS_ARENA` → `crystalColossusArenaRegisteredInCrystalCanopyWoodsOnly` red. |
-  | 3 Client verification & screenshot | Pending | Owner checks Crystal Colossus + Arena + glowing shards + telegraphs in `./gradlew runClient` (`/locate structure artilian:crystal_colossus_arena`, or place Boss Altar + Colossus Heart) and saves `qa/evidence/crystal-colossus-2026-11-19.png`. |
+  | 3 Client verification & screenshot | This commit | Verified live in `./gradlew runClient` (clean `run/logs/latest.log`), capturing daylight arena/Phase 1 BLUE bar (`qa/evidence/crystal-colossus-2026-11-19.png`) and midnight Overcharge/PURPLE bar + `#FF4D5A` Prism Nova telegraph ring (`qa/evidence/crystal-colossus-overcharge-2026-11-19.png`). |
 
 - **Tests & Red-proofs (`CrystalColossusGameTests`):**
   1. `crystalColossusAttributesElementsTagEggAndLootTable`: verifies `CRYSTAL / STARLIGHT`, `200` HP, `artilian:bosses` tag, spawn egg, battle target validity, capture immunity, and `PRISM_CORE` loot drops.
