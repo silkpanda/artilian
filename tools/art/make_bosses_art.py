@@ -327,62 +327,75 @@ def make_colossus_animations():
                 "animation_length": 2.4,
                 "bones": {
                     "body": {
-                        "position": {"0.0": [0, 0, 0], "1.2": [0, 0.5, 0], "2.4": [0, 0, 0]}
+                        "position": {"0.0": [0, 0, 0], "1.2": [0, 0.7, 0], "2.4": [0, 0, 0]},
+                        "rotation": {"0.0": [3, 0, 0], "1.2": [5, 0, 0], "2.4": [3, 0, 0]},
                     },
                     "head": {
-                        "rotation": {"0.0": [0, -3, 0], "1.2": [2, 3, 0], "2.4": [0, -3, 0]}
+                        "rotation": {"0.0": [2, -4, 0], "1.2": [-2, 4, 0], "2.4": [2, -4, 0]}
+                    },
+                    "shoulder_left": {
+                        "rotation": {"0.0": [0, 0, 0], "1.2": [0, 0, -4], "2.4": [0, 0, 0]}
+                    },
+                    "shoulder_right": {
+                        "rotation": {"0.0": [0, 0, 0], "1.2": [0, 0, 4], "2.4": [0, 0, 0]}
                     },
                     "arm_left": {
-                        "rotation": {"0.0": [0, 0, 4], "1.2": [-5, 0, 7], "2.4": [0, 0, 4]}
+                        "rotation": {"0.0": [4, 0, 5], "1.2": [-4, 0, 9], "2.4": [4, 0, 5]}
                     },
                     "arm_right": {
-                        "rotation": {"0.0": [0, 0, -4], "1.2": [5, 0, -7], "2.4": [0, 0, -4]}
+                        "rotation": {"0.0": [-4, 0, -5], "1.2": [4, 0, -9], "2.4": [-4, 0, -5]}
                     },
                     "floating_shards": {
-                        "position": {"0.0": [0, 0, 0], "1.2": [0, 1.5, 0], "2.4": [0, 0, 0]},
+                        "position": {"0.0": [0, 0, 0], "1.2": [0, 1.8, 0], "2.4": [0, 0, 0]},
                         "rotation": {"0.0": [0, 0, 0], "2.4": [0, 360, 0]},
                     },
                 },
             },
             f"{p}.walk": {
                 "loop": True,
-                "animation_length": 0.9,
+                "animation_length": 1.0,
                 "bones": {
                     "body": {
-                        "position": {"0.0": [0, 0, 0], "0.45": [0, 0.8, 0], "0.9": [0, 0, 0]},
-                        "rotation": {"0.0": [4, 0, -2], "0.45": [4, 0, 2], "0.9": [4, 0, -2]},
+                        "position": {"0.0": [0, 0, 0], "0.25": [0, 1.0, 0], "0.5": [0, 0, 0], "0.75": [0, 1.0, 0], "1.0": [0, 0, 0]},
+                        "rotation": {"0.0": [6, -3, -3], "0.5": [6, 3, 3], "1.0": [6, -3, -3]},
+                    },
+                    "head": {
+                        "rotation": {"0.0": [-2, 3, 0], "0.5": [-2, -3, 0], "1.0": [-2, 3, 0]}
                     },
                     "arm_left": {
-                        "rotation": {"0.0": [22, 0, 4], "0.45": [-22, 0, 4], "0.9": [22, 0, 4]}
+                        "rotation": {"0.0": [26, 0, 6], "0.5": [-26, 0, 6], "1.0": [26, 0, 6]}
                     },
                     "arm_right": {
-                        "rotation": {"0.0": [-22, 0, -4], "0.45": [22, 0, -4], "0.9": [-22, 0, -4]}
+                        "rotation": {"0.0": [-26, 0, -6], "0.5": [26, 0, -6], "1.0": [-26, 0, -6]}
                     },
                     "leg_left": {
-                        "rotation": {"0.0": [-22, 0, 0], "0.45": [22, 0, 0], "0.9": [-22, 0, 0]}
+                        "rotation": {"0.0": [-24, 0, 0], "0.5": [24, 0, 0], "1.0": [-24, 0, 0]}
                     },
                     "leg_right": {
-                        "rotation": {"0.0": [22, 0, 0], "0.45": [-22, 0, 0], "0.9": [22, 0, 0]}
+                        "rotation": {"0.0": [24, 0, 0], "0.5": [-24, 0, 0], "1.0": [24, 0, 0]}
                     },
                     "floating_shards": {
-                        "rotation": {"0.0": [0, 0, 0], "0.9": [0, 180, 0]},
+                        "rotation": {"0.0": [0, 0, 0], "1.0": [0, 180, 0]},
                     },
                 },
             },
             f"{p}.attack": {
-                "animation_length": 0.55,
+                "animation_length": 0.6,
                 "bones": {
                     "body": {
-                        "rotation": {"0.0": [0, 0, 0], "0.2": [-14, 0, 0], "0.38": [18, 0, 0], "0.55": [0, 0, 0]}
+                        "rotation": {"0.0": [4, 0, 0], "0.22": [-16, 0, 0], "0.4": [22, 0, 0], "0.6": [4, 0, 0]}
+                    },
+                    "head": {
+                        "rotation": {"0.0": [0, 0, 0], "0.22": [-10, 0, 0], "0.4": [14, 0, 0], "0.6": [0, 0, 0]}
                     },
                     "arm_left": {
-                        "rotation": {"0.0": [0, 0, 0], "0.2": [-115, 0, 10], "0.38": [28, 0, 0], "0.55": [0, 0, 0]}
+                        "rotation": {"0.0": [0, 0, 5], "0.22": [-125, -10, 14], "0.4": [34, 8, 4], "0.6": [0, 0, 5]}
                     },
                     "arm_right": {
-                        "rotation": {"0.0": [0, 0, 0], "0.2": [-115, 0, -10], "0.38": [28, 0, 0], "0.55": [0, 0, 0]}
+                        "rotation": {"0.0": [0, 0, -5], "0.22": [-125, 10, -14], "0.4": [34, -8, -4], "0.6": [0, 0, -5]}
                     },
                     "floating_shards": {
-                        "rotation": {"0.0": [0, 0, 0], "0.55": [0, 180, 0]}
+                        "rotation": {"0.0": [0, 0, 0], "0.6": [0, 180, 0]}
                     },
                 },
             },
@@ -391,22 +404,25 @@ def make_colossus_animations():
                 "animation_length": 2.0,
                 "bones": {
                     "body": {
-                        "rotation": {"0.0": [0, 0, 0], "1.5": [-10, 0, 0], "2.0": [-14, 0, 0]}
+                        "rotation": {"0.0": [4, 0, 0], "1.4": [-12, 0, 0], "2.0": [-16, 0, 0]}
+                    },
+                    "head": {
+                        "rotation": {"0.0": [0, 0, 0], "2.0": [-14, 0, 0]}
                     },
                     "shoulder_left": {
-                        "rotation": {"0.0": [0, 0, 0], "2.0": [0, 0, -10]}
+                        "rotation": {"0.0": [0, 0, 0], "2.0": [0, 0, -12]}
                     },
                     "shoulder_right": {
-                        "rotation": {"0.0": [0, 0, 0], "2.0": [0, 0, 10]}
+                        "rotation": {"0.0": [0, 0, 0], "2.0": [0, 0, 12]}
                     },
                     "arm_left": {
-                        "rotation": {"0.0": [0, 0, 6], "2.0": [-130, 0, 16]}
+                        "rotation": {"0.0": [0, 0, 6], "2.0": [-135, -8, 18]}
                     },
                     "arm_right": {
-                        "rotation": {"0.0": [0, 0, -6], "2.0": [-130, 0, -16]}
+                        "rotation": {"0.0": [0, 0, -6], "2.0": [-135, 8, -18]}
                     },
                     "floating_shards": {
-                        "position": {"0.0": [0, 0, 0], "2.0": [0, 4.0, 0]},
+                        "position": {"0.0": [0, 0, 0], "2.0": [0, 4.5, 0]},
                         "rotation": {"0.0": [0, 0, 0], "2.0": [0, 720, 0]},
                     },
                 },
@@ -415,210 +431,533 @@ def make_colossus_animations():
     }
 
 
+def _h(x, y, seed=0):
+    """Deterministic pixel hash in [0, 255] for stone/crystal pixel-art dithering."""
+    n = (x * 374761393 + y * 668265263 + seed * 1442695041) & 0xFFFFFFFF
+    n = ((n ^ (n >> 13)) * 1274126177) & 0xFFFFFFFF
+    return ((n ^ (n >> 16)) & 0xFF)
+
+
+def _lerp_color(c1, c2, t):
+    t = max(0.0, min(1.0, t))
+    return (
+        int(round(c1[0] + (c2[0] - c1[0]) * t)),
+        int(round(c1[1] + (c2[1] - c1[1]) * t)),
+        int(round(c1[2] + (c2[2] - c1[2]) * t)),
+        255,
+    )
+
+
 def build_crystal_colossus():
     eid = "crystal_colossus"
     img = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
     glow = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
 
-    # DESIGN.md arcane slate + Starlight teal + Starlight violet palette
-    slate = ((90, 76, 114, 255), (58, 47, 77, 255), (43, 35, 56, 255), (27, 21, 36, 255))
-    dark_trim = ((72, 60, 96, 255), (46, 37, 64, 255), (34, 27, 48, 255), (21, 16, 30, 255))
-    teal = ((168, 255, 250, 255), (56, 217, 192, 255), (34, 164, 152, 255), (20, 110, 108, 255))
-    bright_teal = ((238, 255, 255, 255), (125, 249, 255, 255), (56, 217, 192, 255), (38, 178, 166, 255))
-    violet = ((198, 172, 255, 255), (139, 124, 255, 255), (102, 82, 212, 255), (68, 52, 160, 255))
-    gold_trim = ((255, 224, 130, 255), (255, 159, 56, 255), (196, 112, 32, 255), (132, 70, 18, 255))
+    # Rich 8-stop Warden/Iron-Golem inspired Arcane Slate + Starlight Teal + Amethyst Violet + Sunsteel Gold palette
+    VOID_DEEP = (11, 8, 19, 255)
+    SLATE_SEAM = (19, 14, 30, 255)
+    SLATE_DARK = (30, 23, 45, 255)
+    SLATE_BASE = (44, 35, 64, 255)
+    SLATE_MID = (60, 48, 86, 255)
+    SLATE_HI = (82, 67, 114, 255)
+    SLATE_RIM = (106, 89, 142, 255)
 
-    # Non-overlapping UV layout in 256x128
-    uv_torso = (0, 0)              # 24x28x14 -> 76x42
-    uv_head = (78, 0)              # 14x13x14 -> 56x27
-    uv_pauldron_l = (136, 0)       # 10x8x14  -> 48x22
-    uv_pauldron_r = (186, 0)       # 10x8x14  -> 48x22
-    uv_leg_l = (0, 44)             # 9x16x10  -> 38x26
-    uv_leg_r = (40, 44)            # 9x16x10  -> 38x26
-    uv_upper_arm_l = (80, 30)      # 6x12x6   -> 24x18
-    uv_upper_arm_r = (106, 30)     # 6x12x6   -> 24x18
-    uv_fist_l = (80, 50)           # 8x14x8   -> 32x22
-    uv_fist_r = (114, 50)          # 8x14x8   -> 32x22
-    uv_chest_outer = (136, 24)     # 8x10x3   -> 22x13
-    uv_chest_inner = (160, 24)     # 4x6x2    -> 12x8
-    uv_spire_tall_l = (174, 24)    # 5x9x6    -> 22x15
-    uv_spire_tall_r = (198, 24)    # 5x9x6    -> 22x15
-    uv_spire_side_l = (150, 42)    # 4x7x5    -> 18x12
-    uv_spire_side_r = (170, 42)    # 4x7x5    -> 18x12
-    uv_crown_center = (190, 42)    # 4x7x4    -> 16x11
-    uv_crown_horn_l = (208, 42)    # 3x5x3    -> 12x8
-    uv_crown_horn_r = (222, 42)    # 3x5x3    -> 12x8
-    uv_back_spine_big = (150, 56)  # 4x8x5    -> 18x13
-    uv_back_spine_sm = (170, 56)   # 4x6x4    -> 16x10
-    uv_kneecap = (188, 56)         # 7x5x2    -> 18x7
-    uv_knuckle = (208, 56)         # 6x4x2    -> 16x6
-    uv_shards = [(0, 74), (14, 74), (28, 74), (42, 74)]  # each 3x7x3 -> 12x10
+    GOLD_DEEP = (120, 62, 16, 255)
+    GOLD_MID = (198, 114, 30, 255)
+    GOLD_BRIGHT = (255, 174, 56, 255)
+    GOLD_SPEC = (255, 232, 148, 255)
 
-    # Paint structural armor parts
-    paint_box(img, *uv_torso, 24, 28, 14, *slate)
-    paint_box(img, *uv_head, 14, 13, 14, *slate)
-    paint_box(img, *uv_pauldron_l, 10, 8, 14, *dark_trim)
-    paint_box(img, *uv_pauldron_r, 10, 8, 14, *dark_trim)
-    paint_box(img, *uv_leg_l, 9, 16, 10, *dark_trim)
-    paint_box(img, *uv_leg_r, 9, 16, 10, *dark_trim)
-    paint_box(img, *uv_upper_arm_l, 6, 12, 6, *slate)
-    paint_box(img, *uv_upper_arm_r, 6, 12, 6, *slate)
-    paint_box(img, *uv_fist_l, 8, 14, 8, *dark_trim)
-    paint_box(img, *uv_fist_r, 8, 14, 8, *dark_trim)
-    paint_box(img, *uv_kneecap, 7, 5, 2, *slate)
+    TEAL_ROOT = (20, 74, 82, 255)
+    TEAL_DEEP = (26, 126, 128, 255)
+    TEAL_MID = (48, 192, 178, 255)
+    TEAL_BRIGHT = (88, 238, 224, 255)
+    CYAN_HOT = (158, 252, 255, 255)
+    WHITE_CYAN = (236, 255, 255, 255)
 
-    # Gold arcane trim along belt & pauldron rims
-    tf = faces(*uv_torso, 24, 28, 14)
-    fill(img, (tf["front"][0], tf["front"][1] + 24, 24, 2), gold_trim[1])
-    fill(img, (tf["front"][0] + 10, tf["front"][1] + 23, 4, 4), gold_trim[0])
-    for p_uv in (uv_pauldron_l, uv_pauldron_r):
-        pf = faces(*p_uv, 10, 8, 14)
-        fill(img, (pf["front"][0], pf["front"][1] + 6, 10, 1), gold_trim[1])
-        fill(img, (pf["east"][0], pf["east"][1] + 6, 14, 1), gold_trim[1])
-        fill(img, (pf["west"][0], pf["west"][1] + 6, 14, 1), gold_trim[1])
+    VIOLET_ROOT = (44, 26, 88, 255)
+    VIOLET_DEEP = (76, 48, 148, 255)
+    VIOLET_MID = (124, 90, 224, 255)
+    VIOLET_BRIGHT = (172, 140, 255, 255)
+    LAVENDER_HOT = (226, 206, 255, 255)
 
-    # Glowing crystal veins across torso & fists
-    for vein_rect in (
-        (tf["front"][0] + 3, tf["front"][1] + 4, 2, 10),
-        (tf["front"][0] + 19, tf["front"][1] + 4, 2, 10),
-        (tf["front"][0] + 5, tf["front"][1] + 16, 4, 2),
-        (tf["front"][0] + 15, tf["front"][1] + 16, 4, 2),
-    ):
-        fill(img, vein_rect, teal[1])
-        fill(glow, vein_rect, bright_teal[1])
-    for fist_uv in (uv_fist_l, uv_fist_r):
-        ff = faces(*fist_uv, 8, 14, 8)
-        for band in ((ff["front"][0] + 1, ff["front"][1] + 3, 6, 2), (ff["front"][0] + 3, ff["front"][1] + 5, 2, 5)):
-            fill(img, band, teal[1])
-            fill(glow, band, bright_teal[1])
-    kf = faces(*uv_kneecap, 7, 5, 2)
-    fill(img, (kf["front"][0] + 2, kf["front"][1] + 1, 3, 3), teal[1])
-    fill(glow, (kf["front"][0] + 2, kf["front"][1] + 1, 3, 3), bright_teal[1])
+    RIB_IVORY = (196, 234, 232, 255)
+    RIB_MID = (118, 178, 184, 255)
+    RIB_SHADE = (62, 108, 122, 255)
 
-    # Glowing visor eyes on head front
-    hf = faces(*uv_head, 14, 13, 14)["front"]
-    fill(img, (hf[0] + 1, hf[1] + 4, 12, 4), (16, 12, 24, 255))
-    for eye_rect in ((hf[0] + 2, hf[1] + 5, 4, 2), (hf[0] + 8, hf[1] + 5, 4, 2)):
-        fill(img, eye_rect, bright_teal[1])
-        fill(glow, eye_rect, bright_teal[0])
-    put(img, hf[0] + 4, hf[1] + 5, (255, 255, 255, 255))
-    put(img, hf[0] + 9, hf[1] + 5, (255, 255, 255, 255))
-    put(glow, hf[0] + 4, hf[1] + 5, (255, 255, 255, 255))
-    put(glow, hf[0] + 9, hf[1] + 5, (255, 255, 255, 255))
+    # Non-overlapping UV box definitions: (u, v, w, h, d)
+    CHEST_UPPER = (0, 0, 22, 18, 14)       # 72x32
+    WAIST = (74, 0, 14, 8, 10)             # 48x18
+    BELT = (124, 0, 16, 3, 11)             # 54x14
+    COLLAR = (180, 0, 16, 4, 11)           # 54x15
+    TASSET = (236, 0, 6, 6, 2)             # 16x8
+    RIB_PILLAR_L = (74, 19, 4, 12, 2)      # 12x14
+    RIB_PILLAR_R = (88, 19, 4, 12, 2)      # 12x14
+    RIB_BAR = (102, 19, 6, 2, 2)           # 16x4
+    HEART_CORE = (124, 16, 8, 10, 4)       # 24x14
+    HEART_INNER = (150, 16, 5, 7, 3)       # 16x10
+    PAULDRON_RIM_L = (190, 16, 11, 4, 14)  # 50x18
 
-    # Paint all glowing crystal clusters (base + glowmask)
-    paint_box_both(img, glow, *uv_chest_outer, 8, 10, 3, violet, violet)
-    paint_box_both(img, glow, *uv_chest_inner, 4, 6, 2, bright_teal, bright_teal)
-    paint_box_both(img, glow, *uv_spire_tall_l, 5, 9, 6, teal, teal)
-    paint_box_both(img, glow, *uv_spire_tall_r, 5, 9, 6, teal, teal)
-    paint_box_both(img, glow, *uv_spire_side_l, 4, 7, 5, violet, violet)
-    paint_box_both(img, glow, *uv_spire_side_r, 4, 7, 5, violet, violet)
-    paint_box_both(img, glow, *uv_crown_center, 4, 7, 4, bright_teal, bright_teal)
-    paint_box_both(img, glow, *uv_crown_horn_l, 3, 5, 3, violet, violet)
-    paint_box_both(img, glow, *uv_crown_horn_r, 3, 5, 3, violet, violet)
-    paint_box_both(img, glow, *uv_back_spine_big, 4, 8, 5, teal, teal)
-    paint_box_both(img, glow, *uv_back_spine_sm, 4, 6, 4, violet, violet)
-    paint_box_both(img, glow, *uv_knuckle, 6, 4, 2, bright_teal, bright_teal)
-    for idx, s_uv in enumerate(uv_shards):
-        pal = bright_teal if idx % 2 == 0 else violet
-        paint_box_both(img, glow, *s_uv, 3, 7, 3, pal, pal)
+    HEAD_SKULL = (0, 34, 13, 11, 12)       # 50x23
+    HEAD_BROW = (52, 34, 15, 3, 5)         # 40x8
+    HEAD_JAW = (52, 43, 11, 4, 9)          # 40x13
+    PAULDRON_MAIN_L = (94, 34, 10, 9, 13)  # 46x22
+    PAULDRON_MAIN_R = (142, 34, 10, 9, 13) # 46x22
+    PAULDRON_RIM_R = (190, 36, 11, 4, 14)  # 50x18
 
-    # Dimensions & pivots (16 px = 1 block; total height ~64 px with crown)
-    leg_top = 16.0
-    torso_top = 44.0
-    arm_x = 17.0
+    ARM_UPPER_L = (0, 58, 6, 12, 7)        # 26x19
+    ARM_UPPER_R = (28, 58, 6, 12, 7)       # 26x19
+    FOREARM_L = (56, 58, 9, 15, 9)         # 36x24
+    FOREARM_R = (94, 58, 9, 15, 9)         # 36x24
+    THIGH_L = (132, 58, 7, 8, 7)           # 28x15
+    THIGH_R = (162, 58, 7, 8, 7)           # 28x15
+    GREAVE_L = (192, 56, 9, 10, 9)         # 36x19
+    GREAVE_R = (192, 76, 9, 10, 9)         # 36x19
+    TOE_CAP = (230, 56, 9, 4, 3)           # 24x7
+    KNEE_SPUR = (230, 66, 4, 7, 4)         # 16x11
+
+    SPIRE_TALL_TEAL = (0, 84, 5, 12, 5)    # 20x17
+    SPIRE_TALL_VIOLET = (22, 84, 5, 11, 5) # 20x16
+    SPIRE_MED_TEAL = (44, 84, 4, 9, 4)     # 16x13
+    SPIRE_MED_VIOLET = (62, 84, 4, 9, 4)   # 16x13
+    SPIRE_SM_TEAL = (80, 84, 3, 7, 3)      # 12x10
+    SPIRE_SM_VIOLET = (94, 84, 3, 7, 3)    # 12x10
+    HORN_BASE = (108, 84, 4, 6, 4)         # 16x10
+    HORN_TIP = (126, 84, 3, 9, 3)          # 12x12
+    CROWN_CREST = (140, 84, 4, 8, 5)       # 18x13
+    FOREARM_BLADE = (160, 84, 3, 9, 4)     # 14x13
+    CLAW_FINGER = (176, 84, 3, 6, 3)       # 12x9
+
+    SHARD_TEAL = (0, 104, 4, 9, 4)         # 16x13
+    SHARD_VIOLET = (18, 104, 4, 9, 4)      # 16x13
+    SHARD_CAP_TEAL = (36, 104, 3, 5, 3)    # 12x8
+    SHARD_CAP_VIOLET = (50, 104, 3, 5, 3)  # 12x8
+
+    all_uv_boxes = [
+        CHEST_UPPER, WAIST, BELT, COLLAR, TASSET, RIB_PILLAR_L, RIB_PILLAR_R, RIB_BAR,
+        HEART_CORE, HEART_INNER, PAULDRON_RIM_L, HEAD_SKULL, HEAD_BROW, HEAD_JAW,
+        PAULDRON_MAIN_L, PAULDRON_MAIN_R, PAULDRON_RIM_R, ARM_UPPER_L, ARM_UPPER_R,
+        FOREARM_L, FOREARM_R, THIGH_L, THIGH_R, GREAVE_L, GREAVE_R, TOE_CAP, KNEE_SPUR,
+        SPIRE_TALL_TEAL, SPIRE_TALL_VIOLET, SPIRE_MED_TEAL, SPIRE_MED_VIOLET,
+        SPIRE_SM_TEAL, SPIRE_SM_VIOLET, HORN_BASE, HORN_TIP, CROWN_CREST,
+        FOREARM_BLADE, CLAW_FINGER, SHARD_TEAL, SHARD_VIOLET, SHARD_CAP_TEAL, SHARD_CAP_VIOLET,
+    ]
+    occupied = set()
+    for u, v, w, h, d in all_uv_boxes:
+        uw, uh = 2 * (d + w), d + h
+        assert u + uw <= 256 and v + uh <= 128, f"UV box {(u, v, w, h, d)} out of 256x128 bounds"
+        for px in range(u, u + uw):
+            for py in range(v, v + uh):
+                assert (px, py) not in occupied, f"UV overlap at {(px, py)} in box {(u, v, w, h, d)}"
+                occupied.add((px, py))
+
+    def paint_stone_armor_box(box, seed=1, gold_border=False, crystal_ridges=False, spore_density=16):
+        """Warden & Iron-Golem style textured stone/slate armor with strata, bevels, cracks, rivets, and glowing pores."""
+        u, v, w, h, d = box
+        for face, (fx, fy, fw, fh) in faces(u, v, w, h, d).items():
+            for dy in range(fh):
+                py = fy + dy
+                ty = dy / max(1, fh - 1)
+                for dx in range(fw):
+                    px = fx + dx
+                    tx = dx / max(1, fw - 1)
+                    hval = _h(px, py, seed)
+                    strata = ((dy * 3 + (dx // 2)) % 5 == 0)
+
+                    # Base directional lighting + dithered stone texture
+                    if face == "top":
+                        base = SLATE_HI if hval > 110 else (SLATE_RIM if hval > 210 else SLATE_MID)
+                    elif face == "bottom":
+                        base = VOID_DEEP if hval < 120 else SLATE_SEAM
+                    elif face in ("east", "west"):
+                        shade_t = 0.25 + 0.55 * ty
+                        base = _lerp_color(SLATE_MID, SLATE_DARK, shade_t)
+                        if hval < 55 or strata:
+                            base = _lerp_color(base, SLATE_SEAM, 0.45)
+                        elif hval > 205:
+                            base = _lerp_color(base, SLATE_HI, 0.35)
+                    else:
+                        shade_t = 0.15 + 0.65 * ty
+                        base = _lerp_color(SLATE_HI, SLATE_DARK, shade_t)
+                        if strata and hval < 160:
+                            base = _lerp_color(base, SLATE_SEAM, 0.4)
+                        elif hval < 48:
+                            base = _lerp_color(base, SLATE_SEAM, 0.55)
+                        elif hval > 195:
+                            base = _lerp_color(base, SLATE_RIM, 0.35)
+
+                    # Organic stone edge shading (no artificial bright box borders)
+                    is_outer_edge = (dx == 0 or dx == fw - 1 or dy == 0 or dy == fh - 1)
+                    is_inner_bevel = (dx == 1 or dx == fw - 2 or dy == 1 or dy == fh - 2)
+                    if fw >= 4 and fh >= 4 and is_outer_edge:
+                        if dy == 0 and face != "bottom":
+                            base = _lerp_color(base, SLATE_HI, 0.45)
+                        elif dy == fh - 1:
+                            base = _lerp_color(base, VOID_DEEP, 0.55)
+                        else:
+                            base = _lerp_color(base, SLATE_SEAM, 0.5)
+                    elif fw >= 6 and fh >= 6 and is_inner_bevel:
+                        if dy == 1 or dx == 1:
+                            base = _lerp_color(base, SLATE_HI, 0.25)
+                        elif dy == fh - 2 or dx == fw - 2:
+                            base = _lerp_color(base, SLATE_DARK, 0.35)
+
+                    # Subtle weathered stone cracks & moss/crystal crevices
+                    crack_pattern = ((dx * 5 + dy * 7 + seed) % 19 == 0) or ((dx * 11 - dy * 3 + seed) % 23 == 0)
+                    if not is_outer_edge and crack_pattern and hval < 115:
+                        base = SLATE_SEAM if hval < 65 else TEAL_ROOT
+
+                    put(img, px, py, base)
+
+                    # Bioluminescent sculk-like starlight pores & runic vein tendrils on non-edge pixels
+                    if not is_outer_edge and face not in ("top", "bottom"):
+                        pore_hash = _h(px * 3, py * 5, seed + 77)
+                        if pore_hash < spore_density:
+                            pore_col = TEAL_BRIGHT if (pore_hash % 3 != 0) else VIOLET_BRIGHT
+                            put(img, px, py, pore_col)
+                            put(glow, px, py, pore_col)
+
+            # Warden-inspired jagged vertical crystal-bone growth ridges rising from the bottom of gauntlets/greaves
+            if crystal_ridges and face in ("front", "back", "east", "west") and fw >= 5 and fh >= 8:
+                for dx in range(1, fw - 1):
+                    ridge_h = 3 + (_h(dx, fy, seed + 31) % (fh // 2 + 1))
+                    if dx % 2 == 1:
+                        for rdy in range(ridge_h):
+                            py = fy + fh - 2 - rdy
+                            rt = rdy / max(1, ridge_h - 1)
+                            col = _lerp_color(TEAL_DEEP, WHITE_CYAN if dx % 4 == 1 else LAVENDER_HOT, rt)
+                            put(img, fx + dx, py, col)
+                            if rt > 0.35:
+                                put(glow, fx + dx, py, col)
+
+    def paint_crystal_spire_box(box, palette="teal", seed=11):
+        """Faceted crystal prism with diagonal facet planes, specular edge highlights, and dark stone-crusted roots."""
+        u, v, w, h, d = box
+        if palette == "teal":
+            c_root, c_deep, c_mid, c_hi, c_spec = TEAL_ROOT, TEAL_DEEP, TEAL_MID, TEAL_BRIGHT, WHITE_CYAN
+        elif palette == "violet":
+            c_root, c_deep, c_mid, c_hi, c_spec = VIOLET_ROOT, VIOLET_DEEP, VIOLET_MID, VIOLET_BRIGHT, LAVENDER_HOT
+        else:
+            c_root, c_deep, c_mid, c_hi, c_spec = RIB_SHADE, RIB_MID, RIB_IVORY, WHITE_CYAN, WHITE_CYAN
+
+        for face, (fx, fy, fw, fh) in faces(u, v, w, h, d).items():
+            for dy in range(fh):
+                py = fy + dy
+                # ty=0 is tip (top), ty=1 is root (bottom)
+                ty = dy / max(1, fh - 1)
+                for dx in range(fw):
+                    px = fx + dx
+                    tx = dx / max(1, fw - 1)
+                    facet = ((dx + dy) % 4)
+                    hval = _h(px, py, seed)
+
+                    if face == "top":
+                        col = c_spec if (dx == 0 or dy == 0 or hval > 150) else c_hi
+                    elif face == "bottom":
+                        col = SLATE_DARK
+                    else:
+                        # Vertical gradient from glowing tip (ty=0) to stone-crusted root (ty=1)
+                        if ty < 0.22:
+                            col = _lerp_color(c_spec, c_hi, ty / 0.22)
+                        elif ty < 0.68:
+                            col = _lerp_color(c_hi, c_mid, (ty - 0.22) / 0.46)
+                        elif ty < 0.88:
+                            col = _lerp_color(c_mid, c_deep, (ty - 0.68) / 0.20)
+                        else:
+                            col = _lerp_color(c_root, SLATE_DARK, (ty - 0.88) / 0.12)
+
+                        # Diagonal crystal facet planes & specular edge ridges
+                        if dx == 0 or (dx == fw // 2 and dy < fh - 2):
+                            col = _lerp_color(col, c_spec, 0.65 if ty < 0.75 else 0.25)
+                        elif dx == fw - 1:
+                            col = _lerp_color(col, c_root, 0.55)
+                        elif facet == 0 and ty < 0.8:
+                            col = _lerp_color(col, c_spec, 0.45)
+                        elif facet == 2:
+                            col = _lerp_color(col, c_deep, 0.35)
+
+                    put(img, px, py, col)
+                    if face != "bottom" and ty < 0.85:
+                        put(glow, px, py, col)
+
+    # 1. Paint all stone armor boxes with rich weathered strata & pores
+    paint_stone_armor_box(CHEST_UPPER, seed=101, gold_border=True, spore_density=14)
+    paint_stone_armor_box(WAIST, seed=102, gold_border=False, spore_density=12)
+    paint_stone_armor_box(BELT, seed=103, gold_border=True, spore_density=8)
+    paint_stone_armor_box(COLLAR, seed=104, gold_border=True, spore_density=10)
+    paint_stone_armor_box(TASSET, seed=105, gold_border=True, spore_density=10)
+    paint_stone_armor_box(HEAD_SKULL, seed=106, gold_border=True, spore_density=12)
+    paint_stone_armor_box(HEAD_BROW, seed=107, gold_border=True, spore_density=6)
+    paint_stone_armor_box(HEAD_JAW, seed=108, gold_border=False, spore_density=10)
+    paint_stone_armor_box(PAULDRON_MAIN_L, seed=109, gold_border=True, crystal_ridges=True, spore_density=16)
+    paint_stone_armor_box(PAULDRON_MAIN_R, seed=110, gold_border=True, crystal_ridges=True, spore_density=16)
+    paint_stone_armor_box(PAULDRON_RIM_L, seed=111, gold_border=True, spore_density=10)
+    paint_stone_armor_box(PAULDRON_RIM_R, seed=112, gold_border=True, spore_density=10)
+    paint_stone_armor_box(ARM_UPPER_L, seed=113, gold_border=False, spore_density=14)
+    paint_stone_armor_box(ARM_UPPER_R, seed=114, gold_border=False, spore_density=14)
+    paint_stone_armor_box(FOREARM_L, seed=115, gold_border=True, crystal_ridges=True, spore_density=18)
+    paint_stone_armor_box(FOREARM_R, seed=116, gold_border=True, crystal_ridges=True, spore_density=18)
+    paint_stone_armor_box(THIGH_L, seed=117, gold_border=False, spore_density=12)
+    paint_stone_armor_box(THIGH_R, seed=118, gold_border=False, spore_density=12)
+    paint_stone_armor_box(GREAVE_L, seed=119, gold_border=True, crystal_ridges=True, spore_density=16)
+    paint_stone_armor_box(GREAVE_R, seed=120, gold_border=True, crystal_ridges=True, spore_density=16)
+    paint_stone_armor_box(TOE_CAP, seed=121, gold_border=True, spore_density=8)
+
+    # 2. Paint ribcage bone-crystal arches & glowing heart core boxes
+    paint_crystal_spire_box(RIB_PILLAR_L, palette="rib", seed=201)
+    paint_crystal_spire_box(RIB_PILLAR_R, palette="rib", seed=202)
+    paint_crystal_spire_box(RIB_BAR, palette="rib", seed=203)
+    paint_crystal_spire_box(HEART_CORE, palette="violet", seed=204)
+    paint_crystal_spire_box(HEART_INNER, palette="teal", seed=205)
+
+    # 3. Paint all faceted crystal spires, horns, claws, knee spurs, and floating obelisks
+    paint_crystal_spire_box(SPIRE_TALL_TEAL, palette="teal", seed=301)
+    paint_crystal_spire_box(SPIRE_TALL_VIOLET, palette="violet", seed=302)
+    paint_crystal_spire_box(SPIRE_MED_TEAL, palette="teal", seed=303)
+    paint_crystal_spire_box(SPIRE_MED_VIOLET, palette="violet", seed=304)
+    paint_crystal_spire_box(SPIRE_SM_TEAL, palette="teal", seed=305)
+    paint_crystal_spire_box(SPIRE_SM_VIOLET, palette="violet", seed=306)
+    paint_crystal_spire_box(HORN_BASE, palette="violet", seed=307)
+    paint_crystal_spire_box(HORN_TIP, palette="teal", seed=308)
+    paint_crystal_spire_box(CROWN_CREST, palette="teal", seed=309)
+    paint_crystal_spire_box(FOREARM_BLADE, palette="teal", seed=310)
+    paint_crystal_spire_box(CLAW_FINGER, palette="teal", seed=311)
+    paint_crystal_spire_box(KNEE_SPUR, palette="violet", seed=312)
+    paint_crystal_spire_box(SHARD_TEAL, palette="teal", seed=313)
+    paint_crystal_spire_box(SHARD_VIOLET, palette="violet", seed=314)
+    paint_crystal_spire_box(SHARD_CAP_TEAL, palette="teal", seed=315)
+    paint_crystal_spire_box(SHARD_CAP_VIOLET, palette="violet", seed=316)
+
+    # 4. Hand-detailed Warden-style hollowed ribcage cavity, pulsing Soul-Crystal Heart & branching veins on CHEST_UPPER
+    cf = faces(*CHEST_UPPER)
+    fx, fy, fw, fh = cf["front"]  # 22x18
+    # Deep recessed void cavity in center of chest (x: 4..17, y: 2..15)
+    for dy in range(2, 16):
+        for dx in range(3, 19):
+            dist = ((dx - 10.5) ** 2 / 46.0 + (dy - 8.5) ** 2 / 44.0) ** 0.5
+            if dist <= 1.0:
+                col = VOID_DEEP if dist < 0.78 else SLATE_SEAM
+                put(img, fx + dx, fy + dy, col)
+                # Glowing starlight soul-heart & concentric energy aura deep inside the ribcage cavity
+                if dist <= 0.24:
+                    put(img, fx + dx, fy + dy, WHITE_CYAN)
+                    put(glow, fx + dx, fy + dy, WHITE_CYAN)
+                elif dist <= 0.42:
+                    put(img, fx + dx, fy + dy, CYAN_HOT)
+                    put(glow, fx + dx, fy + dy, CYAN_HOT)
+                elif 0.54 <= dist <= 0.68:
+                    rcol = VIOLET_BRIGHT if (dx + dy) % 2 == 0 else TEAL_BRIGHT
+                    put(img, fx + dx, fy + dy, rcol)
+                    put(glow, fx + dx, fy + dy, rcol)
+    # Sculpted curved pale-teal/ivory crystal ribs arching across the chest cavity (like warden.png)
+    for rib_idx, rib_y in enumerate((3, 6, 9, 12, 14)):
+        rib_span = (3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18) if rib_idx in (1, 2, 3) else (4, 5, 6, 7, 14, 15, 16, 17)
+        for side_dx in rib_span:
+            inward = min(abs(side_dx - 3), abs(18 - side_dx))
+            curve_y = rib_y + (1 if inward >= 3 else 0)
+            rcol = WHITE_CYAN if inward >= 4 else (RIB_IVORY if inward >= 2 else RIB_MID)
+            put(img, fx + side_dx, fy + curve_y, rcol)
+            put(img, fx + side_dx, fy + curve_y + 1, RIB_SHADE)
+            if inward >= 3:
+                put(glow, fx + side_dx, fy + curve_y, rcol)
+    # Organic branching bioluminescent veins radiating from the ribcage to the shoulders & flanks
+    vein_coords = [
+        (1, 2), (2, 2), (3, 3), (2, 4), (1, 5), (2, 8), (1, 9), (2, 12), (3, 13), (1, 14),
+        (20, 2), (19, 2), (18, 3), (19, 4), (20, 5), (19, 8), (20, 9), (19, 12), (18, 13), (20, 14),
+        (10, 1), (11, 1), (10, 16), (11, 16),
+    ]
+    for vx, vy in vein_coords:
+        vcol = TEAL_BRIGHT if (vx + vy) % 2 == 0 else VIOLET_BRIGHT
+        put(img, fx + vx, fy + vy, vcol)
+        put(glow, fx + vx, fy + vy, vcol)
+
+    # 5. Warden-style glowing segmented dorsal spine on CHEST_UPPER back
+    bx, by, bw, bh = cf["back"]  # 22x18
+    for dy in range(1, bh - 1):
+        spine_w = 5 - (dy // 5)
+        for dx in range(bw // 2 - spine_w, bw // 2 + spine_w):
+            d_center = abs(dx - (bw // 2 - 0.5))
+            if dy % 3 in (0, 1):
+                scol = WHITE_CYAN if d_center < 1.2 else (TEAL_BRIGHT if d_center < 2.5 else VIOLET_MID)
+                put(img, bx + dx, by + dy, scol)
+                if d_center < 2.8:
+                    put(glow, bx + dx, by + dy, scol)
+            else:
+                put(img, bx + dx, by + dy, VOID_DEEP)
+
+    # 6. Runic belt buckle & waist vents
+    beltx, belty, beltw, belth = faces(*BELT)["front"]
+    fill(img, (beltx + beltw // 2 - 3, belty, 6, belth), GOLD_BRIGHT)
+    fill(img, (beltx + beltw // 2 - 2, belty + 1, 4, 1), WHITE_CYAN)
+    fill(glow, (beltx + beltw // 2 - 2, belty + 1, 4, 1), WHITE_CYAN)
+
+    # 7. Fierce sculpted helmet face, shadowed eye sockets, multi-tone glowing eyes & forehead starlight rune
+    hfx, hfy, hfw, hfh = faces(*HEAD_SKULL)["front"]  # 13x11
+    # Deep recessed visor cavity & nasal bridge
+    fill(img, (hfx + 1, hfy + 3, 11, 5), VOID_DEEP)
+    fill(img, (hfx + 5, hfy + 3, 3, 6), SLATE_MID)
+    fill(img, (hfx + 6, hfy + 3, 1, 5), SLATE_RIM)
+    # Left & right glowing multi-tone eyes (x: 1..4 and 8..11, y: 4..6)
+    for ex in (hfx + 1, hfx + 8):
+        fill(img, (ex, hfy + 4, 4, 3), TEAL_MID)
+        fill(glow, (ex, hfy + 4, 4, 3), TEAL_BRIGHT)
+        fill(img, (ex + 1, hfy + 4, 3, 2), CYAN_HOT)
+        fill(glow, (ex + 1, hfy + 4, 3, 2), CYAN_HOT)
+        put(img, ex + 2, hfy + 4, WHITE_CYAN)
+        put(glow, ex + 2, hfy + 4, WHITE_CYAN)
+    # Forehead diamond star-rune & cheek respirator vents
+    for target in (img, glow):
+        put(target, hfx + 6, hfy + 1, LAVENDER_HOT)
+        fill(target, (hfx + 5, hfy + 2, 3, 1), VIOLET_BRIGHT)
+        put(target, hfx + 6, hfy + 3, WHITE_CYAN)
+        put(target, hfx + 2, hfy + 9, TEAL_BRIGHT)
+        put(target, hfx + 10, hfy + 9, TEAL_BRIGHT)
+
+    # Jaw tooth-grille bars
+    jfx, jfy, jfw, jfh = faces(*HEAD_JAW)["front"]  # 11x4
+    for dx in range(1, jfw - 1):
+        col = SLATE_RIM if dx % 2 == 1 else VOID_DEEP
+        fill(img, (jfx + dx, jfy + 1, 1, 2), col)
+        if dx % 2 == 0:
+            put(img, jfx + dx, jfy + 2, TEAL_MID)
+            put(glow, jfx + dx, jfy + 2, TEAL_MID)
+
+    # 8. Build sculpted V-tapered geometry with outward-flaring crystal horns, pauldrons, spine, and claws
     bones = [
         {"name": "root", "pivot": [0, 0, 0]},
         {
             "name": "body",
             "parent": "root",
-            "pivot": [0, 30, 0],
+            "pivot": [0, 18, 0],
             "cubes": [
-                {"origin": [-12, leg_top, -7], "size": [24, 28, 14], "uv": list(uv_torso)},
-                {"origin": [-4, 26, -9.5], "size": [8, 10, 3], "uv": list(uv_chest_outer)},
-                {"origin": [-2, 28, -10.5], "size": [4, 6, 2], "uv": list(uv_chest_inner)},
-                {"origin": [-2, 36, 6.5], "size": [4, 8, 5], "uv": list(uv_back_spine_big)},
-                {"origin": [-2, 27, 6.5], "size": [4, 6, 4], "uv": list(uv_back_spine_sm)},
+                # Narrow armored waist & runic belt
+                {"origin": [-7, 16, -5], "size": [14, 8, 10], "uv": [74, 0]},
+                {"origin": [-8, 22, -5.5], "size": [16, 3, 11], "uv": [124, 0]},
+                {"origin": [-3, 13, -6.2], "size": [6, 6, 2], "pivot": [0, 19, -5.2], "rotation": [-10, 0, 0], "uv": [236, 0]},
+                {"origin": [-3, 13, 4.2], "size": [6, 6, 2], "pivot": [0, 19, 5.2], "rotation": [10, 0, 0], "uv": [236, 0]},
+                # Massive broad upper chest (with Warden-style painted ribcage cavity) & armored collar/traps
+                {"origin": [-11, 24, -7], "size": [22, 18, 14], "uv": [0, 0]},
+                {"origin": [-8, 42, -5.5], "size": [16, 4, 11], "uv": [180, 0]},
+                # Recessed pulsing diamond Heart Core nested flush in the center of the ribcage
+                {"origin": [-2.5, 29.5, -7.8], "size": [5, 7, 3], "pivot": [0, 33.0, -7.0], "rotation": [0, 0, 45], "uv": [150, 16]},
+                # Angled dorsal crystal spires erupting down the back spine
+                {"origin": [-2.5, 36, 5.5], "size": [5, 12, 5], "pivot": [0, 38, 7], "rotation": [-28, 0, 0], "uv": [0, 84]},
+                {"origin": [-2, 30, 5.5], "size": [4, 9, 4], "pivot": [0, 32, 7], "rotation": [-34, 0, 0], "uv": [62, 84]},
+                {"origin": [-1.5, 24, 5.0], "size": [3, 7, 3], "pivot": [0, 26, 6.5], "rotation": [-40, 0, 0], "uv": [80, 84]},
             ],
         },
         {
             "name": "head",
             "parent": "body",
-            "pivot": [0, torso_top, 0],
+            "pivot": [0, 45, -1.5],
             "cubes": [
-                {"origin": [-7, torso_top, -7], "size": [14, 13, 14], "uv": list(uv_head)},
-                {"origin": [-2, torso_top + 13, -2], "size": [4, 7, 4], "uv": list(uv_crown_center)},
-                {"origin": [4, torso_top + 12, -1.5], "size": [3, 5, 3], "uv": list(uv_crown_horn_l)},
-                {"origin": [-7, torso_top + 12, -1.5], "size": [3, 5, 3], "uv": list(uv_crown_horn_r)},
+                # Angular helmet skull, angled brow crest & articulated jaw
+                {"origin": [-6.5, 45, -7.5], "size": [13, 11, 12], "uv": [0, 34]},
+                {"origin": [-7.5, 53, -8.8], "size": [15, 3, 5], "pivot": [0, 54.5, -7.5], "rotation": [10, 0, 0], "uv": [52, 34]},
+                {"origin": [-5.5, 43, -7.0], "size": [11, 4, 9], "uv": [52, 43]},
+                # Central angled crystal crown spire
+                {"origin": [-2, 55, -4.5], "size": [4, 8, 5], "pivot": [0, 56, -2], "rotation": [-16, 0, 0], "uv": [140, 84]},
+                # Outward-flaring Warden-style crystal antler horns (Left +X uses +Z rotation to flare outward)
+                {"origin": [5.0, 52, -3.5], "size": [4, 6, 4], "pivot": [6.5, 53, -1.5], "rotation": [-10, 0, 34], "uv": [108, 84]},
+                {"origin": [7.5, 56, -3.0], "size": [3, 9, 3], "pivot": [8.5, 56, -1.5], "rotation": [-8, 0, 22], "uv": [126, 84]},
+                # Outward-flaring Warden-style crystal antler horns (Right -X uses -Z rotation to flare outward)
+                {"origin": [-9.0, 52, -3.5], "size": [4, 6, 4], "pivot": [-6.5, 53, -1.5], "rotation": [-10, 0, -34], "uv": [108, 84]},
+                {"origin": [-10.5, 56, -3.0], "size": [3, 9, 3], "pivot": [-8.5, 56, -1.5], "rotation": [-8, 0, -22], "uv": [126, 84]},
             ],
         },
         {
             "name": "shoulder_left",
             "parent": "body",
-            "pivot": [16, torso_top - 1, 0],
+            "pivot": [13.5, 41, 0],
             "cubes": [
-                {"origin": [11, torso_top - 6, -7], "size": [10, 8, 14], "uv": list(uv_pauldron_l)},
-                {"origin": [13.5, torso_top + 2, -3], "size": [5, 9, 6], "uv": list(uv_spire_tall_l)},
-                {"origin": [19, torso_top - 2, -2.5], "size": [4, 7, 5], "uv": list(uv_spire_side_l)},
+                {"origin": [10.5, 36, -6.5], "size": [10, 9, 13], "pivot": [14, 40, 0], "rotation": [0, 0, 10], "uv": [94, 34]},
+                {"origin": [10.0, 33, -7.0], "size": [11, 4, 14], "pivot": [14, 35, 0], "rotation": [0, 0, 14], "uv": [190, 16]},
+                # 3 outward-flaring crystal spires erupting from left shoulder (+Z flares outward on +X)
+                {"origin": [13.0, 43, -2.5], "size": [5, 12, 5], "pivot": [15, 44, 0], "rotation": [-6, 0, 24], "uv": [0, 84]},
+                {"origin": [14.5, 41, 1.5], "size": [4, 9, 4], "pivot": [16.5, 42, 3.5], "rotation": [-18, 0, 36], "uv": [62, 84]},
+                {"origin": [17.0, 38, -4.0], "size": [3, 7, 3], "pivot": [18.5, 39, -2.5], "rotation": [12, 0, 46], "uv": [80, 84]},
             ],
         },
         {
             "name": "shoulder_right",
             "parent": "body",
-            "pivot": [-16, torso_top - 1, 0],
+            "pivot": [-13.5, 41, 0],
             "cubes": [
-                {"origin": [-21, torso_top - 6, -7], "size": [10, 8, 14], "uv": list(uv_pauldron_r)},
-                {"origin": [-18.5, torso_top + 2, -3], "size": [5, 9, 6], "uv": list(uv_spire_tall_r)},
-                {"origin": [-23, torso_top - 2, -2.5], "size": [4, 7, 5], "uv": list(uv_spire_side_r)},
+                {"origin": [-20.5, 36, -6.5], "size": [10, 9, 13], "pivot": [-14, 40, 0], "rotation": [0, 0, -10], "uv": [142, 34]},
+                {"origin": [-21.0, 33, -7.0], "size": [11, 4, 14], "pivot": [-14, 35, 0], "rotation": [0, 0, -14], "uv": [190, 36]},
+                # 3 outward-flaring crystal spires erupting from right shoulder (-Z flares outward on -X)
+                {"origin": [-18.0, 43, -2.5], "size": [5, 12, 5], "pivot": [-15, 44, 0], "rotation": [-6, 0, -24], "uv": [22, 84]},
+                {"origin": [-18.5, 41, 1.5], "size": [4, 9, 4], "pivot": [-16.5, 42, 3.5], "rotation": [-18, 0, -36], "uv": [44, 84]},
+                {"origin": [-20.0, 38, -4.0], "size": [3, 7, 3], "pivot": [-18.5, 39, -2.5], "rotation": [12, 0, -46], "uv": [94, 84]},
             ],
         },
         {
             "name": "arm_left",
             "parent": "body",
-            "pivot": [arm_x, torso_top - 4, 0],
+            "pivot": [16.0, 38, 0],
             "cubes": [
-                {"origin": [arm_x - 3, torso_top - 16, -3], "size": [6, 12, 6], "uv": list(uv_upper_arm_l)},
-                {"origin": [arm_x - 4, torso_top - 30, -4], "size": [8, 14, 8], "uv": list(uv_fist_l)},
-                {"origin": [arm_x - 3, torso_top - 29, -5.5], "size": [6, 4, 2], "uv": list(uv_knuckle)},
+                # Upper arm + massive low-hanging crystal-bracer forearm (reaches y=7 like Warden/Iron Golem)
+                {"origin": [13.0, 26, -3.5], "size": [6, 12, 7], "uv": [0, 58]},
+                {"origin": [12.0, 11, -4.5], "size": [9, 15, 9], "uv": [56, 58]},
+                # Outward-flaring forearm crystal blades
+                {"origin": [19.0, 17, -2.0], "size": [3, 9, 4], "pivot": [20.0, 18, 0], "rotation": [-12, 0, 26], "uv": [160, 84]},
+                {"origin": [18.5, 13, 0.5], "size": [3, 7, 3], "pivot": [19.5, 14, 2], "rotation": [-18, 0, 34], "uv": [94, 84]},
+                # Articulated crystal claw fingers curving slightly inward
+                {"origin": [18.0, 6, -3.8], "size": [3, 6, 3], "pivot": [19.5, 11, -2.3], "rotation": [0, 0, -14], "uv": [176, 84]},
+                {"origin": [18.0, 6, 0.8], "size": [3, 6, 3], "pivot": [19.5, 11, 2.3], "rotation": [0, 0, -14], "uv": [176, 84]},
+                {"origin": [12.5, 7, -4.2], "size": [3, 5, 3], "pivot": [14.0, 11, -2.7], "rotation": [0, 0, 12], "uv": [176, 84]},
             ],
         },
         {
             "name": "arm_right",
             "parent": "body",
-            "pivot": [-arm_x, torso_top - 4, 0],
+            "pivot": [-16.0, 38, 0],
             "cubes": [
-                {"origin": [-arm_x - 3, torso_top - 16, -3], "size": [6, 12, 6], "uv": list(uv_upper_arm_r)},
-                {"origin": [-arm_x - 4, torso_top - 30, -4], "size": [8, 14, 8], "uv": list(uv_fist_r)},
-                {"origin": [-arm_x - 3, torso_top - 29, -5.5], "size": [6, 4, 2], "uv": list(uv_knuckle)},
+                {"origin": [-19.0, 26, -3.5], "size": [6, 12, 7], "uv": [28, 58]},
+                {"origin": [-21.0, 11, -4.5], "size": [9, 15, 9], "uv": [94, 58]},
+                # Outward-flaring forearm crystal blades
+                {"origin": [-22.0, 17, -2.0], "size": [3, 9, 4], "pivot": [-20.0, 18, 0], "rotation": [-12, 0, -26], "uv": [160, 84]},
+                {"origin": [-21.5, 13, 0.5], "size": [3, 7, 3], "pivot": [-19.5, 14, 2], "rotation": [-18, 0, -34], "uv": [80, 84]},
+                # Articulated crystal claw fingers curving slightly inward
+                {"origin": [-21.0, 6, -3.8], "size": [3, 6, 3], "pivot": [-19.5, 11, -2.3], "rotation": [0, 0, 14], "uv": [176, 84]},
+                {"origin": [-21.0, 6, 0.8], "size": [3, 6, 3], "pivot": [-19.5, 11, 2.3], "rotation": [0, 0, 14], "uv": [176, 84]},
+                {"origin": [-15.5, 7, -4.2], "size": [3, 5, 3], "pivot": [-14.0, 11, -2.7], "rotation": [0, 0, -12], "uv": [176, 84]},
             ],
         },
         {
             "name": "leg_left",
             "parent": "root",
-            "pivot": [6.5, leg_top, 0],
+            "pivot": [6.0, 17, 0],
             "cubes": [
-                {"origin": [2, 0, -5], "size": [9, 16, 10], "uv": list(uv_leg_l)},
-                {"origin": [3, 7, -6], "size": [7, 5, 2], "uv": list(uv_kneecap)},
+                {"origin": [2.5, 9, -3.5], "size": [7, 8, 7], "uv": [132, 58]},
+                {"origin": [1.5, 0, -4.5], "size": [9, 10, 9], "uv": [192, 56]},
+                {"origin": [1.5, 0, -6.8], "size": [9, 4, 3], "uv": [230, 56]},
+                {"origin": [4.0, 8, -6.2], "size": [4, 7, 4], "pivot": [6.0, 10, -4.5], "rotation": [22, 0, 0], "uv": [230, 66]},
             ],
         },
         {
             "name": "leg_right",
             "parent": "root",
-            "pivot": [-6.5, leg_top, 0],
+            "pivot": [-6.0, 17, 0],
             "cubes": [
-                {"origin": [-11, 0, -5], "size": [9, 16, 10], "uv": list(uv_leg_r)},
-                {"origin": [-10, 7, -6], "size": [7, 5, 2], "uv": list(uv_kneecap)},
+                {"origin": [-9.5, 9, -3.5], "size": [7, 8, 7], "uv": [162, 58]},
+                {"origin": [-10.5, 0, -4.5], "size": [9, 10, 9], "uv": [192, 76]},
+                {"origin": [-10.5, 0, -6.8], "size": [9, 4, 3], "uv": [230, 56]},
+                {"origin": [-8.0, 8, -6.2], "size": [4, 7, 4], "pivot": [-6.0, 10, -4.5], "rotation": [22, 0, 0], "uv": [230, 66]},
             ],
         },
         {
             "name": "floating_shards",
             "parent": "body",
-            "pivot": [0, 42, 0],
+            "pivot": [0, 40, 0],
             "cubes": [
-                {"origin": [15, 48, 10], "size": [3, 7, 3], "uv": list(uv_shards[0])},
-                {"origin": [-18, 48, 10], "size": [3, 7, 3], "uv": list(uv_shards[1])},
-                {"origin": [12, 34, -12], "size": [3, 7, 3], "uv": list(uv_shards[2])},
-                {"origin": [-15, 34, -12], "size": [3, 7, 3], "uv": list(uv_shards[3])},
+                {"origin": [18, 47, 9], "size": [4, 9, 4], "pivot": [20, 51, 11], "rotation": [-16, 20, -18], "uv": [0, 104]},
+                {"origin": [18.5, 54, 9.5], "size": [3, 5, 3], "pivot": [20, 51, 11], "rotation": [-16, 20, -18], "uv": [36, 104]},
+                {"origin": [-22, 47, 9], "size": [4, 9, 4], "pivot": [-20, 51, 11], "rotation": [-16, -20, 18], "uv": [18, 104]},
+                {"origin": [-21.5, 54, 9.5], "size": [3, 5, 3], "pivot": [-20, 51, 11], "rotation": [-16, -20, 18], "uv": [50, 104]},
+                {"origin": [16, 33, -13], "size": [4, 9, 4], "pivot": [18, 37, -11], "rotation": [16, -25, -20], "uv": [18, 104]},
+                {"origin": [-20, 33, -13], "size": [4, 9, 4], "pivot": [-18, 37, -11], "rotation": [16, 25, 20], "uv": [0, 104]},
+                {"origin": [0, 52, 13], "size": [4, 9, 4], "pivot": [2, 56, 15], "rotation": [-22, 0, 0], "uv": [0, 104]},
+                {"origin": [-4, 32, 14], "size": [4, 9, 4], "pivot": [-2, 36, 16], "rotation": [22, 0, 0], "uv": [18, 104]},
             ],
         },
     ]
@@ -631,9 +970,9 @@ def build_crystal_colossus():
                     "identifier": f"geometry.{eid}",
                     "texture_width": 256,
                     "texture_height": 128,
-                    "visible_bounds_width": 4.2,
-                    "visible_bounds_height": 4.4,
-                    "visible_bounds_offset": [0, 2.0, 0],
+                    "visible_bounds_width": 4.5,
+                    "visible_bounds_height": 4.6,
+                    "visible_bounds_offset": [0, 2.1, 0],
                 },
                 "bones": bones,
             }
