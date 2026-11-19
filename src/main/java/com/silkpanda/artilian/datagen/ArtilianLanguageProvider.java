@@ -64,6 +64,18 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.STARLIGHT_LEGGINGS, "Starlight Leggings");
         this.addItem(ArtilianItems.STARLIGHT_BOOTS, "Starlight Boots");
 
+        this.addItem(ArtilianItems.PRISMATIC_SWORD, "Prismatic Sword");
+        this.add("item.artilian.prismatic_sword.tooltip", "Boss-forged blade — Lights up and burns foes!");
+        this.addItem(ArtilianItems.PRISMATIC_PICKAXE, "Prismatic Pickaxe");
+        this.addItem(ArtilianItems.PRISMATIC_AXE, "Prismatic Axe");
+        this.addItem(ArtilianItems.PRISMATIC_SHOVEL, "Prismatic Shovel");
+        this.addItem(ArtilianItems.PRISMATIC_HOE, "Prismatic Hoe");
+        this.addItem(ArtilianItems.PRISMATIC_HELMET, "Prismatic Helmet");
+        this.addItem(ArtilianItems.PRISMATIC_CHESTPLATE, "Prismatic Chestplate");
+        this.addItem(ArtilianItems.PRISMATIC_LEGGINGS, "Prismatic Leggings");
+        this.addItem(ArtilianItems.PRISMATIC_BOOTS, "Prismatic Boots");
+        this.add("item.artilian.prismatic_armor.tooltip", "Full Set — Grants Fire Resistance!");
+
         this.addEntityType(ArtilianEntities.PRIMED_TNT, "Primed Artilian TNT");
         this.addBlock(ArtilianBlocks.PARTY_TNT, "Party TNT");
         this.add("block.artilian.party_tnt.tooltip", "Safe Blast — Fireworks, speed, and heal!");

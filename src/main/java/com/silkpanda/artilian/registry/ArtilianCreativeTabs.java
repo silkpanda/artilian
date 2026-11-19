@@ -108,6 +108,15 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.CAPTAIN_BRIMSTONE_SPAWN_EGG.get());
                         output.accept(ArtilianItems.BRIMSTONE_COMPASS.get());
                         output.accept(ArtilianItems.BRIMSTONE_DOUBLOON.get());
+                        output.accept(ArtilianItems.PRISMATIC_SWORD.get());
+                        output.accept(ArtilianItems.PRISMATIC_PICKAXE.get());
+                        output.accept(ArtilianItems.PRISMATIC_AXE.get());
+                        output.accept(ArtilianItems.PRISMATIC_SHOVEL.get());
+                        output.accept(ArtilianItems.PRISMATIC_HOE.get());
+                        output.accept(ArtilianItems.PRISMATIC_HELMET.get());
+                        output.accept(ArtilianItems.PRISMATIC_CHESTPLATE.get());
+                        output.accept(ArtilianItems.PRISMATIC_LEGGINGS.get());
+                        output.accept(ArtilianItems.PRISMATIC_BOOTS.get());
                     })
                     .build());
 

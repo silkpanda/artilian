@@ -1,15 +1,24 @@
 package com.silkpanda.artilian.gear;
 
 import com.silkpanda.artilian.client.ArtilianArmorRenderer;
+import com.silkpanda.artilian.client.PrismaticArmorRenderer;
 import com.silkpanda.artilian.client.StarlightArmorRenderer;
 import com.silkpanda.artilian.client.SunsteelArmorRenderer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
@@ -46,6 +55,7 @@ public final class ArtilianArmorItem extends ArmorItem implements GeoItem {
                     @Nullable HumanoidModel<T> original) {
                 if (this.renderer == null) {
                     this.renderer = switch (ArtilianArmorItem.this.set) {
+                        case "prismatic" -> new PrismaticArmorRenderer();
                         case "starlight" -> new StarlightArmorRenderer();
                         case "sunsteel" -> new SunsteelArmorRenderer();
                         default -> new ArtilianArmorRenderer(ArtilianArmorItem.this.set);
@@ -55,6 +65,36 @@ public final class ArtilianArmorItem extends ArmorItem implements GeoItem {
                 return this.renderer;
             }
         });
+    }
+
+    public String getSetName() {
+        return this.set;
+    }
+
+    /** True when {@code player} is wearing all 4 pieces of the named Artilian armor set. */
+    public static boolean hasFullSet(Player player, String set) {
+        for (ItemStack armorStack : player.getInventory().armor) {
+            if (!(armorStack.getItem() instanceof ArtilianArmorItem artilianArmor)
+                    || !set.equals(artilianArmor.set)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Applies passive full-set bonuses (such as Fire Resistance for Prismatic armor). */
+    public static void applySetBonus(Player player) {
+        if (!player.level().isClientSide && player.isAlive() && hasFullSet(player, "prismatic")) {
+            player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 60, 0, true, false, true));
+        }
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltip, TooltipFlag flag) {
+        if ("prismatic".equals(this.set)) {
+            tooltip.add(Component.translatable("item.artilian.prismatic_armor.tooltip")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        }
     }
 
     @Override

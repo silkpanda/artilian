@@ -7,6 +7,7 @@ import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
 import com.silkpanda.artilian.gear.ArtilianSwordItem;
 import com.silkpanda.artilian.gear.ArtilianTiers;
+import com.silkpanda.artilian.gear.PrismaticSwordItem;
 import com.silkpanda.artilian.mana.ArtilianWandItem;
 import com.silkpanda.artilian.mana.WandSpell;
 import com.silkpanda.artilian.pet.BiomeTreatItem;
@@ -248,6 +249,31 @@ public class ArtilianItems {
             () -> new HoeItem(ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(HoeItem.createAttributes(ArtilianTiers.STARLIGHT, -3.0F, 0.0F))));
 
+    // Tier 3 Prismatic Brimstone weapons & tools (boss-forged, fire-resistant)
+    public static final DeferredItem<SwordItem> PRISMATIC_SWORD = ITEMS.register("prismatic_sword",
+            () -> new PrismaticSwordItem(
+                    ArtilianTiers.PRISMATIC,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(SwordItem.createAttributes(ArtilianTiers.PRISMATIC, 4, -2.2F)),
+                    "item.artilian.prismatic_sword.tooltip",
+                    ChatFormatting.LIGHT_PURPLE));
+    public static final DeferredItem<PickaxeItem> PRISMATIC_PICKAXE = ITEMS.register("prismatic_pickaxe",
+            () -> new PickaxeItem(ArtilianTiers.PRISMATIC,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(PickaxeItem.createAttributes(ArtilianTiers.PRISMATIC, 1.0F, -2.8F))));
+    public static final DeferredItem<AxeItem> PRISMATIC_AXE = ITEMS.register("prismatic_axe",
+            () -> new AxeItem(ArtilianTiers.PRISMATIC,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(AxeItem.createAttributes(ArtilianTiers.PRISMATIC, 5.0F, -3.0F))));
+    public static final DeferredItem<ShovelItem> PRISMATIC_SHOVEL = ITEMS.register("prismatic_shovel",
+            () -> new ShovelItem(ArtilianTiers.PRISMATIC,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(ShovelItem.createAttributes(ArtilianTiers.PRISMATIC, 1.5F, -3.0F))));
+    public static final DeferredItem<HoeItem> PRISMATIC_HOE = ITEMS.register("prismatic_hoe",
+            () -> new HoeItem(ArtilianTiers.PRISMATIC,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(HoeItem.createAttributes(ArtilianTiers.PRISMATIC, -4.0F, 0.0F))));
+
     // Sunsteel armor
     public static final DeferredItem<ArmorItem> SUNSTEEL_HELMET =
             armor("sunsteel_helmet", "sunsteel", ArtilianArmorMaterials.SUNSTEEL, ArmorItem.Type.HELMET, 20);
@@ -268,17 +294,38 @@ public class ArtilianItems {
     public static final DeferredItem<ArmorItem> STARLIGHT_BOOTS =
             armor("starlight_boots", "starlight", ArtilianArmorMaterials.STARLIGHT, ArmorItem.Type.BOOTS, 28);
 
+    // Tier 3 Prismatic Brimstone armor
+    public static final DeferredItem<ArmorItem> PRISMATIC_HELMET =
+            armor("prismatic_helmet", "prismatic", ArtilianArmorMaterials.PRISMATIC, ArmorItem.Type.HELMET, 37, true);
+    public static final DeferredItem<ArmorItem> PRISMATIC_CHESTPLATE =
+            armor("prismatic_chestplate", "prismatic", ArtilianArmorMaterials.PRISMATIC, ArmorItem.Type.CHESTPLATE, 37, true);
+    public static final DeferredItem<ArmorItem> PRISMATIC_LEGGINGS =
+            armor("prismatic_leggings", "prismatic", ArtilianArmorMaterials.PRISMATIC, ArmorItem.Type.LEGGINGS, 37, true);
+    public static final DeferredItem<ArmorItem> PRISMATIC_BOOTS =
+            armor("prismatic_boots", "prismatic", ArtilianArmorMaterials.PRISMATIC, ArmorItem.Type.BOOTS, 37, true);
+
     private static DeferredItem<ArmorItem> armor(
             String name,
             String set,
             Holder<ArmorMaterial> material,
             ArmorItem.Type type,
             int durabilityMultiplier) {
-        return ITEMS.register(name, () -> new ArtilianArmorItem(
-                material,
-                type,
-                new Item.Properties().durability(type.getDurability(durabilityMultiplier)),
-                set));
+        return armor(name, set, material, type, durabilityMultiplier, false);
+    }
+
+    private static DeferredItem<ArmorItem> armor(
+            String name,
+            String set,
+            Holder<ArmorMaterial> material,
+            ArmorItem.Type type,
+            int durabilityMultiplier,
+            boolean fireResistant) {
+        Item.Properties props = new Item.Properties().durability(type.getDurability(durabilityMultiplier));
+        if (fireResistant) {
+            props = props.fireResistant().rarity(Rarity.EPIC);
+        }
+        Item.Properties finalProps = props;
+        return ITEMS.register(name, () -> new ArtilianArmorItem(material, type, finalProps, set));
     }
 
     // Boss Framework Stage 3

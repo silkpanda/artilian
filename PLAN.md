@@ -409,7 +409,29 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies the Captain Brimstone fight and Brimstone Bastion arena.
 
 ### Phase 3 — Stage 4: Tier 3 Arsenal
-- [ ] **Pending** — Boss-forged Tier 3 weapons, armor, tools, advanced Staves, and advanced TNTs (destructive variants strictly honor `allowDestructiveCustomTnt`).
+- [ ] **In Progress** — Boss-forged Tier 3 weapons, armor, tools, advanced Staves, and advanced TNTs (destructive variants strictly honor `allowDestructiveCustomTnt`).
+- **Why & Decisions:** Reward defeating *The Crystal Colossus* (`Prism Core`) and *Captain Brimstone* (`Brimstone Doubloon`) with a cohesive Netherite-grade Tier 3 progression set that stays kid-friendly:
+  1. **Tier 3 Prismatic Gear (`ArtilianTiers.PRISMATIC`, `ArtilianArmorMaterials.PRISMATIC`):**
+     - **Tools & Weapons (`prismatic_sword`, `prismatic_pickaxe`, `prismatic_axe`, `prismatic_shovel`, `prismatic_hoe`):** `2050` durability, `9.5F` mining speed, `4.5F` attack damage bonus, `24` enchantability, `BlockTags.INCORRECT_FOR_NETHERITE_TOOL`, `fireResistant()`, repaired with `Prism Core`. `PrismaticSwordItem` applies `Glowing` (`60`t) and deals `+2.0F` bonus starlight damage on hit so kids see targets light up.
+     - **Armor (`prismatic_helmet`, `prismatic_chestplate`, `prismatic_leggings`, `prismatic_boots`):** Defense `[4, 7, 9, 4]` (total `24`), `3.0F` toughness, `0.15F` knockback resistance, `24` enchantability, `fireResistant()`, GeckoLib 3D `PrismaticArmorRenderer` (`prismatic_armor.geo.json`, validated by `check_armor_sheets.py`). Wearing all 4 pieces grants `Fire Resistance` (`60`t refreshed on player tick) for Captain Brimstone & Nether safety.
+     - **Recipes:** Direct crafting table recipes combining `Prism Core`, `Brimstone Doubloon`, and `Starlight Crystal` / `Stick` (no Smithing Table template friction for ages 5 & 7).
+  2. **Two Advanced Boss-Forged Staves (`WandSpell` + `ManaService`):**
+     - **Prism Nova Staff (`prism_nova_staff`, `40` Mana, `25`t CD):** Centered `6.5`-block starlight shockwave dealing `10.0F` magic damage + `Glowing` (`80`t) + gentle knockback to `KidSafeTargets.isValidOffensiveTarget` entities only.
+     - **Brimstone Meteor Staff (`brimstone_meteor_staff`, `45` Mana, `30`t CD):** Raycasts up to `20` blocks to call down a `4.0`-block brimstone meteor dealing `12.0F` fire damage + `60`t fire to `KidSafeTargets.isValidOffensiveTarget` entities only, with **zero** block breaking and **zero** fire blocks placed.
+  3. **Two Advanced Boss-Forged TNTs (`TntVariant` + `ArtilianPrimedTnt`):**
+     - **Starlight Gravity TNT (`starlight_gravity_tnt`, `destructiveCapable = false`):** Always safe; pulls nearby `KidSafeTargets.isValidOffensiveTarget` entities inward, applies `Levitation` (`30`t) + `Glowing` (`100`t), and deals `6.0F` damage with zero block breaking.
+     - **Brimstone Meteor TNT (`brimstone_meteor_tnt`, `destructiveCapable = true`):** Strictly honors `ArtilianConfig.allowDestructiveCustomTnt` (default `false`: zero block damage, zero fire blocks, `12.0F` blast damage to `KidSafeTargets.isValidOffensiveTarget` entities only; when `true`: `5.5F` explosion using `SAFE_QUARRY_DAMAGE_CALCULATOR` so block entities & kid-safe targets remain protected).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Tier 3 Prismatic gear, 3D armor & tests | Pending | `ArtilianTiers.PRISMATIC`, `ArtilianArmorMaterials.PRISMATIC`, `PrismaticSwordItem`, `PrismaticArmorRenderer`, 9 items, `make_ores_and_gear_art.py`, datagen, `Tier3ArsenalGameTests`. |
+  | 2 Advanced Staves, Boss TNTs & `P3-04` | Pending | `PRISM_NOVA` & `BRIMSTONE_METEOR` staves, `STARLIGHT_GRAVITY` & `BRIMSTONE_METEOR` TNTs, `make_wand_art.py`, `make_tnt_art.py`, `TntSecurityProbes` `P3-04`, `security/FINDINGS.md`. |
+  | 3 Live client check & evidence | Pending | `./gradlew runClient` screenshot of Prismatic gear, Staves, and Boss TNTs (`qa/evidence/tier3-arsenal-2026-11-19.png`). |
+
+- **Tests & Red-proofs (`Tier3ArsenalGameTests`, `TntSecurityProbes`):** Planned for Sub-stages 1–2.
+- **Security Gate (`TntSecurityProbes.p3_04_tier3StavesAndBrimstoneTntRespectKidSafeAndDestructiveConfig`, `security/tnt/README.md`, `security/FINDINGS.md`):** Planned for Sub-stage 2.
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, `check_armor_sheets.py` passes, and live `./gradlew runClient` verifies Tier 3 gear, Staves, and Boss TNTs.
 
 ### Phase 3 — Stage 5: Phase 3 Art Pass & Sign-Off
 - [ ] **Pending** — Art pass over Phase 3 bosses, altars, and Tier 3 gear; done when all checks are green and both bosses are summonable, beatable by a young kid with a parent, and drop working Tier 3 gear.
