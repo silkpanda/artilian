@@ -6,14 +6,14 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 ## Now
 
-*Updated 2026-11-18 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
+*Updated 2026-11-19 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
 
 | | |
 |---|---|
-| **In progress** | Consolidated all 21 disjointed `qa/` and `qa/archive/` feature plans into this single `PLAN.md` organized by Phases (`0`–`5`) and Stages within each Phase, on branch `plan/2026-11-18-consolidated-single-plan` (from `main` at `0c0ef04`, after PR #7 merged with `137/137` GameTests green). |
-| **Next** | 1. Merge this plan-consolidation PR once GitHub CI is green. 2. Owner checks **Sunbeam** (v2), **Frogduck**, and **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient`, saves screenshots to `qa/evidence/`, and checks off Phase 3 Stage 1. 3. Complete remaining Phase 2 Stage 9 art pass items, family LAN co-op playtest, and begin Phase 3 Stage 2 (*The Crystal Colossus*). |
-| **Waiting on the owner** | 1. In-game looks and screenshots for **Sunbeam**, **Frogduck**, and **Boss Framework** (`qa/evidence/`). 2. Merging this plan-consolidation PR. 3. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 4. Steve's official names for **Shadow Wisp** and **Cinder Crag**, and in-game review of **Zaphox**, **Galecorn**, **Ember Drake**, and **Peepkin**. 5. The LAN co-op playtest to check off Phase 1 Stage 6 and Phase 2. 6. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | None (`main` and this PR branch only). |
+| **In progress** | Phase 3 Stage 2 (*The Crystal Colossus*) on branch `phase-3-stage-2-crystal-colossus` (branched from `main` at `d2afceb`, after PR #8 merged). Owner signed off on Phase 2 art on 2026-11-19. |
+| **Next** | Build Phase 3 Stage 2 Sub-stages 1–2 (*Crystal Colossus* boss, 3 telegraphed attacks, Phase 2 Overcharge, items/art, *Crystal Colossus Arena* worldgen, and `P3-02` non-griefing probe). |
+| **Waiting on the owner** | 1. In-game looks and screenshots for **Boss Framework** (*Training Golem* + *Boss Altar*) and **Crystal Colossus** (`qa/evidence/`) when home. 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 5. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | None (`main` and `phase-3-stage-2-crystal-colossus` only). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -204,10 +204,10 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 3 | Pet Capture, `PetElement`, *Crystal Fox* & `P2-01`–`P2-03` | ✅ Complete |
 | 4 | Pet Battle AI, `ElementalMob` & `P2-04` | ✅ Complete |
 | 5 | Core Pet Roster (*Shadow Wisp*, *Cinder Crag*, *Zaphox*, *Galecorn*, *Ember Drake*, *Peepkin*) | ✅ Complete (official names & in-game review pending) |
-| 6 | Kids' Drawn Expansion (*Prismling*, *Flurrywing*, *Sunbeam* + `SUNSTEEL` + `P2-05`, *Frogduck*, *Zapkin*) | ⏳ Code complete (PRs #5–#7); Sunbeam & Frogduck screenshots pending |
+| 6 | Kids' Drawn Expansion (*Prismling*, *Flurrywing*, *Sunbeam* + `SUNSTEEL` + `P2-05`, *Frogduck*, *Zapkin*) | ✅ Complete (PRs #5–#7; Phase 2 art signed off 2026-11-19) |
 | 7 | Biome Structures & Custom `artilian:structure_enemies` | ✅ Complete (PR #3) |
 | 8 | 15 Building-Block Variants & Hand-Built Structure Rebuilds | ✅ Complete (PR #4) |
-| 9 | Phase 2 Art Pass & Family Co-op Playtest Sign-Off | ⏳ In progress (Crystal Fox, Prismling, Zapkin, Sunbeam v2, Structures done) |
+| 9 | Phase 2 Art Pass & Family Co-op Playtest Sign-Off | ⏳ Art signed off (2026-11-19); LAN co-op playtest & official kid names pending |
 
 ### Phase 2 — Stage 1: First Biome (Crystal Canopy Woods)
 - [x] **Complete**
@@ -259,7 +259,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Security Gate:** Inherited `P2-01`–`P2-04` (`HELD`).
 
 ### Phase 2 — Stage 6: Kids' Drawn Expansion & Legendary Pets
-- [ ] **Code Complete (PRs #5, #6, #7 merged); Sunbeam & Frogduck In-Game Look Pending**
+- [x] **Complete** — PRs #5, #6, #7 merged; owner signed off on Phase 2 art 2026-11-19
 - Reference drawings and notes live in `qa/reference/pets/` (`NOTES.md`, `prismling-drawing-*.jpg`, `flurrywing-drawing-2026-11-17.jpg`, `sunsteel-drawing-2026-11-17.jpg`, `frog-duck-drawing-2026-11-17.jpg`, `lightning-guy-drawing-2026-11-17.jpg`).
 - **6A — Prismling (`artilian:prismling`, `[x] Complete`, PR #5 `85b09b3`, `ab165d0`):**
   - First legendary pet (for everyone). `ElementalMob#isAllTypes() = true`: picks the highest-multiplier element among all `PetElement.values()` on attack, takes `1.0x` neutral damage from every element, "All Types" crystal badge.
@@ -270,13 +270,13 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   - `ICE / AIR`, regular roster stats (22 HP, 4.5 ATK, 0.28 speed), hitbox `1.3 x 2.75` (`2.75` blocks tall), Starlight Highlands weight `4`.
   - Three stacked snowballs with coal buttons, turquoise beanie, asymmetric stick & mitten arms, 4 butterfly frost wings (`tools/art/models/flurrywing.bbmodel`), hover damping + zero fall damage, `SNOWFLAKE` particles.
   - `109/109` green; red-proofs: `causeFallDamage` → `super`; hitbox shrunk to `0.9 x 1.8`. Evidence: `qa/evidence/flurrywing-2026-11-17.png`.
-- **6C — Sunbeam (`artilian:sunbeam`, `[ ] Stages 1–2 + v2 Art Complete in PR #7; Owner Screenshot Pending`):**
+- **6C — Sunbeam (`artilian:sunbeam`, `[x] Complete` — Stages 1–2 + v2 Art in PR #7; art signed off 2026-11-19):**
   - Second legendary pet (**Sunbeam** is the owner's final name). Adds 12th `PetElement.SUNSTEEL` (`0xFBBF24`, strong vs `SHADOW`/`ICE`/`DRAGON`, resisted by `FIRE`/`EARTH`, weak to `WATER`/`ELECTRIC`, applies `GLOWING` 60t + `WEAKNESS` 60t).
   - Ghast-tall (`3.0 x 4.0`, eye height `3.3`, 30 HP, 5.0 ATK, hover, rare weight `1` in Emberbloom Meadows).
   - **Sun Aura:** places one level-15 `minecraft:light` block at chest only in **air** (NBT-persisted `SunbeamPlacedLight`, cleared on move/unload/recall/faint/remove) + heals owner and owner's pets within 8 blocks (`REGENERATION I` + `1` HP every 40t; never others).
   - **Security Gate `P2-05` (`PetRosterGameTests.sunbeamLightOnlyReplacesAirAndIsRemovedWithIt`):** EXPLOITED when air check / NBT light save / `remove()` cleanup disabled; HELD (`security/FINDINGS.md`). Also red-proofed owner-only aura heal & `WATER` vs `SUNSTEEL` matchup.
   - **v2 Art Pass (`4db7114`):** `make_pets_art.py --sunbeam` generates `sunbeam.geo.json`, `sunbeam.png`, `sunbeam_glowmask.png` (armored guardian visor, angled solar eyes, forehead sun-diamond, 5-ray solar crown, 4 spiky wing-arms, attack-only `chest_beam`). Commits `32d67fd`, `4db7114`.
-- **6D — Frogduck (`artilian:frogduck`, `[ ] Stages 1–2 Complete in PR #7; Owner Screenshot Pending`):**
+- **6D — Frogduck (`artilian:frogduck`, `[x] Complete` — Stages 1–2 in PR #7; art signed off 2026-11-19):**
   - `WATER / NATURE` (roster's first `WATER` primary), hitbox `1.25 x 1.35`, 24 HP, 4.5 ATK, Crystal Canopy Woods weight `4`.
   - Stout teal frog with middle front face plate (brown eyes, teal dots, brown cloud), four 3-clawed feet, and orange duck with outstretched wings perched on its head (`make_pets_art.py --frogduck`).
   - Amphibious: `canDrownInFluidType` false + short-hop (`< 5.0F`) fall-damage immunity.
@@ -306,11 +306,9 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Evidence:** `qa/evidence/crystal-grove-shrine-rebuild-*-2026-11-17.png`, `emberbloom-outpost-rebuild-*-2026-11-17.png`, `starlight-watchtower-rebuild-*-2026-11-17.png`.
 
 ### Phase 2 — Stage 9: Phase 2 Art Pass & Co-op Sign-Off
-- [ ] **In Progress**
-- **Completed so far:** Crystal Fox hand-touched art pass, Stage 8 structure rebuilds, Prismling v2 glowing guardian, Zapkin v2 storm-armor redesign, Sunbeam v2 solar guardian.
+- [ ] **Art Signed Off; LAN Co-op Playtest & Official Kid Names Remaining**
+- **Completed & signed off (2026-11-19):** Phase 2 art pass signed off by owner (Crystal Fox, Prismling, Flurrywing, Sunbeam v2, Frogduck, Zapkin, Stage 5 roster, Stage 8 structure rebuilds, and structure enemies).
 - **Remaining:**
-  - Owner in-game review & screenshots of **Sunbeam** (v2) and **Frogduck**.
-  - Optional art polish for structure enemies (*Prism Sentinel*, *Cinder Raider*, *Astral Stalker*) or Flurrywing upper-wing symmetry if requested by the kids.
   - Apply official kid-chosen display names (`en_us.json` only; keep entity IDs) for placeholder pets (*Shadow Wisp*, *Cinder Crag*, *Prismling*, *Flurrywing*, *Frogduck*, *Zapkin*).
   - **Done When:** All CI checks green and a family LAN co-op playtest verifies biomes, pet capture, battling, fainting, and structure exploration.
 
@@ -321,7 +319,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | Stage | What ships | Status |
 |---|---|---|
 | 1 | Boss Framework (`ArtilianBossEntity`, `TelegraphedAttack`, `BossAltarBlock`, `P3-01`) | ⏳ Sub-stages 1–3 merged in PR #7 (`137/137`); Sub-stage 4 client check pending |
-| 2 | The Crystal Colossus | ⏹ Pending |
+| 2 | The Crystal Colossus (`CrystalColossusEntity`, `Crystal Colossus Arena`, `P3-02`) | ⏳ In progress (branch `phase-3-stage-2-crystal-colossus`) |
 | 3 | Captain Brimstone | ⏹ Pending |
 | 4 | Tier 3 Arsenal (weapons, armor, tools, advanced Staves & Boss TNTs) | ⏹ Pending |
 | 5 | Phase 3 Art Pass & Family Co-op Sign-Off | ⏹ Pending |
@@ -347,7 +345,36 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   - `P3-01`: 20 uses in 20 ticks holding 20 Golem Cores summons exactly 1 boss and leaves 19 cores (`EXPLOITED` with `isBusy` off or stack consumed early; `HELD` in `137/137` suite).
 
 ### Phase 3 — Stage 2: The Crystal Colossus
-- [ ] **Pending** — First full custom boss building on `ArtilianBossEntity`, telegraphed attacks, arena & rematch altar, and boss drops.
+- [ ] **In Progress** — First full custom boss built on `ArtilianBossEntity` with three telegraphed attacks, Phase 2 *Crystal Overcharge*, an Overworld boss arena, rematch summoning, and boss drops for Phase 3 Stage 4 Tier 3 gear.
+- **Why & Decisions:**
+  1. **`CrystalColossusEntity` (`artilian:crystal_colossus`, `CRYSTAL / STARLIGHT`):** `200` HP (`100` hearts), `8.0` armor, `0.21` speed, `2.2 × 3.8` hitbox (3.8-block towering armored crystal titan with orbiting `floating_shards` and `AutoGlowingGeoLayer` glowmask), `BLUE` boss bar shifting to `PURPLE` on Phase 2 Overcharge. Weak to `EARTH` and `FIRE` so kids' *Training Golem*-tier pets (*Cinder Crag*, *Ember Drake*, *Crystal Fox*) feel great against it.
+  2. **Three telegraphed attacks (all `>= 40` ticks, zero block breaking):**
+     - **Crystal Quake (`40`t, radius `4.5`, `7.0` Crystal):** boss-centered shockwave pushing hit targets gently outward + `Slowness I` (`40`t).
+     - **Starlight Spire (`45`t, radius `3.0`, `6.5` Starlight):** locks onto the target's starting position (never chases mid-windup so kids can step out of the red ring) and drops a glowing Starlight pillar + `Glowing` (`60`t).
+     - **Prism Nova (`50`t, radius `7.0`, `8.5` Crystal, Phase 2 Overcharge only):** unlocks at `<= 50%` HP (`100` HP), shortens attack cooldown from `60`t to `45`t, turns the boss bar `PURPLE`, plays a resonant chime + action-bar alert, and pulses a 7-block shockwave.
+  3. **Summoning & Trophy Progression:**
+     - **Colossus Heart (`artilian:colossus_heart`):** `BossSummonItem` crafted from `Starlight Crystal` + `Amethyst Shard` + `Crystal Bloom` (and 1 guaranteed in the arena prep chest) for summoning/rematching at any **Boss Altar** (also add a survival recipe for `Boss Altar` from `Starlight Slate` + `Starlight Crystal` + `Sunsteel Ingot`).
+     - **Prism Core (`artilian:prism_core`):** foil `BossTrophyItem` dropped (`2–3` guaranteed + `Starlight Crystal`, `Amethyst Shard`, `Biome Treat`) for forging Phase 3 Stage 4 Tier 3 Crystal gear.
+  4. **Crystal Colossus Arena (`artilian:crystal_colossus_arena`):** Open-air stepped amphitheater in `CRYSTAL_CANOPY_WOODS` (`15×12×15`, wide 5-block cardinal stairs, 4 corner crystal obelisks, central `Boss Altar` under open sky, prep chest with `Colossus Heart` + `Biome Treats`, zero extra monster spawns, zero pre-spawned bosses, zero banned blocks).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Entity, 3 attacks, Overcharge, items & art | Pending | `ArtilianBossEntity` multi-attack/target-ring hooks, `BossTrophyItem`, `CrystalColossusEntity`, `CrystalColossusRenderer`, `make_bosses_art.py`, datagen, and 5 `CrystalColossusGameTests`. |
+  | 2 Crystal Colossus Arena & `P3-02` | Pending | `artilian:crystal_colossus_arena` worldgen + chest loot + 2 arena GameTests + `BossSecurityProbes.p3_02_crystalColossusNeverBreaksBlocksOrAltarOrHarmsChester`. |
+  | 3 Client verification & screenshot | Pending | Owner checks Crystal Colossus + Arena + glowing shards + telegraphs in `./gradlew runClient` and saves `qa/evidence/crystal-colossus-2026-11-19.png`. |
+
+- **Tests & Red-proofs (`CrystalColossusGameTests`):**
+  1. `crystalColossusAttributesElementsTagEggAndLootTable`: verifies `CRYSTAL / STARLIGHT`, `200` HP, `artilian:bosses` tag, spawn egg, battle target validity, capture immunity, and `PRISM_CORE` loot drops.
+  2. `starlightSpireLocksTargetPositionAndCanBeDodged`: verifies targeted ground ring stays at target's starting position and can be dodged while stationary targets inside take damage only at tick `45`.
+  3. `crystalColossusEntersOverchargeAtHalfHealthAndUnlocksPrismNova`: verifies `BLUE` → `PURPLE` bar, `60`t → `45`t cooldown, NBT persistence, and `PRISM_NOVA` unlock & 6-block reach at `<= 50%` HP.
+  4. `bossAltarSummonsCrystalColossusWithColossusHeartAndAllowsRematch`: verifies `Colossus Heart` summon, `P3-01` cross-summon lock against `Colossus Heart` & `Golem Core`, and rematch after death.
+  5. `crystalColossusGeckoLibAssetsAndGlowmaskExist`: verifies required `.geo.json` bones, 4 animations, texture, glowmask, `colossus_heart.png`, and `prism_core.png`.
+  6. `crystalColossusArenaRegisteredInCrystalCanopyWoodsOnly`: verifies biome tag exclusivity and empty monster spawn overrides.
+  7. `crystalColossusArenaTemplateHasAltarPrepChestOpenSkyAndNoBannedBlocks`: verifies template bounds, 1 `Boss Altar` with clear sky, 1 prep chest with `Colossus Heart` + `Biome Treat`, zero banned blocks, zero pre-spawned bosses.
+- **Security Gate (`BossSecurityProbes.p3_02_crystalColossusNeverBreaksBlocksOrAltarOrHarmsChester`, `security/bosses/README.md`, `security/FINDINGS.md`):**
+  - `P3-02`: Under `mobGriefing = true` and `ArtilianConfig` destructive mode `true`, all 3 Colossus attacks (`CRYSTAL_QUAKE`, `STARLIGHT_SPIRE` aimed directly over `BOSS_ALTAR`/`CHEST`/`Chester`, and Overcharged `PRISM_NOVA`) break zero blocks/altars/chests and deal `0` damage to `ChesterEntity`.
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and owner verifies the Crystal Colossus fight and arena in `./gradlew runClient`.
 
 ### Phase 3 — Stage 3: Captain Brimstone
 - [ ] **Pending** — Second full custom boss building on `ArtilianBossEntity`, telegraphed attacks, arena & rematch altar, and boss drops.
