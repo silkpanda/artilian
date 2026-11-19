@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | Phase 3 Stage 2 (*The Crystal Colossus*) on branch `phase-3-stage-2-crystal-colossus` (branched from `main` at `d2afceb`, after PR #8 merged). Owner signed off on Phase 2 art on 2026-11-19. |
-| **Next** | Build Phase 3 Stage 2 Sub-stages 1–2 (*Crystal Colossus* boss, 3 telegraphed attacks, Phase 2 Overcharge, items/art, *Crystal Colossus Arena* worldgen, and `P3-02` non-griefing probe). |
-| **Waiting on the owner** | 1. In-game looks and screenshots for **Boss Framework** (*Training Golem* + *Boss Altar*) and **Crystal Colossus** (`qa/evidence/`) when home. 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 5. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | None (`main` and `phase-3-stage-2-crystal-colossus` only). |
+| **In progress** | Phase 3 Stage 2 (*The Crystal Colossus*) Sub-stages 1–2 code complete (`145/145` GameTests, `runData`, and `build` green) on branch `phase-3-stage-2-crystal-colossus` (from `main` at `d2afceb`, after PR #8 merged). Owner signed off on Phase 2 art on 2026-11-19. |
+| **Next** | 1. Push `phase-3-stage-2-crystal-colossus` and open a PR once the owner confirms (or after home client verification). 2. Owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) and **The Crystal Colossus** + *Crystal Colossus Arena* in `./gradlew runClient` and saves screenshots to `qa/evidence/`. 3. Begin **Phase 3 — Stage 3 (*Captain Brimstone*)**. |
+| **Waiting on the owner** | 1. In-game looks and screenshots when home for **Boss Framework** (*Training Golem* + *Boss Altar*) and **Crystal Colossus** + *Crystal Colossus Arena* (`qa/evidence/`). 2. Confirm when ready to push & merge `phase-3-stage-2-crystal-colossus`. 3. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 4. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 5. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 6. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | None (`main` and `phase-3-stage-2-crystal-colossus` only; not pushed yet). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -26,8 +26,8 @@ Sizes are ballparks in evenings of work, corrected as stages finish.
 |---|---|---|---|---|
 | 0 | Project prep: folder, Git repo, 5-doc stack, registers, GitHub repo & CI | n/a | n/a | ✅ Done |
 | 1 | NeoForge `1.21.1` baseline, Chester, starter gear, custom TNTs, Wands & Staves | 6 | 4–6 weeks | ⏳ Waiting on LAN co-op sign-off |
-| 2 | Overworld biomes (`TerraBlender`), pet capture & battle, kids' roster, structures & enemies | 9 | 2–3 months | ⏳ In progress (Stages 1–8 built) |
-| 3 | Custom bosses, rematch altars, Tier 3 gear, advanced Staves/TNTs | 5 | 6–8 weeks | ⏳ In progress (Stage 1 code complete) |
+| 2 | Overworld biomes (`TerraBlender`), pet capture & battle, kids' roster, structures & enemies | 9 | 2–3 months | ⏳ Art signed off; LAN co-op & official names pending |
+| 3 | Custom bosses, rematch altars, Tier 3 gear, advanced Staves/TNTs | 5 | 6–8 weeks | ⏳ In progress (Stages 1–2 code complete) |
 | 4 | Alex's Dimension: The Eye Realm | 7 | 2–3 months | ⏹ Pending |
 | 5 | Steve's Dimension: Giant Dragon Jungle & Grand Finale | 10 | 3–4 months | ⏹ Pending |
 
@@ -319,7 +319,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | Stage | What ships | Status |
 |---|---|---|
 | 1 | Boss Framework (`ArtilianBossEntity`, `TelegraphedAttack`, `BossAltarBlock`, `P3-01`) | ⏳ Sub-stages 1–3 merged in PR #7 (`137/137`); Sub-stage 4 client check pending |
-| 2 | The Crystal Colossus (`CrystalColossusEntity`, `Crystal Colossus Arena`, `P3-02`) | ⏳ In progress (branch `phase-3-stage-2-crystal-colossus`) |
+| 2 | The Crystal Colossus (`CrystalColossusEntity`, `Crystal Colossus Arena`, `P3-02`) | ⏳ Sub-stages 1–2 code complete (`145/145` on `phase-3-stage-2-crystal-colossus`); Sub-stage 3 client check pending |
 | 3 | Captain Brimstone | ⏹ Pending |
 | 4 | Tier 3 Arsenal (weapons, armor, tools, advanced Staves & Boss TNTs) | ⏹ Pending |
 | 5 | Phase 3 Art Pass & Family Co-op Sign-Off | ⏹ Pending |
@@ -345,7 +345,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   - `P3-01`: 20 uses in 20 ticks holding 20 Golem Cores summons exactly 1 boss and leaves 19 cores (`EXPLOITED` with `isBusy` off or stack consumed early; `HELD` in `137/137` suite).
 
 ### Phase 3 — Stage 2: The Crystal Colossus
-- [ ] **In Progress** — First full custom boss built on `ArtilianBossEntity` with three telegraphed attacks, Phase 2 *Crystal Overcharge*, an Overworld boss arena, rematch summoning, and boss drops for Phase 3 Stage 4 Tier 3 gear.
+- [ ] **Sub-stages 1–2 Complete (`145/145`); Sub-stage 3 (Client Verification & Screenshot) Pending** — First full custom boss built on `ArtilianBossEntity` with three telegraphed attacks, Phase 2 *Crystal Overcharge*, an Overworld boss arena, rematch summoning, and boss drops for Phase 3 Stage 4 Tier 3 gear.
 - **Why & Decisions:**
   1. **`CrystalColossusEntity` (`artilian:crystal_colossus`, `CRYSTAL / STARLIGHT`):** `200` HP (`100` hearts), `8.0` armor, `0.21` speed, `2.2 × 3.8` hitbox (3.8-block towering armored crystal titan with orbiting `floating_shards` and `AutoGlowingGeoLayer` glowmask), `BLUE` boss bar shifting to `PURPLE` on Phase 2 Overcharge. Weak to `EARTH` and `FIRE` so kids' *Training Golem*-tier pets (*Cinder Crag*, *Ember Drake*, *Crystal Fox*) feel great against it.
   2. **Three telegraphed attacks (all `>= 40` ticks, zero block breaking):**
@@ -353,16 +353,16 @@ Nobody on this project is an artist and there is no budget for commissions. The 
      - **Starlight Spire (`45`t, radius `3.0`, `6.5` Starlight):** locks onto the target's starting position (never chases mid-windup so kids can step out of the red ring) and drops a glowing Starlight pillar + `Glowing` (`60`t).
      - **Prism Nova (`50`t, radius `7.0`, `8.5` Crystal, Phase 2 Overcharge only):** unlocks at `<= 50%` HP (`100` HP), shortens attack cooldown from `60`t to `45`t, turns the boss bar `PURPLE`, plays a resonant chime + action-bar alert, and pulses a 7-block shockwave.
   3. **Summoning & Trophy Progression:**
-     - **Colossus Heart (`artilian:colossus_heart`):** `BossSummonItem` crafted from `Starlight Crystal` + `Amethyst Shard` + `Crystal Bloom` (and 1 guaranteed in the arena prep chest) for summoning/rematching at any **Boss Altar** (also add a survival recipe for `Boss Altar` from `Starlight Slate` + `Starlight Crystal` + `Sunsteel Ingot`).
+     - **Colossus Heart (`artilian:colossus_heart`):** `BossSummonItem` crafted from `Starlight Crystal` + `Amethyst Shard` + `Crystal Bloom` (and 1 guaranteed in the arena prep chest) for summoning/rematching at any **Boss Altar** (also added a survival recipe for `Boss Altar` from `Starlight Slate` + `Starlight Crystal` + `Sunsteel Ingot`).
      - **Prism Core (`artilian:prism_core`):** foil `BossTrophyItem` dropped (`2–3` guaranteed + `Starlight Crystal`, `Amethyst Shard`, `Biome Treat`) for forging Phase 3 Stage 4 Tier 3 Crystal gear.
   4. **Crystal Colossus Arena (`artilian:crystal_colossus_arena`):** Open-air stepped amphitheater in `CRYSTAL_CANOPY_WOODS` (`15×12×15`, wide 5-block cardinal stairs, 4 corner crystal obelisks, central `Boss Altar` under open sky, prep chest with `Colossus Heart` + `Biome Treats`, zero extra monster spawns, zero pre-spawned bosses, zero banned blocks).
 - **Sub-stages:**
 
   | Sub-stage | Commit | Summary & Verification |
   |---|---|---|
-  | 1 Entity, 3 attacks, Overcharge, items & art | Pending | `ArtilianBossEntity` multi-attack/target-ring hooks, `BossTrophyItem`, `CrystalColossusEntity`, `CrystalColossusRenderer`, `make_bosses_art.py`, datagen, and 5 `CrystalColossusGameTests`. |
-  | 2 Crystal Colossus Arena & `P3-02` | Pending | `artilian:crystal_colossus_arena` worldgen + chest loot + 2 arena GameTests + `BossSecurityProbes.p3_02_crystalColossusNeverBreaksBlocksOrAltarOrHarmsChester`. |
-  | 3 Client verification & screenshot | Pending | Owner checks Crystal Colossus + Arena + glowing shards + telegraphs in `./gradlew runClient` and saves `qa/evidence/crystal-colossus-2026-11-19.png`. |
+  | 1 Entity, 3 attacks, Overcharge, items & art | `8ebd512` | `ArtilianBossEntity` multi-attack/target-ring hooks, `BossTrophyItem`, `CrystalColossusEntity`, `CrystalColossusRenderer`, `make_bosses_art.py`, datagen, and 5 `CrystalColossusGameTests` (`142/142`). Red-proofs: `telegraphCenterFor` forced to boss pos → `starlightSpireLocksTargetPositionAndCanBeDodged` red; `checkOvercharge` bypassed → `crystalColossusEntersOverchargeAtHalfHealthAndUnlocksPrismNova` red; `PRISM_CORE` pool omitted → `crystalColossusAttributesElementsTagEggAndLootTable` red. |
+  | 2 Crystal Colossus Arena & `P3-02` | `fcf3cd1` | `artilian:crystal_colossus_arena` worldgen + chest loot + 2 arena GameTests + `BossSecurityProbes.p3_02_crystalColossusNeverBreaksBlocksOrAltarOrHarmsChester` (`145/145`). Red-proofs: `ExplosionInteraction.MOB` on impact → `P3-02` `EXPLOITED P3-02: Crystal Colossus destroyed or altered Chest`; `CRYSTAL_CANOPY_WOODS` omitted from `HAS_CRYSTAL_COLOSSUS_ARENA` → `crystalColossusArenaRegisteredInCrystalCanopyWoodsOnly` red. |
+  | 3 Client verification & screenshot | Pending | Owner checks Crystal Colossus + Arena + glowing shards + telegraphs in `./gradlew runClient` (`/locate structure artilian:crystal_colossus_arena`, or place Boss Altar + Colossus Heart) and saves `qa/evidence/crystal-colossus-2026-11-19.png`. |
 
 - **Tests & Red-proofs (`CrystalColossusGameTests`):**
   1. `crystalColossusAttributesElementsTagEggAndLootTable`: verifies `CRYSTAL / STARLIGHT`, `200` HP, `artilian:bosses` tag, spawn egg, battle target validity, capture immunity, and `PRISM_CORE` loot drops.
@@ -373,7 +373,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   6. `crystalColossusArenaRegisteredInCrystalCanopyWoodsOnly`: verifies biome tag exclusivity and empty monster spawn overrides.
   7. `crystalColossusArenaTemplateHasAltarPrepChestOpenSkyAndNoBannedBlocks`: verifies template bounds, 1 `Boss Altar` with clear sky, 1 prep chest with `Colossus Heart` + `Biome Treat`, zero banned blocks, zero pre-spawned bosses.
 - **Security Gate (`BossSecurityProbes.p3_02_crystalColossusNeverBreaksBlocksOrAltarOrHarmsChester`, `security/bosses/README.md`, `security/FINDINGS.md`):**
-  - `P3-02`: Under `mobGriefing = true` and `ArtilianConfig` destructive mode `true`, all 3 Colossus attacks (`CRYSTAL_QUAKE`, `STARLIGHT_SPIRE` aimed directly over `BOSS_ALTAR`/`CHEST`/`Chester`, and Overcharged `PRISM_NOVA`) break zero blocks/altars/chests and deal `0` damage to `ChesterEntity`.
+  - `P3-02`: Under `mobGriefing = true` and `ArtilianConfig` destructive mode `true`, all 3 Colossus attacks (`CRYSTAL_QUAKE`, `STARLIGHT_SPIRE` aimed directly over `BOSS_ALTAR`/`CHEST`/`Chester`, and Overcharged `PRISM_NOVA`) break zero blocks/altars/chests and deal `0` damage to `ChesterEntity` (`EXPLOITED` with `ExplosionInteraction.MOB` on impact; `HELD` in `145/145` suite).
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and owner verifies the Crystal Colossus fight and arena in `./gradlew runClient`.
 
 ### Phase 3 — Stage 3: Captain Brimstone
@@ -424,9 +424,9 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ---
 
-## Security Gates Summary (`P1-01`–`P3-01`)
+## Security Gates Summary (`P1-01`–`P3-02`)
 
-All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`137/137`** GameTests passing.
+All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`145/145`** GameTests passing.
 
 | IDs | Phase / Stage | Area | GameTest Class | Index |
 |---|---|---|---|---|
@@ -434,7 +434,7 @@ All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on)
 | `P1-07`–`P1-10` | Phase 1 Stage 4 | `allowDestructiveCustomTnt` default off, Cluster Quarry & safe TNTs | `TntSecurityProbes` | `security/tnt/README.md` |
 | `P2-01`–`P2-04` | Phase 2 Stages 3–4 | Pet crystal ownership, non-lethal fainting, anti-duplication, battle safety | `PetSecurityProbes` | `security/pets/README.md` |
 | `P2-05` | Phase 2 Stage 6C | Sunbeam chest `minecraft:light` air-only placement & removal cleanup | `PetRosterGameTests` | `security/FINDINGS.md` |
-| `P3-01` | Phase 3 Stage 1 | Boss Altar one-boss-per-altar & anti-spam item preservation | `BossSecurityProbes` | `security/bosses/README.md` |
+| `P3-01`–`P3-02` | Phase 3 Stages 1–2 | Boss Altar anti-spam & Crystal Colossus non-griefing / Chester safety | `BossSecurityProbes` | `security/bosses/README.md` |
 
 ---
 
