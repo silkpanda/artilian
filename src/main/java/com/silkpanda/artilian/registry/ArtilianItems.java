@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.boss.BossSummonItem;
+import com.silkpanda.artilian.boss.BossTrophyItem;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
@@ -20,6 +21,7 @@ import net.minecraft.world.item.DoubleHighBlockItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SwordItem;
 import net.neoforged.bus.api.IEventBus;
@@ -286,6 +288,22 @@ public class ArtilianItems {
     public static final DeferredItem<BossSummonItem> GOLEM_CORE =
             ITEMS.register("golem_core", () -> new BossSummonItem(ArtilianEntities.TRAINING_GOLEM,
                     new Item.Properties().stacksTo(16)));
+
+    // Crystal Colossus (Phase 3 Stage 2)
+    public static final DeferredItem<DeferredSpawnEggItem> CRYSTAL_COLOSSUS_SPAWN_EGG =
+            ITEMS.register("crystal_colossus_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CRYSTAL_COLOSSUS, 0x38D9C0, 0x8B7CFF, new Item.Properties()));
+    public static final DeferredItem<BossSummonItem> COLOSSUS_HEART =
+            ITEMS.register("colossus_heart", () -> new BossSummonItem(
+                    ArtilianEntities.CRYSTAL_COLOSSUS,
+                    new Item.Properties().stacksTo(16).rarity(Rarity.RARE),
+                    "item.artilian.colossus_heart.tooltip",
+                    ChatFormatting.AQUA));
+    public static final DeferredItem<BossTrophyItem> PRISM_CORE =
+            ITEMS.register("prism_core", () -> new BossTrophyItem(
+                    new Item.Properties().stacksTo(16).rarity(Rarity.EPIC),
+                    "item.artilian.prism_core.tooltip",
+                    ChatFormatting.LIGHT_PURPLE));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

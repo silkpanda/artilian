@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "B": {
+      "item": "artilian:crystal_bloom"
+    },
+    "C": {
+      "item": "artilian:starlight_crystal"
+    }
+  },
+  "pattern": [
+    " C ",
+    "ABA",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:colossus_heart"
+  }
+}

@@ -51,6 +51,7 @@ public final class ArtilianClient {
                 ctx -> new StructureEnemyRenderer<>(ctx, "astral_stalker", 0.48F));
         event.registerEntityRenderer(ArtilianEntities.TRAINING_GOLEM.get(),
                 ctx -> new TrainingGolemRenderer<>(ctx, "training_golem", 1.0F));
+        event.registerEntityRenderer(ArtilianEntities.CRYSTAL_COLOSSUS.get(), CrystalColossusRenderer::new);
     }
 
     @SubscribeEvent

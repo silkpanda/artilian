@@ -75,6 +75,7 @@ public class ArtilianStructureTemplateProvider implements DataProvider {
             writeTemplate(cachedOutput, "crystal_grove_shrine", buildCrystalGroveShrine());
             writeTemplate(cachedOutput, "emberbloom_outpost", buildEmberbloomOutpost());
             writeTemplate(cachedOutput, "starlight_watchtower", buildStarlightWatchtower());
+            writeTemplate(cachedOutput, "crystal_colossus_arena", buildCrystalColossusArena());
         });
     }
 
@@ -910,6 +911,101 @@ public class ArtilianStructureTemplateProvider implements DataProvider {
         // Two persistent Astral Stalkers guarding the front terrace.
         b.addGuardian(ArtilianEntities.ASTRAL_STALKER.get(), 4.5, 1.0, 11.5);
         b.addGuardian(ArtilianEntities.ASTRAL_STALKER.get(), 8.5, 1.0, 11.5);
+
+        b.connectFencesAndWalls();
+        return b.build();
+    }
+
+    private static CompoundTag buildCrystalColossusArena() {
+        TemplateBuilder b = new TemplateBuilder(15, 12, 15);
+        BlockState slate = ArtilianBlocks.STARLIGHT_SLATE.get().defaultBlockState();
+        Block slateStairs = ArtilianBlocks.STARLIGHT_SLATE_STAIRS.get();
+        BlockState slateWall = ArtilianBlocks.STARLIGHT_SLATE_WALL.get().defaultBlockState();
+        BlockState crystalBlock = ArtilianBlocks.STARLIGHT_CRYSTAL_BLOCK.get().defaultBlockState();
+        BlockState turf = ArtilianBlocks.CRYSTAL_TURF.get().defaultBlockState();
+        BlockState bloom = ArtilianBlocks.CRYSTAL_BLOOM.get().defaultBlockState();
+        BlockState chiseledStone = Blocks.CHISELED_STONE_BRICKS.defaultBlockState();
+        BlockState soulLantern = Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, false);
+        BlockState amethystUp = Blocks.AMETHYST_CLUSTER.defaultBlockState()
+                .setValue(AmethystClusterBlock.FACING, Direction.UP);
+
+        // Open-air arena volume
+        b.fillBox(0, 1, 0, 14, 11, 14, Blocks.AIR.defaultBlockState());
+
+        // y = 0: 15x15 ground foundation with Crystal Turf outer corners
+        for (int x = 0; x <= 14; x++) {
+            for (int z = 0; z <= 14; z++) {
+                boolean outerEdge = (x == 0 || x == 14 || z == 0 || z == 14);
+                b.set(x, 0, z, outerEdge ? slate : weatheredStone(x, 0, z));
+            }
+        }
+        for (int cx : new int[]{0, 14}) {
+            for (int cz : new int[]{0, 14}) {
+                b.set(cx, 0, cz, turf);
+                b.set(cx, 1, cz, bloom);
+            }
+        }
+
+        // y = 1: Raised 13x13 battle dais with wide 5-block cardinal stairs
+        for (int x = 1; x <= 13; x++) {
+            for (int z = 1; z <= 13; z++) {
+                boolean border = (x == 1 || x == 13 || z == 1 || z == 13);
+                b.set(x, 1, z, border ? slate : weatheredStone(x, 1, z));
+            }
+        }
+        for (int i = 5; i <= 9; i++) {
+            b.set(i, 1, 1, stair(slateStairs, Direction.SOUTH, Half.BOTTOM));
+            b.set(i, 1, 13, stair(slateStairs, Direction.NORTH, Half.BOTTOM));
+            b.set(1, 1, i, stair(slateStairs, Direction.EAST, Half.BOTTOM));
+            b.set(13, 1, i, stair(slateStairs, Direction.WEST, Half.BOTTOM));
+        }
+        for (int cx : new int[]{1, 13}) {
+            for (int cz : new int[]{1, 13}) {
+                b.set(cx, 1, cz, chiseledStone);
+            }
+        }
+        // Central summon mosaic inlay at y = 1
+        for (int x = 5; x <= 9; x++) {
+            for (int z = 5; z <= 9; z++) {
+                if (Math.abs(x - 7) + Math.abs(z - 7) <= 3) {
+                    b.set(x, 1, z, slate);
+                }
+            }
+        }
+        b.set(7, 1, 7, crystalBlock);
+        b.set(7, 1, 5, crystalBlock);
+        b.set(7, 1, 9, crystalBlock);
+        b.set(5, 1, 7, crystalBlock);
+        b.set(9, 1, 7, crystalBlock);
+
+        // y = 2: Central Boss Altar under open sky + South prep chest
+        b.set(7, 2, 7, ArtilianBlocks.BOSS_ALTAR.get().defaultBlockState());
+        b.setChest(5, 2, 12, Direction.NORTH, ArtilianStructures.CRYSTAL_COLOSSUS_ARENA_CHEST);
+
+        // Four corner crystal obelisks + low parapet arcs (wide cardinal openings stay clear)
+        int[][] corners = {{2, 2, 1, 1}, {12, 2, -1, 1}, {2, 12, 1, -1}, {12, 12, -1, -1}};
+        for (int[] c : corners) {
+            int ox = c[0];
+            int oz = c[1];
+            int dx = c[2];
+            int dz = c[3];
+            b.set(ox, 2, oz, chiseledStone);
+            b.set(ox, 3, oz, slate);
+            b.set(ox, 4, oz, slate);
+            b.set(ox, 5, oz, crystalBlock);
+            b.set(ox, 6, oz, slateWall);
+            b.set(ox, 7, oz, slateWall);
+            b.set(ox, 8, oz, chiseledStone);
+            b.set(ox, 9, oz, amethystUp);
+
+            // Low parapet wall wings flanking each obelisk, capped with Soul Lanterns near stairs
+            b.set(ox + dx, 2, oz, slateWall);
+            b.set(ox + 2 * dx, 2, oz, slateWall);
+            b.set(ox + 2 * dx, 3, oz, soulLantern);
+            b.set(ox, 2, oz + dz, slateWall);
+            b.set(ox, 2, oz + 2 * dz, slateWall);
+            b.set(ox, 3, oz + 2 * dz, soulLantern);
+        }
 
         b.connectFencesAndWalls();
         return b.build();
