@@ -434,7 +434,22 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, `check_armor_sheets.py` passes, and live `./gradlew runClient` verifies Tier 3 gear, Staves, and Boss TNTs.
 
 ### Phase 3 — Stage 5: Phase 3 Art Pass & Sign-Off
-- [ ] **Pending** — Art pass over Phase 3 bosses, altars, and Tier 3 gear; done when all checks are green and both bosses are summonable, beatable by a young kid with a parent, and drop working Tier 3 gear.
+- [ ] **In Progress** — Art tooling (`TD-01`), Phase 3 art & balance audit, end-to-end progression GameTests, and live client sign-off across Bosses, Altars, and Tier 3 Arsenal.
+- **Why & Decisions:** Ensure every Phase 3 boss, altar, and Tier 3 item meets `DESIGN.md`'s 3D Art Standard and plays smoothly for ages 5 & 7 before moving to Phase 4 (*The Eye Realm*):
+  1. **`TD-01` Art Tooling (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`):** Extract reusable v2 texture painters (`paint_weathered_stone`, `paint_forged_metal`, `paint_faceted_crystal`, `paint_organic_shaded`, `assert_uv_layout_clean`), generalize `check_armor_sheets.py` into `lint_art.py` across all `.geo.json` + `.png` pairs, and add headless 4-angle 3D contact-sheet rendering (`preview_geo.py`).
+  2. **Phase 3 Art Polish:** Audit `training_golem`, `crystal_colossus`, `captain_brimstone`, `prismatic_armor`, `boss_altar`, and Tier 3 items with `lint_art.py` + `preview_geo.py`; upgrade `training_golem` from its Stage 1 `64×64` placeholder to a `128×128` v2 weathered-stone & arcane-core model.
+  3. **Progression & Balance Sign-Off:** Verify end-to-end Phase 3 loop via `Phase3SignOffGameTests` (Boss Altar summons both bosses, drops `Prism Core` / `Brimstone Doubloon`, Tier 3 gear/staves/TNTs work with kid-safe defaults, all boss telegraphs `>= 30` ticks).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 `TD-01` art tooling & Phase 3 audit | Pending | `art_lib.py`, `lint_art.py`, `preview_geo.py`; audit all Phase 3 `.geo.json` + `.png` assets. |
+  | 2 Phase 3 art polish & sign-off tests | Pending | `training_golem` `128×128` v2 art upgrade, any `lint_art.py` fixes, `Phase3SignOffGameTests`. |
+  | 3 Full verification & live client sign-off | Pending | `lint_art.py`, `runData`, `build`, `runGameTestServer`, `./gradlew runClient` screenshots, `TECH_DEBT.md` `TD-01` FIXED. |
+
+- **Tests & Red-proofs:** Pending (`Phase3SignOffGameTests` + `lint_art.py`).
+- **Security Gate:** `n/a` (art pass, tooling, and progression sign-off; `P3-01`–`P3-04` already `HELD`).
+- **Done When:** `lint_art.py`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green; live `./gradlew runClient` verifies Tier 3 Arsenal and Phase 3 bosses/altar; `TD-01` is marked `FIXED`.
 
 ---
 
