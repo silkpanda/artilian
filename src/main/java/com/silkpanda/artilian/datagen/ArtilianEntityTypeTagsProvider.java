@@ -34,6 +34,9 @@ public class ArtilianEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 ArtilianEntities.CINDER_RAIDER.get(),
                 ArtilianEntities.ASTRAL_STALKER.get()
         );
-        tag(ArtilianTags.EntityTypes.BOSSES).add(ArtilianEntities.TRAINING_GOLEM.get());
+        tag(ArtilianTags.EntityTypes.BOSSES).add(
+                ArtilianEntities.TRAINING_GOLEM.get(),
+                ArtilianEntities.CRYSTAL_COLOSSUS.get()
+        );
     }
 }

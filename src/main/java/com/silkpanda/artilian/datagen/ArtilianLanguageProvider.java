@@ -158,6 +158,14 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addBlock(ArtilianBlocks.BOSS_ALTAR, "Boss Altar");
         this.addItem(ArtilianItems.GOLEM_CORE, "Golem Core");
         this.add("message.artilian.boss_altar.busy", "This altar's boss is still out there!");
+        // Phase 3 Stage 2: Crystal Colossus
+        this.addEntityType(ArtilianEntities.CRYSTAL_COLOSSUS, "Crystal Colossus");
+        this.addItem(ArtilianItems.CRYSTAL_COLOSSUS_SPAWN_EGG, "Crystal Colossus Spawn Egg");
+        this.addItem(ArtilianItems.COLOSSUS_HEART, "Colossus Heart");
+        this.add("item.artilian.colossus_heart.tooltip", "Use on a Boss Altar to summon the Crystal Colossus!");
+        this.addItem(ArtilianItems.PRISM_CORE, "Prism Core");
+        this.add("item.artilian.prism_core.tooltip", "Boss Trophy — Forges Tier 3 Crystal gear!");
+        this.add("message.artilian.crystal_colossus.overcharged", "The Crystal Colossus shines with Starlight power!");
         this.addItem(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG, "Prism Sentinel Spawn Egg");
         this.addItem(ArtilianItems.CINDER_RAIDER_SPAWN_EGG, "Cinder Raider Spawn Egg");
         this.addItem(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG, "Astral Stalker Spawn Egg");

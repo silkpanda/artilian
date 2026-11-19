@@ -1,5 +1,6 @@
 package com.silkpanda.artilian.boss;
 
+import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.pet.ElementalMob;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
@@ -162,21 +163,60 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
         return this.activeAttack != null;
     }
 
-    /** Starts one attack: freeze in place, draw the ring, and begin the climbing bell. */
+    @Nullable
+    public TelegraphedAttack getActiveAttack() {
+        return this.activeAttack;
+    }
+
+    public Vec3 getTelegraphCenter() {
+        return this.telegraphCenter;
+    }
+
+    /** Starts one attack centered on the boss: freeze in place, draw the ring, and begin the climbing bell. */
     public boolean startTelegraph(TelegraphedAttack attack) {
+        return this.startTelegraph(attack, this.position());
+    }
+
+    /** Starts one attack centered at {@code center}: freeze in place, draw the ring, and begin the climbing bell. */
+    public boolean startTelegraph(TelegraphedAttack attack, Vec3 center) {
         if (this.isTelegraphing()) {
             return false;
         }
         this.activeAttack = attack;
         this.telegraphTicks = 0;
-        this.telegraphCenter = this.position();
+        this.telegraphCenter = center;
         this.getNavigation().stop();
         Vec3 motion = this.getDeltaMovement();
         this.setDeltaMovement(0.0, motion.y, 0.0);
         this.triggerAnim("action", "telegraph");
-        this.playBell(BossTelegraphs.PITCH_START);
+        BossTelegraphs.bell(this.level(), center.x, center.y, center.z, BossTelegraphs.PITCH_START);
         return true;
     }
+
+    /** Chooses the next telegraphed attack for {@code target}, or {@code null} when out of range. */
+    @Nullable
+    protected TelegraphedAttack chooseTelegraphedAttack(LivingEntity target) {
+        for (TelegraphedAttack attack : this.telegraphedAttacks()) {
+            double range = attack.radius() + 1.0;
+            if (this.distanceToSqr(target) <= range * range) {
+                return attack;
+            }
+        }
+        return null;
+    }
+
+    /** Chooses where the danger ring locks for {@code attack}; defaults to the boss's own feet. */
+    protected Vec3 telegraphCenterFor(TelegraphedAttack attack, LivingEntity target) {
+        return this.position();
+    }
+
+    /** Cooldown in ticks after a telegraphed attack lands. */
+    protected int attackCooldownTicks() {
+        return DEFAULT_ATTACK_COOLDOWN;
+    }
+
+    /** Subclass hook for boss-specific particles, sounds, or mild knockback on telegraph impact. */
+    protected void onTelegraphImpact(TelegraphedAttack attack, Vec3 center, List<LivingEntity> hitTargets) {}
 
     /** Advances the current telegraph by one tick. No-op when no attack is running. */
     public void tickTelegraph() {
@@ -193,12 +233,8 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
         if (this.telegraphTicks >= attack.windupTicks()) {
             this.impact(attack);
             this.activeAttack = null;
-            this.attackCooldown = DEFAULT_ATTACK_COOLDOWN;
+            this.attackCooldown = this.attackCooldownTicks();
         }
-    }
-
-    private void playBell(float pitch) {
-        BossTelegraphs.bell(this.level(), this.getX(), this.getY(), this.getZ(), pitch);
     }
 
     /**
@@ -209,9 +245,11 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
         Vec3 center = this.telegraphCenter;
         AABB area = new AABB(center, center).inflate(attack.radius(), 2.0, attack.radius());
         double radiusSqr = attack.radius() * attack.radius();
+        List<LivingEntity> hitTargets = new ArrayList<>();
         for (LivingEntity target : this.level().getEntitiesOfClass(LivingEntity.class, area)) {
-            if (target == this || target instanceof ArtilianBossEntity
-                    || target.isSpectator() || (target instanceof Player player && player.isCreative())) {
+            if (target == this || target instanceof ArtilianBossEntity || target instanceof ChesterEntity
+                    || !target.isAlive() || target.isSpectator()
+                    || (target instanceof Player player && player.isCreative())) {
                 continue;
             }
             double dx = target.getX() - center.x;
@@ -219,13 +257,16 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
             if (dx * dx + dz * dz > radiusSqr) {
                 continue;
             }
-            target.hurt(this.damageSources().mobAttack(this),
-                    attack.damage() * attack.element().multiplierAgainst(target));
+            if (target.hurt(this.damageSources().mobAttack(this),
+                    attack.damage() * attack.element().multiplierAgainst(target))) {
+                hitTargets.add(target);
+            }
         }
         if (this.level() instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(attack.element().particle(), center.x, center.y + 0.1, center.z,
                     24, 0.5, 0.1, 0.5, 0.05);
         }
+        this.onTelegraphImpact(attack, center, hitTargets);
     }
 
     @Override
@@ -243,12 +284,9 @@ public abstract class ArtilianBossEntity extends Monster implements GeoEntity, E
         } else {
             LivingEntity target = this.getTarget();
             if (target != null && target.isAlive()) {
-                for (TelegraphedAttack attack : this.telegraphedAttacks()) {
-                    double range = attack.radius() + 1.0;
-                    if (this.distanceToSqr(target) <= range * range) {
-                        this.startTelegraph(attack);
-                        break;
-                    }
+                TelegraphedAttack chosen = this.chooseTelegraphedAttack(target);
+                if (chosen != null) {
+                    this.startTelegraph(chosen, this.telegraphCenterFor(chosen, target));
                 }
             }
         }

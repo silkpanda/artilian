@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.boss.CrystalColossusEntity;
 import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.enemy.AstralStalkerEntity;
@@ -175,6 +176,14 @@ public class ArtilianEntities {
                     .eyeHeight(2.2F)
                     .clientTrackingRange(10)
                     .build("training_golem"));
+
+    /** Crystal Colossus: armored Crystal/Starlight titan boss of the Crystal Canopy Woods. */
+    public static final DeferredHolder<EntityType<?>, EntityType<CrystalColossusEntity>> CRYSTAL_COLOSSUS =
+            ENTITY_TYPES.register("crystal_colossus", () -> EntityType.Builder.of(CrystalColossusEntity::new, MobCategory.MONSTER)
+                    .sized(2.2F, 3.8F)
+                    .eyeHeight(3.2F)
+                    .clientTrackingRange(12)
+                    .build("crystal_colossus"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "artilian:starlight_crystal"
+    },
+    "S": {
+      "item": "artilian:starlight_slate"
+    },
+    "X": {
+      "item": "artilian:sunsteel_ingot"
+    }
+  },
+  "pattern": [
+    "SCS",
+    "SXS",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:boss_altar"
+  }
+}

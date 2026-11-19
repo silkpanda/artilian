@@ -134,6 +134,27 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .requires(Items.SUGAR)
                 .unlockedBy("has_biome_bloom", has(ArtilianTags.Items.BIOME_BLOOMS))
                 .save(output);
+
+        // Phase 3 Stage 2: Boss Altar & Crystal Colossus summon item
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ArtilianItems.COLOSSUS_HEART.get())
+                .pattern(" C ")
+                .pattern("ABA")
+                .pattern(" C ")
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('A', Items.AMETHYST_SHARD)
+                .define('B', ArtilianBlocks.CRYSTAL_BLOOM.get())
+                .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ArtilianBlocks.BOSS_ALTAR.get())
+                .pattern("SCS")
+                .pattern("SXS")
+                .pattern("SSS")
+                .define('S', ArtilianBlocks.STARLIGHT_SLATE.get())
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('X', ArtilianItems.SUNSTEEL_INGOT.get())
+                .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
     }
 
     private static void slateStonecutting(RecipeOutput output, ItemLike result, ItemLike base, int count) {
