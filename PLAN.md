@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 3 — Stage 3 (*Captain Brimstone*)** started on branch `phase-3-stage-3-captain-brimstone` (Sub-stage 1: reference spec, Art Brief, and dedicated 3D GeckoLib model/texture art). PR #10 (`phase-3-stage-2-crystal-colossus`) merged into `main`. |
-| **Next** | 1. Finish **Phase 3 — Stage 3 (*Captain Brimstone*)** Sub-stages 1–3 (Art → Entity/Attacks/Items/GameTests → *Brimstone Bastion* arena + `P3-03` + live `./gradlew runClient` verification & PR). 2. Implement `TD-01` (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`) or proceed to **Phase 3 — Stage 4 (*Tier 3 Arsenal*)**. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
+| **In progress** | **Phase 3 — Stage 3 (*Captain Brimstone*)** complete (`153/153` GameTests, `runData`, `build`, and live `./gradlew runClient` screenshots verified) on branch `phase-3-stage-3-captain-brimstone`, ready for PR into `main`. |
+| **Next** | 1. Push `phase-3-stage-3-captain-brimstone` and open/merge PR into `main` once CI is green. 2. Implement `TD-01` (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`) or begin **Phase 3 — Stage 4 (*Tier 3 Arsenal*)**. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
 | **Waiting on the owner** | 1. In-game look & screenshot when home for **Boss Framework** (*Training Golem* + *Boss Altar*, `qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 5. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | None (`main` and `phase-3-stage-3-captain-brimstone` only). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -321,7 +321,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 |---|---|---|
 | 1 | Boss Framework (`ArtilianBossEntity`, `TelegraphedAttack`, `BossAltarBlock`, `P3-01`) | ⏳ Sub-stages 1–3 merged in PR #7 (`137/137`); Sub-stage 4 client check pending |
 | 2 | The Crystal Colossus (`CrystalColossusEntity`, `Crystal Colossus Arena`, `P3-02`) | ✅ Complete (`145/145`, merged in PR #10) |
-| 3 | Captain Brimstone (`CaptainBrimstoneEntity`, `Brimstone Bastion`, `P3-03`) | ⏳ In progress (Sub-stage 1: Reference Spec & Art) |
+| 3 | Captain Brimstone (`CaptainBrimstoneEntity`, `Brimstone Bastion`, `P3-03`) | ✅ Complete (`153/153`, client verified on `phase-3-stage-3-captain-brimstone`) |
 | 4 | Tier 3 Arsenal (weapons, armor, tools, advanced Staves & Boss TNTs) | ⏹ Pending |
 | 5 | Phase 3 Art Pass & Family Co-op Sign-Off | ⏹ Pending |
 
@@ -378,7 +378,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and owner verifies the Crystal Colossus fight and arena in `./gradlew runClient`.
 
 ### Phase 3 — Stage 3: Captain Brimstone
-- [ ] **In progress (`phase-3-stage-3-captain-brimstone`)** — Second full custom boss built on `ArtilianBossEntity` with three telegraphed attacks, Phase 2 *Brimstone Broadside*, an Emberbloom Meadows arena, rematch summoning, and boss drops for Phase 3 Stage 4 Tier 3 gear.
+- [x] **Complete (`153/153` GameTests & Live Client Verified)** — Second full custom boss built on `ArtilianBossEntity` with three telegraphed attacks, Phase 2 *Brimstone Broadside*, an Emberbloom Meadows arena, rematch summoning, and boss drops for Phase 3 Stage 4 Tier 3 gear.
 - **Art Brief (`qa/reference/bosses/captain-brimstone.md`):**
   1. **Target height/scale:** `2.0 × 3.4` hitbox (`~3.6` blocks tall with tricorne hat & shoulder pauldrons).
   2. **Silhouette inspiration:** Magma-forged dread-pirate captain — wide angled 3-flap tricorne hat with skull-crest & ember plume, broad shoulder pauldrons, flared greatcoat tails, heavy hand-cannon right gauntlet, and notched cutlass left forearm.
@@ -401,7 +401,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   |---|---|---|
   | 1 Reference spec, Art Brief & Boss Art | `09633cd` | `qa/reference/bosses/captain-brimstone.md`, `build_captain_brimstone` / `build_brimstone_compass` / `build_brimstone_doubloon` in `tools/art/make_bosses_art.py` (`256×128` UV-checked sheet, `.geo.json`, `.animation.json`, `_glowmask.png`, item icons). |
   | 2 Entity, 3 attacks, Broadside, Items & Tests | `a3dab7e` | `CaptainBrimstoneEntity`, `CaptainBrimstoneRenderer`, `ArtilianEntities`, `ArtilianItems`, datagen (loot, recipes, models, lang, tags), and 5 `CaptainBrimstoneGameTests` (`150/150`). Red-proof: `telegraphCenterFor` forced to `this.position()` → `powderKegTossLocksTargetPositionAndCanBeDodged` red. |
-  | 3 Brimstone Bastion Arena, `P3-03` & Client Check | This commit | `artilian:brimstone_bastion` worldgen + chest loot + 2 arena GameTests + `BossSecurityProbes.p3_03_captainBrimstoneNeverBreaksBlocksOrAltarOrIgnitesTerrainOrHarmsChester` (`153/153`). Red-proof: `ExplosionInteraction.MOB` (`fire=true`) on impact → `P3-03` failed. |
+  | 3 Brimstone Bastion Arena, `P3-03` & Client Check | `70f7183` + evidence | `artilian:brimstone_bastion` worldgen + chest loot + 2 arena GameTests + `BossSecurityProbes.p3_03_captainBrimstoneNeverBreaksBlocksOrAltarOrIgnitesTerrainOrHarmsChester` (`153/153`). Red-proof: `ExplosionInteraction.MOB` (`fire=true`) on impact → `P3-03` failed. Live `./gradlew runClient` verified (`qa/evidence/captain-brimstone-2026-11-19.png`, `qa/evidence/captain-brimstone-broadside-2026-11-19.png`). |
 
 - **Tests & Red-proofs (`CaptainBrimstoneGameTests`):** `153/153` green (7 `CaptainBrimstoneGameTests` + `P3-03`). Red-proofs recorded above.
 - **Security Gate (`BossSecurityProbes.p3_03_captainBrimstoneNeverBreaksBlocksOrAltarOrIgnitesTerrainOrHarmsChester`, `security/bosses/README.md`, `security/FINDINGS.md`):**
