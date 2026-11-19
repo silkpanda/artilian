@@ -31,6 +31,27 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
         this.add(ArtilianEntities.ASTRAL_STALKER.get(), guardianTable(ArtilianItems.STARLIGHT_CRYSTAL.get(), 1, 1));
         this.add(ArtilianEntities.TRAINING_GOLEM.get(), LootTable.lootTable());
         this.add(ArtilianEntities.CRYSTAL_COLOSSUS.get(), crystalColossusTable());
+        this.add(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), captainBrimstoneTable());
+    }
+
+    private static LootTable.Builder captainBrimstoneTable() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.BRIMSTONE_DOUBLOON.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 3)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.SUNSTEEL_INGOT.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 6)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(Items.BLAZE_POWDER)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 6)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.BIOME_TREAT.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))));
     }
 
     private static LootTable.Builder crystalColossusTable() {
@@ -72,7 +93,8 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
                 ArtilianEntities.CINDER_RAIDER.get(),
                 ArtilianEntities.ASTRAL_STALKER.get(),
                 ArtilianEntities.TRAINING_GOLEM.get(),
-                ArtilianEntities.CRYSTAL_COLOSSUS.get()
+                ArtilianEntities.CRYSTAL_COLOSSUS.get(),
+                ArtilianEntities.CAPTAIN_BRIMSTONE.get()
         );
     }
 }

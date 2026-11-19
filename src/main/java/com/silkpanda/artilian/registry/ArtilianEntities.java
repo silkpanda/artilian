@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.boss.CaptainBrimstoneEntity;
 import com.silkpanda.artilian.boss.CrystalColossusEntity;
 import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
@@ -184,6 +185,14 @@ public class ArtilianEntities {
                     .eyeHeight(3.2F)
                     .clientTrackingRange(12)
                     .build("crystal_colossus"));
+
+    /** Captain Brimstone: magma-forged Fire/Shadow pirate captain boss of Emberbloom Meadows. */
+    public static final DeferredHolder<EntityType<?>, EntityType<CaptainBrimstoneEntity>> CAPTAIN_BRIMSTONE =
+            ENTITY_TYPES.register("captain_brimstone", () -> EntityType.Builder.of(CaptainBrimstoneEntity::new, MobCategory.MONSTER)
+                    .sized(2.0F, 3.4F)
+                    .eyeHeight(2.85F)
+                    .clientTrackingRange(12)
+                    .build("captain_brimstone"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

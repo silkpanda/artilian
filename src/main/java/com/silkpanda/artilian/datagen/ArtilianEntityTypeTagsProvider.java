@@ -36,7 +36,8 @@ public class ArtilianEntityTypeTagsProvider extends EntityTypeTagsProvider {
         );
         tag(ArtilianTags.EntityTypes.BOSSES).add(
                 ArtilianEntities.TRAINING_GOLEM.get(),
-                ArtilianEntities.CRYSTAL_COLOSSUS.get()
+                ArtilianEntities.CRYSTAL_COLOSSUS.get(),
+                ArtilianEntities.CAPTAIN_BRIMSTONE.get()
         );
     }
 }

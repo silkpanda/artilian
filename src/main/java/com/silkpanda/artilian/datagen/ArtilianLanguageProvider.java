@@ -166,6 +166,14 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.PRISM_CORE, "Prism Core");
         this.add("item.artilian.prism_core.tooltip", "Boss Trophy — Forges Tier 3 Crystal gear!");
         this.add("message.artilian.crystal_colossus.overcharged", "The Crystal Colossus shines with Starlight power!");
+        // Phase 3 Stage 3: Captain Brimstone
+        this.addEntityType(ArtilianEntities.CAPTAIN_BRIMSTONE, "Captain Brimstone");
+        this.addItem(ArtilianItems.CAPTAIN_BRIMSTONE_SPAWN_EGG, "Captain Brimstone Spawn Egg");
+        this.addItem(ArtilianItems.BRIMSTONE_COMPASS, "Brimstone Compass");
+        this.add("item.artilian.brimstone_compass.tooltip", "Use on a Boss Altar to summon Captain Brimstone!");
+        this.addItem(ArtilianItems.BRIMSTONE_DOUBLOON, "Brimstone Doubloon");
+        this.add("item.artilian.brimstone_doubloon.tooltip", "Boss Trophy — Forges Tier 3 Brimstone gear!");
+        this.add("message.artilian.captain_brimstone.broadside", "Captain Brimstone bellows: All hands, fire the broadside!");
         this.addItem(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG, "Prism Sentinel Spawn Egg");
         this.addItem(ArtilianItems.CINDER_RAIDER_SPAWN_EGG, "Cinder Raider Spawn Egg");
         this.addItem(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG, "Astral Stalker Spawn Egg");

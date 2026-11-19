@@ -52,6 +52,7 @@ public final class ArtilianClient {
         event.registerEntityRenderer(ArtilianEntities.TRAINING_GOLEM.get(),
                 ctx -> new TrainingGolemRenderer<>(ctx, "training_golem", 1.0F));
         event.registerEntityRenderer(ArtilianEntities.CRYSTAL_COLOSSUS.get(), CrystalColossusRenderer::new);
+        event.registerEntityRenderer(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), CaptainBrimstoneRenderer::new);
     }
 
     @SubscribeEvent

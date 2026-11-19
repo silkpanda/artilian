@@ -105,6 +105,9 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.CRYSTAL_COLOSSUS_SPAWN_EGG.get());
                         output.accept(ArtilianItems.COLOSSUS_HEART.get());
                         output.accept(ArtilianItems.PRISM_CORE.get());
+                        output.accept(ArtilianItems.CAPTAIN_BRIMSTONE_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.BRIMSTONE_COMPASS.get());
+                        output.accept(ArtilianItems.BRIMSTONE_DOUBLOON.get());
                     })
                     .build());
 
