@@ -15,7 +15,13 @@ import com.silkpanda.artilian.registry.ArtilianDataComponents;
 import com.silkpanda.artilian.registry.ArtilianEntities;
 import com.silkpanda.artilian.registry.ArtilianItems;
 import com.silkpanda.artilian.registry.ArtilianTags;
+import com.silkpanda.artilian.worldgen.ArtilianBiomes;
+import com.silkpanda.artilian.worldgen.ArtilianStructures;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -24,10 +30,20 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -328,6 +344,132 @@ public class CrystalColossusGameTests {
         assertResourceExists(helper, "assets/artilian/textures/entity/crystal_colossus_glowmask.png");
         assertResourceExists(helper, "assets/artilian/textures/item/colossus_heart.png");
         assertResourceExists(helper, "assets/artilian/textures/item/prism_core.png");
+        helper.succeed();
+    }
+
+    @GameTest(template = "structure_arena")
+    public static void crystalColossusArenaRegisteredInCrystalCanopyWoodsOnly(GameTestHelper helper) {
+        var registries = helper.getLevel().registryAccess();
+        Registry<StructureTemplatePool> pools = registries.registryOrThrow(Registries.TEMPLATE_POOL);
+        Registry<Structure> structures = registries.registryOrThrow(Registries.STRUCTURE);
+        Registry<StructureSet> sets = registries.registryOrThrow(Registries.STRUCTURE_SET);
+        Registry<Biome> biomes = registries.registryOrThrow(Registries.BIOME);
+
+        helper.assertTrue(pools.containsKey(ArtilianStructures.CRYSTAL_COLOSSUS_ARENA_POOL),
+                "Missing crystal_colossus_arena template pool");
+        helper.assertTrue(structures.containsKey(ArtilianStructures.CRYSTAL_COLOSSUS_ARENA),
+                "Missing crystal_colossus_arena structure");
+        helper.assertTrue(sets.containsKey(ArtilianStructures.CRYSTAL_COLOSSUS_ARENAS),
+                "Missing crystal_colossus_arenas structure set");
+
+        Holder<Biome> crystalWoods = biomes.getHolderOrThrow(ArtilianBiomes.CRYSTAL_CANOPY_WOODS);
+        Holder<Biome> emberMeadows = biomes.getHolderOrThrow(ArtilianBiomes.EMBERBLOOM_MEADOWS);
+        Holder<Biome> starlightHighlands = biomes.getHolderOrThrow(ArtilianBiomes.STARLIGHT_HIGHLANDS);
+
+        Structure arena = structures.getOrThrow(ArtilianStructures.CRYSTAL_COLOSSUS_ARENA);
+        helper.assertTrue(arena.biomes().contains(crystalWoods),
+                "Crystal Colossus Arena must generate in Crystal Canopy Woods");
+        helper.assertFalse(arena.biomes().contains(emberMeadows),
+                "Crystal Colossus Arena must NOT generate in Emberbloom Meadows");
+        helper.assertFalse(arena.biomes().contains(starlightHighlands),
+                "Crystal Colossus Arena must NOT generate in Starlight Highlands");
+
+        var monsterOverride = arena.spawnOverrides().get(MobCategory.MONSTER);
+        helper.assertTrue(monsterOverride == null || monsterOverride.spawns().isEmpty(),
+                "Boss arena must have empty monster spawn overrides");
+
+        StructureSet set = sets.getOrThrow(ArtilianStructures.CRYSTAL_COLOSSUS_ARENAS);
+        helper.assertTrue(set.structures().stream()
+                        .anyMatch(entry -> entry.structure().is(ArtilianStructures.CRYSTAL_COLOSSUS_ARENA)),
+                "crystal_colossus_arenas structure set must reference crystal_colossus_arena");
+        helper.succeed();
+    }
+
+    @GameTest(template = "structure_arena")
+    public static void crystalColossusArenaTemplateHasAltarPrepChestOpenSkyAndNoBannedBlocks(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = CustomTntGameTests.spawnSurvivalPlayer(helper, "arena-inspector", new Vec3(1.5, 1.0, 1.5));
+
+        try {
+            StructureTemplate template = level.getStructureManager()
+                    .get(ArtilianMod.id("crystal_colossus_arena"))
+                    .orElse(null);
+            helper.assertTrue(template != null, "Missing structure template NBT: artilian:crystal_colossus_arena");
+
+            Vec3i size = template.getSize();
+            helper.assertTrue(size.getX() <= 16 && size.getY() <= 20 && size.getZ() <= 16,
+                    "Crystal Colossus Arena exceeds 16x20x16 footprint cap: " + size);
+
+            BlockPos origin = helper.absolutePos(new BlockPos(1, 1, 1));
+            StructurePlaceSettings settings = new StructurePlaceSettings()
+                    .setIgnoreEntities(false)
+                    .setFinalizeEntities(true);
+            helper.assertTrue(template.placeInWorld(level, origin, origin, settings, level.random, 2),
+                    "Failed to place crystal_colossus_arena template");
+
+            Set<Block> banned = Set.of(
+                    Blocks.LAVA, Blocks.FIRE, Blocks.SOUL_FIRE, Blocks.TNT,
+                    Blocks.COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK,
+                    Blocks.SPAWNER, Blocks.STRUCTURE_BLOCK
+            );
+            List<BlockPos> altars = new java.util.ArrayList<>();
+            List<ChestBlockEntity> chests = new java.util.ArrayList<>();
+            for (int dx = 0; dx < size.getX(); dx++) {
+                for (int dy = 0; dy < size.getY(); dy++) {
+                    for (int dz = 0; dz < size.getZ(); dz++) {
+                        BlockPos pos = origin.offset(dx, dy, dz);
+                        Block block = level.getBlockState(pos).getBlock();
+                        helper.assertFalse(banned.contains(block),
+                                "Crystal Colossus Arena contains banned block " + block + " at " + pos);
+                        if (block == ArtilianBlocks.BOSS_ALTAR.get()) {
+                            altars.add(pos);
+                        }
+                        if (level.getBlockEntity(pos) instanceof ChestBlockEntity chestEntity) {
+                            chests.add(chestEntity);
+                        }
+                    }
+                }
+            }
+
+            helper.assertTrue(altars.size() == 1,
+                    "Expected exactly 1 Boss Altar in arena, found " + altars.size());
+            BlockPos altarPos = altars.get(0);
+            for (int h = 1; h <= 5; h++) {
+                helper.assertTrue(level.getBlockState(altarPos.above(h)).isAir(),
+                        "Boss Altar sky clearance blocked " + h + " blocks above altar");
+            }
+
+            helper.assertTrue(chests.size() == 1,
+                    "Expected exactly 1 prep chest in arena, found " + chests.size());
+            ChestBlockEntity chest = chests.get(0);
+            helper.assertTrue(ArtilianStructures.CRYSTAL_COLOSSUS_ARENA_CHEST.equals(chest.getLootTable()),
+                    "Expected chest loot table " + ArtilianStructures.CRYSTAL_COLOSSUS_ARENA_CHEST.location()
+                            + ", got " + chest.getLootTable());
+            chest.unpackLootTable(player);
+
+            boolean hasHeart = false;
+            boolean hasTreat = false;
+            for (int i = 0; i < chest.getContainerSize(); i++) {
+                ItemStack stack = chest.getItem(i);
+                if (stack.is(ArtilianItems.COLOSSUS_HEART.get())) {
+                    hasHeart = true;
+                } else if (stack.is(ArtilianItems.BIOME_TREAT.get())) {
+                    hasTreat = true;
+                }
+            }
+            helper.assertTrue(hasHeart && hasTreat,
+                    "Arena prep chest must contain both a Colossus Heart and Biome Treats");
+
+            AABB bounds = new AABB(
+                    origin.getX(), origin.getY(), origin.getZ(),
+                    origin.getX() + size.getX(), origin.getY() + size.getY(), origin.getZ() + size.getZ()
+            ).inflate(2.0);
+            List<CrystalColossusEntity> preSpawned = level.getEntitiesOfClass(CrystalColossusEntity.class, bounds);
+            helper.assertTrue(preSpawned.isEmpty(),
+                    "Arena template must not pre-spawn bosses before the player uses the altar");
+        } finally {
+            CustomTntGameTests.removeTestPlayer(level, player);
+        }
         helper.succeed();
     }
 

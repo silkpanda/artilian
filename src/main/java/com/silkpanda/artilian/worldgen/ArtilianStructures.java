@@ -43,6 +43,8 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/emberbloom_outpost"));
     public static final ResourceKey<LootTable> STARLIGHT_WATCHTOWER_CHEST =
             ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/starlight_watchtower"));
+    public static final ResourceKey<LootTable> CRYSTAL_COLOSSUS_ARENA_CHEST =
+            ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/crystal_colossus_arena"));
 
     public static final ResourceKey<StructureTemplatePool> CRYSTAL_GROVE_SHRINE_POOL =
             ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("crystal_grove_shrine"));
@@ -50,6 +52,8 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("emberbloom_outpost"));
     public static final ResourceKey<StructureTemplatePool> STARLIGHT_WATCHTOWER_POOL =
             ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("starlight_watchtower"));
+    public static final ResourceKey<StructureTemplatePool> CRYSTAL_COLOSSUS_ARENA_POOL =
+            ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("crystal_colossus_arena"));
 
     public static final ResourceKey<Structure> CRYSTAL_GROVE_SHRINE =
             ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("crystal_grove_shrine"));
@@ -57,6 +61,8 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("emberbloom_outpost"));
     public static final ResourceKey<Structure> STARLIGHT_WATCHTOWER =
             ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("starlight_watchtower"));
+    public static final ResourceKey<Structure> CRYSTAL_COLOSSUS_ARENA =
+            ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("crystal_colossus_arena"));
 
     public static final ResourceKey<StructureSet> CRYSTAL_GROVE_SHRINES =
             ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("crystal_grove_shrines"));
@@ -64,6 +70,8 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("emberbloom_outposts"));
     public static final ResourceKey<StructureSet> STARLIGHT_WATCHTOWERS =
             ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("starlight_watchtowers"));
+    public static final ResourceKey<StructureSet> CRYSTAL_COLOSSUS_ARENAS =
+            ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("crystal_colossus_arenas"));
 
     public static void bootstrapTemplatePools(BootstrapContext<StructureTemplatePool> context) {
         HolderGetter<StructureTemplatePool> pools = context.lookup(Registries.TEMPLATE_POOL);
@@ -72,6 +80,7 @@ public final class ArtilianStructures {
         registerSinglePool(context, CRYSTAL_GROVE_SHRINE_POOL, emptyFallback, "artilian:crystal_grove_shrine");
         registerSinglePool(context, EMBERBLOOM_OUTPOST_POOL, emptyFallback, "artilian:emberbloom_outpost");
         registerSinglePool(context, STARLIGHT_WATCHTOWER_POOL, emptyFallback, "artilian:starlight_watchtower");
+        registerSinglePool(context, CRYSTAL_COLOSSUS_ARENA_POOL, emptyFallback, "artilian:crystal_colossus_arena");
     }
 
     public static void bootstrapStructures(BootstrapContext<Structure> context) {
@@ -87,6 +96,9 @@ public final class ArtilianStructures {
         context.register(STARLIGHT_WATCHTOWER, surfaceStructure(
                 biomes, pools, ArtilianTags.Biomes.HAS_STARLIGHT_WATCHTOWER,
                 STARLIGHT_WATCHTOWER_POOL, ArtilianEntities.ASTRAL_STALKER.get()));
+        context.register(CRYSTAL_COLOSSUS_ARENA, bossArenaStructure(
+                biomes, pools, ArtilianTags.Biomes.HAS_CRYSTAL_COLOSSUS_ARENA,
+                CRYSTAL_COLOSSUS_ARENA_POOL));
     }
 
     public static void bootstrapStructureSets(BootstrapContext<StructureSet> context) {
@@ -95,6 +107,7 @@ public final class ArtilianStructures {
         context.register(CRYSTAL_GROVE_SHRINES, spreadSet(structures, CRYSTAL_GROVE_SHRINE, 61482011));
         context.register(EMBERBLOOM_OUTPOSTS, spreadSet(structures, EMBERBLOOM_OUTPOST, 72593122));
         context.register(STARLIGHT_WATCHTOWERS, spreadSet(structures, STARLIGHT_WATCHTOWER, 83604233));
+        context.register(CRYSTAL_COLOSSUS_ARENAS, spreadSet(structures, CRYSTAL_COLOSSUS_ARENA, 26, 12, 94715344));
     }
 
     private static void registerSinglePool(
@@ -134,12 +147,40 @@ public final class ArtilianStructures {
                 Heightmap.Types.WORLD_SURFACE_WG);
     }
 
+    private static Structure bossArenaStructure(
+            HolderGetter<Biome> biomes,
+            HolderGetter<StructureTemplatePool> pools,
+            TagKey<Biome> biomeTag,
+            ResourceKey<StructureTemplatePool> startPool) {
+        Structure.StructureSettings settings = new Structure.StructureSettings.Builder(biomes.getOrThrow(biomeTag))
+                .spawnOverrides(Map.of())
+                .generationStep(GenerationStep.Decoration.SURFACE_STRUCTURES)
+                .terrainAdapation(TerrainAdjustment.BEARD_THIN)
+                .build();
+        return new JigsawStructure(
+                settings,
+                pools.getOrThrow(startPool),
+                1,
+                ConstantHeight.of(VerticalAnchor.absolute(0)),
+                false,
+                Heightmap.Types.WORLD_SURFACE_WG);
+    }
+
     private static StructureSet spreadSet(
             HolderGetter<Structure> structures,
             ResourceKey<Structure> structureKey,
             int salt) {
+        return spreadSet(structures, structureKey, 18, 8, salt);
+    }
+
+    private static StructureSet spreadSet(
+            HolderGetter<Structure> structures,
+            ResourceKey<Structure> structureKey,
+            int spacing,
+            int separation,
+            int salt) {
         return new StructureSet(
                 structures.getOrThrow(structureKey),
-                new RandomSpreadStructurePlacement(18, 8, RandomSpreadType.LINEAR, salt));
+                new RandomSpreadStructurePlacement(spacing, separation, RandomSpreadType.LINEAR, salt));
     }
 }

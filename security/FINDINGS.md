@@ -177,3 +177,13 @@ Template for an entry:
 - **Impact:** Without a one-boss-per-altar rule, every click starts or restarts a summon: the stack is drained for nothing, and with the countdown check also gone, bosses pile up until the server stalls.
 - **Fix:** `BossAltarBlockEntity#isBusy` is true while a countdown runs or while the altar's stored boss UUID resolves to a living, loaded entity. `#trySummon` checks it before touching the stack and sends `message.artilian.boss_altar.busy` instead. The altar frees itself when its boss dies or is removed, so rematches work. Commit `Boss Framework Stage 3` on `phase-3-stage-1-boss-framework`.
 - **Proof:** GameTest `BossSecurityProbes.p3_01_altarSpamSummonsOneBoss`. EXPLOITED (`EXPLOITED P3-01: altar spam ate 20 Golem Cores for one boss`) with `isBusy` forced to `false`, and again with the stack consumed before the busy check; HELD with the control on (`116/116` tests passing). With `isBusy` off, each click restarts the countdown, so the spam drains the stack rather than stacking bosses; the probe asserts both the boss count and the core count.
+
+---
+
+### P3-02 — Crystal Colossus attacks break world/altar blocks or harm Chester — FIXED
+- **Severity:** High
+- **Where:** `boss/ArtilianBossEntity.java` (`impact`), `boss/CrystalColossusEntity.java` (`onTelegraphImpact`)
+- **Attack:** Under `mobGriefing = true` and `allowDestructiveCustomTnt = true`, the Crystal Colossus fires `CRYSTAL_QUAKE`, `STARLIGHT_SPIRE` targeted directly onto a player's `ChesterEntity` beside a `Boss Altar` and `Chest`, and Overcharged `PRISM_NOVA` covering `Glass` and `Stone`.
+- **Impact:** If any telegraphed boss attack used `Level#explode` with block interaction or omitted the `ChesterEntity` exclusion in `impact`, boss fights at an arena or base would break Boss Altars/chests/builds and injure Chester.
+- **Fix:** `ArtilianBossEntity#impact` explicitly skips `ChesterEntity` and applies direct elemental damage only, and `CrystalColossusEntity#onTelegraphImpact` emits particles, sounds, mild knockback, and status effects without any `Level#explode` or block mutation. Phase 3 Stage 2 (`Crystal Colossus Stage 2`) on `phase-3-stage-2-crystal-colossus`.
+- **Proof:** GameTest `BossSecurityProbes.p3_02_crystalColossusNeverBreaksBlocksOrAltarOrHarmsChester`. EXPLOITED (`EXPLOITED P3-02: Crystal Colossus destroyed or altered Chest`) when `Level.ExplosionInteraction.MOB` was injected into `CrystalColossusEntity#onTelegraphImpact`; HELD with the control on (`145/145` tests passing).

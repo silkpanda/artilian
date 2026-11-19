@@ -40,6 +40,31 @@ public class ArtilianChestLootSubProvider implements LootTableSubProvider {
                 Items.ENDER_PEARL,
                 ArtilianBlocks.STARLIGHT_BLOSSOM.get(),
                 ArtilianItems.SPARK_WAND.get()));
+
+        output.accept(ArtilianStructures.CRYSTAL_COLOSSUS_ARENA_CHEST, buildCrystalColossusArenaChest());
+    }
+
+    private static LootTable.Builder buildCrystalColossusArenaChest() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.COLOSSUS_HEART.get())))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.BIOME_TREAT.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 5)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(UniformGenerator.between(2, 3))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                                .setWeight(3)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2))))
+                        .add(LootItem.lootTableItem(Items.AMETHYST_SHARD)
+                                .setWeight(3)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4))))
+                        .add(LootItem.lootTableItem(Items.GOLDEN_APPLE)
+                                .setWeight(1))
+                        .add(LootItem.lootTableItem(ArtilianItems.CAPTURE_CRYSTAL.get())
+                                .setWeight(2)));
     }
 
     private static LootTable.Builder buildShrineChest(
