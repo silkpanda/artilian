@@ -29,3 +29,16 @@
 ## Component Conventions
 - **Cartoony Entity Language (GeckoLib):** Exaggerated eyes, bouncy walk cycles, and expressive idle animations (Chester blinking & chomping; snapping flat into a vanilla-style normal chest when sleeping).
 - **Color-Coded Tooltips:** Weapons, Wands/Staves, Capture Crystals, and TNTs show concise 1–2 line kid-readable effect tags (`Safe Blast`, `Heals Pets`, `Captures Biome Pets`).
+
+## 3D Entity, Boss & Structure Art Standard
+
+First-pass art must meet this bar on pass 1 rather than shipping flat programmer-art placeholders that require a full redo later.
+
+- **Texture Sheet Budget:** Minimum `128×128` for articulated pets and structure enemies; `256×128` (or larger) for legendary pets and bosses. Never pack an articulated creature onto `64×64` with stretched or overlapping UVs.
+- **Silhouette & 3D Depth:** Build layered body mass (broad shoulders/pauldrons, tapered waist, distinct limbs) and include angled/rotated geometry (horns, spikes, Z-kink bolts, claws, wings, floating shards). Recessed features (visors, eye sockets, chest cores, snouts) must use real 3D inset/outset cubes — never a flat box with a face painted onto one plane.
+- **Value & Material Contrast:** Anchor bright accents and `_glowmask.png` zones against a darker structural base (arcane slate, storm-navy, deep bronze, or rich shadow tones) so glowing eyes, crests, and runes pop cleanly instead of blending into bright-on-bright mush.
+- **Surface Detail (No Flat Faces):** Use 6–8 stop color ramps, directional top/bottom shading, inner bevels, and deterministic pixel-art texture (stone strata/cracks, forged metal seams, faceted crystal highlights, or organic shading).
+  - **Banned v1 anti-patterns:** single-color flat faces, uniform 1px neon box outlines around every cube, and overlapping UV rectangles.
+- **Translating Kid Drawings (`qa/reference/pets/`):** Preserve the kid's *concept, colors, and signature features* faithfully, but translate 2D crayon shapes into 3D Minecraft/Warden/Iron-Golem-grade craft (armored plates, glowing visors, articulated limbs) rather than literal stick-figure cubes or flat smiley faces.
+- **Bosses & Enemies Without Drawings:** Establish a short visual reference or silhouette spec in `qa/reference/` before modeling so every agent builds toward the same target.
+- **Structures:** Avoid plain boxy cubes; use depth (recessed walls, roof overhangs, stepped stairs, pillars, and the 15 building-block variants) consistent with `qa/reference/structures/`.
