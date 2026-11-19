@@ -380,11 +380,11 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 ### Phase 3 — Stage 3: Captain Brimstone
 - [x] **Complete (`153/153` GameTests & Live Client Verified)** — Second full custom boss built on `ArtilianBossEntity` with three telegraphed attacks, Phase 2 *Brimstone Broadside*, an Emberbloom Meadows arena, rematch summoning, and boss drops for Phase 3 Stage 4 Tier 3 gear.
 - **Art Brief (`qa/reference/bosses/captain-brimstone.md`):**
-  1. **Target height/scale:** `2.0 × 3.4` hitbox (`~3.6` blocks tall with tricorne hat & shoulder pauldrons).
-  2. **Silhouette inspiration:** Magma-forged dread-pirate captain — wide angled 3-flap tricorne hat with skull-crest & ember plume, broad shoulder pauldrons, flared greatcoat tails, heavy hand-cannon right gauntlet, and notched cutlass left forearm.
-  3. **Anchor & accent palette:** Charred Nether-Iron & Deep Coal-Slate (`#181216`–`#42323A`) + Crimson-Oxide coat lining (`#521E24`–`#7A2B30`) anchored with Sunsteel Gold (`#B87424`–`#FFE08A`) trim.
-  4. **Key 3D recessed/angled features:** Recessed skull-visor eye sockets, 3D iron rib bars framing a recessed furnace heart core, angled tricorne flaps, flared cannon muzzle, and integrated cutlass blade.
-  5. **`_glowmask.png` zones:** Recessed magma eye sockets, furnace heart core, cannon barrel bore, cutlass edge runes, and hat skull emblem (`#FF6B1A` / `#FFB84D` / `#FFF2B2`).
+  1. **Target height/scale:** `2.4 × 3.4` hitbox (`~4.0` blocks tall to top of mast/Jolly-Roger flag).
+  2. **Silhouette inspiration (non-humanoid):** Living **Cursed Pirate Galleon-Walker** — curved dark-timber ship hull on 4 articulated iron crab/anchor legs, pointed bowsprit with skull figurehead, port & starboard broadside cannons, spoked ship's wheel, tall mast with tattered Crimson Jolly-Roger sail (skull & crossbones), and a Tricorne-hatted Pirate Skull-Captain with an eyepatch fused into the helm.
+  3. **Anchor & accent palette:** Charred Emberwood & Iron Hull (`#221518`–`#5A3228`), Crimson-Oxide Jolly-Roger sailcloth (`#5E1A22`–`#9A2C34`) with bone-white (`#E8DFD0`) skull emblem, anchored with Sunsteel Gold (`#B87424`–`#FFE08A`) trim.
+  4. **Key 3D recessed/angled features:** 4 angled crab-anchor legs, `25°` upward bowsprit + figurehead, flared gunwales with swiveling broadside cannons, spoked ship's wheel, and angled 3-flap Tricorne hat over a pirate skull with diagonal eyepatch.
+  5. **`_glowmask.png` zones:** Hull portholes, cannon bores, uncovered magma eye socket, bowsprit figurehead eyes, and crow's-nest mast lantern (`#FF6B1A` / `#FFB84D` / `#FFF2B2`).
 - **Why & Decisions:**
   1. **`CaptainBrimstoneEntity` (`artilian:captain_brimstone`, `FIRE / SHADOW`):** `220` HP (`110` hearts), `6.0` armor, `0.23` speed, `2.0 × 3.4` hitbox, `RED` boss bar shifting to `YELLOW` on Phase 2 *Brimstone Broadside*. Weak to `WATER` and `STARLIGHT` so kids' *Splashy*, *Frogduck*, and *Crystal Fox* pets shine against it.
   2. **Three telegraphed attacks (all `>= 35` ticks, zero block breaking):**

@@ -1,16 +1,15 @@
-# Captain Brimstone — Silhouette & Visual Reference Spec
+# Captain Brimstone — Silhouette & Visual Reference Spec (v2: Non-Humanoid Pirate Galleon-Walker)
 
-- **Role:** Phase 3 — Stage 3 Boss (`artilian:captain_brimstone`), Fire / Shadow pirate captain of **Emberbloom Meadows** (`artilian:brimstone_bastion`).
-- **Target Scale:** `2.0 × 3.4` block hitbox (`~3.6` blocks tall including tricorne hat & shoulder cannon-pauldrons; `visible_bounds_width: 4.2`, `visible_bounds_height: 4.2`).
-- **Silhouette Inspiration:** Towering magma-forged dread-pirate captain — broad-shouldered charred-iron greatcoat with flared coat-tails, wide sweeping tricorne hat with glowing ember-gold trim and front skull-crest, hollowed furnace-rib chest cavity with a glowing magma heart core, heavy iron-cannon right gauntlet, and curved notched cutlass-blade left forearm.
+- **Role:** Phase 3 — Stage 3 Boss (`artilian:captain_brimstone`), Fire / Shadow cursed pirate boss of **Emberbloom Meadows** (`artilian:brimstone_bastion`).
+- **Target Scale:** `2.4 × 3.4` block hitbox (`~4.0` blocks tall to top of mast/Jolly-Roger flag; `visible_bounds_width: 4.8`, `visible_bounds_height: 4.6`).
+- **Silhouette Inspiration (0% Humanoid, 100% Pirate):** A living, scuttling **Cursed Pirate Galleon-Crab** — a curved dark-timber & iron-banded pirate ship hull walking on **4 articulated iron anchor/crab legs**, featuring a **pointed bowsprit with a glowing skull figurehead**, **port & starboard broadside cannons**, a **spoked ship's wheel** on the quarterdeck, a **tall mainmast with a tattered Crimson Jolly-Roger Sail (pixel-art skull & crossbones)**, and a **giant Tricorne-hatted Pirate Skull-Captain** (with a **black eyepatch** and **one blazing magma eye**) fused into the helm!
 - **Color Palette & Anchor:**
-  - **Dark Structural Anchor:** Charred Nether-Iron & Deep Coal-Slate (`#181216` – `#42323A`) for the greatcoat, boots, hat body, and armor plates, with weathered Crimson-Oxide coat lining (`#521E24` – `#7A2B30`).
-  - **Metallic Trim:** Sunsteel Gold (`#B87424` – `#FFE08A`) for pauldrons, belt buckle, coat buttons, hat trim, and cannon muzzle rings.
-  - **Glowing Accents (`_glowmask.png`):** Blazing Magma Orange (`#FF6B1A`), Ember Gold (`#FFB84D`), and White-Hot Core (`#FFF2B2`) in the recessed eye sockets, furnace-rib chest core, cannon barrel bore, cutlass edge runes, and hat skull emblem.
+  - **Ship Hull & Anchor Legs:** Dark Weathered Emberwood & Charred Oak (`#221518` – `#5A3228`), iron hull bands (`#1E1920` – `#4A3E4C`), and Sunsteel Gold trim (`#B87424` – `#FFE08A`).
+  - **Sail & Jolly Roger:** Tattered Crimson-Oxide sailcloth (`#5E1A22` – `#9A2C34`) with bone-white (`#E8DFD0`) skull & crossbones emblem.
+  - **Glowing Accents (`_glowmask.png`):** Blazing Magma Orange (`#FF6B1A`), Ember Gold (`#FFB84D`), and White-Hot Core (`#FFF2B2`) in the glowing hull portholes, cannon bores, captain's single uncovered magma eye, bowsprit figurehead eyes, and crow's-nest mast lantern.
 - **Key 3D Recessed / Angled Features:**
-  - **Tricorne Hat:** 3-part angled brim flaps (`front`, `left`, `right` pitched outward) + tall crown + front 3D Sunsteel skull/ember crest + trailing ember-feather plume.
-  - **Head:** Recessed dark skull-visor face with 3D brow ridge, angled cheekbones/jaw, glowing magma eye sockets, and braided/chunky ash-grey & ember-tipped beard.
-  - **Torso:** Tapered greatcoat torso with 3D flared coat-tails (`tasset_left`, `tasset_right`, `coat_back`), Sunsteel belt + oversized buckle, and a Warden-style hollowed chest furnace with 3D iron rib bars framing a recessed glowing magma core.
-  - **Arms:** Asymmetric pirate silhouette — right arm (`arm_right`) ends in a heavy banded iron hand-cannon gauntlet with flared muzzle rim; left arm (`arm_left`) wields an integrated notched cutlass blade extending from the bracer.
-  - **Legs:** Heavy cuffed sea-boots with Sunsteel knee-guards and toe-caps.
-- **Required Animations (`captain_brimstone.animation.json`):** `idle`, `walk`, `attack`, `telegraph` (2.0 s / 40-tick windup raising cannon & cutlass).
+  - **4 Articulated Crab-Anchor Legs:** `leg_left` & `leg_right` (front pair) + `leg_back_left` & `leg_back_right` (rear pair), each with upper timber-iron femur + angled curved anchor-claw tibia.
+  - **Galleon Hull & Bowsprit:** Stepped flared ship hull with raised quarterdeck stern, glowing porthole row, and a `25°` upward-angled bowsprit + skull figurehead at the bow.
+  - **Broadside Cannons (`arm_left`, `arm_right`):** Heavy banded iron ship cannons on wooden carriages flanking the port & starboard gunwales, recoiling on attack and tilting upward during `telegraph`.
+  - **Helm & Mast (`head`, `mast`):** Large spoked wooden ship's wheel behind a wide **Tricorne-hatted Pirate Skull** (with diagonal **black eyepatch** + glowing magma eye), backed by a tall mast flying a **Jolly-Roger Skull & Crossbones sail** and crow's-nest lantern.
+- **Required Animations (`captain_brimstone.animation.json`):** `idle` (hull bobs, sail sways, cannons breathe), `walk` (4-leg crab scuttle), `attack` (cannon recoil + bowsprit lunge), `telegraph` (2.0 s / 40-tick windup aiming cannons skyward & rocking hull).

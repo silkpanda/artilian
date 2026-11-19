@@ -1062,96 +1062,173 @@ def build_prism_core():
     img.save(ASSETS / "textures/item/prism_core.png")
 
 
+def make_captain_brimstone_animations():
+    p = "animation.captain_brimstone"
+    return {
+        "format_version": "1.8.0",
+        "animations": {
+            f"{p}.idle": {
+                "loop": True,
+                "animation_length": 2.4,
+                "bones": {
+                    "body": {
+                        "position": {"0.0": [0, 0, 0], "1.2": [0, 0.8, 0], "2.4": [0, 0, 0]},
+                        "rotation": {"0.0": [0, 0, -1.5], "1.2": [1.5, 0, 1.5], "2.4": [0, 0, -1.5]},
+                    },
+                    "head": {
+                        "rotation": {"0.0": [0, -6, 0], "1.2": [3, 6, 0], "2.4": [0, -6, 0]},
+                    },
+                    "mast": {
+                        "rotation": {"0.0": [0, 0, -2], "1.2": [2, 0, 2], "2.4": [0, 0, -2]},
+                    },
+                    "arm_left": {
+                        "rotation": {"0.0": [0, 0, 0], "1.2": [-4, 0, 0], "2.4": [0, 0, 0]},
+                    },
+                    "arm_right": {
+                        "rotation": {"0.0": [0, 0, 0], "1.2": [-4, 0, 0], "2.4": [0, 0, 0]},
+                    },
+                },
+            },
+            f"{p}.walk": {
+                "loop": True,
+                "animation_length": 0.8,
+                "bones": {
+                    "body": {
+                        "position": {"0.0": [0, 0, 0], "0.4": [0, 1.0, 0], "0.8": [0, 0, 0]},
+                        "rotation": {"0.0": [2, 0, -4], "0.4": [2, 0, 4], "0.8": [2, 0, -4]},
+                    },
+                    "leg_left": {
+                        "rotation": {"0.0": [-22, 0, 0], "0.4": [22, 0, 0], "0.8": [-22, 0, 0]},
+                    },
+                    "leg_right": {
+                        "rotation": {"0.0": [22, 0, 0], "0.4": [-22, 0, 0], "0.8": [22, 0, 0]},
+                    },
+                    "leg_back_left": {
+                        "rotation": {"0.0": [22, 0, 0], "0.4": [-22, 0, 0], "0.8": [22, 0, 0]},
+                    },
+                    "leg_back_right": {
+                        "rotation": {"0.0": [-22, 0, 0], "0.4": [22, 0, 0], "0.8": [-22, 0, 0]},
+                    },
+                },
+            },
+            f"{p}.attack": {
+                "animation_length": 0.5,
+                "bones": {
+                    "body": {
+                        "rotation": {"0.0": [0, 0, 0], "0.18": [-8, 0, 0], "0.34": [10, 0, 0], "0.5": [0, 0, 0]},
+                    },
+                    "arm_left": {
+                        "position": {"0.0": [0, 0, 0], "0.18": [0, 0, 4], "0.5": [0, 0, 0]},
+                        "rotation": {"0.0": [0, 0, 0], "0.18": [-18, 0, 0], "0.5": [0, 0, 0]},
+                    },
+                    "arm_right": {
+                        "position": {"0.0": [0, 0, 0], "0.18": [0, 0, 4], "0.5": [0, 0, 0]},
+                        "rotation": {"0.0": [0, 0, 0], "0.18": [-18, 0, 0], "0.5": [0, 0, 0]},
+                    },
+                },
+            },
+            f"{p}.telegraph": {
+                "loop": False,
+                "animation_length": 2.0,
+                "bones": {
+                    "body": {
+                        "rotation": {"0.0": [0, 0, 0], "1.0": [-10, 0, 0], "1.8": [-14, 0, 0], "2.0": [6, 0, 0]},
+                    },
+                    "arm_left": {
+                        "rotation": {"0.0": [0, 0, 0], "1.0": [-28, 0, 0], "1.8": [-35, 0, 0], "2.0": [8, 0, 0]},
+                    },
+                    "arm_right": {
+                        "rotation": {"0.0": [0, 0, 0], "1.0": [-28, 0, 0], "1.8": [-35, 0, 0], "2.0": [8, 0, 0]},
+                    },
+                    "mast": {
+                        "rotation": {"0.0": [0, 0, 0], "1.0": [8, 0, 0], "2.0": [-6, 0, 0]},
+                    },
+                },
+            },
+        },
+    }
+
+
 def build_captain_brimstone():
-    """Magma-forged pirate captain boss: 256x128 UV-non-overlapping sheet, tricorne hat,
-    furnace-rib chest core, hand-cannon right arm, cutlass left arm, and ember glowmask.
+    """Non-humanoid Cursed Pirate Galleon-Walker: scuttling 4-legged ship hull, bowsprit skull
+    figurehead, broadside cannons, spoked ship's wheel, Tricorne pirate skull-captain with eyepatch,
+    and tall mast flying a Crimson Jolly-Roger skull & crossbones sail.
     """
     eid = "captain_brimstone"
     img = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
     glow = Image.new("RGBA", (256, 128), (0, 0, 0, 0))
 
-    # Charred Nether-Iron & Coal-Slate anchor palette (6-8 stop ramp)
-    IRON_VOID = (18, 13, 18, 255)
-    IRON_DEEP = (28, 21, 27, 255)
-    IRON_DARK = (40, 30, 38, 255)
-    IRON_MID = (56, 43, 52, 255)
-    IRON_HI = (78, 61, 72, 255)
-    IRON_RIM = (102, 82, 94, 255)
+    # Dark weathered ship timber (6-stop ramp)
+    WOOD_VOID = (24, 14, 14, 255)
+    WOOD_DEEP = (40, 22, 20, 255)
+    WOOD_DARK = (62, 34, 28, 255)
+    WOOD_MID = (86, 48, 36, 255)
+    WOOD_HI = (114, 66, 48, 255)
 
-    # Crimson-Oxide pirate greatcoat palette
-    COAT_DEEP = (52, 16, 22, 255)
-    COAT_DARK = (76, 24, 30, 255)
-    COAT_MID = (104, 34, 40, 255)
-    COAT_HI = (132, 48, 52, 255)
+    # Charred iron hull bands & cannons
+    IRON_VOID = (16, 13, 18, 255)
+    IRON_DEEP = (28, 23, 30, 255)
+    IRON_DARK = (44, 37, 46, 255)
+    IRON_MID = (66, 56, 68, 255)
+    IRON_HI = (94, 82, 96, 255)
 
-    # Sunsteel Gold metallic trim palette
+    # Sunsteel Gold trim
     GOLD_DEEP = (128, 72, 20, 255)
     GOLD_DARK = (176, 108, 32, 255)
     GOLD_MID = (224, 152, 52, 255)
     GOLD_HI = (255, 208, 96, 255)
-    GOLD_SPEC = (255, 240, 176, 255)
 
-    # Cutlass steel & ash beard
-    STEEL_DARK = (62, 68, 82, 255)
-    STEEL_MID = (108, 118, 138, 255)
-    STEEL_HI = (168, 182, 204, 255)
-    BEARD_DARK = (54, 48, 52, 255)
-    BEARD_MID = (86, 78, 84, 255)
-    BEARD_HI = (124, 114, 120, 255)
+    # Crimson Jolly-Roger sailcloth & bone-white skull
+    SAIL_DEEP = (68, 16, 22, 255)
+    SAIL_DARK = (102, 26, 34, 255)
+    SAIL_MID = (138, 38, 46, 255)
+    SAIL_HI = (168, 56, 60, 255)
+    BONE_DARK = (146, 136, 124, 255)
+    BONE_MID = (206, 196, 180, 255)
+    BONE_HI = (238, 230, 214, 255)
 
-    # Magma / Ember glowmask palette
+    # Magma glowmask
     MAGMA_ROOT = (138, 34, 12, 255)
-    MAGMA_MID = (224, 78, 20, 255)
     MAGMA_HOT = (255, 142, 38, 255)
     MAGMA_BRIGHT = (255, 198, 76, 255)
     MAGMA_CORE = (255, 242, 178, 255)
 
-    # Non-overlapping 256x128 UV layout: (u, v, w, h, d) -> footprint 2*(d+w) x (d+h)
-    COAT_UPPER = (0, 0, 14, 12, 10)        # 48x22
-    WAIST = (50, 0, 12, 6, 9)              # 42x15
-    BELT = (94, 0, 14, 3, 10)              # 48x13
-    COLLAR = (144, 0, 15, 4, 10)           # 50x14
-    COAT_TAIL_L = (196, 0, 6, 8, 2)        # 16x10
-    COAT_TAIL_R = (214, 0, 6, 8, 2)        # 16x10
-    COAT_TAIL_B = (196, 12, 12, 8, 2)      # 28x10
+    # Non-overlapping 256x128 UV layout: (u, v, w, h, d) -> 2*(d+w) x (d+h)
+    HULL_MAIN = (0, 0, 22, 7, 24)         # 92x31 -> x:[0..92), y:[0..31)
+    HULL_KEEL = (94, 0, 16, 5, 26)         # 84x31 -> x:[94..178), y:[0..31)
+    QUARTERDECK = (180, 0, 20, 5, 9)       # 58x14 -> x:[180..238), y:[0..14)
+    BOWSPRIT = (180, 15, 3, 3, 14)         # 34x17 -> x:[180..214), y:[15..32)
+    FIGUREHEAD = (216, 15, 6, 6, 6)        # 24x12 -> x:[216..240), y:[15..27)
 
-    HEAD_SKULL = (0, 24, 10, 10, 10)       # 40x20
-    HEAD_BROW = (42, 24, 12, 3, 4)         # 32x7
-    HEAD_JAW = (42, 33, 8, 3, 7)           # 30x10
-    BEARD_MAIN = (76, 24, 8, 7, 3)         # 22x10
-    HAT_CROWN = (100, 24, 12, 6, 12)       # 48x18
-    HAT_BRIM_F = (150, 24, 14, 2, 5)       # 38x7
-    HAT_BRIM_S = (190, 24, 3, 4, 14)       # 34x18
-    HAT_CREST = (150, 34, 4, 4, 2)         # 12x6
-    HAT_PLUME = (166, 34, 3, 7, 4)         # 14x11
+    GUNWALE_RAIL = (0, 32, 24, 3, 2)       # 52x5 -> x:[0..52), y:[32..37)
+    MAST_POLE = (0, 38, 3, 26, 3)          # 12x29 -> x:[0..12), y:[38..67)
+    YARDARM = (14, 38, 20, 2, 2)           # 44x4 -> x:[14..58), y:[38..42)
+    SAIL_MAIN = (14, 43, 18, 14, 1)        # 38x15 -> x:[14..52), y:[43..58)
+    CROWS_NEST = (54, 43, 7, 3, 7)         # 28x10 -> x:[54..82), y:[43..53)
+    MAST_LANTERN = (84, 43, 3, 4, 3)       # 12x7 -> x:[84..96), y:[43..50)
 
-    PAULDRON_L = (0, 46, 8, 7, 10)         # 36x17
-    PAULDRON_R = (38, 46, 8, 7, 10)        # 36x17
-    RIB_BAR = (76, 46, 6, 2, 2)            # 16x4
-    FURNACE_CORE = (94, 46, 6, 8, 3)       # 18x11
-    BUCKLE = (114, 46, 5, 4, 2)            # 14x6
-    ARM_UPPER_L = (130, 46, 6, 10, 6)      # 24x16
-    ARM_UPPER_R = (156, 46, 6, 10, 6)      # 24x16
-    FOREARM_L = (182, 46, 7, 12, 7)        # 28x19
-    CANNON_BODY = (212, 46, 8, 13, 8)      # 32x21
+    SKULL_HEAD = (100, 34, 10, 9, 9)       # 38x18 -> x:[100..138), y:[34..52)
+    HAT_CROWN = (140, 34, 11, 5, 10)       # 42x15 -> x:[140..182), y:[34..49)
+    HAT_BRIM_F = (184, 34, 14, 2, 5)       # 38x7 -> x:[184..222), y:[34..41)
+    HAT_BRIM_S = (184, 42, 3, 4, 12)       # 30x16 -> x:[184..214), y:[42..58)
+    SHIPS_WHEEL = (216, 42, 10, 10, 2)     # 24x12 -> x:[216..240), y:[42..54)
 
-    THIGH_L = (0, 68, 6, 8, 6)             # 24x14
-    THIGH_R = (26, 68, 6, 8, 6)            # 24x14
-    BOOT_L = (52, 68, 7, 9, 8)             # 30x17
-    BOOT_R = (84, 68, 7, 9, 8)             # 30x17
-    KNEE_GUARD = (116, 68, 4, 5, 3)        # 14x8
-    TOE_CAP = (132, 68, 7, 3, 3)           # 20x6
-    CUTLASS_HILT = (154, 68, 4, 3, 4)      # 16x7
-    CUTLASS_BLADE = (172, 68, 2, 13, 4)    # 12x17
-    CANNON_RIM = (186, 68, 9, 3, 9)        # 36x12
-    CANNON_BORE = (224, 68, 6, 2, 6)       # 24x8
+    CANNON_BARREL_L = (0, 68, 6, 6, 12)    # 36x18 -> x:[0..36), y:[68..86)
+    CANNON_BARREL_R = (38, 68, 6, 6, 12)   # 36x18 -> x:[38..74), y:[68..86)
+    CANNON_RIM = (76, 68, 7, 7, 3)         # 20x10 -> x:[76..96), y:[68..78)
+    CANNON_BORE = (76, 79, 4, 4, 2)        # 12x6 -> x:[76..88), y:[79..85)
+    CANNON_CARRIAGE = (98, 68, 6, 4, 7)    # 26x11 -> x:[98..124), y:[68..79)
+
+    LEG_FEMUR = (126, 68, 4, 10, 4)        # 16x14 -> x:[126..142), y:[68..82)
+    LEG_CLAW = (144, 68, 4, 11, 4)         # 16x15 -> x:[144..160), y:[68..83)
+    LEG_TIP = (162, 68, 5, 3, 5)           # 20x8 -> x:[162..182), y:[68..76)
 
     all_uv_boxes = [
-        COAT_UPPER, WAIST, BELT, COLLAR, COAT_TAIL_L, COAT_TAIL_R, COAT_TAIL_B,
-        HEAD_SKULL, HEAD_BROW, HEAD_JAW, BEARD_MAIN, HAT_CROWN, HAT_BRIM_F, HAT_BRIM_S,
-        HAT_CREST, HAT_PLUME, PAULDRON_L, PAULDRON_R, RIB_BAR, FURNACE_CORE, BUCKLE,
-        ARM_UPPER_L, ARM_UPPER_R, FOREARM_L, CANNON_BODY, THIGH_L, THIGH_R, BOOT_L,
-        BOOT_R, KNEE_GUARD, TOE_CAP, CUTLASS_HILT, CUTLASS_BLADE, CANNON_RIM, CANNON_BORE,
+        HULL_MAIN, HULL_KEEL, QUARTERDECK, BOWSPRIT, FIGUREHEAD,
+        GUNWALE_RAIL, MAST_POLE, YARDARM, SAIL_MAIN, CROWS_NEST, MAST_LANTERN,
+        SKULL_HEAD, HAT_CROWN, HAT_BRIM_F, HAT_BRIM_S, SHIPS_WHEEL,
+        CANNON_BARREL_L, CANNON_BARREL_R, CANNON_RIM, CANNON_BORE, CANNON_CARRIAGE,
+        LEG_FEMUR, LEG_CLAW, LEG_TIP,
     ]
     occupied = set()
     for u, v, w, h, d in all_uv_boxes:
@@ -1162,8 +1239,8 @@ def build_captain_brimstone():
                 assert (px, py) not in occupied, f"UV overlap at {(px, py)} in box {(u, v, w, h, d)}"
                 occupied.add((px, py))
 
-    def paint_shaded_box(box, pal_hi, pal_mid, pal_dark, pal_deep, seed=1,
-                         seams=True, ember_pores=0, gold_trim_bottom=False):
+    def paint_plank_box(box, pal_hi, pal_mid, pal_dark, pal_deep, seed=1,
+                        plank_lines=True, gold_top=False, portholes=False):
         u, v, w, h, d = box
         for face, (fx, fy, fw, fh) in faces(u, v, w, h, d).items():
             for dy in range(fh):
@@ -1181,220 +1258,234 @@ def build_captain_brimstone():
                     else:
                         col = _lerp_color(pal_hi, pal_dark, 0.15 + 0.65 * ty)
 
-                    if seams and hv < 48:
-                        col = _lerp_color(col, pal_deep, 0.55)
+                    if plank_lines and face != "bottom" and (dy % 3 == 2):
+                        col = _lerp_color(col, pal_deep, 0.5)
+                    elif hv < 45:
+                        col = _lerp_color(col, pal_deep, 0.45)
                     elif hv > 205:
                         col = _lerp_color(col, pal_hi, 0.35)
 
                     if fw >= 4 and fh >= 4:
                         if dy == 0 and face != "bottom":
-                            col = _lerp_color(col, pal_hi, 0.4)
+                            col = GOLD_MID if gold_top else _lerp_color(col, pal_hi, 0.4)
                         elif dy == fh - 1:
                             col = _lerp_color(col, pal_deep, 0.55)
                         elif dx == 0 or dx == fw - 1:
                             col = _lerp_color(col, pal_deep, 0.4)
 
-                    if gold_trim_bottom and face not in ("top", "bottom") and dy >= fh - 2 and fh >= 4:
-                        col = GOLD_MID if dy == fh - 2 else GOLD_DARK
-
                     put(img, px, py, col)
 
-                    if ember_pores > 0 and face not in ("top", "bottom") and 1 <= dx < fw - 1 and 1 <= dy < fh - 1:
-                        ph = _h(px * 3, py * 5, seed + 41)
-                        if ph < ember_pores:
-                            ecol = MAGMA_HOT if ph % 2 == 0 else MAGMA_BRIGHT
-                            put(img, px, py, ecol)
-                            put(glow, px, py, ecol)
+            # Glowing magma portholes along the hull sides
+            if portholes and face in ("east", "west") and fw >= 18 and fh >= 6:
+                for px_off in range(3, fw - 3, 5):
+                    fill(img, (fx + px_off, fy + 2, 2, 2), MAGMA_BRIGHT)
+                    fill(glow, (fx + px_off, fy + 2, 2, 2), MAGMA_BRIGHT)
+                    put(img, fx + px_off, fy + 2, MAGMA_CORE)
+                    put(glow, fx + px_off, fy + 2, MAGMA_CORE)
+                    # Gold ring around porthole
+                    for rx in (px_off - 1, px_off + 2):
+                        put(img, fx + rx, fy + 2, GOLD_DARK)
+                        put(img, fx + rx, fy + 3, GOLD_DARK)
 
-    # Coat, waist, collar, coat-tails
-    paint_shaded_box(COAT_UPPER, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=101, ember_pores=8)
-    paint_shaded_box(WAIST, COAT_MID, COAT_DARK, COAT_DEEP, IRON_VOID, seed=102)
-    paint_shaded_box(COLLAR, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=103)
-    paint_shaded_box(BELT, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=104)
-    paint_shaded_box(COAT_TAIL_L, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=105, gold_trim_bottom=True)
-    paint_shaded_box(COAT_TAIL_R, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=106, gold_trim_bottom=True)
-    paint_shaded_box(COAT_TAIL_B, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=107, gold_trim_bottom=True)
+    # Hull, keel, quarterdeck, bowsprit, gunwale
+    paint_plank_box(HULL_MAIN, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=201, gold_top=True, portholes=True)
+    paint_plank_box(HULL_KEEL, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=202, plank_lines=False)
+    paint_plank_box(QUARTERDECK, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=203, gold_top=True)
+    paint_plank_box(GUNWALE_RAIL, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=204, gold_top=True)
+    paint_plank_box(BOWSPRIT, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=205)
 
-    # Gold coat buttons down the front of COAT_UPPER
-    cfx, cfy, cfw, cfh = faces(*COAT_UPPER)["front"]
-    for by in (2, 5, 8):
-        for bx in (2, cfw - 3):
-            put(img, cfx + bx, cfy + by, GOLD_HI)
-            put(img, cfx + bx, cfy + by + 1, GOLD_DARK)
+    # Bowsprit Skull Figurehead
+    paint_plank_box(FIGUREHEAD, BONE_HI, BONE_MID, BONE_DARK, IRON_VOID, seed=206, plank_lines=False)
+    fgx, fgy, fgw, fgh = faces(*FIGUREHEAD)["front"]
+    for ex in (fgx + 1, fgx + fgw - 2):
+        put(img, ex, fgy + 2, MAGMA_BRIGHT)
+        put(glow, ex, fgy + 2, MAGMA_BRIGHT)
 
-    # Belt buckle & furnace core + iron ribs
-    paint_shaded_box(BUCKLE, GOLD_SPEC, GOLD_HI, GOLD_MID, GOLD_DEEP, seed=108)
-    paint_shaded_box(RIB_BAR, IRON_RIM, IRON_HI, IRON_DARK, IRON_VOID, seed=109)
-    paint_shaded_box(FURNACE_CORE, MAGMA_CORE, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_ROOT, seed=110)
-    for face, rect in faces(*FURNACE_CORE).items():
-        fill(glow, rect, MAGMA_HOT)
-    fcfx, fcfy, fcfw, fcfh = faces(*FURNACE_CORE)["front"]
-    fill(img, (fcfx + 1, fcfy + 2, max(1, fcfw - 2), max(1, fcfh - 4)), MAGMA_CORE)
-    fill(glow, (fcfx + 1, fcfy + 2, max(1, fcfw - 2), max(1, fcfh - 4)), MAGMA_CORE)
-
-    # Head, brow, jaw, beard, tricorne hat
-    paint_shaded_box(HEAD_SKULL, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=111, ember_pores=10)
-    paint_shaded_box(HEAD_BROW, IRON_RIM, IRON_HI, IRON_DARK, IRON_VOID, seed=112)
-    paint_shaded_box(HEAD_JAW, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=113)
-    paint_shaded_box(BEARD_MAIN, BEARD_HI, BEARD_MID, BEARD_DARK, IRON_VOID, seed=114)
-    # Ember-tipped beard bottom row
-    bfx, bfy, bfw, bfh = faces(*BEARD_MAIN)["front"]
-    for dx in range(bfw):
-        if dx % 2 == 0:
-            put(img, bfx + dx, bfy + bfh - 1, MAGMA_HOT)
-            put(glow, bfx + dx, bfy + bfh - 1, MAGMA_HOT)
-
-    # Recessed glowing magma eye sockets on HEAD_SKULL front
-    hfx, hfy, hfw, hfh = faces(*HEAD_SKULL)["front"]
-    for ex in (hfx + 2, hfx + hfw - 4):
-        fill(img, (ex, hfy + 4, 2, 2), MAGMA_BRIGHT)
-        fill(glow, (ex, hfy + 4, 2, 2), MAGMA_BRIGHT)
-        put(img, ex + (0 if ex < hfx + 5 else 1), hfy + 4, MAGMA_CORE)
-        put(glow, ex + (0 if ex < hfx + 5 else 1), hfy + 4, MAGMA_CORE)
-
-    # Tricorne hat + gold trim + skull crest + ember plume
-    paint_shaded_box(HAT_CROWN, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=115)
-    paint_shaded_box(HAT_BRIM_F, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=116, gold_trim_bottom=True)
-    paint_shaded_box(HAT_BRIM_S, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=117, gold_trim_bottom=True)
-    paint_shaded_box(HAT_CREST, GOLD_SPEC, GOLD_HI, GOLD_MID, GOLD_DEEP, seed=118)
-    crfx, crfy, crfw, crfh = faces(*HAT_CREST)["front"]
-    put(img, crfx + 1, crfy + 1, MAGMA_BRIGHT)
-    put(img, crfx + 2, crfy + 1, MAGMA_BRIGHT)
-    put(glow, crfx + 1, crfy + 1, MAGMA_BRIGHT)
-    put(glow, crfx + 2, crfy + 1, MAGMA_BRIGHT)
-    paint_shaded_box(HAT_PLUME, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_MID, MAGMA_ROOT, seed=119)
-    for face, rect in faces(*HAT_PLUME).items():
-        if face in ("front", "top", "east", "west"):
-            fill(glow, rect, MAGMA_HOT)
-
-    # Pauldrons, arms, cutlass, cannon, legs, boots
-    paint_shaded_box(PAULDRON_L, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=120)
-    paint_shaded_box(PAULDRON_R, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=121)
-    paint_shaded_box(ARM_UPPER_L, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=122)
-    paint_shaded_box(ARM_UPPER_R, COAT_HI, COAT_MID, COAT_DARK, COAT_DEEP, seed=123)
-    paint_shaded_box(FOREARM_L, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=124, gold_trim_bottom=True)
-    paint_shaded_box(CANNON_BODY, IRON_RIM, IRON_MID, IRON_DARK, IRON_VOID, seed=125, ember_pores=12)
-    paint_shaded_box(CANNON_RIM, GOLD_SPEC, GOLD_HI, GOLD_MID, GOLD_DEEP, seed=126)
-    paint_shaded_box(CANNON_BORE, MAGMA_CORE, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_ROOT, seed=127)
-    for face, rect in faces(*CANNON_BORE).items():
+    # Mast, yardarm, crow's nest, glowing lantern
+    paint_plank_box(MAST_POLE, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=207)
+    paint_plank_box(YARDARM, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=208)
+    paint_plank_box(CROWS_NEST, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=209, gold_top=True)
+    paint_plank_box(MAST_LANTERN, MAGMA_CORE, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_ROOT, seed=210, plank_lines=False)
+    for face, rect in faces(*MAST_LANTERN).items():
         fill(glow, rect, MAGMA_BRIGHT)
 
-    paint_shaded_box(CUTLASS_HILT, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=128)
-    paint_shaded_box(CUTLASS_BLADE, STEEL_HI, STEEL_MID, STEEL_DARK, IRON_VOID, seed=129)
-    cbfx, cbfy, cbfw, cbfh = faces(*CUTLASS_BLADE)["front"]
-    for dy in range(1, cbfh - 1, 2):
-        put(img, cbfx, cbfy + dy, MAGMA_HOT)
-        put(glow, cbfx, cbfy + dy, MAGMA_HOT)
+    # Crimson Jolly-Roger Sail with bold Skull & Crossbones on front & back
+    paint_plank_box(SAIL_MAIN, SAIL_HI, SAIL_MID, SAIL_DARK, SAIL_DEEP, seed=211, plank_lines=False)
+    for face_name in ("front", "back"):
+        sfx, sfy, sfw, sfh = faces(*SAIL_MAIN)[face_name]
+        # Gold border hem on sail
+        fill(img, (sfx, sfy, sfw, 1), GOLD_MID)
+        fill(img, (sfx, sfy + sfh - 1, sfw, 1), GOLD_DARK)
+        # Pixel-art Skull & Crossbones centered on 18x14 sail
+        cx, cy = sfx + sfw // 2, sfy + sfh // 2 - 1
+        fill(img, (cx - 3, cy - 3, 6, 4), BONE_HI)
+        fill(img, (cx - 2, cy + 1, 4, 2), BONE_MID)
+        # Dark skull eyes & nose
+        put(img, cx - 2, cy - 1, IRON_VOID)
+        put(img, cx + 1, cy - 1, IRON_VOID)
+        put(img, cx - 1, cy + 1, IRON_VOID)
+        put(img, cx, cy + 1, IRON_VOID)
+        # Crossbones
+        for d in (-4, -3, 2, 3):
+            put(img, cx + d, cy + 3, BONE_HI)
+            put(img, cx + d, cy + 4, BONE_MID)
+            put(img, cx - d - 1, cy + 3, BONE_HI)
 
-    paint_shaded_box(THIGH_L, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=130)
-    paint_shaded_box(THIGH_R, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=131)
-    paint_shaded_box(BOOT_L, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=132, gold_trim_bottom=True)
-    paint_shaded_box(BOOT_R, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=133, gold_trim_bottom=True)
-    paint_shaded_box(KNEE_GUARD, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=134)
-    paint_shaded_box(TOE_CAP, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=135)
+    # Pirate Skull-Captain Head with Black Eyepatch + 1 Blazing Magma Eye + Tricorne Hat
+    paint_plank_box(SKULL_HEAD, BONE_HI, BONE_MID, BONE_DARK, IRON_VOID, seed=212, plank_lines=False)
+    skx, sky, skw, skh = faces(*SKULL_HEAD)["front"]
+    # Black eyepatch strap + patch over right eye (left side of front face)
+    for dx in range(skw):
+        put(img, skx + dx, sky + 2, IRON_VOID)
+    fill(img, (skx + 1, sky + 3, 3, 3), IRON_VOID)
+    # Blazing magma eye in left eye socket (right side of front face)
+    fill(img, (skx + skw - 4, sky + 3, 2, 2), MAGMA_BRIGHT)
+    fill(glow, (skx + skw - 4, sky + 3, 2, 2), MAGMA_BRIGHT)
+    put(img, skx + skw - 3, sky + 3, MAGMA_CORE)
+    put(glow, skx + skw - 3, sky + 3, MAGMA_CORE)
+    # Grinning skull teeth
+    for tx in range(skx + 2, skx + skw - 2, 2):
+        put(img, tx, sky + skh - 2, IRON_VOID)
+
+    paint_plank_box(HAT_CROWN, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=213, plank_lines=False)
+    paint_plank_box(HAT_BRIM_F, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=214, plank_lines=False, gold_top=True)
+    paint_plank_box(HAT_BRIM_S, IRON_MID, IRON_DARK, IRON_DEEP, IRON_VOID, seed=215, plank_lines=False, gold_top=True)
+    hfx, hfy, hfw, hfh = faces(*HAT_CROWN)["front"]
+    fill(img, (hfx + hfw // 2 - 1, hfy + 1, 2, 2), GOLD_HI)
+
+    # Spoked Ship's Wheel
+    paint_plank_box(SHIPS_WHEEL, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=216, plank_lines=False)
+    for face_name in ("front", "back"):
+        wfx, wfy, wfw, wfh = faces(*SHIPS_WHEEL)[face_name]
+        fill(img, (wfx + 4, wfy + 4, 2, 2), GOLD_HI)
+        for s in range(0, 10, 3):
+            put(img, wfx + s, wfy + 4, GOLD_MID)
+            put(img, wfx + 4, wfy + s, GOLD_MID)
+
+    # Broadside Cannons + Carriages + 4 Crab-Anchor Legs
+    paint_plank_box(CANNON_BARREL_L, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=217, plank_lines=False)
+    paint_plank_box(CANNON_BARREL_R, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=218, plank_lines=False)
+    paint_plank_box(CANNON_RIM, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=219, plank_lines=False)
+    paint_plank_box(CANNON_BORE, MAGMA_CORE, MAGMA_BRIGHT, MAGMA_HOT, MAGMA_ROOT, seed=220, plank_lines=False)
+    for face, rect in faces(*CANNON_BORE).items():
+        fill(glow, rect, MAGMA_BRIGHT)
+    paint_plank_box(CANNON_CARRIAGE, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=221)
+
+    paint_plank_box(LEG_FEMUR, WOOD_HI, WOOD_MID, WOOD_DARK, WOOD_VOID, seed=222)
+    paint_plank_box(LEG_CLAW, IRON_HI, IRON_MID, IRON_DARK, IRON_VOID, seed=223, plank_lines=False)
+    paint_plank_box(LEG_TIP, GOLD_HI, GOLD_MID, GOLD_DARK, GOLD_DEEP, seed=224, plank_lines=False)
 
     bones = [
         {"name": "root", "pivot": [0, 0, 0]},
         {
             "name": "body",
             "parent": "root",
-            "pivot": [0, 17, 0],
+            "pivot": [0, 14, 0],
             "cubes": [
-                # Tapered greatcoat torso & waist
-                {"origin": [-6.0, 17, -4.5], "size": [12, 6, 9], "uv": [50, 0]},
-                {"origin": [-7.0, 23, -5.0], "size": [14, 12, 10], "uv": [0, 0]},
-                {"origin": [-7.0, 21, -5.0], "size": [14, 3, 10], "uv": [94, 0]},
-                {"origin": [-2.5, 20.5, -5.8], "size": [5, 4, 2], "uv": [114, 46]},
-                # Raised pirate coat collar
-                {"origin": [-7.5, 34, -4.5], "size": [15, 4, 10], "uv": [144, 0]},
-                # Flared greatcoat tails
-                {"origin": [3.0, 10, -3.5], "size": [6, 8, 2], "pivot": [6.0, 18, -2.5], "rotation": [0, 0, -10], "uv": [196, 0]},
-                {"origin": [-9.0, 10, -3.5], "size": [6, 8, 2], "pivot": [-6.0, 18, -2.5], "rotation": [0, 0, 10], "uv": [214, 0]},
-                {"origin": [-6.0, 10, 3.8], "size": [12, 8, 2], "pivot": [0, 18, 4.8], "rotation": [12, 0, 0], "uv": [196, 12]},
-                # Hollowed chest furnace core + 3D iron rib bars
-                {"origin": [-3.0, 25, -5.6], "size": [6, 8, 3], "pivot": [0, 29, -5.6], "rotation": [0, 0, 8], "uv": [94, 46]},
-                {"origin": [-3.0, 31, -6.2], "size": [6, 2, 2], "uv": [76, 46]},
-                {"origin": [-3.0, 27, -6.2], "size": [6, 2, 2], "uv": [76, 46]},
+                # Ship Keel & Main Pirate Galleon Hull
+                {"origin": [-8.0, 9, -13.0], "size": [16, 5, 26], "uv": [94, 0]},
+                {"origin": [-11.0, 14, -12.0], "size": [22, 7, 24], "uv": [0, 0]},
+                # Gunwale rails (port & starboard)
+                {"origin": [-12.0, 21, -13.0], "size": [24, 3, 2], "uv": [0, 32]},
+                {"origin": [-12.0, 21, 11.0], "size": [24, 3, 2], "uv": [0, 32]},
+                # Raised Quarterdeck Stern
+                {"origin": [-10.0, 21, 4.0], "size": [20, 5, 9], "uv": [180, 0]},
+                # Sweeping 25-deg Bowsprit & Skull Figurehead jutting forward (-Z)
+                {"origin": [-1.5, 19, -23.0], "size": [3, 3, 14], "pivot": [0, 20, -11], "rotation": [-25, 0, 0], "uv": [180, 15]},
+                {"origin": [-3.0, 21, -24.0], "size": [6, 6, 6], "pivot": [0, 20, -11], "rotation": [-25, 0, 0], "uv": [216, 15]},
             ],
         },
         {
             "name": "head",
             "parent": "body",
-            "pivot": [0, 36, 0],
+            "pivot": [0, 26, 7],
             "cubes": [
-                {"origin": [-5.0, 36, -5.0], "size": [10, 10, 10], "uv": [0, 24]},
-                {"origin": [-6.0, 43, -5.8], "size": [12, 3, 4], "pivot": [0, 44, -4.5], "rotation": [8, 0, 0], "uv": [42, 24]},
-                {"origin": [-4.0, 35, -5.6], "size": [8, 3, 7], "uv": [42, 33]},
-                {"origin": [-4.0, 30, -6.2], "size": [8, 7, 3], "pivot": [0, 36, -5.0], "rotation": [-8, 0, 0], "uv": [76, 24]},
-                # 3-flap angled Tricorne Hat + crown + skull crest + ember plume
-                {"origin": [-6.0, 45, -6.0], "size": [12, 6, 12], "uv": [100, 24]},
-                {"origin": [-7.0, 45, -9.5], "size": [14, 2, 5], "pivot": [0, 45, -5.5], "rotation": [-18, 0, 0], "uv": [150, 24]},
-                {"origin": [5.5, 45, -7.0], "size": [3, 4, 14], "pivot": [6.0, 45, 0], "rotation": [0, 0, 24], "uv": [190, 24]},
-                {"origin": [-8.5, 45, -7.0], "size": [3, 4, 14], "pivot": [-6.0, 45, 0], "rotation": [0, 0, -24], "uv": [190, 24]},
-                {"origin": [-2.0, 47, -7.2], "size": [4, 4, 2], "uv": [150, 34]},
-                {"origin": [-1.5, 48, 3.5], "size": [3, 7, 4], "pivot": [0, 49, 5.0], "rotation": [-28, 0, 0], "uv": [166, 34]},
+                # Spoked Ship's Wheel behind the Captain Skull
+                {"origin": [-5.0, 26, 9.0], "size": [10, 10, 2], "uv": [216, 42]},
+                # Pirate Skull-Captain with Eyepatch & Magma Eye
+                {"origin": [-5.0, 26, 1.0], "size": [10, 9, 9], "uv": [100, 34]},
+                # Sweeping 3-flap Tricorne Hat
+                {"origin": [-5.5, 34, 0.5], "size": [11, 5, 10], "uv": [140, 34]},
+                {"origin": [-7.0, 34, -3.5], "size": [14, 2, 5], "pivot": [0, 34, 1.0], "rotation": [-18, 0, 0], "uv": [184, 34]},
+                {"origin": [5.0, 34, -1.0], "size": [3, 4, 12], "pivot": [5.5, 34, 5.0], "rotation": [0, 0, 24], "uv": [184, 42]},
+                {"origin": [-8.0, 34, -1.0], "size": [3, 4, 12], "pivot": [-5.5, 34, 5.0], "rotation": [0, 0, -24], "uv": [184, 42]},
             ],
         },
         {
-            "name": "shoulder_left",
+            "name": "mast",
             "parent": "body",
-            "pivot": [10.5, 34, 0],
+            "pivot": [0, 21, -2],
             "cubes": [
-                {"origin": [6.5, 30, -5.0], "size": [8, 7, 10], "pivot": [10.0, 34, 0], "rotation": [0, 0, 12], "uv": [0, 46]},
-            ],
-        },
-        {
-            "name": "shoulder_right",
-            "parent": "body",
-            "pivot": [-10.5, 34, 0],
-            "cubes": [
-                {"origin": [-14.5, 30, -5.0], "size": [8, 7, 10], "pivot": [-10.0, 34, 0], "rotation": [0, 0, -12], "uv": [38, 46]},
+                # Tall Mainmast, Yardarm, Crimson Jolly-Roger Sail, Crow's Nest & Glowing Lantern
+                {"origin": [-1.5, 21, -3.5], "size": [3, 26, 3], "uv": [0, 38]},
+                {"origin": [-10.0, 42, -5.0], "size": [20, 2, 2], "uv": [14, 38]},
+                {"origin": [-9.0, 28, -4.8], "size": [18, 14, 1], "uv": [14, 43]},
+                {"origin": [-3.5, 45, -5.5], "size": [7, 3, 7], "uv": [54, 43]},
+                {"origin": [-1.5, 48, -3.5], "size": [3, 4, 3], "uv": [84, 43]},
             ],
         },
         {
             "name": "arm_left",
             "parent": "body",
-            "pivot": [11.5, 32, 0],
+            "pivot": [12.0, 22, -2],
             "cubes": [
-                # Cutlass arm: coat upper arm, iron bracer, gold guard, notched steel cutlass blade
-                {"origin": [8.5, 22, -3.0], "size": [6, 10, 6], "uv": [130, 46]},
-                {"origin": [8.0, 11, -3.5], "size": [7, 12, 7], "uv": [182, 46]},
-                {"origin": [9.5, 9, -5.5], "size": [4, 3, 4], "uv": [154, 68]},
-                {"origin": [10.5, 1, -7.5], "size": [2, 13, 4], "pivot": [11.5, 10, -5.5], "rotation": [-52, 0, 0], "uv": [172, 68]},
+                # Port Broadside Cannon on wooden carriage
+                {"origin": [9.0, 19, -5.5], "size": [6, 4, 7], "uv": [98, 68]},
+                {"origin": [9.0, 21, -8.5], "size": [6, 6, 12], "uv": [0, 68]},
+                {"origin": [8.5, 20.5, -10.5], "size": [7, 7, 3], "uv": [76, 68]},
+                {"origin": [10.0, 22, -11.5], "size": [4, 4, 2], "uv": [76, 79]},
             ],
         },
         {
             "name": "arm_right",
             "parent": "body",
-            "pivot": [-11.5, 32, 0],
+            "pivot": [-12.0, 22, -2],
             "cubes": [
-                # Heavy iron hand-cannon gauntlet
-                {"origin": [-14.5, 22, -3.0], "size": [6, 10, 6], "uv": [156, 46]},
-                {"origin": [-15.5, 10, -4.0], "size": [8, 13, 8], "uv": [212, 46]},
-                {"origin": [-16.0, 8, -4.5], "size": [9, 3, 9], "uv": [186, 68]},
-                {"origin": [-14.5, 7, -3.0], "size": [6, 2, 6], "uv": [224, 68]},
+                # Starboard Broadside Cannon on wooden carriage
+                {"origin": [-15.0, 19, -5.5], "size": [6, 4, 7], "uv": [98, 68]},
+                {"origin": [-15.0, 21, -8.5], "size": [6, 6, 12], "uv": [38, 68]},
+                {"origin": [-15.5, 20.5, -10.5], "size": [7, 7, 3], "uv": [76, 68]},
+                {"origin": [-14.0, 22, -11.5], "size": [4, 4, 2], "uv": [76, 79]},
             ],
         },
         {
             "name": "leg_left",
             "parent": "root",
-            "pivot": [4.5, 17, 0],
+            "pivot": [10.0, 13, -7],
             "cubes": [
-                {"origin": [1.5, 9, -3.0], "size": [6, 8, 6], "uv": [0, 68]},
-                {"origin": [1.0, 0, -4.0], "size": [7, 9, 8], "uv": [52, 68]},
-                {"origin": [2.5, 8, -5.2], "size": [4, 5, 3], "pivot": [4.5, 10, -4.0], "rotation": [16, 0, 0], "uv": [116, 68]},
-                {"origin": [1.0, 0, -6.2], "size": [7, 3, 3], "uv": [132, 68]},
+                {"origin": [9.0, 6, -9.0], "size": [4, 10, 4], "pivot": [10.0, 13, -7], "rotation": [-12, 0, -34], "uv": [126, 68]},
+                {"origin": [13.0, 0, -10.0], "size": [4, 11, 4], "pivot": [14.0, 9, -8], "rotation": [8, 0, 16], "uv": [144, 68]},
+                {"origin": [11.5, 0, -10.5], "size": [5, 3, 5], "uv": [162, 68]},
             ],
         },
         {
             "name": "leg_right",
             "parent": "root",
-            "pivot": [-4.5, 17, 0],
+            "pivot": [-10.0, 13, -7],
             "cubes": [
-                {"origin": [-7.5, 9, -3.0], "size": [6, 8, 6], "uv": [26, 68]},
-                {"origin": [-8.0, 0, -4.0], "size": [7, 9, 8], "uv": [84, 68]},
-                {"origin": [-6.5, 8, -5.2], "size": [4, 5, 3], "pivot": [-4.5, 10, -4.0], "rotation": [16, 0, 0], "uv": [116, 68]},
-                {"origin": [-8.0, 0, -6.2], "size": [7, 3, 3], "uv": [132, 68]},
+                {"origin": [-13.0, 6, -9.0], "size": [4, 10, 4], "pivot": [-10.0, 13, -7], "rotation": [-12, 0, 34], "uv": [126, 68]},
+                {"origin": [-17.0, 0, -10.0], "size": [4, 11, 4], "pivot": [-14.0, 9, -8], "rotation": [8, 0, -16], "uv": [144, 68]},
+                {"origin": [-16.5, 0, -10.5], "size": [5, 3, 5], "uv": [162, 68]},
+            ],
+        },
+        {
+            "name": "leg_back_left",
+            "parent": "root",
+            "pivot": [10.0, 13, 7],
+            "cubes": [
+                {"origin": [9.0, 6, 5.0], "size": [4, 10, 4], "pivot": [10.0, 13, 7], "rotation": [12, 0, -34], "uv": [126, 68]},
+                {"origin": [13.0, 0, 6.0], "size": [4, 11, 4], "pivot": [14.0, 9, 8], "rotation": [-8, 0, 16], "uv": [144, 68]},
+                {"origin": [11.5, 0, 5.5], "size": [5, 3, 5], "uv": [162, 68]},
+            ],
+        },
+        {
+            "name": "leg_back_right",
+            "parent": "root",
+            "pivot": [-10.0, 13, 7],
+            "cubes": [
+                {"origin": [-13.0, 6, 5.0], "size": [4, 10, 4], "pivot": [-10.0, 13, 7], "rotation": [12, 0, 34], "uv": [126, 68]},
+                {"origin": [-17.0, 0, 6.0], "size": [4, 11, 4], "pivot": [-14.0, 9, 8], "rotation": [-8, 0, -16], "uv": [144, 68]},
+                {"origin": [-16.5, 0, 5.5], "size": [5, 3, 5], "uv": [162, 68]},
             ],
         },
     ]
@@ -1407,9 +1498,9 @@ def build_captain_brimstone():
                     "identifier": f"geometry.{eid}",
                     "texture_width": 256,
                     "texture_height": 128,
-                    "visible_bounds_width": 4.2,
-                    "visible_bounds_height": 4.2,
-                    "visible_bounds_offset": [0, 1.9, 0],
+                    "visible_bounds_width": 4.8,
+                    "visible_bounds_height": 4.6,
+                    "visible_bounds_offset": [0, 2.0, 0],
                 },
                 "bones": bones,
             }
@@ -1424,7 +1515,7 @@ def build_captain_brimstone():
     glow.save(ASSETS / f"textures/entity/{eid}_glowmask.png")
     (ASSETS / f"geo/entity/{eid}.geo.json").write_text(json.dumps(geo, indent=2) + "\n", encoding="utf-8")
     (ASSETS / f"animations/entity/{eid}.animation.json").write_text(
-        json.dumps(make_animations(eid), indent=2) + "\n", encoding="utf-8"
+        json.dumps(make_captain_brimstone_animations(), indent=2) + "\n", encoding="utf-8"
     )
 
 
