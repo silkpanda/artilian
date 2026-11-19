@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 3 — Stage 4 (*Tier 3 Arsenal*)** Sub-stages 1–2 complete (`162/162` GameTests, `runData`, `build`, `check_armor_sheets.py`, and `P3-04` red-proven & `HELD`) on branch `phase-3-stage-4-tier-3-arsenal`; Sub-stage 3 (`./gradlew runClient` visual check & screenshot) pending. |
-| **Next** | 1. Run `./gradlew runClient` on `phase-3-stage-4-tier-3-arsenal` to visually verify Prismatic Armor, Prismatic Sword, Prism Nova Staff, Brimstone Meteor Staff, Starlight Gravity TNT, and Brimstone Meteor TNT (`qa/evidence/tier3-arsenal-2026-11-19.png`), then open PR into `main` (after `phase-3-stage-3-captain-brimstone` PR merges). 2. Implement `TD-01` (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`) or begin **Phase 3 — Stage 5 (*Phase 3 Art Pass & Sign-Off*)**. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
-| **Waiting on the owner** | 1. In-game look & screenshot when home for **Boss Framework** (*Training Golem* + *Boss Altar*, `qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 5. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | `phase-3-stage-3-captain-brimstone` (ready for PR into `main`) and `phase-3-stage-4-tier-3-arsenal` (branched from Stage 3). |
+| **In progress** | **Phase 3 — Stage 5 (*Phase 3 Art Pass & Sign-Off*)** Sub-stages 1–2 complete (`TD-01` implemented via `art_lib.py`/`lint_art.py`/`preview_geo.py`, `training_golem` upgraded to v2 `128×128`, `crystal_colossus` spire/claw UVs fixed, `lint_art.py --phase3` clean, `164/164` GameTests, `runData`, `build`, `check_armor_sheets.py` green) on branch `phase-3-stage-5-art-pass`; live `./gradlew runClient` visual sign-off pending. |
+| **Next** | 1. Run `./gradlew runClient` on `phase-3-stage-5-art-pass` to visually verify Tier 3 Arsenal (`qa/evidence/tier3-arsenal-2026-11-19.png`) and Training Golem v2 (`qa/evidence/phase3-signoff-2026-11-19.png`), then open PRs into `main` (Stage 3 → Stage 4 → Stage 5). 2. Begin **Phase 4 — Stage 1 (*The Eye Realm: Dimension & Gazing Portal*)** after Phase 3 PRs merge. 3. When home, owner runs family LAN co-op playtest to sign off Phase 1 Stage 6, Phase 2, and Phase 3. |
+| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, and family LAN co-op playtest across Phases 1–3 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | `phase-3-stage-3-captain-brimstone` (ready for PR into `main`), `phase-3-stage-4-tier-3-arsenal` (branched from Stage 3), and `phase-3-stage-5-art-pass` (branched from Stage 4). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -443,11 +443,11 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
   | Sub-stage | Commit | Summary & Verification |
   |---|---|---|
-  | 1 `TD-01` art tooling & Phase 3 audit | Pending | `art_lib.py`, `lint_art.py`, `preview_geo.py`; audit all Phase 3 `.geo.json` + `.png` assets. |
-  | 2 Phase 3 art polish & sign-off tests | Pending | `training_golem` `128×128` v2 art upgrade, any `lint_art.py` fixes, `Phase3SignOffGameTests`. |
-  | 3 Full verification & live client sign-off | Pending | `lint_art.py`, `runData`, `build`, `runGameTestServer`, `./gradlew runClient` screenshots, `TECH_DEBT.md` `TD-01` FIXED. |
+  | 1 `TD-01` art tooling & Phase 3 audit | `11b2fac` | `art_lib.py`, `lint_art.py`, `preview_geo.py`; audited `training_golem`, `crystal_colossus`, `captain_brimstone`, `prismatic_armor` (caught `training_golem` `128×64` flat placeholder and `crystal_colossus` spire/claw UV issues). |
+  | 2 Phase 3 art polish & sign-off tests | This commit | Upgraded `training_golem` to v2 `128×128` weathered stone & amber core (`art_lib.py`); fixed `crystal_colossus` `SPIRE_TALL_VIOLET` (`5×12×5`) & `CLAW_THUMB` UVs; `lint_art.py --phase3` clean; added `Phase3SignOffGameTests` (`164/164`, `runData`, `build`, `check_armor_sheets.py` green); `TD-01` marked `FIXED`. |
+  | 3 Live client sign-off | Pending | `./gradlew runClient` visual verification & screenshots (`qa/evidence/tier3-arsenal-2026-11-19.png`, `qa/evidence/phase3-signoff-2026-11-19.png`). |
 
-- **Tests & Red-proofs:** Pending (`Phase3SignOffGameTests` + `lint_art.py`).
+- **Tests & Red-proofs:** `Phase3SignOffGameTests` (`164/164` green) + `python tools/art/lint_art.py --phase3` (exit `0`).
 - **Security Gate:** `n/a` (art pass, tooling, and progression sign-off; `P3-01`–`P3-04` already `HELD`).
 - **Done When:** `lint_art.py`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green; live `./gradlew runClient` verifies Tier 3 Arsenal and Phase 3 bosses/altar; `TD-01` is marked `FIXED`.
 
