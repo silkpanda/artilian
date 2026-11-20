@@ -12,6 +12,18 @@
             0
           ]
         },
+        "orbit_shards": {
+          "rotation": [
+            0,
+            "query.anim_time * -180",
+            0
+          ],
+          "position": [
+            0,
+            "math.sin(query.anim_time * 180) * 0.8",
+            0
+          ]
+        },
         "torso": {
           "position": [
             0,
@@ -36,6 +48,13 @@
           "rotation": [
             0,
             "query.anim_time * 360",
+            0
+          ]
+        },
+        "orbit_shards": {
+          "rotation": [
+            0,
+            "query.anim_time * -360",
             0
           ]
         },

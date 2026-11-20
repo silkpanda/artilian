@@ -8,7 +8,7 @@
         "body": {
           "position": [
             0,
-            "math.sin(query.anim_time * 225) * 1.2",
+            "math.sin(query.anim_time * 225) * 1.4",
             0
           ]
         },
@@ -16,20 +16,27 @@
           "rotation": [
             0,
             0,
-            "math.sin(query.anim_time * 450) * 18"
+            "math.sin(query.anim_time * 450) * 20"
           ]
         },
         "wing_right": {
           "rotation": [
             0,
             0,
-            "-math.sin(query.anim_time * 450) * 18"
+            "-math.sin(query.anim_time * 450) * 20"
           ]
         },
         "tail_stalk": {
           "rotation": [
-            "math.cos(query.anim_time * 225) * 10",
+            "math.cos(query.anim_time * 225) * 12",
             0,
+            0
+          ]
+        },
+        "orbit_motes": {
+          "rotation": [
+            0,
+            "query.anim_time * 180",
             0
           ]
         }
@@ -42,11 +49,11 @@
         "body": {
           "position": [
             0,
-            "math.sin(query.anim_time * 450) * 1.6",
+            "math.sin(query.anim_time * 450) * 1.8",
             0
           ],
           "rotation": [
-            12,
+            14,
             0,
             0
           ]
@@ -55,14 +62,21 @@
           "rotation": [
             0,
             0,
-            "math.sin(query.anim_time * 900) * 28"
+            "math.sin(query.anim_time * 900) * 32"
           ]
         },
         "wing_right": {
           "rotation": [
             0,
             0,
-            "-math.sin(query.anim_time * 900) * 28"
+            "-math.sin(query.anim_time * 900) * 32"
+          ]
+        },
+        "orbit_motes": {
+          "rotation": [
+            0,
+            "query.anim_time * 360",
+            0
           ]
         }
       }
@@ -99,7 +113,7 @@
             "0.18": [
               0,
               0,
-              -40
+              -42
             ],
             "0.45": [
               0,
@@ -118,7 +132,7 @@
             "0.18": [
               0,
               0,
-              40
+              42
             ],
             "0.45": [
               0,

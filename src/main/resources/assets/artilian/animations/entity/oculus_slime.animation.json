@@ -11,6 +11,20 @@
             "1 - math.sin(query.anim_time * 225) * 0.08",
             "1 + math.sin(query.anim_time * 225) * 0.06"
           ]
+        },
+        "eyestalks": {
+          "rotation": [
+            "math.sin(query.anim_time * 225) * 8",
+            0,
+            0
+          ]
+        },
+        "tentacles": {
+          "rotation": [
+            0,
+            0,
+            "math.cos(query.anim_time * 225) * 10"
+          ]
         }
       }
     },
@@ -21,13 +35,20 @@
         "body": {
           "position": [
             0,
-            "math.abs(math.sin(query.anim_time * 450)) * 3.5",
+            "math.abs(math.sin(query.anim_time * 450)) * 3.8",
             0
           ],
           "scale": [
             "1 - math.abs(math.sin(query.anim_time * 450)) * 0.08",
             "1 + math.abs(math.sin(query.anim_time * 450)) * 0.14",
             "1 - math.abs(math.sin(query.anim_time * 450)) * 0.08"
+          ]
+        },
+        "eyestalks": {
+          "rotation": [
+            "math.sin(query.anim_time * 450) * 14",
+            0,
+            0
           ]
         }
       }
@@ -43,7 +64,7 @@
               0
             ],
             "0.18": [
-              22,
+              24,
               0,
               0
             ],
