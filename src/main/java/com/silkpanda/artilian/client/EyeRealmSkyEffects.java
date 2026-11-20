@@ -8,19 +8,26 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
+import com.silkpanda.artilian.ArtilianMod;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 /**
- * Custom twilight skybox for Alex's Eye Realm featuring twinkling star-eyes
+ * Custom twilight skybox for Alex's Eye Realm featuring painted twinkling star-eyes
  * and a giant Great Sky Eye overhead that periodically blinks.
  */
 public class EyeRealmSkyEffects extends DimensionSpecialEffects {
+
+    private static final ResourceLocation GREAT_SKY_EYE_TEX =
+            ArtilianMod.id("textures/environment/great_sky_eye.png");
+    private static final ResourceLocation SKY_STAR_EYE_TEX =
+            ArtilianMod.id("textures/environment/sky_star_eye.png");
 
     private static final float[] STAR_ANGLES_X = { -42f, -18f, 24f, 52f, -60f, 12f, 38f, -30f, 65f, -8f };
     private static final float[] STAR_ANGLES_Y = { 28f, -45f, 35f, -22f, 10f, 58f, -55f, 64f, 18f, -72f };
@@ -63,9 +70,10 @@ public class EyeRealmSkyEffects extends DimensionSpecialEffects {
 
         // 0. Twilight skybox dome (deep Artilian slate zenith -> twilight violet horizon)
         drawTwilightSkybox(tesselator, poseStack.last().pose());
-        RenderSystem.enableCull();
 
-        // 1. Twinkling star-eyes around the twilight dome
+        // 1. Twinkling painted star-eyes around the twilight dome
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShaderTexture(0, SKY_STAR_EYE_TEX);
         float time = ticks + partialTick;
         for (int i = 0; i < STAR_ANGLES_X.length; i++) {
             float twinkle = 0.45F + 0.55F * Mth.sin(time * 0.08F + i * 1.3F);
@@ -74,54 +82,53 @@ public class EyeRealmSkyEffects extends DimensionSpecialEffects {
             poseStack.mulPose(Axis.ZP.rotationDegrees(STAR_ANGLES_Y[i]));
             Matrix4f mat = poseStack.last().pose();
 
-            float size = 2.2F;
+            float size = 3.2F;
             float yDist = 92.0F;
-            boolean cyan = (i % 2 == 0);
-            int r = cyan ? 125 : 217;
-            int g = cyan ? 249 : 70;
-            int b = cyan ? 255 : 239;
-            int a = (int) (180 * twinkle);
+            int a = (int) (235 * twinkle);
 
-            BufferBuilder buf = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            buf.addVertex(mat, -size, yDist, -size * 0.65F).setColor(r, g, b, a);
-            buf.addVertex(mat, size, yDist, -size * 0.65F).setColor(r, g, b, a);
-            buf.addVertex(mat, size, yDist, size * 0.65F).setColor(r, g, b, a);
-            buf.addVertex(mat, -size, yDist, size * 0.65F).setColor(r, g, b, a);
+            BufferBuilder buf = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            buf.addVertex(mat, -size, yDist, -size).setUv(0.0F, 0.0F).setColor(255, 255, 255, a);
+            buf.addVertex(mat, size, yDist, -size).setUv(1.0F, 0.0F).setColor(255, 255, 255, a);
+            buf.addVertex(mat, size, yDist, size).setUv(1.0F, 1.0F).setColor(255, 255, 255, a);
+            buf.addVertex(mat, -size, yDist, size).setUv(0.0F, 1.0F).setColor(255, 255, 255, a);
             BufferUploader.drawWithShader(buf.buildOrThrow());
             poseStack.popPose();
         }
 
-        // 2. Giant Great Sky Eye high overhead with smooth periodic blink (160-tick cycle)
+        // 2. Giant painted Great Sky Eye high overhead with 4-frame periodic blink (160-tick cycle)
         float cycle = (time % 160.0F) / 160.0F;
-        float openness;
+        int frame;
         if (cycle < 0.80F) {
-            openness = 1.0F;
-        } else if (cycle < 0.88F) {
-            openness = 1.0F - (cycle - 0.80F) / 0.08F;
-        } else if (cycle < 0.92F) {
-            openness = 0.05F;
+            frame = 0; // Wide open
+        } else if (cycle < 0.86F) {
+            frame = 1; // Half-closing
+        } else if (cycle < 0.93F) {
+            frame = 2; // Blink shut
         } else {
-            openness = 0.05F + 0.95F * ((cycle - 0.92F) / 0.08F);
+            frame = 3; // Opening
         }
-        openness = Mth.clamp(openness, 0.05F, 1.0F);
+        float v0 = frame * 0.25F;
+        float v1 = v0 + 0.25F;
 
+        RenderSystem.setShaderTexture(0, GREAT_SKY_EYE_TEX);
         poseStack.pushPose();
         poseStack.mulPose(Axis.XP.rotationDegrees(-52.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(-8.0F));
         Matrix4f eyeMat = poseStack.last().pose();
         float dist = 85.0F;
+        float halfW = 26.0F;
+        float halfH = 13.0F;
 
-        // Outer sclera (soft lavender-white)
-        drawQuad(tesselator, eyeMat, dist, 20.0F, 11.5F * openness, 232, 214, 248, 225);
-        // Twilight magenta iris
-        drawQuad(tesselator, eyeMat, dist - 0.2F, 10.5F, 9.0F * openness, 217, 70, 239, 235);
-        // Cyan pupil glow ring
-        drawQuad(tesselator, eyeMat, dist - 0.4F, 6.2F, 6.2F * openness, 125, 249, 255, 245);
-        // Deep void pupil slit
-        drawQuad(tesselator, eyeMat, dist - 0.6F, 2.6F, 4.8F * openness, 24, 12, 38, 255);
+        BufferBuilder eyeBuf = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        eyeBuf.addVertex(eyeMat, -halfW, dist, -halfH).setUv(0.0F, v0).setColor(255, 255, 255, 245);
+        eyeBuf.addVertex(eyeMat, halfW, dist, -halfH).setUv(1.0F, v0).setColor(255, 255, 255, 245);
+        eyeBuf.addVertex(eyeMat, halfW, dist, halfH).setUv(1.0F, v1).setColor(255, 255, 255, 245);
+        eyeBuf.addVertex(eyeMat, -halfW, dist, halfH).setUv(0.0F, v1).setColor(255, 255, 255, 245);
+        BufferUploader.drawWithShader(eyeBuf.buildOrThrow());
 
         poseStack.popPose();
 
+        RenderSystem.enableCull();
         RenderSystem.disableBlend();
         RenderSystem.depthMask(true);
         return true;
@@ -165,24 +172,6 @@ public class EyeRealmSkyEffects extends DimensionSpecialEffects {
         buf.addVertex(mat, x2, y2, z2).setColor(43, 35, 56, 255);
         buf.addVertex(mat, x4, y4, z4).setColor(91, 33, 120, 255);
         buf.addVertex(mat, x3, y3, z3).setColor(91, 33, 120, 255);
-        BufferUploader.drawWithShader(buf.buildOrThrow());
-    }
-
-    private static void drawQuad(
-            Tesselator tesselator,
-            Matrix4f mat,
-            float y,
-            float halfW,
-            float halfH,
-            int r,
-            int g,
-            int b,
-            int a) {
-        BufferBuilder buf = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        buf.addVertex(mat, -halfW, y, -halfH).setColor(r, g, b, a);
-        buf.addVertex(mat, halfW, y, -halfH).setColor(r, g, b, a);
-        buf.addVertex(mat, halfW, y, halfH).setColor(r, g, b, a);
-        buf.addVertex(mat, -halfW, y, halfH).setColor(r, g, b, a);
         BufferUploader.drawWithShader(buf.buildOrThrow());
     }
 }

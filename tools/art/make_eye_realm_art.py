@@ -8,6 +8,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[2]
 BLOCK_TEX = ROOT / "src/main/resources/assets/artilian/textures/block"
 ITEM_TEX = ROOT / "src/main/resources/assets/artilian/textures/item"
+ENV_TEX = ROOT / "src/main/resources/assets/artilian/textures/environment"
 
 
 def build_gazing_portal() -> None:
@@ -286,6 +287,130 @@ def build_ocular_wood_set() -> None:
     sap.save(BLOCK_TEX / "ocular_sapling.png")
 
 
+def build_great_sky_eye() -> None:
+    """256x512 (4 frames of 256x128) cosmic almond Great Sky Eye with soft aura & blinking lids."""
+    w, fh = 256, 128
+    frames = 4
+    openness_list = [1.0, 0.55, 0.08, 0.55]
+    img = Image.new("RGBA", (w, fh * frames), (0, 0, 0, 0))
+    px = img.load()
+
+    cx, cy = 127.5, 63.5
+    for f in range(frames):
+        oy = f * fh
+        open_amt = openness_list[f]
+        for y in range(fh):
+            ny = (y - cy) / 42.0
+            for x in range(w):
+                nx = (x - cx) / 96.0
+                # Almond shape: |ny| <= lid_curve(nx)
+                if abs(nx) <= 1.0:
+                    max_lid = (1.0 - nx * nx) ** 0.72
+                else:
+                    max_lid = -1.0
+
+                # Soft cosmic halo outside the eye
+                halo_dist = math.hypot(nx * 1.15, ny * 1.1)
+                if halo_dist < 1.35:
+                    halo_alpha = int(max(0.0, (1.35 - halo_dist) / 1.35) ** 2.2 * 130)
+                else:
+                    halo_alpha = 0
+
+                in_almond = max_lid > 0.0 and abs(ny) <= max_lid
+                if not in_almond:
+                    if halo_alpha > 0:
+                        # Twilight magenta -> cyan cosmic nebula aura
+                        mix = max(0.0, min(1.0, 1.0 - halo_dist / 1.35))
+                        r = int(140 + 77 * mix)
+                        g = int(42 + 40 * mix)
+                        b = int(196 + 43 * mix)
+                        px[x, oy + y] = (r, g, b, halo_alpha)
+                    continue
+
+                # Inside almond: check if covered by blinking eyelid
+                lid_open = max_lid * open_amt
+                if abs(ny) > lid_open:
+                    # Curved twilight-indigo eyelid with glowing lash rim
+                    rim_dist = abs(ny) - lid_open
+                    if rim_dist < 0.09:
+                        px[x, oy + y] = (217, 70, 239, 240)
+                    else:
+                        shade = int(46 + 24 * (1.0 - abs(ny) / max(0.01, max_lid)))
+                        px[x, oy + y] = (shade, 26, shade + 34, 235)
+                    continue
+
+                # Visible eye interior (sclera, iris, pupil, specular glint)
+                dx = x - cx
+                dy = y - cy
+                iris_r = math.hypot(dx, dy)
+                angle = math.atan2(dy, dx)
+
+                if iris_r < 14.0:
+                    # Deep cosmic void pupil + crisp starlight glint
+                    glint_d = math.hypot(dx + 5.5, dy + 5.5)
+                    if glint_d < 3.6:
+                        px[x, oy + y] = (240, 253, 255, 255)
+                    elif iris_r > 11.2:
+                        px[x, oy + y] = (64, 215, 245, 255)
+                    else:
+                        px[x, oy + y] = (18, 10, 34, 255)
+                elif iris_r < 32.0:
+                    # Radial striated cyan -> magenta -> violet iris
+                    t = (iris_r - 14.0) / 18.0
+                    ray = 0.5 + 0.5 * math.sin(angle * 18.0 + iris_r * 0.25)
+                    if t < 0.42:
+                        # Bright pupil-glow cyan ring
+                        r = int(105 + 45 * ray)
+                        g = int(230 + 25 * ray)
+                        b = 255
+                    elif t < 0.82:
+                        # Twilight magenta iris body
+                        r = int(190 + 35 * ray)
+                        g = int(52 + 38 * ray)
+                        b = int(218 + 25 * ray)
+                    else:
+                        # Dark arcane iris limbal ring
+                        r = int(86 + 30 * ray)
+                        g = int(32 + 18 * ray)
+                        b = int(128 + 30 * ray)
+                    px[x, oy + y] = (r, g, b, 250)
+                else:
+                    # Shaded lavender-moon sclera with subtle edge vignette
+                    edge = abs(ny) / max(0.01, max_lid)
+                    lum = 1.0 - 0.28 * (edge * edge) - 0.14 * (nx * nx)
+                    r = int(236 * lum)
+                    g = int(216 * lum)
+                    b = int(248 * lum)
+                    px[x, oy + y] = (r, g, b, 242)
+
+                # Soft lash outline along the almond edge
+                if max_lid - abs(ny) < 0.065:
+                    px[x, oy + y] = (43, 25, 66, 245)
+
+    ENV_TEX.mkdir(parents=True, exist_ok=True)
+    img.save(ENV_TEX / "great_sky_eye.png")
+
+
+def build_sky_star_eye() -> None:
+    """16x16 soft glowing cosmic star-eye sprite for the Eye Realm sky."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            dx = (x - 7.5) / 7.5
+            dy = (y - 7.5) / 7.5
+            d = math.hypot(dx, dy)
+            if d < 0.28:
+                px[x, y] = (240, 253, 255, 255)
+            elif d < 0.55:
+                px[x, y] = (125, 249, 255, 210)
+            elif d < 1.0:
+                a = int(((1.0 - d) / 0.45) ** 2 * 140)
+                px[x, y] = (217, 70, 239, a)
+    ENV_TEX.mkdir(parents=True, exist_ok=True)
+    img.save(ENV_TEX / "sky_star_eye.png")
+
+
 if __name__ == "__main__":
     build_gazing_portal()
     build_gazing_eye()
@@ -293,4 +418,6 @@ if __name__ == "__main__":
     build_eye_turf()
     build_blinking_eye_block()
     build_ocular_wood_set()
+    build_great_sky_eye()
+    build_sky_star_eye()
     print("Generated Phase 4 Eye Realm textures.")
