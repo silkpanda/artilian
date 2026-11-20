@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 4 — Stage 1 (*The Eye Realm: Dimension & Gazing Portal*)** Sub-stages 1 & 2 complete on branch `phase-4-stage-1-eye-realm-portal` (`artilian:eye_realm` dimension + biome + flat `starlight_slate` placeholder, `GazingPortalBlock`, `GazingPortalShape`, `GazingEyeItem`, `make_eye_realm_art.py`, `EyeRealmPortalGameTests`, `P4-01` red-proven & held, `169/169` GameTests, `runData`, `build` green); ready for live `./gradlew runClient` verification & screenshot. |
-| **Next** | 1. Run live `./gradlew runClient` check for **Phase 4 — Stage 1** (light a `Starlight Slate` Gazing Portal with `Gazing Eye`, step into `artilian:eye_realm`, save `qa/evidence/eye-realm-portal-2026-11-20.png`) and open PR. 2. Open and merge PRs into `main` for `phase-3-stage-3-captain-brimstone`, `phase-3-stage-4-tier-3-arsenal`, `phase-3-stage-5-art-pass`, and `phase-4-stage-1-eye-realm-portal`. 3. Begin **Phase 4 — Stage 2 (*Terrain & Sky*)**. |
+| **In progress** | **Phase 4 — Stage 2 (*Eye Realm: Terrain & Sky*)** Complete and live-client verified on branch `phase-4-stage-2-eye-realm-terrain-sky` (branched from `phase-4-stage-1-eye-realm-portal`: `Eye Turf`, `Gaze Stone` + stairs/slab/wall, animated `Blinking Eye Block`, `Ocular Log`/`Planks`/`Stairs`/`Slab`/`Leaves`/`Sapling`, `EyeRealmDimension` `NoiseBasedChunkGenerator` + `EYE_REALM_NOISE`, `EyeRealmSkyEffects` blinking Great Sky Eye skybox, `make_eye_realm_art.py`, `EyeRealmTerrainGameTests`, `173/173` GameTests, `runData`, `build`, and live `./gradlew runClient` screenshots green). |
+| **Next** | 1. Open and merge PRs into `main` for `phase-3-stage-3-captain-brimstone`, `phase-3-stage-4-tier-3-arsenal`, `phase-3-stage-5-art-pass`, `phase-4-stage-1-eye-realm-portal`, and `phase-4-stage-2-eye-realm-terrain-sky`. 2. Begin **Phase 4 — Stage 3 (*Eye Realm Enemies: Peepers, Oculus Slimes, Lens Guardians*)**. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, and family LAN co-op playtest across Phases 1–3 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-3-stage-3-captain-brimstone` (ready for PR into `main`), `phase-3-stage-4-tier-3-arsenal` (branched from Stage 3), and `phase-3-stage-5-art-pass` (branched from Stage 4). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -460,8 +460,8 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 | Stage | Name | Scope | Status |
 |---|---|---|---|
-| 1 | Dimension & Portal | `artilian:eye_realm` dimension and Gazing Portal with flat placeholder terrain | 🔄 In Progress |
-| 2 | Terrain & Sky | Eye-covered blocks, trees, terrain generation, blinking skybox | [ ] Pending |
+| 1 | Dimension & Portal | `artilian:eye_realm` dimension and Gazing Portal with flat placeholder terrain | ✅ Complete (`169/169` + client verified) |
+| 2 | Terrain & Sky | Eye-covered blocks, trees, terrain generation, blinking skybox | ✅ Complete (`173/173` + client verified) |
 | 3 | Eye Realm Enemies | **Peepers**, **Oculus Slimes**, **Lens Guardians** | [ ] Pending |
 | 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | [ ] Pending |
 | 5 | Eye Realm Structures | Dimension structures & chests | [ ] Pending |
@@ -487,11 +487,33 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   |---|---|---|
   | 1 Dimension, Biome, Portal Block, Gazing Eye & Art | Pending commit | `EyeRealmDimension`, `GazingPortalBlock`, `GazingPortalShape`, `GazingEyeItem`, `ArtilianTags.Blocks.GAZING_PORTAL_FRAME`, datagen (`eye_realm.json` dimension & dimension_type, biome, recipe, blockstate, models, lang), and `tools/art/make_eye_realm_art.py` (`gazing_portal.png` 4-frame animated + `.mcmeta`, `gazing_eye.png`). |
   | 2 `EyeRealmPortalGameTests` & `P4-01` | Pending commit | 5 `EyeRealmPortalGameTests` (`169/169` green, `runData`, `build`). Red-proof: `createReturnPortalWithPlatform` placing interior with flag `3` before top frame collapsed portal → `P4-01` failed (`Arrival block must be GAZING_PORTAL`); fixed by building frame edges first and filling interior with flag `18`. |
-  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Gazing Portal & Eye Realm (`qa/evidence/eye-realm-portal-2026-11-20.png`). |
+  | 3 Live client verification & evidence | Verified | `./gradlew runClient` screenshot of Gazing Portal & Eye Realm (`qa/evidence/eye-realm-portal-2026-11-20.png`). |
 
 - **Tests & Red-proofs (`EyeRealmPortalGameTests`):** `169/169` green (5 new tests including `P4-01`). Red-proof recorded above.
 - **Security / Safety Gate (`P4-01`):** `HELD` in `169/169` suite (`security/FINDINGS.md`).
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies lighting the Gazing Portal and stepping into `artilian:eye_realm`.
+
+### Phase 4 — Stage 2: Terrain & Sky
+- [x] **Complete (`173/173` GameTests & Live Client Verified)** — Eye-covered terrain blocks, Ocular Trees, `NoiseBasedChunkGenerator` worldgen, and blinking Great Sky Eye skybox.
+- **Why & Decisions:** Replace Stage 1's flat placeholder with Alex's signature eye-covered twilight landscape and blinking skybox:
+  1. **Eye-Covered Blocks & Ocular Wood Set (`ArtilianBlocks`, `ArtilianItems`, `ArtilianTreeGrowers.OCULAR`):**
+     - `eye_turf` (`Eye Turf`), `gaze_stone` (`Gaze Stone` + stairs/slab/wall), and `blinking_eye_block` (`Blinking Eye Block`, light level `7`, 4-frame animated blinking texture).
+     - `ocular_log`, `ocular_planks`, `ocular_stairs`, `ocular_slab`, `ocular_leaves` (light level `4`), `ocular_sapling` (light level `5`).
+  2. **Noise Terrain & Features (`EyeRealmDimension`, `ArtilianWorldGen`):**
+     - `EYE_REALM_NOISE` (`NoiseGeneratorSettings`) with Overworld-scale rolling hills (`seaLevel = 63`), `Gaze Stone` base, `Eye Turf` floor, `Starlight Slate` under-floor, `OCULAR_TREE_PLACED`, and `BLINKING_EYE_PATCH_PLACED`.
+  3. **Blinking Skybox (`EyeRealmSkyEffects`):**
+     - Registered on `EyeRealmDimension.EYE_REALM_EFFECTS` via `RegisterDimensionSpecialEffectsEvent`; renders twinkling cyan/magenta star-eyes and a giant Great Sky Eye overhead that smoothly blinks on a 160-tick cycle.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Eye Realm blocks, Ocular tree set & art | Pending commit | `eye_turf`, `gaze_stone` (+ stairs/slab/wall), `blinking_eye_block` (animated `.mcmeta`), `ocular_*` wood set, `ArtilianTreeGrowers.OCULAR`, datagen, and `tools/art/make_eye_realm_art.py`. |
+  | 2 Noise terrain, blinking skybox & tests | Pending commit | `EYE_REALM_NOISE`, `NoiseBasedChunkGenerator` in `EYE_REALM_STEM`, `OCULAR_TREE_PLACED` + `BLINKING_EYE_PATCH_PLACED`, `EyeRealmSkyEffects`, and 4 `EyeRealmTerrainGameTests` (`173/173` green). Red-proof: removed `EYE_TURF` from `BlockTags.DIRT` → `eyeRealmBlocksHaveExpectedTagsAndLightLevels` failed → restored green. |
+  | 3 Live client verification & evidence | This commit | `./gradlew runClient` screenshot of Eye Realm terrain, Ocular Trees, and blinking skybox (`qa/evidence/eye-realm-terrain-sky-2026-11-20.png`). |
+
+- **Tests & Red-proofs (`EyeRealmTerrainGameTests`):** `173/173` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (worldgen, blocks, and client skybox only).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Eye Realm terrain, Ocular Trees, and the blinking skybox.
 
 ---
 

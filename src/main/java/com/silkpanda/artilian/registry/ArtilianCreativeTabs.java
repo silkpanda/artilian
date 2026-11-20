@@ -122,6 +122,18 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.PRISMATIC_LEGGINGS.get());
                         output.accept(ArtilianItems.PRISMATIC_BOOTS.get());
                         output.accept(ArtilianItems.GAZING_EYE.get());
+                        output.accept(ArtilianItems.EYE_TURF_ITEM.get());
+                        output.accept(ArtilianItems.GAZE_STONE_ITEM.get());
+                        output.accept(ArtilianItems.GAZE_STONE_STAIRS_ITEM.get());
+                        output.accept(ArtilianItems.GAZE_STONE_SLAB_ITEM.get());
+                        output.accept(ArtilianItems.GAZE_STONE_WALL_ITEM.get());
+                        output.accept(ArtilianItems.BLINKING_EYE_BLOCK_ITEM.get());
+                        output.accept(ArtilianItems.OCULAR_LOG_ITEM.get());
+                        output.accept(ArtilianItems.OCULAR_PLANKS_ITEM.get());
+                        output.accept(ArtilianItems.OCULAR_STAIRS_ITEM.get());
+                        output.accept(ArtilianItems.OCULAR_SLAB_ITEM.get());
+                        output.accept(ArtilianItems.OCULAR_LEAVES_ITEM.get());
+                        output.accept(ArtilianItems.OCULAR_SAPLING_ITEM.get());
                     })
                     .build());
 

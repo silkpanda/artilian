@@ -66,6 +66,10 @@ public final class ArtilianWorldGen {
             ResourceKey.create(Registries.CONFIGURED_FEATURE, ArtilianMod.id("starlight_slate_boulder"));
     public static final ResourceKey<ConfiguredFeature<?, ?>> STARLIGHT_BLOSSOM_PATCH =
             ResourceKey.create(Registries.CONFIGURED_FEATURE, ArtilianMod.id("starlight_blossom_patch"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> OCULAR_TREE =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, ArtilianMod.id("ocular_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> BLINKING_EYE_PATCH =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, ArtilianMod.id("blinking_eye_patch"));
 
     public static final ResourceKey<PlacedFeature> ORE_SUNSTEEL_PLACED =
             ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("ore_sunsteel_placed"));
@@ -83,6 +87,10 @@ public final class ArtilianWorldGen {
             ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("starlight_slate_boulder_placed"));
     public static final ResourceKey<PlacedFeature> STARLIGHT_BLOSSOM_PATCH_PLACED =
             ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("starlight_blossom_patch_placed"));
+    public static final ResourceKey<PlacedFeature> OCULAR_TREE_PLACED =
+            ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("ocular_tree_placed"));
+    public static final ResourceKey<PlacedFeature> BLINKING_EYE_PATCH_PLACED =
+            ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("blinking_eye_patch_placed"));
 
     public static final ResourceKey<BiomeModifier> ADD_SUNSTEEL_ORE =
             ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ArtilianMod.id("add_sunsteel_ore"));
@@ -140,6 +148,33 @@ public final class ArtilianWorldGen {
                 new BlockStateConfiguration(ArtilianBlocks.STARLIGHT_SLATE.get().defaultBlockState())));
 
         context.register(STARLIGHT_BLOSSOM_PATCH, flowerPatch(ArtilianBlocks.STARLIGHT_BLOSSOM.get(), 24, 6, 2));
+
+        context.register(OCULAR_TREE, new ConfiguredFeature<>(
+                Feature.TREE,
+                new TreeConfiguration.TreeConfigurationBuilder(
+                        BlockStateProvider.simple(ArtilianBlocks.OCULAR_LOG.get()),
+                        new StraightTrunkPlacer(4, 2, 1),
+                        BlockStateProvider.simple(ArtilianBlocks.OCULAR_LEAVES.get()),
+                        new FancyFoliagePlacer(ConstantInt.of(2), ConstantInt.of(2), 3),
+                        new TwoLayersFeatureSize(1, 0, 1))
+                        .dirt(BlockStateProvider.simple(ArtilianBlocks.GAZE_STONE.get()))
+                        .build()));
+
+        context.register(BLINKING_EYE_PATCH, new ConfiguredFeature<>(
+                Feature.RANDOM_PATCH,
+                new RandomPatchConfiguration(
+                        3,
+                        4,
+                        2,
+                        PlacementUtils.filtered(
+                                Feature.SIMPLE_BLOCK,
+                                new SimpleBlockConfiguration(
+                                        BlockStateProvider.simple(ArtilianBlocks.BLINKING_EYE_BLOCK.get())),
+                                net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.allOf(
+                                        net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.ONLY_IN_AIR_PREDICATE,
+                                        net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.matchesBlocks(
+                                                net.minecraft.core.Direction.DOWN.getNormal(),
+                                                ArtilianBlocks.EYE_TURF.get()))))));
     }
 
     private static ConfiguredFeature<RandomPatchConfiguration, Feature<RandomPatchConfiguration>> flowerPatch(
@@ -193,6 +228,16 @@ public final class ArtilianWorldGen {
         context.register(STARLIGHT_BLOSSOM_PATCH_PLACED, new PlacedFeature(
                 configured.getOrThrow(STARLIGHT_BLOSSOM_PATCH),
                 surfacePatch(4)));
+
+        context.register(OCULAR_TREE_PLACED, new PlacedFeature(
+                configured.getOrThrow(OCULAR_TREE),
+                VegetationPlacements.treePlacement(
+                        PlacementUtils.countExtra(5, 0.1F, 1),
+                        ArtilianBlocks.OCULAR_SAPLING.get())));
+
+        context.register(BLINKING_EYE_PATCH_PLACED, new PlacedFeature(
+                configured.getOrThrow(BLINKING_EYE_PATCH),
+                surfacePatch(1)));
     }
 
     private static List<PlacementModifier> surfacePatch(int countPerChunk) {

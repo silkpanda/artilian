@@ -57,8 +57,8 @@ public class EyeRealmPortalGameTests {
         ServerLevel eyeRealm = helper.getLevel().getServer().getLevel(EyeRealmDimension.EYE_REALM_LEVEL);
         if (eyeRealm != null) {
             eyeRealm.getChunk(0, 0);
-            helper.assertTrue(eyeRealm.getBlockState(new BlockPos(0, 63, 0)).is(ArtilianBlocks.STARLIGHT_SLATE.get()),
-                    "Live Eye Realm surface at Y=63 should be Starlight Slate");
+            helper.assertTrue(eyeRealm.dimensionType().effectsLocation().equals(EyeRealmDimension.EYE_REALM_EFFECTS),
+                    "Live Eye Realm should use custom artilian:eye_realm sky effects");
         }
 
         helper.succeed();

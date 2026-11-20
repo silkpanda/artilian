@@ -84,6 +84,28 @@ public class ArtilianBlockStateProvider extends BlockStateProvider {
                 ArtilianBlocks.STARLIGHT_SLATE_WALL);
         flowerCross(ArtilianBlocks.STARLIGHT_BLOSSOM);
         gazingPortalBlock();
+
+        // Phase 4 Stage 2: Eye Realm Terrain & Trees
+        turfBlock(ArtilianBlocks.EYE_TURF, "eye_turf", modLoc("block/gaze_stone"));
+        simpleCube(ArtilianBlocks.GAZE_STONE);
+        slateVariants(
+                ArtilianBlocks.GAZE_STONE_STAIRS,
+                ArtilianBlocks.GAZE_STONE_SLAB,
+                ArtilianBlocks.GAZE_STONE_WALL);
+        simpleCube(ArtilianBlocks.BLINKING_EYE_BLOCK);
+        woodSet(
+                ArtilianBlocks.OCULAR_LOG,
+                ArtilianBlocks.OCULAR_PLANKS,
+                ArtilianBlocks.OCULAR_LEAVES,
+                ArtilianBlocks.OCULAR_SAPLING);
+        stairsBlock(ArtilianBlocks.OCULAR_STAIRS.get(), blockTexture(ArtilianBlocks.OCULAR_PLANKS.get()));
+        simpleBlockItem(ArtilianBlocks.OCULAR_STAIRS.get(),
+                models().getExistingFile(modLoc("block/ocular_stairs")));
+        slabBlock(ArtilianBlocks.OCULAR_SLAB.get(),
+                blockTexture(ArtilianBlocks.OCULAR_PLANKS.get()),
+                blockTexture(ArtilianBlocks.OCULAR_PLANKS.get()));
+        simpleBlockItem(ArtilianBlocks.OCULAR_SLAB.get(),
+                models().getExistingFile(modLoc("block/ocular_slab")));
     }
 
     private void gazingPortalBlock() {

@@ -88,6 +88,26 @@ public class ArtilianRecipeProvider extends RecipeProvider {
 
         logToPlanks(output, ArtilianBlocks.CRYSTAL_CANOPY_LOG.get(), ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get());
         logToPlanks(output, ArtilianBlocks.EMBERWOOD_LOG.get(), ArtilianBlocks.EMBERWOOD_PLANKS.get());
+        logToPlanks(output, ArtilianBlocks.OCULAR_LOG.get(), ArtilianBlocks.OCULAR_PLANKS.get());
+
+        ItemLike ocularPlanks = ArtilianBlocks.OCULAR_PLANKS.get();
+        stairBuilder(ArtilianBlocks.OCULAR_STAIRS.get(), Ingredient.of(ocularPlanks))
+                .unlockedBy(getHasName(ocularPlanks), has(ocularPlanks))
+                .save(output);
+        slab(output, RecipeCategory.BUILDING_BLOCKS, ArtilianBlocks.OCULAR_SLAB.get(), ocularPlanks);
+
+        ItemLike gazeStone = ArtilianBlocks.GAZE_STONE.get();
+        ItemLike gazeStairs = ArtilianBlocks.GAZE_STONE_STAIRS.get();
+        ItemLike gazeSlab = ArtilianBlocks.GAZE_STONE_SLAB.get();
+        ItemLike gazeWall = ArtilianBlocks.GAZE_STONE_WALL.get();
+        stairBuilder(gazeStairs, Ingredient.of(gazeStone))
+                .unlockedBy(getHasName(gazeStone), has(gazeStone))
+                .save(output);
+        slab(output, RecipeCategory.BUILDING_BLOCKS, gazeSlab, gazeStone);
+        wall(output, RecipeCategory.BUILDING_BLOCKS, gazeWall, gazeStone);
+        slateStonecutting(output, gazeStairs, gazeStone, 1);
+        slateStonecutting(output, gazeSlab, gazeStone, 2);
+        slateStonecutting(output, gazeWall, gazeStone, 1);
 
         // Building-block variants (Structure Rebuild Stage 1)
         woodVariantRecipes(output,

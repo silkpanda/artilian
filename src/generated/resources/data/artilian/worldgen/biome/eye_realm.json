@@ -27,7 +27,21 @@
     "water_color": 8255999,
     "water_fog_color": 2827064
   },
-  "features": [],
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "artilian:ocular_tree_placed",
+      "artilian:blinking_eye_patch_placed"
+    ]
+  ],
   "has_precipitation": false,
   "spawn_costs": {},
   "spawners": {

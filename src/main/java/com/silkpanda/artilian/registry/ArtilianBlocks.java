@@ -259,6 +259,62 @@ public class ArtilianBlocks {
                     .pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK)
                     .noLootTable()));
 
+    // Phase 4 Stage 2: Eye Realm Terrain & Trees
+    public static final DeferredBlock<Block> EYE_TURF = BLOCKS.register("eye_turf",
+            () -> new Block(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_MAGENTA)
+                    .strength(0.65F)
+                    .sound(SoundType.GRASS)));
+
+    public static final DeferredBlock<Block> GAZE_STONE = BLOCKS.register("gaze_stone",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .mapColor(MapColor.COLOR_PURPLE)
+                    .strength(1.8F, 6.0F)));
+
+    public static final DeferredBlock<StairBlock> GAZE_STONE_STAIRS = BLOCKS.register("gaze_stone_stairs",
+            () -> new StairBlock(GAZE_STONE.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(GAZE_STONE.get())));
+
+    public static final DeferredBlock<SlabBlock> GAZE_STONE_SLAB = BLOCKS.register("gaze_stone_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(GAZE_STONE.get())));
+
+    public static final DeferredBlock<WallBlock> GAZE_STONE_WALL = BLOCKS.register("gaze_stone_wall",
+            () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(GAZE_STONE.get())));
+
+    public static final DeferredBlock<Block> BLINKING_EYE_BLOCK = BLOCKS.register("blinking_eye_block",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK)
+                    .mapColor(MapColor.COLOR_CYAN)
+                    .strength(1.4F, 4.0F)
+                    .lightLevel(state -> 7)));
+
+    public static final DeferredBlock<RotatedPillarBlock> OCULAR_LOG = BLOCKS.register("ocular_log",
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG)
+                    .mapColor(MapColor.COLOR_PURPLE)));
+
+    public static final DeferredBlock<Block> OCULAR_PLANKS = BLOCKS.register("ocular_planks",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
+                    .mapColor(MapColor.COLOR_MAGENTA)));
+
+    public static final DeferredBlock<StairBlock> OCULAR_STAIRS = BLOCKS.register("ocular_stairs",
+            () -> new StairBlock(OCULAR_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS)
+                            .mapColor(MapColor.COLOR_MAGENTA)));
+
+    public static final DeferredBlock<SlabBlock> OCULAR_SLAB = BLOCKS.register("ocular_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB)
+                    .mapColor(MapColor.COLOR_MAGENTA)));
+
+    public static final DeferredBlock<LeavesBlock> OCULAR_LEAVES = BLOCKS.register("ocular_leaves",
+            () -> new LeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES)
+                    .mapColor(MapColor.COLOR_MAGENTA)
+                    .lightLevel(state -> 4)));
+
+    public static final DeferredBlock<SaplingBlock> OCULAR_SAPLING = BLOCKS.register("ocular_sapling",
+            () -> new SaplingBlock(ArtilianTreeGrowers.OCULAR,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)
+                            .mapColor(MapColor.COLOR_MAGENTA)
+                            .lightLevel(state -> 5)));
+
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
     }

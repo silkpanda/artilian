@@ -2,7 +2,7 @@
   "ambient_light": 0.25,
   "bed_works": false,
   "coordinate_scale": 1.0,
-  "effects": "minecraft:overworld",
+  "effects": "artilian:eye_realm",
   "fixed_time": 18000,
   "has_ceiling": false,
   "has_raids": false,
