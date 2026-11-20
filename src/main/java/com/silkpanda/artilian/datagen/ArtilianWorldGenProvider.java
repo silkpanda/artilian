@@ -23,6 +23,7 @@ public class ArtilianWorldGenProvider extends DatapackBuiltinEntriesProvider {
             .add(Registries.TEMPLATE_POOL, ArtilianStructures::bootstrapTemplatePools)
             .add(Registries.STRUCTURE, ArtilianStructures::bootstrapStructures)
             .add(Registries.STRUCTURE_SET, ArtilianStructures::bootstrapStructureSets)
+            .add(Registries.NOISE_SETTINGS, EyeRealmDimension::bootstrapNoiseSettings)
             .add(Registries.DIMENSION_TYPE, EyeRealmDimension::bootstrapDimensionType)
             .add(Registries.LEVEL_STEM, EyeRealmDimension::bootstrapLevelStem)
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ArtilianWorldGen::bootstrapBiomeModifiers);

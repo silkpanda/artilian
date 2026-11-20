@@ -20,4 +20,10 @@ public final class ArtilianTreeGrowers {
             Optional.empty(),
             Optional.of(ArtilianWorldGen.EMBERWOOD_TREE),
             Optional.empty());
+
+    public static final TreeGrower OCULAR = new TreeGrower(
+            ArtilianMod.MODID + ":ocular",
+            Optional.empty(),
+            Optional.of(ArtilianWorldGen.OCULAR_TREE),
+            Optional.empty());
 }

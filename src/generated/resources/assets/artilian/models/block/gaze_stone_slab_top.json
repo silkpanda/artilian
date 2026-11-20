@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "artilian:block/starlight_slate",
+    "side": "artilian:block/starlight_slate",
+    "top": "artilian:block/starlight_slate"
+  }
+}

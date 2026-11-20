@@ -245,5 +245,19 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("tooltip.artilian.gazing_eye", "Right-click a Starlight Slate portal frame to open the Eye Realm!");
         this.add("biome.artilian.eye_realm", "Eye Realm");
         this.add("message.artilian.crystal.resting", "%s is resting (%ss left) — Hold a Biome Treat to wake early!");
+
+        // Phase 4 Stage 2: Eye Realm Terrain & Trees
+        this.addBlock(ArtilianBlocks.EYE_TURF, "Eye Turf");
+        this.addBlock(ArtilianBlocks.GAZE_STONE, "Gaze Stone");
+        this.addBlock(ArtilianBlocks.GAZE_STONE_STAIRS, "Gaze Stone Stairs");
+        this.addBlock(ArtilianBlocks.GAZE_STONE_SLAB, "Gaze Stone Slab");
+        this.addBlock(ArtilianBlocks.GAZE_STONE_WALL, "Gaze Stone Wall");
+        this.addBlock(ArtilianBlocks.BLINKING_EYE_BLOCK, "Blinking Eye Block");
+        this.addBlock(ArtilianBlocks.OCULAR_LOG, "Ocular Log");
+        this.addBlock(ArtilianBlocks.OCULAR_PLANKS, "Ocular Planks");
+        this.addBlock(ArtilianBlocks.OCULAR_STAIRS, "Ocular Stairs");
+        this.addBlock(ArtilianBlocks.OCULAR_SLAB, "Ocular Slab");
+        this.addBlock(ArtilianBlocks.OCULAR_LEAVES, "Ocular Leaves");
+        this.addBlock(ArtilianBlocks.OCULAR_SAPLING, "Ocular Sapling");
     }
 }

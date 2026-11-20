@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "artilian:block/ocular_slab"
+    },
+    "type=double": {
+      "model": "artilian:block/ocular_planks"
+    },
+    "type=top": {
+      "model": "artilian:block/ocular_slab_top"
+    }
+  }
+}

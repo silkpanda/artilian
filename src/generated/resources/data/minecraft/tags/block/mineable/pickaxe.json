@@ -10,6 +10,11 @@
     "artilian:starlight_slate_stairs",
     "artilian:starlight_slate_slab",
     "artilian:starlight_slate_wall",
-    "artilian:boss_altar"
+    "artilian:boss_altar",
+    "artilian:gaze_stone",
+    "artilian:gaze_stone_stairs",
+    "artilian:gaze_stone_slab",
+    "artilian:gaze_stone_wall",
+    "artilian:blinking_eye_block"
   ]
 }

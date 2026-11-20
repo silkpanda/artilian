@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "artilian:block/gaze_stone",
+    "side": "artilian:block/eye_turf_side",
+    "top": "artilian:block/eye_turf_top"
+  }
+}

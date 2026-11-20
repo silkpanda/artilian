@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "artilian:block/ocular_planks",
+    "side": "artilian:block/ocular_planks",
+    "top": "artilian:block/ocular_planks"
+  }
+}

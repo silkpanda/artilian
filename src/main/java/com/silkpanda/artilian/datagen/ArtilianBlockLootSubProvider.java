@@ -75,6 +75,22 @@ public class ArtilianBlockLootSubProvider extends BlockLootSubProvider {
         add(ArtilianBlocks.STARLIGHT_SLATE_SLAB.get(), block -> createSlabItemTable(block));
         dropSelf(ArtilianBlocks.STARLIGHT_SLATE_WALL.get());
         dropSelf(ArtilianBlocks.STARLIGHT_BLOSSOM.get());
+
+        // Phase 4 Stage 2: Eye Realm Terrain & Trees
+        add(ArtilianBlocks.EYE_TURF.get(),
+                block -> createSingleItemTableWithSilkTouch(block, ArtilianBlocks.GAZE_STONE.get()));
+        dropSelf(ArtilianBlocks.GAZE_STONE.get());
+        dropSelf(ArtilianBlocks.GAZE_STONE_STAIRS.get());
+        add(ArtilianBlocks.GAZE_STONE_SLAB.get(), block -> createSlabItemTable(block));
+        dropSelf(ArtilianBlocks.GAZE_STONE_WALL.get());
+        dropSelf(ArtilianBlocks.BLINKING_EYE_BLOCK.get());
+        dropSelf(ArtilianBlocks.OCULAR_LOG.get());
+        dropSelf(ArtilianBlocks.OCULAR_PLANKS.get());
+        dropSelf(ArtilianBlocks.OCULAR_STAIRS.get());
+        add(ArtilianBlocks.OCULAR_SLAB.get(), block -> createSlabItemTable(block));
+        add(ArtilianBlocks.OCULAR_LEAVES.get(),
+                block -> createLeavesDrops(block, ArtilianBlocks.OCULAR_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES));
+        dropSelf(ArtilianBlocks.OCULAR_SAPLING.get());
     }
 
     @Override
