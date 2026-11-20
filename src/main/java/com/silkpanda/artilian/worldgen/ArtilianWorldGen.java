@@ -163,13 +163,18 @@ public final class ArtilianWorldGen {
         context.register(BLINKING_EYE_PATCH, new ConfiguredFeature<>(
                 Feature.RANDOM_PATCH,
                 new RandomPatchConfiguration(
-                        8,
-                        5,
+                        3,
+                        4,
                         2,
-                        PlacementUtils.onlyWhenEmpty(
+                        PlacementUtils.filtered(
                                 Feature.SIMPLE_BLOCK,
                                 new SimpleBlockConfiguration(
-                                        BlockStateProvider.simple(ArtilianBlocks.BLINKING_EYE_BLOCK.get()))))));
+                                        BlockStateProvider.simple(ArtilianBlocks.BLINKING_EYE_BLOCK.get())),
+                                net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.allOf(
+                                        net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.ONLY_IN_AIR_PREDICATE,
+                                        net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.matchesBlocks(
+                                                net.minecraft.core.Direction.DOWN.getNormal(),
+                                                ArtilianBlocks.EYE_TURF.get()))))));
     }
 
     private static ConfiguredFeature<RandomPatchConfiguration, Feature<RandomPatchConfiguration>> flowerPatch(
@@ -232,7 +237,7 @@ public final class ArtilianWorldGen {
 
         context.register(BLINKING_EYE_PATCH_PLACED, new PlacedFeature(
                 configured.getOrThrow(BLINKING_EYE_PATCH),
-                surfacePatch(2)));
+                surfacePatch(1)));
     }
 
     private static List<PlacementModifier> surfacePatch(int countPerChunk) {

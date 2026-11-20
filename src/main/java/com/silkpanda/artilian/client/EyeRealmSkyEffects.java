@@ -54,13 +54,19 @@ public class EyeRealmSkyEffects extends DimensionSpecialEffects {
         poseStack.mulPose(modelViewMatrix);
 
         RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
+        Tesselator tesselator = Tesselator.getInstance();
+
+        // 0. Twilight skybox dome (deep Artilian slate zenith -> twilight violet horizon)
+        drawTwilightSkybox(tesselator, poseStack.last().pose());
+        RenderSystem.enableCull();
+
         // 1. Twinkling star-eyes around the twilight dome
         float time = ticks + partialTick;
-        Tesselator tesselator = Tesselator.getInstance();
         for (int i = 0; i < STAR_ANGLES_X.length; i++) {
             float twinkle = 0.45F + 0.55F * Mth.sin(time * 0.08F + i * 1.3F);
             poseStack.pushPose();
@@ -100,8 +106,8 @@ public class EyeRealmSkyEffects extends DimensionSpecialEffects {
         openness = Mth.clamp(openness, 0.05F, 1.0F);
 
         poseStack.pushPose();
-        poseStack.mulPose(Axis.XP.rotationDegrees(18.0F));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(-12.0F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-52.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(-8.0F));
         Matrix4f eyeMat = poseStack.last().pose();
         float dist = 85.0F;
 
@@ -119,6 +125,47 @@ public class EyeRealmSkyEffects extends DimensionSpecialEffects {
         RenderSystem.disableBlend();
         RenderSystem.depthMask(true);
         return true;
+    }
+
+    private static void drawTwilightSkybox(Tesselator tesselator, Matrix4f mat) {
+        float s = 100.0F;
+        // Top (+Y): Deep Artilian Slate (#2B2338)
+        BufferBuilder top = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        top.addVertex(mat, -s, s, -s).setColor(43, 35, 56, 255);
+        top.addVertex(mat, -s, s, s).setColor(43, 35, 56, 255);
+        top.addVertex(mat, s, s, s).setColor(43, 35, 56, 255);
+        top.addVertex(mat, s, s, -s).setColor(43, 35, 56, 255);
+        BufferUploader.drawWithShader(top.buildOrThrow());
+
+        // Bottom (-Y): Deep void (#221830)
+        BufferBuilder bot = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        bot.addVertex(mat, -s, -s, s).setColor(34, 24, 48, 255);
+        bot.addVertex(mat, -s, -s, -s).setColor(34, 24, 48, 255);
+        bot.addVertex(mat, s, -s, -s).setColor(34, 24, 48, 255);
+        bot.addVertex(mat, s, -s, s).setColor(34, 24, 48, 255);
+        BufferUploader.drawWithShader(bot.buildOrThrow());
+
+        // 4 horizon walls: zenith (#2B2338) -> twilight magenta-violet horizon (#5B2178)
+        drawWall(tesselator, mat, -s, s, -s, s, s, -s, -s, -s, -s, s, -s, -s);
+        drawWall(tesselator, mat, s, s, s, -s, s, s, -s, -s, s, s, -s, s);
+        drawWall(tesselator, mat, -s, s, s, -s, s, -s, -s, -s, -s, -s, -s, s);
+        drawWall(tesselator, mat, s, s, -s, s, s, s, s, -s, s, s, -s, -s);
+    }
+
+    private static void drawWall(
+            Tesselator tesselator,
+            Matrix4f mat,
+            float x1, float y1, float z1,
+            float x2, float y2, float z2,
+            float x3, float y3, float z3,
+            float x4, float y4, float z4) {
+        // Order: (x1,y1,z1)=top-left, (x2,y2,z2)=top-right, (x4,y4,z4)=bot-right, (x3,y3,z3)=bot-left
+        BufferBuilder buf = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        buf.addVertex(mat, x1, y1, z1).setColor(43, 35, 56, 255);
+        buf.addVertex(mat, x2, y2, z2).setColor(43, 35, 56, 255);
+        buf.addVertex(mat, x4, y4, z4).setColor(91, 33, 120, 255);
+        buf.addVertex(mat, x3, y3, z3).setColor(91, 33, 120, 255);
+        BufferUploader.drawWithShader(buf.buildOrThrow());
     }
 
     private static void drawQuad(
