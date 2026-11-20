@@ -121,6 +121,7 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.PRISMATIC_CHESTPLATE.get());
                         output.accept(ArtilianItems.PRISMATIC_LEGGINGS.get());
                         output.accept(ArtilianItems.PRISMATIC_BOOTS.get());
+                        output.accept(ArtilianItems.GAZING_EYE.get());
                     })
                     .build());
 

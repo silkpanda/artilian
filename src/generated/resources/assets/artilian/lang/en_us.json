@@ -1,6 +1,7 @@
 {
   "biome.artilian.crystal_canopy_woods": "Crystal Canopy Woods",
   "biome.artilian.emberbloom_meadows": "Emberbloom Meadows",
+  "biome.artilian.eye_realm": "Eye Realm",
   "biome.artilian.starlight_highlands": "Starlight Highlands",
   "block.artilian.boss_altar": "Boss Altar",
   "block.artilian.bounce_tnt": "Bounce TNT",
@@ -37,6 +38,7 @@
   "block.artilian.emberwood_trapdoor": "Emberwood Trapdoor",
   "block.artilian.frost_nova_tnt": "Frost Nova TNT",
   "block.artilian.frost_nova_tnt.tooltip": "Safe Blast — Freezes foes and turns water to ice!",
+  "block.artilian.gazing_portal": "Gazing Portal",
   "block.artilian.party_tnt": "Party TNT",
   "block.artilian.party_tnt.tooltip": "Safe Blast — Fireworks, speed, and heal!",
   "block.artilian.starlight_blossom": "Starlight Blossom",
@@ -112,6 +114,7 @@
   "item.artilian.flurrywing_spawn_egg": "Flurrywing Spawn Egg",
   "item.artilian.frogduck_spawn_egg": "Frogduck Spawn Egg",
   "item.artilian.galecorn_spawn_egg": "Galecorn Spawn Egg",
+  "item.artilian.gazing_eye": "Gazing Eye",
   "item.artilian.golem_core": "Golem Core",
   "item.artilian.heart_bloom_staff": "Heart-Bloom Staff",
   "item.artilian.heart_bloom_staff.tooltip": "30 Mana — Heals and shields friends nearby!",
@@ -194,5 +197,6 @@
   "tooltip.artilian.crystal.fainted": "Resting safely — Hold Biome Treat to wake (%s)",
   "tooltip.artilian.crystal.ready": "Ready (%s/%s HP) — Owner: %s",
   "tooltip.artilian.crystal.summoned": "Summoned — Right-click to recall (%s)",
+  "tooltip.artilian.gazing_eye": "Right-click a Starlight Slate portal frame to open the Eye Realm!",
   "tooltip.artilian.pet.elements": "Element: %s"
 }

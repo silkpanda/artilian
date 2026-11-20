@@ -354,6 +354,13 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .define('S', Items.STICK)
                 .unlockedBy("has_brimstone_doubloon", has(ArtilianItems.BRIMSTONE_DOUBLOON.get()))
                 .save(output);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ArtilianItems.GAZING_EYE.get())
+                .requires(Items.ENDER_EYE)
+                .requires(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .requires(Items.AMETHYST_SHARD)
+                .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
     }
 
     private static void customTntRecipe(

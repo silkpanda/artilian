@@ -90,6 +90,7 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         flatBlockItem("emberwood_sapling");
         flatBlockItem("ember_bloom");
         flatBlockItem("starlight_blossom");
+        this.basicItem(ArtilianItems.GAZING_EYE.get());
     }
 
     private void flatBlockItem(String name) {

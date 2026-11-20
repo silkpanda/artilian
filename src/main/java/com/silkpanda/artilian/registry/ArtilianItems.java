@@ -2,6 +2,7 @@ package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.boss.BossSummonItem;
 import com.silkpanda.artilian.boss.BossTrophyItem;
+import com.silkpanda.artilian.dimension.GazingEyeItem;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
@@ -377,6 +378,11 @@ public class ArtilianItems {
                     new Item.Properties().stacksTo(16).rarity(Rarity.EPIC),
                     "item.artilian.brimstone_doubloon.tooltip",
                     ChatFormatting.RED));
+
+    // Phase 4 Stage 1: Eye Realm
+    public static final DeferredItem<GazingEyeItem> GAZING_EYE =
+            ITEMS.register("gazing_eye", () -> new GazingEyeItem(
+                    new Item.Properties().stacksTo(1).durability(64).rarity(Rarity.RARE)));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

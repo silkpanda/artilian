@@ -207,3 +207,13 @@ Template for an entry:
 - **Impact:** Without `SAFE_QUARRY_DAMAGE_CALCULATOR`, `allowDestructiveCustomTnt` enforcement, and `KidSafeTargets.isValidOffensiveTarget`, Tier 3 Staves and Boss TNTs would destroy player bases/chests and injure players, Chester, villagers, and tamed pets.
 - **Fix:** `ManaService` filters all offensive AoEs via `KidSafeTargets.isValidOffensiveTarget` with zero block interaction or fire placement; `ArtilianPrimedTnt#explodeBrimstoneMeteor` uses `SAFE_QUARRY_DAMAGE_CALCULATOR` and `Level.ExplosionInteraction.NONE` when `allowDestructiveCustomTnt` is `false` (and `fire = false`), while `explodeStarlightGravity` is non-destructive and filters via `KidSafeTargets`. Phase 3 Stage 4 (`phase-3-stage-4-tier-3-arsenal`).
 - **Proof:** GameTest `TntSecurityProbes.p3_04_tier3StavesAndBrimstoneTntRespectKidSafeAndDestructiveConfig`. EXPLOITED when `SAFE_QUARRY_DAMAGE_CALCULATOR` was replaced with `null` and `Level.ExplosionInteraction.TNT` was forced on `Brimstone Meteor TNT`; HELD with the controls on (`162/162` tests passing).
+
+---
+
+### P4-01 — Gazing Portal destination spawns players in void, solid rock, or without a return portal — FIXED
+- **Severity:** High
+- **Where:** `dimension/GazingPortalBlock.java` (`createReturnPortalWithPlatform`, `findSafeSurfaceY`, `getPortalDestination`)
+- **Attack:** A player steps into a Gazing Portal targeting coordinates in `artilian:eye_realm` (or `Level.OVERWORLD`) where no return portal exists yet, including void-low Y hints (`Y = -100`).
+- **Impact:** Without clamped safe surface Y, a cleared headspace, a `5x5` landing pad, and placing the frame before the interior with flag `18`, the return portal collapsed mid-build (`updateShape`) or could strand/suffocate players.
+- **Fix:** `findSafeSurfaceY` clamps above `minBuildHeight + 8`, `createReturnPortalWithPlatform` builds a `5x5` `Starlight Slate` landing pad, clears a `5x5x5` air pocket, places the `4x5` frame edges first, and fills the `2x3` `Gazing Portal` interior with flag `18`. Phase 4 Stage 1 (`phase-4-stage-1-eye-realm-portal`).
+- **Proof:** GameTest `EyeRealmPortalGameTests.p4_01_gazingPortalArrivalIsAlwaysSafeAndCreatesLandingPad`. EXPLOITED (`P4-01: Arrival block must be GAZING_PORTAL`) when portal interior was placed with flag `3` before the top frame completed; HELD with frame-first + flag `18` (`169/169` tests passing).

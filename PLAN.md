@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 3 — Stage 5 (*Phase 3 Art Pass & Sign-Off*)** complete on branch `phase-3-stage-5-art-pass` (`TD-01` fixed, `training_golem` v2 `128×128`, `crystal_colossus` UV fixes, `lint_art.py --phase3` clean, `164/164` GameTests, `build`, `runData`, and live `./gradlew runClient` screenshots in `qa/evidence/`); ready to open PRs into `main` (Stage 3 → Stage 4 → Stage 5). |
-| **Next** | 1. Open and merge PRs into `main` for `phase-3-stage-3-captain-brimstone`, `phase-3-stage-4-tier-3-arsenal`, and `phase-3-stage-5-art-pass`. 2. Begin **Phase 4 — Stage 1 (*The Eye Realm: Dimension & Gazing Portal*)** on a new branch from `main`. 3. When home, owner runs family LAN co-op playtest to sign off Phase 1 Stage 6, Phase 2, and Phase 3. |
+| **In progress** | **Phase 4 — Stage 1 (*The Eye Realm: Dimension & Gazing Portal*)** Sub-stages 1 & 2 complete on branch `phase-4-stage-1-eye-realm-portal` (`artilian:eye_realm` dimension + biome + flat `starlight_slate` placeholder, `GazingPortalBlock`, `GazingPortalShape`, `GazingEyeItem`, `make_eye_realm_art.py`, `EyeRealmPortalGameTests`, `P4-01` red-proven & held, `169/169` GameTests, `runData`, `build` green); ready for live `./gradlew runClient` verification & screenshot. |
+| **Next** | 1. Run live `./gradlew runClient` check for **Phase 4 — Stage 1** (light a `Starlight Slate` Gazing Portal with `Gazing Eye`, step into `artilian:eye_realm`, save `qa/evidence/eye-realm-portal-2026-11-20.png`) and open PR. 2. Open and merge PRs into `main` for `phase-3-stage-3-captain-brimstone`, `phase-3-stage-4-tier-3-arsenal`, `phase-3-stage-5-art-pass`, and `phase-4-stage-1-eye-realm-portal`. 3. Begin **Phase 4 — Stage 2 (*Terrain & Sky*)**. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, and family LAN co-op playtest across Phases 1–3 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-3-stage-3-captain-brimstone` (ready for PR into `main`), `phase-3-stage-4-tier-3-arsenal` (branched from Stage 3), and `phase-3-stage-5-art-pass` (branched from Stage 4). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -455,18 +455,43 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ## Phase 4: The Eye Realm (Alex's Dimension)
 
-- **Status:** ⏹ Pending
+- **Status:** 🔄 In Progress (Stage 1)
 - **Done When:** All checks green, dimension and portal GameTests pass, and the Eye Realm loop is playable end to end.
 
 | Stage | Name | Scope | Status |
 |---|---|---|---|
-| 1 | Dimension & Portal | `artilian:eye_realm` dimension and Gazing Portal with flat placeholder terrain | [ ] Pending |
+| 1 | Dimension & Portal | `artilian:eye_realm` dimension and Gazing Portal with flat placeholder terrain | 🔄 In Progress |
 | 2 | Terrain & Sky | Eye-covered blocks, trees, terrain generation, blinking skybox | [ ] Pending |
 | 3 | Eye Realm Enemies | **Peepers**, **Oculus Slimes**, **Lens Guardians** | [ ] Pending |
 | 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | [ ] Pending |
 | 5 | Eye Realm Structures | Dimension structures & chests | [ ] Pending |
 | 6 | The Great All-Seer | Phase 4 boss (`ArtilianBossEntity`) with telegraphed attacks & rematch altar | [ ] Pending |
 | 7 | Phase 4 Art Pass | Final art polish against Alex's specs + co-op verification | [ ] Pending |
+
+### Phase 4 — Stage 1: Dimension & Gazing Portal
+- [ ] **In Progress** — `artilian:eye_realm` dimension, `GazingPortalBlock`, `GazingEyeItem`, flat placeholder terrain, safe return portal generation, and GameTests.
+- **Why & Decisions:** Give Alex a dedicated, safe, immediately visitable **Eye Realm** (`artilian:eye_realm`) before Stage 2 builds out its eye-covered terrain, trees, and blinking skybox:
+  1. **Dimension & Flat Placeholder Terrain (`EyeRealmDimension` + `ArtilianWorldGenProvider`):**
+     - `artilian:eye_realm` `DimensionType` (`minY = -64`, `height = 384`, `ambientLight = 0.25F` for kid-friendly visibility, `hasSkyLight = true`, `natural = true`, `coordinateScale = 1.0`).
+     - `artilian:eye_realm` `Biome` with `DESIGN.md` Twilight Magenta (`#D946EF`) / Pupil Glow (`#7DF9FF`) / Deep Artilian Slate (`#2B2338`) fog, sky, water, and foliage colors.
+     - `FlatLevelSource` placeholder terrain (`bedrock` at `-64`, `deepslate` up to `Y = 59`, `artilian:starlight_slate` surface `Y = 60..63`) so players arrive on solid ground at `Y = 64`.
+  2. **Gazing Portal (`GazingPortalBlock`, `GazingPortalShape`, `ArtilianTags.Blocks.GAZING_PORTAL_FRAME`):**
+     - Rectangular frame (`2..21` wide × `3..21` tall interior, minimum `2×3` interior) built from `artilian:gazing_portal_frame` (`artilian:starlight_slate`), supporting `X` and `Z` axes.
+     - Implements NeoForge/Minecraft `Portal` (`getPortalTransitionTime`, `getPortalDestination`, `getLocalTransition`) to warp bidirectionally between `Level.OVERWORLD` and `artilian:eye_realm`.
+     - **Safe Arrival (`P4-01`):** Searches within `64` blocks for an existing `GazingPortalBlock`; if none exists, builds a complete return `GazingPortal` frame + `5×5` `starlight_slate` landing pad at a safe open surface Y (never inside solid rock or below `minY + 8`).
+  3. **Gazing Eye (`artilian:gazing_eye`, `GazingEyeItem`):**
+     - Reusable igniter (`durability = 64`, crafted from `Ender Eye` + `Starlight Crystal` + `Amethyst Shard`) that lights a valid `GazingPortal` frame on right-click with twilight particles and sound.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Dimension, Biome, Portal Block, Gazing Eye & Art | Pending commit | `EyeRealmDimension`, `GazingPortalBlock`, `GazingPortalShape`, `GazingEyeItem`, `ArtilianTags.Blocks.GAZING_PORTAL_FRAME`, datagen (`eye_realm.json` dimension & dimension_type, biome, recipe, blockstate, models, lang), and `tools/art/make_eye_realm_art.py` (`gazing_portal.png` 4-frame animated + `.mcmeta`, `gazing_eye.png`). |
+  | 2 `EyeRealmPortalGameTests` & `P4-01` | Pending commit | 5 `EyeRealmPortalGameTests` (`169/169` green, `runData`, `build`). Red-proof: `createReturnPortalWithPlatform` placing interior with flag `3` before top frame collapsed portal → `P4-01` failed (`Arrival block must be GAZING_PORTAL`); fixed by building frame edges first and filling interior with flag `18`. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Gazing Portal & Eye Realm (`qa/evidence/eye-realm-portal-2026-11-20.png`). |
+
+- **Tests & Red-proofs (`EyeRealmPortalGameTests`):** `169/169` green (5 new tests including `P4-01`). Red-proof recorded above.
+- **Security / Safety Gate (`P4-01`):** `HELD` in `169/169` suite (`security/FINDINGS.md`).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies lighting the Gazing Portal and stepping into `artilian:eye_realm`.
 
 ---
 
@@ -477,7 +502,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 | Stage | Name | Scope | Status |
 |---|---|---|---|
-| 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal | [ ] Pending |
+| 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal (Steve's note: throw a boss drop into a Nether Portal to open the Dragon Jungle dimension) | [ ] Pending |
 | 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | [ ] Pending |
 | 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | [ ] Pending |
 | 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | [ ] Pending |

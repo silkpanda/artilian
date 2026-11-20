@@ -2,6 +2,7 @@ package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
+import com.silkpanda.artilian.registry.ArtilianTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
@@ -153,6 +154,9 @@ public class ArtilianBlockTagsProvider extends BlockTagsProvider {
                 ArtilianBlocks.CRYSTAL_BLOOM.get(),
                 ArtilianBlocks.EMBER_BLOOM.get(),
                 ArtilianBlocks.STARLIGHT_BLOSSOM.get()
+        );
+        tag(ArtilianTags.Blocks.GAZING_PORTAL_FRAME).add(
+                ArtilianBlocks.STARLIGHT_SLATE.get()
         );
     }
 }

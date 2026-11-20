@@ -238,6 +238,12 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("message.artilian.crystal.not_yours", "This Capture Crystal belongs to %s");
         this.add("message.artilian.crystal.summoned", "Go, %s!");
         this.add("message.artilian.crystal.recalled", "Recalled %s!");
+
+        // Phase 4 Stage 1: Eye Realm
+        this.addBlock(ArtilianBlocks.GAZING_PORTAL, "Gazing Portal");
+        this.addItem(ArtilianItems.GAZING_EYE, "Gazing Eye");
+        this.add("tooltip.artilian.gazing_eye", "Right-click a Starlight Slate portal frame to open the Eye Realm!");
+        this.add("biome.artilian.eye_realm", "Eye Realm");
         this.add("message.artilian.crystal.resting", "%s is resting (%ss left) — Hold a Biome Treat to wake early!");
     }
 }

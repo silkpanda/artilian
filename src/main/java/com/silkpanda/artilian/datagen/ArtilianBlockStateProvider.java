@@ -1,7 +1,9 @@
 package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.dimension.GazingPortalBlock;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -81,6 +83,23 @@ public class ArtilianBlockStateProvider extends BlockStateProvider {
                 ArtilianBlocks.STARLIGHT_SLATE_SLAB,
                 ArtilianBlocks.STARLIGHT_SLATE_WALL);
         flowerCross(ArtilianBlocks.STARLIGHT_BLOSSOM);
+        gazingPortalBlock();
+    }
+
+    private void gazingPortalBlock() {
+        var nsModel = models().withExistingParent("gazing_portal_ns", mcLoc("block/nether_portal_ns"))
+                .texture("particle", modLoc("block/gazing_portal"))
+                .texture("portal", modLoc("block/gazing_portal"))
+                .renderType("translucent");
+        var ewModel = models().withExistingParent("gazing_portal_ew", mcLoc("block/nether_portal_ew"))
+                .texture("particle", modLoc("block/gazing_portal"))
+                .texture("portal", modLoc("block/gazing_portal"))
+                .renderType("translucent");
+        getVariantBuilder(ArtilianBlocks.GAZING_PORTAL.get())
+                .partialState().with(GazingPortalBlock.AXIS, Direction.Axis.X)
+                .modelForState().modelFile(nsModel).addModel()
+                .partialState().with(GazingPortalBlock.AXIS, Direction.Axis.Z)
+                .modelForState().modelFile(ewModel).addModel();
     }
 
     private void turfBlock(DeferredBlock<Block> block, String name, ResourceLocation bottomTexture) {

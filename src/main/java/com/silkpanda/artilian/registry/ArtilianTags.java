@@ -2,15 +2,24 @@ package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.ArtilianMod;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 
 /** Custom Artilian item, block, entity, and biome tags. */
 public final class ArtilianTags {
     private ArtilianTags() {}
+
+    public static final class Blocks {
+        public static final TagKey<Block> GAZING_PORTAL_FRAME =
+                BlockTags.create(ArtilianMod.id("gazing_portal_frame"));
+
+        private Blocks() {}
+    }
 
     public static final class Items {
         public static final TagKey<Item> BIOME_BLOOMS = ItemTags.create(ArtilianMod.id("biome_blooms"));

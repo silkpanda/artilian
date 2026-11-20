@@ -1,0 +1,25 @@
+{
+  "type": "artilian:eye_realm",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "artilian:eye_realm",
+      "features": false,
+      "lakes": false,
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        },
+        {
+          "block": "minecraft:deepslate",
+          "height": 123
+        },
+        {
+          "block": "artilian:starlight_slate",
+          "height": 4
+        }
+      ]
+    }
+  }
+}
