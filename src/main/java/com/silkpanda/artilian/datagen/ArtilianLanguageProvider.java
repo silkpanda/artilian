@@ -197,6 +197,13 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG, "Prism Sentinel Spawn Egg");
         this.addItem(ArtilianItems.CINDER_RAIDER_SPAWN_EGG, "Cinder Raider Spawn Egg");
         this.addItem(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG, "Astral Stalker Spawn Egg");
+        // Phase 4 Stage 3: Eye Realm Enemies
+        this.addEntityType(ArtilianEntities.PEEPER, "Peeper");
+        this.addEntityType(ArtilianEntities.OCULUS_SLIME, "Oculus Slime");
+        this.addEntityType(ArtilianEntities.LENS_GUARDIAN, "Lens Guardian");
+        this.addItem(ArtilianItems.PEEPER_SPAWN_EGG, "Peeper Spawn Egg");
+        this.addItem(ArtilianItems.OCULUS_SLIME_SPAWN_EGG, "Oculus Slime Spawn Egg");
+        this.addItem(ArtilianItems.LENS_GUARDIAN_SPAWN_EGG, "Lens Guardian Spawn Egg");
         this.addItem(ArtilianItems.CAPTURE_CRYSTAL, "Capture Crystal");
         this.add("item.artilian.capture_crystal.filled", "Capture Crystal (%s)");
         this.add("item.artilian.capture_crystal.tooltip", "Captures Biome Pets — Right-click a wild pet!");

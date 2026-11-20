@@ -37,6 +37,9 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG.get());
                         output.accept(ArtilianItems.CINDER_RAIDER_SPAWN_EGG.get());
                         output.accept(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.PEEPER_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.OCULUS_SLIME_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.LENS_GUARDIAN_SPAWN_EGG.get());
                         output.accept(ArtilianItems.SUNSTEEL_ORE_ITEM.get());
                         output.accept(ArtilianItems.DEEPSLATE_SUNSTEEL_ORE_ITEM.get());
                         output.accept(ArtilianItems.SUNSTEEL_BLOCK_ITEM.get());

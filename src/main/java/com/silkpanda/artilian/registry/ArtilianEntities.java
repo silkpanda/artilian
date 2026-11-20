@@ -7,6 +7,9 @@ import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.enemy.AstralStalkerEntity;
 import com.silkpanda.artilian.enemy.CinderRaiderEntity;
+import com.silkpanda.artilian.enemy.LensGuardianEntity;
+import com.silkpanda.artilian.enemy.OculusSlimeEntity;
+import com.silkpanda.artilian.enemy.PeeperEntity;
 import com.silkpanda.artilian.enemy.PrismSentinelEntity;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
@@ -169,6 +172,30 @@ public class ArtilianEntities {
                     .eyeHeight(1.55F)
                     .clientTrackingRange(10)
                     .build("astral_stalker"));
+
+    /** Peeper: agile Shadow/Air eyeball scout of the Eye Realm. */
+    public static final DeferredHolder<EntityType<?>, EntityType<PeeperEntity>> PEEPER =
+            ENTITY_TYPES.register("peeper", () -> EntityType.Builder.of(PeeperEntity::new, MobCategory.MONSTER)
+                    .sized(0.75F, 0.90F)
+                    .eyeHeight(0.55F)
+                    .clientTrackingRange(10)
+                    .build("peeper"));
+
+    /** Oculus Slime: bouncy Shadow/Crystal gel cube of the Eye Realm. */
+    public static final DeferredHolder<EntityType<?>, EntityType<OculusSlimeEntity>> OCULUS_SLIME =
+            ENTITY_TYPES.register("oculus_slime", () -> EntityType.Builder.of(OculusSlimeEntity::new, MobCategory.MONSTER)
+                    .sized(1.15F, 1.15F)
+                    .eyeHeight(0.65F)
+                    .clientTrackingRange(10)
+                    .build("oculus_slime"));
+
+    /** Lens Guardian: towering Starlight/Shadow armored sentinel of the Eye Realm. */
+    public static final DeferredHolder<EntityType<?>, EntityType<LensGuardianEntity>> LENS_GUARDIAN =
+            ENTITY_TYPES.register("lens_guardian", () -> EntityType.Builder.of(LensGuardianEntity::new, MobCategory.MONSTER)
+                    .sized(1.10F, 2.35F)
+                    .eyeHeight(2.00F)
+                    .clientTrackingRange(10)
+                    .build("lens_guardian"));
 
     /** Test-only boss for the boss framework. Not in the creative tab and has no spawn egg. */
     public static final DeferredHolder<EntityType<?>, EntityType<TrainingGolemEntity>> TRAINING_GOLEM =
