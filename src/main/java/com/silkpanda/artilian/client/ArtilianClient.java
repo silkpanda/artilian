@@ -51,6 +51,12 @@ public final class ArtilianClient {
                 ctx -> new StructureEnemyRenderer<>(ctx, "cinder_raider", 0.45F));
         event.registerEntityRenderer(ArtilianEntities.ASTRAL_STALKER.get(),
                 ctx -> new StructureEnemyRenderer<>(ctx, "astral_stalker", 0.48F));
+        event.registerEntityRenderer(ArtilianEntities.PEEPER.get(),
+                ctx -> new EyeRealmEnemyRenderer<>(ctx, "peeper", 0.45F));
+        event.registerEntityRenderer(ArtilianEntities.OCULUS_SLIME.get(),
+                ctx -> new EyeRealmEnemyRenderer<>(ctx, "oculus_slime", 0.65F));
+        event.registerEntityRenderer(ArtilianEntities.LENS_GUARDIAN.get(),
+                ctx -> new EyeRealmEnemyRenderer<>(ctx, "lens_guardian", 0.65F));
         event.registerEntityRenderer(ArtilianEntities.TRAINING_GOLEM.get(),
                 ctx -> new TrainingGolemRenderer<>(ctx, "training_golem", 1.0F));
         event.registerEntityRenderer(ArtilianEntities.CRYSTAL_COLOSSUS.get(), CrystalColossusRenderer::new);

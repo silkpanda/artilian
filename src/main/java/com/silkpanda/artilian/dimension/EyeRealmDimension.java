@@ -2,6 +2,7 @@ package com.silkpanda.artilian.dimension;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
+import com.silkpanda.artilian.registry.ArtilianEntities;
 import com.silkpanda.artilian.worldgen.ArtilianWorldGen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -15,6 +16,7 @@ import net.minecraft.sounds.Musics;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.AmbientMoodSettings;
 import net.minecraft.world.level.biome.AmbientParticleSettings;
@@ -88,6 +90,9 @@ public final class EyeRealmDimension {
         generation.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, ArtilianWorldGen.BLINKING_EYE_PATCH_PLACED);
 
         MobSpawnSettings.Builder spawns = new MobSpawnSettings.Builder();
+        spawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.PEEPER.get(), 45, 1, 3));
+        spawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.OCULUS_SLIME.get(), 35, 1, 2));
+        spawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.LENS_GUARDIAN.get(), 15, 1, 1));
 
         BiomeSpecialEffects effects = new BiomeSpecialEffects.Builder()
                 .skyColor(0x3D1E5A)

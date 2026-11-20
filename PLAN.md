@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 4 — Stage 2 (*Eye Realm: Terrain & Sky*)** Complete and live-client verified on branch `phase-4-stage-2-eye-realm-terrain-sky` (branched from `phase-4-stage-1-eye-realm-portal`: `Eye Turf`, `Gaze Stone` + stairs/slab/wall, animated `Blinking Eye Block`, `Ocular Log`/`Planks`/`Stairs`/`Slab`/`Leaves`/`Sapling`, `EyeRealmDimension` `NoiseBasedChunkGenerator` + `EYE_REALM_NOISE`, `EyeRealmSkyEffects` blinking Great Sky Eye skybox, `make_eye_realm_art.py`, `EyeRealmTerrainGameTests`, `173/173` GameTests, `runData`, `build`, and live `./gradlew runClient` screenshots green). |
-| **Next** | 1. Open and merge PRs into `main` for `phase-3-stage-3-captain-brimstone`, `phase-3-stage-4-tier-3-arsenal`, `phase-3-stage-5-art-pass`, `phase-4-stage-1-eye-realm-portal`, and `phase-4-stage-2-eye-realm-terrain-sky`. 2. Begin **Phase 4 — Stage 3 (*Eye Realm Enemies: Peepers, Oculus Slimes, Lens Guardians*)**. |
+| **In progress** | **Phase 4 — Stage 3 (*Eye Realm Enemies: Peepers, Oculus Slimes, Lens Guardians*)** Complete and live-client verified on branch `phase-4-stage-3-eye-realm-enemies` (`177/177` GameTests, `lint_art.py --strict` clean on all 3 enemies, `runData`, `build`, and live `./gradlew runClient` screenshot `qa/evidence/eye-realm-enemies-2026-11-20.png`). |
+| **Next** | 1. Open and merge PRs into `main` for `phase-3-stage-3-captain-brimstone`, `phase-3-stage-4-tier-3-arsenal`, `phase-3-stage-5-art-pass`, `phase-4-stage-1-eye-realm-portal`, `phase-4-stage-2-eye-realm-terrain-sky`, and `phase-4-stage-3-eye-realm-enemies`. 2. Begin **Phase 4 — Stage 4 (*Blinky Pet*)**. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, and family LAN co-op playtest across Phases 1–3 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-3-stage-3-captain-brimstone` (ready for PR into `main`), `phase-3-stage-4-tier-3-arsenal` (branched from Stage 3), and `phase-3-stage-5-art-pass` (branched from Stage 4). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -455,14 +455,14 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ## Phase 4: The Eye Realm (Alex's Dimension)
 
-- **Status:** 🔄 In Progress (Stage 1)
+- **Status:** 🔄 In Progress (Stage 3)
 - **Done When:** All checks green, dimension and portal GameTests pass, and the Eye Realm loop is playable end to end.
 
 | Stage | Name | Scope | Status |
 |---|---|---|---|
 | 1 | Dimension & Portal | `artilian:eye_realm` dimension and Gazing Portal with flat placeholder terrain | ✅ Complete (`169/169` + client verified) |
 | 2 | Terrain & Sky | Eye-covered blocks, trees, terrain generation, blinking skybox | ✅ Complete (`173/173` + client verified) |
-| 3 | Eye Realm Enemies | **Peepers**, **Oculus Slimes**, **Lens Guardians** | [ ] Pending |
+| 3 | Eye Realm Enemies | **Peepers**, **Oculus Slimes**, **Lens Guardians** | ✅ Complete (`177/177` + client verified) |
 | 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | [ ] Pending |
 | 5 | Eye Realm Structures | Dimension structures & chests | [ ] Pending |
 | 6 | The Great All-Seer | Phase 4 boss (`ArtilianBossEntity`) with telegraphed attacks & rematch altar | [ ] Pending |
@@ -514,6 +514,31 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`EyeRealmTerrainGameTests`):** `173/173` green (4 new tests). Red-proof recorded above.
 - **Security Gate:** `n/a` (worldgen, blocks, and client skybox only).
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Eye Realm terrain, Ocular Trees, and the blinking skybox.
+
+### Phase 4 — Stage 3: Eye Realm Enemies
+- [x] **Complete (`177/177` GameTests & Live Client Verified)** — Three Eye Realm hostile mobs (**Peeper**, **Oculus Slime**, **Lens Guardian**), v2 `256×128` GeckoLib models & `_glowmask.png` sheets, Eye Realm biome spawn table, spawn eggs, loot tables, and GameTests.
+- **Art Briefs (`qa/reference/`):**
+  1. **Peeper (`artilian:peeper`):** `0.75 × 0.90` hovering eyeball scout (`~1.0` block tall). Deep Artilian-slate armored eyelid-hood (`#2B2338`–`#46385C`), 3D recessed eye socket with Pupil Glow (`#7DF9FF`) iris & dark pupil, 4 angled Twilight Magenta (`#D946EF`) bat-like eye-wings, and an articulated tail-stalk. Glowmask: iris, wing veins, tail tip.
+  2. **Oculus Slime (`artilian:oculus_slime`):** `1.15 × 1.15` bouncy gelatinous slime cube with layered 3D outer membrane (`#5A2875`–`#9C4DCC`), 3D recessed inner eyeball core (`#7DF9FF` iris), 4 angled corner crystal-gel spikes (`#D946EF`), and dripping pseudopod nubs. Glowmask: inner eye iris, gel spike tips.
+  3. **Lens Guardian (`artilian:lens_guardian`):** `1.10 × 2.35` towering armored sentinel (`~2.5` blocks tall) in Gaze Stone & Starlight Slate plates (`#241C30`–`#4A3C61`), broad pauldrons with angled prism-spikes, hollowed chest cavity housing a floating diamond Focus Lens (`#7DF9FF`), 3D recessed cyclopean helm (`#D946EF` / `#7DF9FF`), and articulated gauntleted arms & greaves. Glowmask: cyclopean eye, chest Focus Lens, gauntlet runes.
+- **Why & Decisions:**
+  1. **Shared `EyeRealmEnemyEntity` + `StructureEnemyEntity`-style GeckoLib loop:** Extends `Monster`, implements `GeoEntity` & `ElementalMob`, uses `AutoGlowingGeoLayer` in `EyeRealmEnemyRenderer`, never breaks blocks, and respects `KidSafeTargets` (never targets `ChesterEntity` or friendly pets unless provoked).
+  2. **Distinct Elemental Typings & Combat Roles:**
+     - **Peeper (`SHADOW / AIR`):** `22` HP, `0.26` speed, `4.0` damage, `2.0` armor; applies `Glowing` (`40`t) on hit; drops `Amethyst Shard` + rare `Biome Treat`.
+     - **Oculus Slime (`SHADOW / CRYSTAL`):** `34` HP, `0.22` speed, `5.5` damage, `3.0` armor, `0.2` knockback resistance; applies `Slowness I` (`40`t) on hit; drops `Slimeball` + `Amethyst Shard`.
+     - **Lens Guardian (`STARLIGHT / SHADOW`):** `54` HP, `0.21` speed, `7.5` damage, `6.0` armor, `0.45` knockback resistance; applies `Weakness I` (`40`t) on hit; drops `Starlight Crystal` + rare `Ender Pearl`.
+  3. **Natural Spawns in `EYE_REALM_BIOME`:** Registered in `EyeRealmDimension.bootstrapBiome` (`PEEPER` weight `45`, `OCULUS_SLIME` weight `35`, `LENS_GUARDIAN` weight `15`) and `EnemyEvents` (`ON_GROUND`, `Monster::checkMonsterSpawnRules`), so Eternal Twilight (`18000L`) spawns them naturally while torches/light keep kid bases safe.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `128×128` GeckoLib models, textures & glowmasks | This commit | `tools/art/make_eye_realm_enemies_art.py` using `art_lib.py`; `lint_art.py` clean (`peeper`, `oculus_slime`, `lens_guardian`) + 4-angle `preview_geo.py` contact sheets (`qa/evidence/previews/*-preview.png`). |
+  | 2 Entities, renderer, spawns, eggs, loot & GameTests | This commit | `EyeRealmEnemyEntity`, `PeeperEntity`, `OculusSlimeEntity`, `LensGuardianEntity`, `EyeRealmEnemyModel`/`Renderer` (`AutoGlowingGeoLayer`), `ArtilianEntities`, `ArtilianItems`, `EyeRealmDimension` monster spawns, datagen (`runData`), `build`, and 4 `EyeRealmEnemiesGameTests` (`177/177` green). Red-proof: removed `MobEffects.GLOWING` from `PeeperEntity.onElementalHit` → `eyeRealmEnemiesApplyElementalEffectsAndRespectKidSafeTargets` failed → restored green. |
+  | 3 Live client verification & evidence | This commit | `./gradlew runClient` screenshot of Peepers, Oculus Slimes, and Lens Guardians in the Eye Realm (`qa/evidence/eye-realm-enemies-2026-11-20.png`). |
+
+- **Tests & Red-proofs (`EyeRealmEnemiesGameTests`):** `177/177` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (standard hostile mobs with zero block-breaking and `KidSafeTargets` protection; spawn rules respect light level).
+- **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green, and live `./gradlew runClient` verifies all three Eye Realm enemies in-game.
 
 ---
 

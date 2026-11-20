@@ -49,7 +49,26 @@
     "axolotls": [],
     "creature": [],
     "misc": [],
-    "monster": [],
+    "monster": [
+      {
+        "type": "artilian:peeper",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 45
+      },
+      {
+        "type": "artilian:oculus_slime",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 35
+      },
+      {
+        "type": "artilian:lens_guardian",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 15
+      }
+    ],
     "underground_water_creature": [],
     "water_ambient": [],
     "water_creature": []

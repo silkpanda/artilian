@@ -29,6 +29,9 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
         this.add(ArtilianEntities.PRISM_SENTINEL.get(), guardianTable(Items.AMETHYST_SHARD, 1, 2));
         this.add(ArtilianEntities.CINDER_RAIDER.get(), guardianTable(ArtilianItems.RAW_SUNSTEEL.get(), 1, 2));
         this.add(ArtilianEntities.ASTRAL_STALKER.get(), guardianTable(ArtilianItems.STARLIGHT_CRYSTAL.get(), 1, 1));
+        this.add(ArtilianEntities.PEEPER.get(), guardianTable(Items.AMETHYST_SHARD, 1, 2));
+        this.add(ArtilianEntities.OCULUS_SLIME.get(), guardianTable(Items.SLIME_BALL, 1, 2));
+        this.add(ArtilianEntities.LENS_GUARDIAN.get(), guardianTable(ArtilianItems.STARLIGHT_CRYSTAL.get(), 1, 2));
         this.add(ArtilianEntities.TRAINING_GOLEM.get(), LootTable.lootTable());
         this.add(ArtilianEntities.CRYSTAL_COLOSSUS.get(), crystalColossusTable());
         this.add(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), captainBrimstoneTable());
@@ -92,6 +95,9 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
                 ArtilianEntities.PRISM_SENTINEL.get(),
                 ArtilianEntities.CINDER_RAIDER.get(),
                 ArtilianEntities.ASTRAL_STALKER.get(),
+                ArtilianEntities.PEEPER.get(),
+                ArtilianEntities.OCULUS_SLIME.get(),
+                ArtilianEntities.LENS_GUARDIAN.get(),
                 ArtilianEntities.TRAINING_GOLEM.get(),
                 ArtilianEntities.CRYSTAL_COLOSSUS.get(),
                 ArtilianEntities.CAPTAIN_BRIMSTONE.get()
