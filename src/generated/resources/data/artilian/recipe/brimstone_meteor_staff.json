@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_powder"
+    },
+    "D": {
+      "item": "artilian:brimstone_doubloon"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    " DB",
+    " SD",
+    "S  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:brimstone_meteor_staff"
+  }
+}

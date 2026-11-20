@@ -75,10 +75,14 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 ArtilianItems.STARLIGHT_LEGGINGS.get(),
                 ArtilianItems.STARLIGHT_BOOTS.get());
 
+        prismaticGearSet(output);
+
         customTntRecipe(output, ArtilianBlocks.PARTY_TNT.get(), Items.SUGAR, ArtilianItems.SUNSTEEL_INGOT.get());
         customTntRecipe(output, ArtilianBlocks.BOUNCE_TNT.get(), Items.SLIME_BALL, ArtilianItems.SUNSTEEL_INGOT.get());
         customTntRecipe(output, ArtilianBlocks.FROST_NOVA_TNT.get(), Items.SNOWBALL, ArtilianItems.STARLIGHT_CRYSTAL.get());
         customTntRecipe(output, ArtilianBlocks.CLUSTER_QUARRY_TNT.get(), ArtilianItems.STARLIGHT_CRYSTAL.get(), ArtilianItems.SUNSTEEL_INGOT.get());
+        customTntRecipe(output, ArtilianBlocks.STARLIGHT_GRAVITY_TNT.get(), ArtilianItems.PRISM_CORE.get(), ArtilianItems.STARLIGHT_CRYSTAL.get());
+        customTntRecipe(output, ArtilianBlocks.BRIMSTONE_METEOR_TNT.get(), ArtilianItems.BRIMSTONE_DOUBLOON.get(), Items.BLAZE_POWDER);
 
         wandRecipes(output);
 
@@ -210,6 +214,95 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .save(output);
     }
 
+    private static void prismaticGearSet(RecipeOutput output) {
+        ItemLike prism = ArtilianItems.PRISM_CORE.get();
+        ItemLike doubloon = ArtilianItems.BRIMSTONE_DOUBLOON.get();
+        String hasPrism = "has_prism_core";
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.PRISMATIC_SWORD.get())
+                .pattern("P")
+                .pattern("D")
+                .pattern("S")
+                .define('P', prism)
+                .define('D', doubloon)
+                .define('S', Items.STICK)
+                .unlockedBy(hasPrism, has(prism))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.PRISMATIC_PICKAXE.get())
+                .pattern("PDP")
+                .pattern(" S ")
+                .pattern(" S ")
+                .define('P', prism)
+                .define('D', doubloon)
+                .define('S', Items.STICK)
+                .unlockedBy(hasPrism, has(prism))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.PRISMATIC_AXE.get())
+                .pattern("PD")
+                .pattern("PS")
+                .pattern(" S")
+                .define('P', prism)
+                .define('D', doubloon)
+                .define('S', Items.STICK)
+                .unlockedBy(hasPrism, has(prism))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.PRISMATIC_SHOVEL.get())
+                .pattern("D")
+                .pattern("S")
+                .pattern("S")
+                .define('D', doubloon)
+                .define('S', Items.STICK)
+                .unlockedBy("has_brimstone_doubloon", has(doubloon))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.PRISMATIC_HOE.get())
+                .pattern("PD")
+                .pattern(" S")
+                .pattern(" S")
+                .define('P', prism)
+                .define('D', doubloon)
+                .define('S', Items.STICK)
+                .unlockedBy(hasPrism, has(prism))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.PRISMATIC_HELMET.get())
+                .pattern("PDP")
+                .pattern("P P")
+                .define('P', prism)
+                .define('D', doubloon)
+                .unlockedBy(hasPrism, has(prism))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.PRISMATIC_CHESTPLATE.get())
+                .pattern("P P")
+                .pattern("PDP")
+                .pattern("PPP")
+                .define('P', prism)
+                .define('D', doubloon)
+                .unlockedBy(hasPrism, has(prism))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.PRISMATIC_LEGGINGS.get())
+                .pattern("PDP")
+                .pattern("P P")
+                .pattern("P P")
+                .define('P', prism)
+                .define('D', doubloon)
+                .unlockedBy(hasPrism, has(prism))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.PRISMATIC_BOOTS.get())
+                .pattern("P P")
+                .pattern("D D")
+                .define('P', prism)
+                .define('D', doubloon)
+                .unlockedBy(hasPrism, has(prism))
+                .save(output);
+    }
+
     private static void wandRecipes(RecipeOutput output) {
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.SPARK_WAND.get())
                 .pattern("  C")
@@ -240,6 +333,26 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .define('F', Items.FEATHER)
                 .define('S', Items.STICK)
                 .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.PRISM_NOVA_STAFF.get())
+                .pattern(" PC")
+                .pattern(" SP")
+                .pattern("S  ")
+                .define('P', ArtilianItems.PRISM_CORE.get())
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('S', Items.STICK)
+                .unlockedBy("has_prism_core", has(ArtilianItems.PRISM_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.BRIMSTONE_METEOR_STAFF.get())
+                .pattern(" DB")
+                .pattern(" SD")
+                .pattern("S  ")
+                .define('D', ArtilianItems.BRIMSTONE_DOUBLOON.get())
+                .define('B', Items.BLAZE_POWDER)
+                .define('S', Items.STICK)
+                .unlockedBy("has_brimstone_doubloon", has(ArtilianItems.BRIMSTONE_DOUBLOON.get()))
                 .save(output);
     }
 

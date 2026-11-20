@@ -222,6 +222,50 @@ def make_cluster_quarry_tnt():
     return side, top, bottom
 
 
+def make_starlight_gravity_tnt():
+    palettes = [
+        (MAGENTA_HI, MAGENTA, MAGENTA_DARK),
+        (CYAN_HI, TEAL, TEAL_DARK),
+    ]
+    side = make_sticks_side(palettes)
+    emblem_band(side, INDIGO_DARK, MAGENTA_DARK, [
+        "..HHHH..",
+        ".H....H.",
+        "H.M..M.H",
+        "H..WW..H",
+        "H..WW..H",
+        "H.M..M.H",
+        ".H....H.",
+        "..HHHH..",
+    ], {"W": WHITE, "H": CYAN_HI, "M": MAGENTA_HI})
+
+    top = make_grid_cap(palettes, CYAN_HI, INDIGO, rim_color=MAGENTA, corner_accents=CYAN_HI)
+    bottom = make_grid_cap(palettes, None, INDIGO_DARK)
+    return side, top, bottom
+
+
+def make_brimstone_meteor_tnt():
+    palettes = [
+        (CORAL_HI, CORAL, CORAL_DARK),
+        (GOLD_HI, EMBER, EMBER_DARK),
+    ]
+    side = make_sticks_side(palettes)
+    emblem_band(side, SLATE_DARK, CORAL_DARK, [
+        "...YY...",
+        "..YEEY..",
+        ".YERREY.",
+        "YERWWREY",
+        "YERWWREY",
+        ".YERREY.",
+        "..YEEY..",
+        "...YY...",
+    ], {"W": WHITE, "Y": GOLD_HI, "E": EMBER, "R": CORAL})
+
+    top = make_grid_cap(palettes, GOLD_HI, SLATE_DARK, rim_color=CORAL, corner_accents=GOLD_HI)
+    bottom = make_grid_cap(palettes, None, SLATE)
+    return side, top, bottom
+
+
 def main():
     BLOCK_TEX_DIR.mkdir(parents=True, exist_ok=True)
     variants = {
@@ -229,6 +273,8 @@ def main():
         "bounce_tnt": make_bounce_tnt(),
         "frost_nova_tnt": make_frost_nova_tnt(),
         "cluster_quarry_tnt": make_cluster_quarry_tnt(),
+        "starlight_gravity_tnt": make_starlight_gravity_tnt(),
+        "brimstone_meteor_tnt": make_brimstone_meteor_tnt(),
     }
     for name, (side, top, bottom) in variants.items():
         side.save(BLOCK_TEX_DIR / f"{name}_side.png")

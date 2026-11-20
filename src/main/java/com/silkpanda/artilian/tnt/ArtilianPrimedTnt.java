@@ -215,6 +215,8 @@ public class ArtilianPrimedTnt extends PrimedTnt {
             case BOUNCE -> explodeBounce(serverLevel);
             case FROST_NOVA -> explodeFrostNova(serverLevel);
             case CLUSTER_QUARRY -> explodeClusterQuarry(serverLevel);
+            case STARLIGHT_GRAVITY -> explodeStarlightGravity(serverLevel);
+            case BRIMSTONE_METEOR -> explodeBrimstoneMeteor(serverLevel);
         }
     }
 
@@ -233,13 +235,7 @@ public class ArtilianPrimedTnt extends PrimedTnt {
                 destructive ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
 
         if (!destructive && this.getClusterGeneration() == 0) {
-            Component safeNotice = Component.translatable("message.artilian.tnt.safe_mode")
-                    .withStyle(ChatFormatting.YELLOW);
-            for (ServerPlayer player : level.players()) {
-                if (player.distanceToSqr(this) <= 256.0) {
-                    player.displayClientMessage(safeNotice, true);
-                }
-            }
+            notifySafeMode(level);
         }
 
         if (this.getClusterGeneration() == 0) {
@@ -263,6 +259,76 @@ public class ArtilianPrimedTnt extends PrimedTnt {
                 level.addFreshEntity(bomblet);
             }
         }
+    }
+
+    private void notifySafeMode(ServerLevel level) {
+        Component safeNotice = Component.translatable("message.artilian.tnt.safe_mode")
+                .withStyle(ChatFormatting.YELLOW);
+        for (ServerPlayer player : level.players()) {
+            if (player.distanceToSqr(this) <= 256.0) {
+                player.displayClientMessage(safeNotice, true);
+            }
+        }
+    }
+
+    private void explodeStarlightGravity(ServerLevel level) {
+        double radius = 6.5;
+        AABB box = this.getBoundingBox().inflate(radius);
+        Vec3 center = this.position();
+        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, box)) {
+            if (KidSafeTargets.isValidOffensiveTarget(null, target)
+                    && target.distanceToSqr(center) <= radius * radius) {
+                Vec3 pull = center.subtract(target.position());
+                double len = pull.length();
+                if (len > 0.2) {
+                    Vec3 dir = pull.scale(1.0 / len);
+                    target.setDeltaMovement(dir.x * 0.75, 0.45, dir.z * 0.75);
+                    target.hasImpulse = true;
+                    target.hurtMarked = true;
+                }
+                target.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 30, 0));
+                target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));
+                target.hurt(level.damageSources().magic(), 6.0F);
+            }
+        }
+        level.sendParticles(ParticleTypes.PORTAL, this.getX(), this.getY() + 0.6, this.getZ(),
+                40, 1.5, 0.8, 1.5, 0.25);
+        level.sendParticles(ParticleTypes.END_ROD, this.getX(), this.getY() + 0.6, this.getZ(),
+                24, 1.2, 0.8, 1.2, 0.08);
+        level.playSound(null, this.getX(), this.getY(), this.getZ(),
+                SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.4F, 0.85F);
+    }
+
+    private void explodeBrimstoneMeteor(ServerLevel level) {
+        boolean destructive = ArtilianConfig.isDestructiveTntAllowed();
+        level.explode(
+                this,
+                Explosion.getDefaultDamageSource(level, this),
+                SAFE_QUARRY_DAMAGE_CALCULATOR,
+                this.getX(),
+                this.getY(0.0625),
+                this.getZ(),
+                5.5F,
+                false,
+                destructive ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+
+        if (!destructive) {
+            notifySafeMode(level);
+        }
+
+        double radius = 6.0;
+        AABB box = this.getBoundingBox().inflate(radius);
+        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, box)) {
+            if (KidSafeTargets.isValidOffensiveTarget(null, target)
+                    && target.distanceToSqr(this) <= radius * radius) {
+                target.hurt(level.damageSources().explosion(this, this.getOwner()), 12.0F);
+                target.igniteForSeconds(3);
+            }
+        }
+        level.sendParticles(ParticleTypes.FLAME, this.getX(), this.getY() + 0.5, this.getZ(),
+                45, 1.8, 0.8, 1.8, 0.1);
+        level.sendParticles(ParticleTypes.LAVA, this.getX(), this.getY() + 0.5, this.getZ(),
+                18, 1.4, 0.6, 1.4, 0.05);
     }
 
     private void explodeParty(ServerLevel level) {

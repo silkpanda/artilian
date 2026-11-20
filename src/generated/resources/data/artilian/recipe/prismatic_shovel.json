@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "D": {
+      "item": "artilian:brimstone_doubloon"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "D",
+    "S",
+    "S"
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:prismatic_shovel"
+  }
+}

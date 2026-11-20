@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "artilian:block/starlight_gravity_tnt_bottom",
+    "side": "artilian:block/starlight_gravity_tnt_side",
+    "top": "artilian:block/starlight_gravity_tnt_top"
+  }
+}

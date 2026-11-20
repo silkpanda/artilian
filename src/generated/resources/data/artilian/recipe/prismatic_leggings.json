@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "D": {
+      "item": "artilian:brimstone_doubloon"
+    },
+    "P": {
+      "item": "artilian:prism_core"
+    }
+  },
+  "pattern": [
+    "PDP",
+    "P P",
+    "P P"
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:prismatic_leggings"
+  }
+}

@@ -55,6 +55,12 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.handheldItem(ArtilianItems.STARLIGHT_SHOVEL.get());
         this.handheldItem(ArtilianItems.STARLIGHT_HOE.get());
 
+        this.handheldItem(ArtilianItems.PRISMATIC_SWORD.get());
+        this.handheldItem(ArtilianItems.PRISMATIC_PICKAXE.get());
+        this.handheldItem(ArtilianItems.PRISMATIC_AXE.get());
+        this.handheldItem(ArtilianItems.PRISMATIC_SHOVEL.get());
+        this.handheldItem(ArtilianItems.PRISMATIC_HOE.get());
+
         this.basicItem(ArtilianItems.SUNSTEEL_HELMET.get());
         this.basicItem(ArtilianItems.SUNSTEEL_CHESTPLATE.get());
         this.basicItem(ArtilianItems.SUNSTEEL_LEGGINGS.get());
@@ -65,9 +71,16 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.basicItem(ArtilianItems.STARLIGHT_LEGGINGS.get());
         this.basicItem(ArtilianItems.STARLIGHT_BOOTS.get());
 
+        this.basicItem(ArtilianItems.PRISMATIC_HELMET.get());
+        this.basicItem(ArtilianItems.PRISMATIC_CHESTPLATE.get());
+        this.basicItem(ArtilianItems.PRISMATIC_LEGGINGS.get());
+        this.basicItem(ArtilianItems.PRISMATIC_BOOTS.get());
+
         this.handheldItem(ArtilianItems.SPARK_WAND.get());
         this.handheldItem(ArtilianItems.HEART_BLOOM_STAFF.get());
         this.handheldItem(ArtilianItems.ZEPHYR_DASH_WAND.get());
+        this.handheldItem(ArtilianItems.PRISM_NOVA_STAFF.get());
+        this.handheldItem(ArtilianItems.BRIMSTONE_METEOR_STAFF.get());
 
         this.basicItem(ArtilianItems.CRYSTAL_CANOPY_DOOR_ITEM.get());
         this.basicItem(ArtilianItems.EMBERWOOD_DOOR_ITEM.get());

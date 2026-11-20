@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "artilian:starlight_crystal"
+    },
+    "P": {
+      "item": "artilian:prism_core"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    " PC",
+    " SP",
+    "S  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:prism_nova_staff"
+  }
+}

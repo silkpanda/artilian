@@ -68,9 +68,13 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.BOUNCE_TNT_ITEM.get());
                         output.accept(ArtilianItems.FROST_NOVA_TNT_ITEM.get());
                         output.accept(ArtilianItems.CLUSTER_QUARRY_TNT_ITEM.get());
+                        output.accept(ArtilianItems.STARLIGHT_GRAVITY_TNT_ITEM.get());
+                        output.accept(ArtilianItems.BRIMSTONE_METEOR_TNT_ITEM.get());
                         output.accept(ArtilianItems.SPARK_WAND.get());
                         output.accept(ArtilianItems.HEART_BLOOM_STAFF.get());
                         output.accept(ArtilianItems.ZEPHYR_DASH_WAND.get());
+                        output.accept(ArtilianItems.PRISM_NOVA_STAFF.get());
+                        output.accept(ArtilianItems.BRIMSTONE_METEOR_STAFF.get());
                         output.accept(ArtilianItems.CRYSTAL_TURF_ITEM.get());
                         output.accept(ArtilianItems.CRYSTAL_CANOPY_LOG_ITEM.get());
                         output.accept(ArtilianItems.CRYSTAL_CANOPY_PLANKS_ITEM.get());
@@ -108,6 +112,15 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.CAPTAIN_BRIMSTONE_SPAWN_EGG.get());
                         output.accept(ArtilianItems.BRIMSTONE_COMPASS.get());
                         output.accept(ArtilianItems.BRIMSTONE_DOUBLOON.get());
+                        output.accept(ArtilianItems.PRISMATIC_SWORD.get());
+                        output.accept(ArtilianItems.PRISMATIC_PICKAXE.get());
+                        output.accept(ArtilianItems.PRISMATIC_AXE.get());
+                        output.accept(ArtilianItems.PRISMATIC_SHOVEL.get());
+                        output.accept(ArtilianItems.PRISMATIC_HOE.get());
+                        output.accept(ArtilianItems.PRISMATIC_HELMET.get());
+                        output.accept(ArtilianItems.PRISMATIC_CHESTPLATE.get());
+                        output.accept(ArtilianItems.PRISMATIC_LEGGINGS.get());
+                        output.accept(ArtilianItems.PRISMATIC_BOOTS.get());
                     })
                     .build());
 

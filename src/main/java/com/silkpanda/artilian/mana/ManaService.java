@@ -42,6 +42,9 @@ public final class ManaService {
 
     private static final double HEART_BLOOM_RADIUS = 8.0;
     private static final double ZEPHYR_GUST_RADIUS = 4.0;
+    private static final double PRISM_NOVA_RADIUS = 6.5;
+    private static final double METEOR_RANGE = 20.0;
+    private static final double METEOR_IMPACT_RADIUS = 4.0;
 
     private ManaService() {}
 
@@ -49,7 +52,9 @@ public final class ManaService {
     public static void sync(ServerPlayer player) {
         ManaData data = ManaData.get(player);
         data.recordSync();
-        if (player.connection != null && player.connection.hasChannel(ManaSyncPayload.TYPE)) {
+        if (player.connection != null
+                && player.connection.getConnection().channel() != null
+                && player.connection.hasChannel(ManaSyncPayload.TYPE)) {
             PacketDistributor.sendToPlayer(player, new ManaSyncPayload(data.getMana(), data.getMaxMana()));
         }
     }
@@ -100,6 +105,8 @@ public final class ManaService {
             case SPARK -> castSparkWand(level, player);
             case HEART_BLOOM -> castHeartBloomStaff(level, player);
             case ZEPHYR_DASH -> castZephyrDashWand(level, player);
+            case PRISM_NOVA -> castPrismNovaStaff(level, player);
+            case BRIMSTONE_METEOR -> castBrimstoneMeteorStaff(level, player);
         }
         return true;
     }
@@ -286,6 +293,74 @@ public final class ManaService {
             foe.hasImpulse = true;
             foe.hurtMarked = true;
         }
+    }
+
+    private static void castPrismNovaStaff(ServerLevel level, Player caster) {
+        Vec3 center = caster.position();
+        AABB box = caster.getBoundingBox().inflate(PRISM_NOVA_RADIUS);
+        List<LivingEntity> foes = level.getEntitiesOfClass(
+                LivingEntity.class, box, e -> isValidOffensiveTarget(caster, e)
+                        && e.distanceToSqr(center) <= PRISM_NOVA_RADIUS * PRISM_NOVA_RADIUS);
+
+        for (LivingEntity foe : foes) {
+            foe.hurt(level.damageSources().indirectMagic(caster, caster), 10.0F);
+            foe.addEffect(new MobEffectInstance(MobEffects.GLOWING, 80, 0));
+            double dx = foe.getX() - caster.getX();
+            double dz = foe.getZ() - caster.getZ();
+            double dist = Math.hypot(dx, dz);
+            if (dist > 1.0E-4) {
+                foe.push((dx / dist) * 0.55, 0.25, (dz / dist) * 0.55);
+                foe.hurtMarked = true;
+            }
+        }
+
+        for (int i = 0; i < 24; i++) {
+            double angle = (Math.PI * 2.0 * i) / 24.0;
+            double px = caster.getX() + Math.cos(angle) * 2.8;
+            double pz = caster.getZ() + Math.sin(angle) * 2.8;
+            level.sendParticles(ParticleTypes.END_ROD, px, caster.getY() + 0.8, pz, 2, 0.15, 0.2, 0.15, 0.05);
+            level.sendParticles(ParticleTypes.PORTAL, px, caster.getY() + 0.6, pz, 2, 0.2, 0.2, 0.2, 0.05);
+        }
+        level.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
+                SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.2F, 1.1F);
+    }
+
+    private static void castBrimstoneMeteorStaff(ServerLevel level, Player caster) {
+        Vec3 eye = caster.getEyePosition();
+        Vec3 look = caster.getLookAngle();
+        Vec3 maxEnd = eye.add(look.scale(METEOR_RANGE));
+        BlockHitResult blockHit = level.clip(new ClipContext(
+                eye, maxEnd, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, caster));
+        Vec3 blockImpact = blockHit.getType() == HitResult.Type.MISS ? maxEnd : blockHit.getLocation();
+
+        // Snap impact to nearest offensive target along aim ray if closer than block hit
+        double maxDistSqr = blockImpact.distanceToSqr(eye);
+        AABB rayBox = caster.getBoundingBox().expandTowards(look.scale(METEOR_RANGE)).inflate(1.75);
+        LivingEntity aimedTarget = level.getEntitiesOfClass(
+                LivingEntity.class, rayBox, e -> isValidOffensiveTarget(caster, e)
+                        && e.getBoundingBox().inflate(1.0).clip(eye, blockImpact).isPresent())
+                .stream()
+                .min(Comparator.comparingDouble(e -> e.distanceToSqr(eye)))
+                .orElse(null);
+        Vec3 impact = (aimedTarget != null && aimedTarget.distanceToSqr(eye) < maxDistSqr)
+                ? aimedTarget.position()
+                : blockImpact;
+
+        AABB impactBox = AABB.ofSize(impact, METEOR_IMPACT_RADIUS * 2.0, METEOR_IMPACT_RADIUS * 2.0, METEOR_IMPACT_RADIUS * 2.0);
+        List<LivingEntity> foes = level.getEntitiesOfClass(
+                LivingEntity.class, impactBox, e -> isValidOffensiveTarget(caster, e)
+                        && e.distanceToSqr(impact) <= METEOR_IMPACT_RADIUS * METEOR_IMPACT_RADIUS);
+        for (LivingEntity foe : foes) {
+            foe.hurt(level.damageSources().onFire(), 12.0F);
+            foe.igniteForSeconds(3);
+        }
+
+        // Visual meteor trail from sky to impact (zero block breaking, zero fire blocks placed)
+        emitParticleLine(level, impact.add(0.0, 6.0, 0.0), impact, ParticleTypes.FLAME, ParticleTypes.LAVA, 12);
+        level.sendParticles(ParticleTypes.EXPLOSION, impact.x, impact.y + 0.4, impact.z, 2, 0.4, 0.2, 0.4, 0.0);
+        level.sendParticles(ParticleTypes.FLAME, impact.x, impact.y + 0.5, impact.z, 28, 1.2, 0.5, 1.2, 0.08);
+        level.playSound(null, impact.x, impact.y, impact.z,
+                SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.9F, 1.0F);
     }
 
     private static void emitParticleLine(

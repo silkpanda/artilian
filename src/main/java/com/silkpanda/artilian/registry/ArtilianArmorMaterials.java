@@ -39,6 +39,15 @@ public class ArtilianArmorMaterials {
             2.0F,
             0.05F);
 
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> PRISMATIC = register(
+            "prismatic",
+            4, 7, 9, 4, 11,
+            24,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            () -> ArtilianItems.PRISM_CORE.get(),
+            3.0F,
+            0.15F);
+
     private static DeferredHolder<ArmorMaterial, ArmorMaterial> register(
             String name,
             int boots,

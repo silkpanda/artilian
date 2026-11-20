@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 3 — Stage 3 (*Captain Brimstone*)** complete (`153/153` GameTests, `runData`, `build`, and live `./gradlew runClient` screenshots verified) on branch `phase-3-stage-3-captain-brimstone`, ready for PR into `main`. |
-| **Next** | 1. Push `phase-3-stage-3-captain-brimstone` and open/merge PR into `main` once CI is green. 2. Implement `TD-01` (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`) or begin **Phase 3 — Stage 4 (*Tier 3 Arsenal*)**. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
+| **In progress** | **Phase 3 — Stage 4 (*Tier 3 Arsenal*)** Sub-stages 1–2 complete (`162/162` GameTests, `runData`, `build`, `check_armor_sheets.py`, and `P3-04` red-proven & `HELD`) on branch `phase-3-stage-4-tier-3-arsenal`; Sub-stage 3 (`./gradlew runClient` visual check & screenshot) pending. |
+| **Next** | 1. Run `./gradlew runClient` on `phase-3-stage-4-tier-3-arsenal` to visually verify Prismatic Armor, Prismatic Sword, Prism Nova Staff, Brimstone Meteor Staff, Starlight Gravity TNT, and Brimstone Meteor TNT (`qa/evidence/tier3-arsenal-2026-11-19.png`), then open PR into `main` (after `phase-3-stage-3-captain-brimstone` PR merges). 2. Implement `TD-01` (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`) or begin **Phase 3 — Stage 5 (*Phase 3 Art Pass & Sign-Off*)**. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
 | **Waiting on the owner** | 1. In-game look & screenshot when home for **Boss Framework** (*Training Golem* + *Boss Altar*, `qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 5. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | None (`main` and `phase-3-stage-3-captain-brimstone` only). |
+| **Other work in flight** | `phase-3-stage-3-captain-brimstone` (ready for PR into `main`) and `phase-3-stage-4-tier-3-arsenal` (branched from Stage 3). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -322,7 +322,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 1 | Boss Framework (`ArtilianBossEntity`, `TelegraphedAttack`, `BossAltarBlock`, `P3-01`) | ⏳ Sub-stages 1–3 merged in PR #7 (`137/137`); Sub-stage 4 client check pending |
 | 2 | The Crystal Colossus (`CrystalColossusEntity`, `Crystal Colossus Arena`, `P3-02`) | ✅ Complete (`145/145`, merged in PR #10) |
 | 3 | Captain Brimstone (`CaptainBrimstoneEntity`, `Brimstone Bastion`, `P3-03`) | ✅ Complete (`153/153`, client verified on `phase-3-stage-3-captain-brimstone`) |
-| 4 | Tier 3 Arsenal (weapons, armor, tools, advanced Staves & Boss TNTs) | ⏹ Pending |
+| 4 | Tier 3 Arsenal (weapons, armor, tools, advanced Staves & Boss TNTs) | ⏳ Sub-stages 1–2 complete (`162/162`); Sub-stage 3 client check pending |
 | 5 | Phase 3 Art Pass & Family Co-op Sign-Off | ⏹ Pending |
 
 ### Phase 3 — Stage 1: Boss Framework & Rematch Altars
@@ -409,7 +409,29 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies the Captain Brimstone fight and Brimstone Bastion arena.
 
 ### Phase 3 — Stage 4: Tier 3 Arsenal
-- [ ] **Pending** — Boss-forged Tier 3 weapons, armor, tools, advanced Staves, and advanced TNTs (destructive variants strictly honor `allowDestructiveCustomTnt`).
+- [ ] **In Progress** — Boss-forged Tier 3 weapons, armor, tools, advanced Staves, and advanced TNTs (destructive variants strictly honor `allowDestructiveCustomTnt`).
+- **Why & Decisions:** Reward defeating *The Crystal Colossus* (`Prism Core`) and *Captain Brimstone* (`Brimstone Doubloon`) with a cohesive Netherite-grade Tier 3 progression set that stays kid-friendly:
+  1. **Tier 3 Prismatic Gear (`ArtilianTiers.PRISMATIC`, `ArtilianArmorMaterials.PRISMATIC`):**
+     - **Tools & Weapons (`prismatic_sword`, `prismatic_pickaxe`, `prismatic_axe`, `prismatic_shovel`, `prismatic_hoe`):** `2050` durability, `9.5F` mining speed, `4.5F` attack damage bonus, `24` enchantability, `BlockTags.INCORRECT_FOR_NETHERITE_TOOL`, `fireResistant()`, repaired with `Prism Core`. `PrismaticSwordItem` applies `Glowing` (`60`t) and deals `+2.0F` bonus starlight damage on hit so kids see targets light up.
+     - **Armor (`prismatic_helmet`, `prismatic_chestplate`, `prismatic_leggings`, `prismatic_boots`):** Defense `[4, 7, 9, 4]` (total `24`), `3.0F` toughness, `0.15F` knockback resistance, `24` enchantability, `fireResistant()`, GeckoLib 3D `PrismaticArmorRenderer` (`prismatic_armor.geo.json`, validated by `check_armor_sheets.py`). Wearing all 4 pieces grants `Fire Resistance` (`60`t refreshed on player tick) for Captain Brimstone & Nether safety.
+     - **Recipes:** Direct crafting table recipes combining `Prism Core`, `Brimstone Doubloon`, and `Starlight Crystal` / `Stick` (no Smithing Table template friction for ages 5 & 7).
+  2. **Two Advanced Boss-Forged Staves (`WandSpell` + `ManaService`):**
+     - **Prism Nova Staff (`prism_nova_staff`, `40` Mana, `25`t CD):** Centered `6.5`-block starlight shockwave dealing `10.0F` magic damage + `Glowing` (`80`t) + gentle knockback to `KidSafeTargets.isValidOffensiveTarget` entities only.
+     - **Brimstone Meteor Staff (`brimstone_meteor_staff`, `45` Mana, `30`t CD):** Raycasts up to `20` blocks to call down a `4.0`-block brimstone meteor dealing `12.0F` fire damage + `60`t fire to `KidSafeTargets.isValidOffensiveTarget` entities only, with **zero** block breaking and **zero** fire blocks placed.
+  3. **Two Advanced Boss-Forged TNTs (`TntVariant` + `ArtilianPrimedTnt`):**
+     - **Starlight Gravity TNT (`starlight_gravity_tnt`, `destructiveCapable = false`):** Always safe; pulls nearby `KidSafeTargets.isValidOffensiveTarget` entities inward, applies `Levitation` (`30`t) + `Glowing` (`100`t), and deals `6.0F` damage with zero block breaking.
+     - **Brimstone Meteor TNT (`brimstone_meteor_tnt`, `destructiveCapable = true`):** Strictly honors `ArtilianConfig.allowDestructiveCustomTnt` (default `false`: zero block damage, zero fire blocks, `12.0F` blast damage to `KidSafeTargets.isValidOffensiveTarget` entities only; when `true`: `5.5F` explosion using `SAFE_QUARRY_DAMAGE_CALCULATOR` so block entities & kid-safe targets remain protected).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Tier 3 Prismatic gear, 3D armor & tests | `954414e` | `ArtilianTiers.PRISMATIC`, `ArtilianArmorMaterials.PRISMATIC`, `PrismaticSwordItem`, `PrismaticArmorRenderer`, 9 fire-resistant items, `make_ores_and_gear_art.py`, `check_armor_sheets.py` clean, datagen, 4 `Tier3ArsenalGameTests` (`157/157`). |
+  | 2 Advanced Staves, Boss TNTs & `P3-04` | This commit | `PRISM_NOVA` & `BRIMSTONE_METEOR` staves, `STARLIGHT_GRAVITY` & `BRIMSTONE_METEOR` TNTs, `make_wand_art.py`, `make_tnt_art.py`, datagen, 4 `Tier3ArsenalGameTests` + `TntSecurityProbes` `P3-04` (`162/162`, `build` green). Red-proof: `SAFE_QUARRY_DAMAGE_CALCULATOR` replaced with `null` & `ExplosionInteraction.TNT` forced → `P3-04` & `brimstoneMeteorTntHonorsDestructiveConfig` red. |
+  | 3 Live client check & evidence | Pending | `./gradlew runClient` screenshot of Prismatic gear, Staves, and Boss TNTs (`qa/evidence/tier3-arsenal-2026-11-19.png`). |
+
+- **Tests & Red-proofs (`Tier3ArsenalGameTests`, `TntSecurityProbes`):** `162/162` green (8 `Tier3ArsenalGameTests` + `P3-04`). Red-proof recorded above.
+- **Security Gate (`TntSecurityProbes.p3_04_tier3StavesAndBrimstoneTntRespectKidSafeAndDestructiveConfig`, `security/FINDINGS.md`):** `P3-04` `HELD` in `162/162` suite.
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, `check_armor_sheets.py` passes, and live `./gradlew runClient` verifies Tier 3 gear, Staves, and Boss TNTs.
 
 ### Phase 3 — Stage 5: Phase 3 Art Pass & Sign-Off
 - [ ] **Pending** — Art pass over Phase 3 bosses, altars, and Tier 3 gear; done when all checks are green and both bosses are summonable, beatable by a young kid with a parent, and drop working Tier 3 gear.
@@ -453,9 +475,9 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ---
 
-## Security Gates Summary (`P1-01`–`P3-03`)
+## Security Gates Summary (`P1-01`–`P3-04`)
 
-All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`153/153`** GameTests passing.
+All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`162/162`** GameTests passing.
 
 | IDs | Phase / Stage | Area | GameTest Class | Index |
 |---|---|---|---|---|

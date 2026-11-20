@@ -92,6 +92,12 @@ public class ArtilianBlocks {
     public static final DeferredBlock<ArtilianTntBlock> CLUSTER_QUARRY_TNT = BLOCKS.register("cluster_quarry_tnt",
             () -> new ArtilianTntBlock(TntVariant.CLUSTER_QUARRY,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.TNT).mapColor(MapColor.COLOR_ORANGE)));
+    public static final DeferredBlock<ArtilianTntBlock> STARLIGHT_GRAVITY_TNT = BLOCKS.register("starlight_gravity_tnt",
+            () -> new ArtilianTntBlock(TntVariant.STARLIGHT_GRAVITY,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TNT).mapColor(MapColor.COLOR_PURPLE)));
+    public static final DeferredBlock<ArtilianTntBlock> BRIMSTONE_METEOR_TNT = BLOCKS.register("brimstone_meteor_tnt",
+            () -> new ArtilianTntBlock(TntVariant.BRIMSTONE_METEOR,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TNT).mapColor(MapColor.COLOR_RED)));
 
     // Crystal Canopy Woods (Phase 2 Stage 1)
     public static final DeferredBlock<Block> CRYSTAL_TURF = BLOCKS.register("crystal_turf",

@@ -51,6 +51,17 @@ STAR_TRIM_HI = (196, 236, 246, 255)  # #C4ECF6 pale ice glint
 STAR_TRIM = (52, 140, 166, 255)      # #348CA6 ice-teal
 STAR_TRIM_DARK = (26, 44, 78, 255)   # #1A2C4E deep navy outline
 
+# Prismatic Brimstone palette (Tier 3 Boss-Forged: Obsidian-Plum + Prism Magenta/Cyan + Brimstone Gold)
+PRISM_HI = (240, 250, 255, 255)      # Radiant prism edge
+PRISM_BRIGHT = (217, 70, 239, 255)   # #D946EF Twilight Magenta
+PRISM_MAIN = (126, 58, 178, 255)     # Royal prism violet
+PRISM_SHADE = (66, 36, 98, 255)      # Deep arcane plum
+PRISM_DARK = (38, 24, 62, 255)       # Obsidian-plum plate
+PRISM_OUTLINE = (20, 14, 34, 255)    # Deepest void-slate outline
+PRISM_TRIM_HI = (255, 224, 138, 255) # Brimstone gold glint
+PRISM_TRIM = (232, 93, 42, 255)      # Brimstone ember trim
+PRISM_TRIM_DARK = (118, 30, 24, 255) # Deep crimson trim
+
 # Handle wood / dark slate accents for tools
 HANDLE_LIGHT = (148, 102, 46, 255)
 HANDLE_MAIN = (112, 74, 28, 255)
@@ -580,12 +591,12 @@ def make_sunsteel_armor_icons(p):
         img.save(TEX_ROOT / "item" / f"sunsteel_{piece}.png")
 
 
-def make_starlight_armor_icons(p):
+def make_starlight_armor_icons(p, prefix="starlight", trim=STAR_TRIM, trim_dark=STAR_TRIM_DARK, trim_hi=STAR_TRIM_HI):
     ap = {
         **p,
-        "p": STAR_TRIM,
-        "P": STAR_TRIM_DARK,
-        "v": STAR_TRIM_HI,
+        "p": trim,
+        "P": trim_dark,
+        "v": trim_hi,
     }
     helmet = [
         ".......oo.......",
@@ -666,8 +677,8 @@ def make_starlight_armor_icons(p):
         ("boots", boots),
     ):
         img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
-        paint_checked(img, rows, ap, f"starlight_{piece}")
-        img.save(TEX_ROOT / "item" / f"starlight_{piece}.png")
+        paint_checked(img, rows, ap, f"{prefix}_{piece}")
+        img.save(TEX_ROOT / "item" / f"{prefix}_{piece}.png")
 
 
 def faces(u, v, w, h, d):
@@ -1036,15 +1047,15 @@ def make_sunsteel_armor_layers(p):
     return l1, l2, ap
 
 
-def make_starlight_armor_layers(p):
+def make_starlight_armor_layers(p, prefix="starlight", trim=STAR_TRIM, trim_dark=STAR_TRIM_DARK, trim_hi=STAR_TRIM_HI):
     # Celestial / Astral Archon armor: Open-face Circlet + 3D Crystal Spire Horns (hat u=32),
     # Ice-Teal trimmed diamond-core cuirass with spiky crystal pauldrons & bracers,
     # Ice-Teal sash leggings, and crystal-finned ice boots.
     ap = {
         **p,
-        "p": STAR_TRIM,
-        "P": STAR_TRIM_DARK,
-        "v": STAR_TRIM_HI,
+        "p": trim,
+        "P": trim_dark,
+        "v": trim_hi,
         "g": SUN_HI,
     }
     l1 = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
@@ -1311,7 +1322,7 @@ def make_starlight_armor_layers(p):
     paint_patch(l1, 8, 20, 4, 12, boot_inner, ap, "star_boot_inner")
     paint_patch(l1, 12, 20, 4, 12, boot_inner, ap, "star_boot_back")
 
-    l1.save(TEX_ROOT / "models" / "armor" / "starlight_layer_1.png")
+    l1.save(TEX_ROOT / "models" / "armor" / f"{prefix}_layer_1.png")
 
     # Layer 2: Ice-Teal Waist Sash + Diamond Star Buckle + Faceted Crystal Greaves
     l2 = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
@@ -1387,7 +1398,7 @@ def make_starlight_armor_layers(p):
     paint_patch(l2, 4, 20, 4, 12, leg_front, ap, "star_leg_front")
     paint_patch(l2, 8, 20, 4, 12, leg_inner, ap, "star_leg_inner")
     paint_patch(l2, 12, 20, 4, 12, leg_side, ap, "star_leg_back")
-    l2.save(TEX_ROOT / "models" / "armor" / "starlight_layer_2.png")
+    l2.save(TEX_ROOT / "models" / "armor" / f"{prefix}_layer_2.png")
     return l1, l2, ap
 
 
@@ -1630,7 +1641,7 @@ def make_sunsteel_armor_geo_sheet(l1, l2, ap):
     )
 
 
-def make_starlight_armor_geo_sheet(l1, l2, ap):
+def make_starlight_armor_geo_sheet(l1, l2, ap, prefix="starlight", trim_dark=STAR_TRIM_DARK, trim=STAR_TRIM, shade=STAR_SHADE):
     boxes = {
         "tasset": (
             16, 32, 4, 5, 4,
@@ -1731,16 +1742,16 @@ def make_starlight_armor_geo_sheet(l1, l2, ap):
         ),
     }
     compose_geckolib_armor_sheet(
-        "starlight_armor.png",
+        f"{prefix}_armor.png",
         l1,
         l2,
-        STAR_TRIM_DARK,
-        STAR_TRIM,
+        trim_dark,
+        trim,
         ap,
         boxes,
         "star",
-        geo_name="starlight_armor.geo.json",
-        base=STAR_SHADE,
+        geo_name=f"{prefix}_armor.geo.json",
+        base=shade,
     )
 
 
@@ -1788,6 +1799,25 @@ def main():
         "g": SUN_HI,
     }
 
+    prism_p = {
+        "h": PRISM_HI, "hi": PRISM_HI,
+        "b": PRISM_BRIGHT, "bright": PRISM_BRIGHT,
+        "m": PRISM_MAIN, "main": PRISM_MAIN,
+        "s": PRISM_SHADE, "shade": PRISM_SHADE,
+        "d": PRISM_DARK, "dark": PRISM_DARK,
+        "o": PRISM_OUTLINE,
+    }
+    prism_tool_p = {
+        "O": PRISM_OUTLINE,
+        "o": PRISM_TRIM_DARK,
+        "d": PRISM_TRIM,
+        "s": PRISM_SHADE,
+        "m": PRISM_MAIN,
+        "b": PRISM_BRIGHT,
+        "h": PRISM_HI,
+        "g": PRISM_TRIM_HI,
+    }
+
     make_sunsteel_ore("sunsteel_ore.png", False, sun_p)
     make_sunsteel_ore("deepslate_sunsteel_ore.png", True, sun_p)
     make_sunsteel_storage_block("sunsteel_block.png")
@@ -1799,13 +1829,19 @@ def main():
     make_materials()
     make_tool_set("sunsteel", sun_tool_p)
     make_tool_set("starlight", star_tool_p)
+    make_tool_set("prismatic", prism_tool_p)
     make_sunsteel_armor_icons(sun_p)
     make_starlight_armor_icons(star_p)
+    make_starlight_armor_icons(prism_p, prefix="prismatic", trim=PRISM_TRIM, trim_dark=PRISM_TRIM_DARK, trim_hi=PRISM_TRIM_HI)
     sun_l1, sun_l2, sun_ap = make_sunsteel_armor_layers(sun_p)
     star_l1, star_l2, star_ap = make_starlight_armor_layers(star_p)
+    prism_l1, prism_l2, prism_ap = make_starlight_armor_layers(
+        prism_p, prefix="prismatic", trim=PRISM_TRIM, trim_dark=PRISM_TRIM_DARK, trim_hi=PRISM_TRIM_HI)
     make_sunsteel_armor_geo_sheet(sun_l1, sun_l2, sun_ap)
     make_starlight_armor_geo_sheet(star_l1, star_l2, star_ap)
-    print("Generated all Sunsteel and Starlight Crystal textures.")
+    make_starlight_armor_geo_sheet(
+        prism_l1, prism_l2, prism_ap, prefix="prismatic", trim_dark=PRISM_TRIM_DARK, trim=PRISM_TRIM, shade=PRISM_SHADE)
+    print("Generated all Sunsteel, Starlight Crystal, and Prismatic textures.")
 
 
 if __name__ == "__main__":

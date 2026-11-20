@@ -25,4 +25,12 @@ public final class ArtilianTiers {
             3.5F,
             20,
             () -> Ingredient.of(ArtilianItems.STARLIGHT_CRYSTAL.get()));
+
+    public static final Tier PRISMATIC = new SimpleTier(
+            BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
+            2050,
+            9.5F,
+            4.5F,
+            24,
+            () -> Ingredient.of(ArtilianItems.PRISM_CORE.get()));
 }

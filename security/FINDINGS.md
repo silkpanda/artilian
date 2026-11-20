@@ -197,3 +197,13 @@ Template for an entry:
 - **Impact:** If any Fire/explosive boss attack used `Level#explode` with `fire=true` / block interaction or omitted the `ChesterEntity` exclusion in `impact`, boss fights at Brimstone Bastion or a player's base would break Boss Altars/chests, ignite wooden decks, and injure Chester.
 - **Fix:** `ArtilianBossEntity#impact` explicitly skips `ChesterEntity` and applies direct elemental damage only, and `CaptainBrimstoneEntity#onTelegraphImpact` emits particles, sounds, mild knockback, and entity-only ignite/weakness effects without any `Level#explode` or block/fire placement. Phase 3 Stage 3 (`phase-3-stage-3-captain-brimstone`).
 - **Proof:** GameTest `BossSecurityProbes.p3_03_captainBrimstoneNeverBreaksBlocksOrAltarOrIgnitesTerrainOrHarmsChester`. EXPLOITED when `Level.ExplosionInteraction.MOB` (`fire=true`) was injected into `CaptainBrimstoneEntity#onTelegraphImpact`; HELD with the control on (`153/153` tests passing).
+
+---
+
+### P3-04 — Tier 3 Staves and Brimstone Meteor TNT bypass kid-safe targeting or `allowDestructiveCustomTnt` — FIXED
+- **Severity:** High
+- **Where:** `mana/ManaService.java` (`castPrismNovaStaff`, `castBrimstoneMeteorStaff`), `tnt/ArtilianPrimedTnt.java` (`explodeStarlightGravity`, `explodeBrimstoneMeteor`, `SAFE_QUARRY_DAMAGE_CALCULATOR`)
+- **Attack:** Under default config (`allowDestructiveCustomTnt = false`), a player casts `Prism Nova Staff` or detonates `Brimstone Meteor TNT` inside an arena containing Glass/Oak Planks, a `Chest`, a `Player`, `ChesterEntity`, a `Villager`, a tamed `CrystalFoxEntity`, and a hostile `Zombie`.
+- **Impact:** Without `SAFE_QUARRY_DAMAGE_CALCULATOR`, `allowDestructiveCustomTnt` enforcement, and `KidSafeTargets.isValidOffensiveTarget`, Tier 3 Staves and Boss TNTs would destroy player bases/chests and injure players, Chester, villagers, and tamed pets.
+- **Fix:** `ManaService` filters all offensive AoEs via `KidSafeTargets.isValidOffensiveTarget` with zero block interaction or fire placement; `ArtilianPrimedTnt#explodeBrimstoneMeteor` uses `SAFE_QUARRY_DAMAGE_CALCULATOR` and `Level.ExplosionInteraction.NONE` when `allowDestructiveCustomTnt` is `false` (and `fire = false`), while `explodeStarlightGravity` is non-destructive and filters via `KidSafeTargets`. Phase 3 Stage 4 (`phase-3-stage-4-tier-3-arsenal`).
+- **Proof:** GameTest `TntSecurityProbes.p3_04_tier3StavesAndBrimstoneTntRespectKidSafeAndDestructiveConfig`. EXPLOITED when `SAFE_QUARRY_DAMAGE_CALCULATOR` was replaced with `null` and `Level.ExplosionInteraction.TNT` was forced on `Brimstone Meteor TNT`; HELD with the controls on (`162/162` tests passing).
