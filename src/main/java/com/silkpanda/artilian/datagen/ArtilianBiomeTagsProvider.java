@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.dimension.EyeRealmDimension;
 import com.silkpanda.artilian.registry.ArtilianTags;
 import com.silkpanda.artilian.worldgen.ArtilianBiomes;
 import net.minecraft.core.HolderLookup;
@@ -43,5 +44,7 @@ public class ArtilianBiomeTagsProvider extends BiomeTagsProvider {
         tag(ArtilianTags.Biomes.HAS_STARLIGHT_WATCHTOWER).add(ArtilianBiomes.STARLIGHT_HIGHLANDS);
         tag(ArtilianTags.Biomes.HAS_CRYSTAL_COLOSSUS_ARENA).add(ArtilianBiomes.CRYSTAL_CANOPY_WOODS);
         tag(ArtilianTags.Biomes.HAS_BRIMSTONE_BASTION).add(ArtilianBiomes.EMBERBLOOM_MEADOWS);
+        tag(ArtilianTags.Biomes.HAS_OCULAR_OBSERVATORY).add(EyeRealmDimension.EYE_REALM_BIOME);
+        tag(ArtilianTags.Biomes.HAS_GAZING_SANCTUM).add(EyeRealmDimension.EYE_REALM_BIOME);
     }
 }
