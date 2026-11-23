@@ -296,5 +296,10 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addBlock(ArtilianBlocks.DRAGONWOOD_SLAB, "Dragonwood Slab");
         this.addBlock(ArtilianBlocks.DRAGONWOOD_LEAVES, "Dragonwood Leaves");
         this.addBlock(ArtilianBlocks.DRAGONWOOD_SAPLING, "Dragonwood Sapling");
+
+        // Phase 5 Stage 4: First Dragon Species
+        this.addEntityType(ArtilianEntities.CANOPY_WYVERN, "Canopy Wyvern");
+        this.addItem(ArtilianItems.CANOPY_WYVERN_SPAWN_EGG, "Canopy Wyvern Spawn Egg");
+        this.addItem(ArtilianItems.DRAGON_SCALE, "Dragon Scale");
     }
 }

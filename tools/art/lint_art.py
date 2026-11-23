@@ -29,6 +29,9 @@ PHASE3_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone")
 PHASE3_ARMORS = ("prismatic_armor",)
 PHASE4_ENTITIES = ("peeper", "oculus_slime", "lens_guardian", "blinky", "great_all_seer")
 BOSS_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone", "great_all_seer")
+SHARED_RIGS = {
+    "dragon_rig": ("canopy_wyvern",),
+}
 
 
 def _describe_face(img: Image.Image, rect: tuple[int, int, int, int]) -> tuple[float, int]:
@@ -123,7 +126,7 @@ def lint_pair(
     return problems, notes
 
 
-def collect_pairs(phase3_only: bool, phase4_only: bool) -> list[tuple[str, Path, Path, int, int]]:
+def collect_pairs(phase3_only: bool, phase4_only: bool, phase5_only: bool) -> list[tuple[str, Path, Path, int, int]]:
     pairs: list[tuple[str, Path, Path, int, int]] = []
     if phase3_only:
         for eid in PHASE3_ENTITIES:
@@ -141,8 +144,18 @@ def collect_pairs(phase3_only: bool, phase4_only: bool) -> list[tuple[str, Path,
             pairs.append((f"entity/{eid}", ENTITY_GEO_DIR / f"{eid}.geo.json", ENTITY_TEX_DIR / f"{eid}.png", min_w, min_h))
         return pairs
 
+    if phase5_only:
+        for rig, species_list in SHARED_RIGS.items():
+            for species_id in species_list:
+                pairs.append((f"entity/{species_id}", ENTITY_GEO_DIR / f"{rig}.geo.json", ENTITY_TEX_DIR / f"{species_id}.png", 256, 128))
+        return pairs
+
     for geo_path in sorted(ENTITY_GEO_DIR.glob("*.geo.json")):
         eid = geo_path.name.removesuffix(".geo.json")
+        if eid in SHARED_RIGS:
+            for species_id in SHARED_RIGS[eid]:
+                pairs.append((f"entity/{species_id}", geo_path, ENTITY_TEX_DIR / f"{species_id}.png", 256, 128))
+            continue
         min_w = 256 if eid in ("crystal_colossus", "captain_brimstone", "great_all_seer") else (128 if eid != "chester" else 64)
         min_h = 128 if eid in BOSS_ENTITIES else 64
         pairs.append((f"entity/{eid}", geo_path, ENTITY_TEX_DIR / f"{eid}.png", min_w, min_h))
@@ -158,11 +171,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Lint Artilian GeckoLib models and textures.")
     parser.add_argument("--phase3", action="store_true", help="Check only Phase 3 bosses and armor.")
     parser.add_argument("--phase4", action="store_true", help="Check only Phase 4 Eye Realm entities.")
+    parser.add_argument("--phase5", action="store_true", help="Check only Phase 5 Dragon Jungle entities.")
     parser.add_argument("--strict", action="store_true", help="Fail if any flat single-colour faces are found.")
     args = parser.parse_args()
 
     failed = False
-    for name, geo_path, tex_path, min_w, min_h in collect_pairs(args.phase3, args.phase4):
+    for name, geo_path, tex_path, min_w, min_h in collect_pairs(args.phase3, args.phase4, args.phase5):
         problems, notes = lint_pair(name, geo_path, tex_path, min_width=min_w, min_height=min_h)
         print(f"== {name} ==")
         for p in problems:

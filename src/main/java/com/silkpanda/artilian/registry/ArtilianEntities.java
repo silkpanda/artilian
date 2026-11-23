@@ -6,6 +6,7 @@ import com.silkpanda.artilian.boss.CrystalColossusEntity;
 import com.silkpanda.artilian.boss.GreatAllSeerEntity;
 import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
+import com.silkpanda.artilian.dragon.CanopyWyvernEntity;
 import com.silkpanda.artilian.enemy.AstralStalkerEntity;
 import com.silkpanda.artilian.enemy.CinderRaiderEntity;
 import com.silkpanda.artilian.enemy.LensGuardianEntity;
@@ -238,6 +239,14 @@ public class ArtilianEntities {
                     .eyeHeight(2.0F)
                     .clientTrackingRange(12)
                     .build("great_all_seer"));
+
+    /** Canopy Wyvern: first wild Dragon Jungle dragon species, establishing the shared dragon_rig. */
+    public static final DeferredHolder<EntityType<?>, EntityType<CanopyWyvernEntity>> CANOPY_WYVERN =
+            ENTITY_TYPES.register("canopy_wyvern", () -> EntityType.Builder.of(CanopyWyvernEntity::new, MobCategory.MONSTER)
+                    .sized(1.55F, 1.95F)
+                    .eyeHeight(1.55F)
+                    .clientTrackingRange(12)
+                    .build("canopy_wyvern"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

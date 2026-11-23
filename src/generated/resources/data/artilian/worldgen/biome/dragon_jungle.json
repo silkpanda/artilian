@@ -53,7 +53,14 @@
     "axolotls": [],
     "creature": [],
     "misc": [],
-    "monster": [],
+    "monster": [
+      {
+        "type": "artilian:canopy_wyvern",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 18
+      }
+    ],
     "underground_water_creature": [],
     "water_ambient": [],
     "water_creature": []

@@ -153,6 +153,8 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.DRAGONWOOD_SLAB_ITEM.get());
                         output.accept(ArtilianItems.DRAGONWOOD_LEAVES_ITEM.get());
                         output.accept(ArtilianItems.DRAGONWOOD_SAPLING_ITEM.get());
+                        output.accept(ArtilianItems.DRAGON_SCALE.get());
+                        output.accept(ArtilianItems.CANOPY_WYVERN_SPAWN_EGG.get());
                     })
                     .build());
 

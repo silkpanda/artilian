@@ -3,6 +3,7 @@ package com.silkpanda.artilian.dimension;
 import com.mojang.datafixers.util.Pair;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
+import com.silkpanda.artilian.registry.ArtilianEntities;
 import com.silkpanda.artilian.worldgen.ArtilianWorldGen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -17,6 +18,7 @@ import net.minecraft.sounds.Musics;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.AmbientMoodSettings;
 import net.minecraft.world.level.biome.AmbientParticleSettings;
@@ -106,6 +108,9 @@ public final class DragonJungleDimension {
                 .backgroundMusic(Musics.createGameMusic(SoundEvents.MUSIC_BIOME_JUNGLE))
                 .build();
 
+        MobSpawnSettings.Builder jungleSpawns = new MobSpawnSettings.Builder();
+        jungleSpawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.CANOPY_WYVERN.get(), 18, 1, 2));
+
         context.register(
                 DRAGON_JUNGLE_BIOME,
                 new Biome.BiomeBuilder()
@@ -113,7 +118,7 @@ public final class DragonJungleDimension {
                         .temperature(0.95F)
                         .downfall(0.9F)
                         .specialEffects(jungleEffects)
-                        .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                        .mobSpawnSettings(jungleSpawns.build())
                         .generationSettings(jungleGen.build())
                         .build());
 

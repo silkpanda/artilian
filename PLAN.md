@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 5 — Stage 3 (*Dragon Jungle Structures*)** **Dragon Roost** (`artilian:dragon_roost`, `15×15×15`, bound to `artilian:dragon_jungle`) and **Amber Temple** (`artilian:amber_temple`, `15×16×15`, bound to `artilian:amber_volcanic_grove`) with chest loot tables (`dragon_roost`, `amber_temple`), datagen, `./gradlew build`, and `./gradlew runGameTestServer` (`201/201` green) on `phase-5-stage-3-dragon-jungle-structures`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–3 (`qa/evidence/dragon-jungle-structures-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 4 (*First Dragon Species*)**: one wild dragon end-to-end establishing the shared GeckoLib dragon rig. |
+| **In progress** | **Phase 5 — Stage 4 (*First Dragon Species*)** Shared `256×128` GeckoLib `dragon_rig.geo.json` + `dragon_rig.animation.json` (`idle`, `walk`, `fly`, `attack`), `WildDragonEntity`, `WildDragonModel` / `WildDragonRenderer` (`AutoGlowingGeoLayer`), **Canopy Wyvern** (`artilian:canopy_wyvern`, `Dragon / Nature`, `DRAGON_JUNGLE_BIOME` spawn, `artilian:dragon_scale` loot), `lint_art.py --phase5 --strict` clean, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`205/205` green) on `phase-5-stage-4-first-dragon-species`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–4 (`qa/evidence/canopy-wyvern-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 5 (*More Dragon Species*)**: additional wild dragon species reusing the shared `dragon_rig`. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -636,7 +636,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal (Steve's note: throw a boss drop into a Nether Portal to open the Dragon Jungle dimension) | 🔄 Code & GameTests complete (`194/194`); live client check pending |
 | 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | 🔄 Code & GameTests complete (`198/198`); live client check pending |
 | 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | 🔄 Code & GameTests complete (`201/201`); live client check pending |
-| 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | [ ] Pending |
+| 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | 🔄 Code & GameTests complete (`205/205`); live client check pending |
 | 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | [ ] Pending |
 | 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | [ ] Pending |
 | 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | [ ] Pending |
@@ -705,6 +705,30 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`DragonJungleStructuresGameTests`):** `201/201` green (3 new tests). Red-proof recorded above.
 - **Security Gate:** `n/a` (worldgen structures & chest loot only; zero banned blocks).
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies both Dragon Jungle structures in-game.
+
+### Phase 5 — Stage 4: First Dragon Species
+- [ ] **In Progress (`205/205` GameTests Green & Strict Art Lint Clean; Live Client Check Pending)** — Establish the shared GeckoLib dragon rig (`dragon_rig.geo.json`, `dragon_rig.animation.json`, `WildDragonModel`, `WildDragonRenderer`, `WildDragonEntity`) and ship the first wild dragon species end-to-end: **Canopy Wyvern** (`artilian:canopy_wyvern`, `Dragon / Nature`) spawning in `artilian:dragon_jungle` and dropping `artilian:dragon_scale`.
+- **Art Brief (`Canopy Wyvern` / `dragon_rig`):**
+  - **Target height/scale:** ~`2.4` blocks tall at horn crest, ~`3.2` blocks nose-to-tail, ~`4.2` blocks wingspan (`EntityType` `1.55F × 1.95F`, `eyeHeight = 1.55F`, `shadowRadius = 1.05F`).
+  - **Silhouette inspiration:** Classic storybook jungle wyvern/dragon with broad muscular chest & shoulders, tapered waist & hip, arched S-curved neck, horned dragon head with separate articulated lower jaw (`jaw`) and swept-back horns, 4 clawed legs, two-segment articulated dihedral wings (`left_wing_inner`/`outer`, `right_wing_inner`/`outer`) with leading wing-claws, and a 3-segment whip tail (`tail_1`, `tail_2`, `tail_3`) with dorsal ridge spines.
+  - **Dark structural anchor + accent palette:** Deep jungle obsidian-slate (`#132A20` → `#1E4634`) armored scales anchored against `DESIGN.md` Canopy Emerald (`#22C55E` → `#4ADE80`) wing membranes/belly/crests and Ember Amber (`#F97316` → `#FDE047`) eyes, horn tips, and wing-vein runes.
+  - **Key 3D recessed/angled features:** Inset eye sockets with glowing amber pupils, articulated lower `jaw`, angled brow horns (`[-25°, ±15°, 0°]`), angled dorsal spine fins along torso & tail, dihedral wing segments, and 3D taloned feet.
+  - **`_glowmask.png` zones:** Emissive amber eyes, chest scale core, dorsal spine tips, and wing-vein runes (`AutoGlowingGeoLayer`).
+- **Why & Decisions:**
+  1. **Shared Dragon Rig (`dragon_rig.geo.json` + `dragon_rig.animation.json`):** Both Stage 4 (`canopy_wyvern`) and Stage 5's additional dragon species reuse one `256×128` UV-mapped GeckoLib skeleton (`idle`, `walk`, `fly`, `attack`), parameterized in `WildDragonModel` / `WildDragonRenderer` by species texture ID.
+  2. **Wild Dragon Base (`WildDragonEntity extends Monster implements GeoEntity, ElementalMob`):** Enforces `KidSafeTargets.isValidOffensiveTarget` (Chester & player pets are never harmed), airborne wing-flutter fall immunity (`causeFallDamage` returns `false`), and `checkWildDragonSpawnRules` allowing natural daytime/nighttime spawns in `DragonJungleDimension.DRAGON_JUNGLE_BIOME` on `JUNGLE_TURF`, `MOSS_BLOCK`, `PRIMAL_BASALT`, or `DRAGONWOOD_LEAVES`.
+  3. **Canopy Wyvern (`CanopyWyvernEntity`):** `PetElement.DRAGON` / `PetElement.NATURE`, `44.0` HP, `6.0` ATK, `4.0` Armor, applies brief `MobEffects.POISON` (`40` ticks) + `DRAGON_BREATH` / `SPORE_BLOSSOM_AIR` particles on hit, and drops `1–3` `Dragon Scale` (`artilian:dragon_scale`) for future Stage 7 Dragonscale gear.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `256×128` shared `dragon_rig`, `canopy_wyvern` textures, glowmask & `dragon_scale` sprite | Pending commit | `tools/art/make_dragons_art.py`, `lint_art.py --phase5 --strict` clean (`entity/canopy_wyvern`), `preview_geo.py` (`qa/evidence/previews/canopy_wyvern-preview.png`). |
+  | 2 `WildDragonEntity`, `CanopyWyvernEntity`, renderer, `dragon_scale`, biome spawn, datagen & GameTests | Pending commit | `WildDragonEntity`, `CanopyWyvernEntity`, `WildDragonModel`, `WildDragonRenderer`, `DragonEvents`, `ArtilianEntities.CANOPY_WYVERN`, `ArtilianItems.DRAGON_SCALE` & `CANOPY_WYVERN_SPAWN_EGG`, `ArtilianTags.EntityTypes.WILD_DRAGONS`, `DragonSpeciesGameTests` (`205/205` green, `runData`, `build`). Red-proof: `WildDragonEntity.causeFallDamage` delegating to `super` → `canopywyvernregisteredtaggedhasegglootandelements` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Canopy Wyvern in `artilian:dragon_jungle` (`qa/evidence/canopy-wyvern-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonSpeciesGameTests`):** `205/205` green (4 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
+- **Security Gate:** `n/a` (wild dragon mob, loot, and biome spawns; enforces `KidSafeTargets` protection for Chester and pets).
+- **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Canopy Wyvern in `artilian:dragon_jungle`.
 
 ---
 

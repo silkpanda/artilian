@@ -157,7 +157,8 @@ def render_angle(quads, yaw_deg: float, pitch_deg: float, size: int = 240) -> Im
 def preview_target(target: str, out_path: Path | None = None) -> Path:
     if target.startswith("entity/"):
         name = target.split("/", 1)[1]
-        geo_path = ASSETS / "geo" / "entity" / f"{name}.geo.json"
+        geo_name = "dragon_rig" if name in ("canopy_wyvern",) else name
+        geo_path = ASSETS / "geo" / "entity" / f"{geo_name}.geo.json"
         tex_path = ASSETS / "textures" / "entity" / f"{name}.png"
     elif target.startswith("armor/"):
         name = target.split("/", 1)[1]

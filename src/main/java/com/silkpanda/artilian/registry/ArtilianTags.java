@@ -35,6 +35,8 @@ public final class ArtilianTags {
                 TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("structure_enemies"));
         public static final TagKey<EntityType<?>> EYE_REALM_ENEMIES =
                 TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("eye_realm_enemies"));
+        public static final TagKey<EntityType<?>> WILD_DRAGONS =
+                TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("wild_dragons"));
         public static final TagKey<EntityType<?>> BOSSES =
                 TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("bosses"));
 

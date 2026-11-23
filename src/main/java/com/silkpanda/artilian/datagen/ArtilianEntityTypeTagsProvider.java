@@ -39,6 +39,9 @@ public class ArtilianEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 ArtilianEntities.OCULUS_SLIME.get(),
                 ArtilianEntities.LENS_GUARDIAN.get()
         );
+        tag(ArtilianTags.EntityTypes.WILD_DRAGONS).add(
+                ArtilianEntities.CANOPY_WYVERN.get()
+        );
         tag(ArtilianTags.EntityTypes.BOSSES).add(
                 ArtilianEntities.TRAINING_GOLEM.get(),
                 ArtilianEntities.CRYSTAL_COLOSSUS.get(),

@@ -464,6 +464,13 @@ public class ArtilianItems {
     public static final DeferredItem<BlockItem> DRAGONWOOD_SAPLING_ITEM =
             ITEMS.registerSimpleBlockItem("dragonwood_sapling", ArtilianBlocks.DRAGONWOOD_SAPLING);
 
+    // Phase 5 Stage 4: First Dragon Species (Canopy Wyvern)
+    public static final DeferredItem<Item> DRAGON_SCALE =
+            ITEMS.register("dragon_scale", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<DeferredSpawnEggItem> CANOPY_WYVERN_SPAWN_EGG =
+            ITEMS.register("canopy_wyvern_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CANOPY_WYVERN, 0x1E4634, 0xF97316, new Item.Properties()));
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
     }
