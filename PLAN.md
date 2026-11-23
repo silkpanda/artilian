@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 4 — Stage 6 (*The Great All-Seer*)** Code, `256×128` GeckoLib art (`lint_art.py --strict` clean), `Ocular Key`, `All-Seer's Lens`, datagen, and `GreatAllSeerGameTests` (`187/187` green) complete on `phase-4-stage-6-great-all-seer`; awaiting live `./gradlew runClient` visual check & PR into `main`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshot (`qa/evidence/great-all-seer-2026-11-22.png`) for Phase 4 Stage 6, then open PR into `main`. 2. Begin **Phase 4 — Stage 7 (*Phase 4 Art Pass*)**. |
-| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, and family LAN co-op playtest across Phases 1–3 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | None. |
+| **In progress** | **Phase 4 — Stage 7 (*Phase 4 Art Pass*)** Art audit (`python tools/art/lint_art.py --phase4 --strict` clean across all 5 Eye Realm entities), `Phase4SignOffGameTests`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`189/189` green) complete on `phase-4-stage-7-art-pass`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stage 6 (`qa/evidence/great-all-seer-2026-11-22.png`) and Stage 7 Eye Realm end-to-end playthrough (`qa/evidence/phase4-signoff-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 1 (*Giant Dragon Jungle Dimension & Primal Portal*)**. |
+| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187` green) awaiting live client screenshot & PR into `main` (included in `phase-4-stage-7-art-pass`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -466,7 +466,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | ✅ Complete (`180/180` + client verified) |
 | 5 | Eye Realm Structures | Dimension structures & chests | ✅ Merged into `main` (`c346c90`, `183/183`; client screenshot pending) |
 | 6 | The Great All-Seer | Phase 4 boss (`ArtilianBossEntity`) with telegraphed attacks & rematch altar | 🔄 Code & GameTests complete (`187/187`); live client check pending |
-| 7 | Phase 4 Art Pass | Final art polish against Alex's specs + co-op verification | [ ] Pending |
+| 7 | Phase 4 Art Pass | Final art polish against Alex's specs + co-op verification | 🔄 Art audit & GameTests complete (`189/189`); live client & co-op check pending |
 
 ### Phase 4 — Stage 1: Dimension & Gazing Portal
 - [ ] **In Progress** — `artilian:eye_realm` dimension, `GazingPortalBlock`, `GazingEyeItem`, flat placeholder terrain, safe return portal generation, and GameTests.
@@ -607,6 +607,22 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`GreatAllSeerGameTests`):** `187/187` green (4 new tests). Red-proof recorded above.
 - **Security Gate:** `n/a` (inherits `P3-01`–`P3-03` `BossAltarBlockEntity` single-boss lock, zero block-breaking, and `ChesterEntity` immunity).
 - **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green, and live `./gradlew runClient` verifies The Great All-Seer in-game.
+
+### Phase 4 — Stage 7: Phase 4 Art Pass
+- [ ] **In Progress (`189/189` GameTests & Strict Art Lint Clean; Live Client Check Pending)** — Phase 4 art & preview audit (`--phase4` in `lint_art.py`), end-to-end Eye Realm sign-off tests (`Phase4SignOffGameTests`), and progression readiness verification.
+- **Why & Decisions:** Ensure every Phase 4 entity, block, item, structure, and boss meets `DESIGN.md`'s 3D Art Standard and plays smoothly end-to-end before moving to Phase 5 (*Giant Dragon Jungle*):
+  1. **Phase 4 Art Linter (`tools/art/lint_art.py --phase4 --strict`):** Added `PHASE4_ENTITIES` (`peeper`, `oculus_slime`, `lens_guardian`, `blinky`, `great_all_seer`), included `great_all_seer` in `BOSS_ENTITIES` (`256×128` minimum sheet), and verified all 5 models + `_glowmask.png` sheets + 4-angle `qa/evidence/previews/*-preview.png` contact sheets pass with zero UV overlaps, zero transparent holes, and zero flat single-color faces.
+  2. **Phase 4 Sign-Off GameTests (`Phase4SignOffGameTests`):** Verifies all 5 Phase 4 GeckoLib models, required bones, animation clips, sheet dimensions, glowmasks, animated block `.mcmeta` files (`gazing_portal`, `blinking_eye_block`), block/item textures, `GreatAllSeerEntity` telegraph windup floor (`>= 30` ticks), Phase 4 crafting recipes, `EyeRealmDimension` registration, and structure/boss loot tables.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Phase 4 art audit, `lint_art.py --phase4` & `Phase4SignOffGameTests` | Pending commit | Updated `tools/art/lint_art.py` (`--phase4`, `great_all_seer` `256×128` boss budget), visually audited all 5 `qa/evidence/previews/*-preview.png` contact sheets, added `Phase4SignOffGameTests` (`189/189` green, `runData`, `build`, `lint_art.py --phase4 --strict` exit `0`). |
+  | 2 Live client & co-op sign-off | Pending | `./gradlew runClient` walkthrough of Gazing Portal → Eye Realm terrain/sky → enemies & Blinky → Observatory/Sanctum → Great All-Seer (`qa/evidence/phase4-signoff-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`Phase4SignOffGameTests`):** `189/189` green (2 new tests) + `python tools/art/lint_art.py --phase4 --strict` (exit `0`).
+- **Security Gate:** `n/a` (art pass, linter, and progression sign-off; `P4-01` already `HELD`).
+- **Done When:** `lint_art.py --phase4 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies the full Eye Realm loop.
 
 ---
 

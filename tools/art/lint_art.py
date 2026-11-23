@@ -5,6 +5,7 @@ Implements TD-01 from TECH_DEBT.md (generalizing check_armor_sheets.py).
 Usage:
     python tools/art/lint_art.py              # lint all entity + armor pairs
     python tools/art/lint_art.py --phase3     # lint Phase 3 bosses + armor strictly
+    python tools/art/lint_art.py --phase4     # lint Phase 4 Eye Realm entities strictly
     python tools/art/lint_art.py --strict     # treat flat faces & small sheets as errors
 """
 from __future__ import annotations
@@ -26,7 +27,8 @@ ARMOR_TEX_DIR = ASSETS / "textures" / "item" / "armor"
 
 PHASE3_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone")
 PHASE3_ARMORS = ("prismatic_armor",)
-BOSS_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone")
+PHASE4_ENTITIES = ("peeper", "oculus_slime", "lens_guardian", "blinky", "great_all_seer")
+BOSS_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone", "great_all_seer")
 
 
 def _describe_face(img: Image.Image, rect: tuple[int, int, int, int]) -> tuple[float, int]:
@@ -121,7 +123,7 @@ def lint_pair(
     return problems, notes
 
 
-def collect_pairs(phase3_only: bool) -> list[tuple[str, Path, Path, int, int]]:
+def collect_pairs(phase3_only: bool, phase4_only: bool) -> list[tuple[str, Path, Path, int, int]]:
     pairs: list[tuple[str, Path, Path, int, int]] = []
     if phase3_only:
         for eid in PHASE3_ENTITIES:
@@ -132,9 +134,16 @@ def collect_pairs(phase3_only: bool) -> list[tuple[str, Path, Path, int, int]]:
             pairs.append((f"armor/{aid}", ARMOR_GEO_DIR / f"{aid}.geo.json", ARMOR_TEX_DIR / f"{aid}.png", 64, 64))
         return pairs
 
+    if phase4_only:
+        for eid in PHASE4_ENTITIES:
+            min_w = 256 if eid == "great_all_seer" else 128
+            min_h = 128
+            pairs.append((f"entity/{eid}", ENTITY_GEO_DIR / f"{eid}.geo.json", ENTITY_TEX_DIR / f"{eid}.png", min_w, min_h))
+        return pairs
+
     for geo_path in sorted(ENTITY_GEO_DIR.glob("*.geo.json")):
         eid = geo_path.name.removesuffix(".geo.json")
-        min_w = 256 if eid in ("crystal_colossus", "captain_brimstone") else (128 if eid != "chester" else 64)
+        min_w = 256 if eid in ("crystal_colossus", "captain_brimstone", "great_all_seer") else (128 if eid != "chester" else 64)
         min_h = 128 if eid in BOSS_ENTITIES else 64
         pairs.append((f"entity/{eid}", geo_path, ENTITY_TEX_DIR / f"{eid}.png", min_w, min_h))
 
@@ -148,11 +157,12 @@ def collect_pairs(phase3_only: bool) -> list[tuple[str, Path, Path, int, int]]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Lint Artilian GeckoLib models and textures.")
     parser.add_argument("--phase3", action="store_true", help="Check only Phase 3 bosses and armor.")
+    parser.add_argument("--phase4", action="store_true", help="Check only Phase 4 Eye Realm entities.")
     parser.add_argument("--strict", action="store_true", help="Fail if any flat single-colour faces are found.")
     args = parser.parse_args()
 
     failed = False
-    for name, geo_path, tex_path, min_w, min_h in collect_pairs(args.phase3):
+    for name, geo_path, tex_path, min_w, min_h in collect_pairs(args.phase3, args.phase4):
         problems, notes = lint_pair(name, geo_path, tex_path, min_width=min_w, min_height=min_h)
         print(f"== {name} ==")
         for p in problems:
