@@ -1,35 +1,34 @@
-# Art Pass — Section 2.2: Hero Weapons & Staves
+# Art Pass — Section 2.2: Hero Weapons & Staves Gallery
 
 - **Branch:** `art/pass-2-weapons-items`
-- **Commit:** `0a27088`
-- **Generator:** `tools/art/make_hero_weapons_art.py`
+- **Generator:** [make_hero_weapons_art.py](../tools/art/make_hero_weapons_art.py)
+- **Verification:** `check_armor_sheets.py` clean · `lint_art.py --phase5 --strict` clean · `./gradlew build` green
 
-## What Changed
+![Hero Weapons & Staves Overview](evidence/previews/hero_weapons-preview.png)
 
-Repainted all 11 `16×16` hero weapon and staff icons in `src/main/resources/assets/artilian/textures/item/` with distinct silhouettes, hue-shifted shading, and v3 armor-set alignment:
+---
 
-### Swords & Blades (5)
-- `sunsteel_sword.png` — **Solar Broadsword** (obsidian-crimson steel, hammered gold sun-guard & fuller, molten core)
-- `starlight_sword.png` — **Arcane Ranger Sabre** (indigo steel, cyan crystal edge, swept guard, leather grip, teardrop pommel)
-- `prismatic_sword.png` — **Admiral's Cutlass** (curved blade, gold knuckle-bow D-guard, violet & magma prism inlay)
-- `dragonscale_sword.png` — **Dragon-Hunter Fangblade** (serrated emerald-scale blade, drake-bone horn guard, amber core)
-- `twin_star_blade.png` — **Seraphic Twin-Star Greatsword** (platinum-silver & void-indigo blade, winged gold/platinum guard, cyan core)
+## Hero Swords & Blades (5 Items)
 
-### Wands & Staves (6)
-- `spark_wand.png` — Faceted cyan-teal crystal spire wand with floating spark glints
-- `heart_bloom_staff.png` — Rose-pink heart blossom cradled by emerald leaves on a warm wood shaft
-- `zephyr_dash_wand.png` — Swept sky-wing & mana-violet wind-gem wand
-- `prism_nova_staff.png` — Dual-faceted violet/cyan prism astrolabe staff
-- `brimstone_meteor_staff.png` — Obsidian-clawed molten meteor staff
-- `twin_star_staff.png` — Golden crescent & platinum wing cradle holding orbiting amber-gold and starlight-cyan stars
+Each blade uses its corresponding v3 armor set's exact hue-shifted palette and a bespoke `16×16` silhouette.
 
-## Verification
+| Icon (4×) | Item | Set / Tier | Tooltip | Silhouette & Palette Notes |
+| :---: | :--- | :--- | :--- | :--- |
+| ![Sunsteel Sword](evidence/previews/sunsteel_sword-preview.png) | **Sunsteel Sword**<br>`sunsteel_sword` | Sunsteel (Phase 1) | *Sturdy Sunsteel blade* | Broad obsidian-crimson blade with hammered-gold fuller, flared sun-ray crossguard, molten solar core, crimson grip, and gold pommel. |
+| ![Starlight Sword](evidence/previews/starlight_sword-preview.png) | **Starlight Sword**<br>`starlight_sword` | Starlight (Phase 1) | *Swift Starlight blade* | Sleek midnight-indigo steel with glowing starlight-cyan crystal edge, swept crescent guard, warm leather grip, and teardrop pommel. |
+| ![Prismatic Sword](evidence/previews/prismatic_sword-preview.png) | **Prismatic Sword**<br>`prismatic_sword` | Prismatic (Phase 3) | *Boss-forged blade — Lights up and burns foes!* | Pirate-admiral curved cutlass with gold knuckle-bow D-guard, crimson grip, and arcane-violet & magma-orange prism inlay. |
+| ![Dragonscale Sword](evidence/previews/dragonscale_sword-preview.png) | **Dragonscale Sword**<br>`dragonscale_sword` | Dragonscale (Phase 5) | *Dragon-forged blade — Scorches and weakens foes!* | Serrated emerald-scale fangblade with upturned drake-bone horn crossguard and glowing amber dragon-eye core. |
+| ![Twin-Star Blade](evidence/previews/twin_star_blade-preview.png) | **Twin-Star Blade**<br>`twin_star_blade` | Twin-Star (Phase 5) | *Twin-Realm Blade — Ignites, weakens, and reveals foes!* | Seraphic platinum-silver & void-indigo greatsword with winged gold/platinum crossguard, cyan twin-star core, and golden halo pommel. |
 
-- `python tools/art/make_hero_weapons_art.py` — generated 11 icons in `src/main/resources/assets/artilian/textures/item`, visually inspected via magnified contact sheet.
-- `python tools/art/check_armor_sheets.py` — clean across all 5 armor sets.
-- `python tools/art/lint_art.py --phase5 --strict` — clean across all Phase 5 entities and armors.
-- `./gradlew build` — `BUILD SUCCESSFUL`.
+---
 
-## Next
+## Wands & Staves (6 Items)
 
-- Start **Section 2.3 (Tool Sets, Boss Summons & Trophies — 39 items)** on `art/pass-2-weapons-items`.
+| Icon (4×) | Item | Mana Cost | Tooltip | Silhouette & Palette Notes |
+| :---: | :--- | :---: | :--- | :--- |
+| ![Spark Wand](evidence/previews/spark_wand-preview.png) | **Spark Wand**<br>`spark_wand` | 20 Mana | *20 Mana — Zaps foes with chain starlight!* | Nimble faceted cyan-teal crystal spire wand with two floating spark glints and a slate-and-gold shaft. |
+| ![Heart-Bloom Staff](evidence/previews/heart_bloom_staff-preview.png) | **Heart-Bloom Staff**<br>`heart_bloom_staff` | 30 Mana | *30 Mana — Heals and shields friends nearby!* | Rose-pink heart blossom cradled by shaded emerald leaves on a warm wood shaft with gold ferrule. |
+| ![Zephyr Dash Wand](evidence/previews/zephyr_dash_wand-preview.png) | **Zephyr Dash Wand**<br>`zephyr_dash_wand` | 25 Mana | *25 Mana — Sky dash with Slow Falling!* | Swept feather-white & lavender sky-wing crest around a glowing mana-violet wind gem. |
+| ![Prism Nova Staff](evidence/previews/prism_nova_staff-preview.png) | **Prism Nova Staff**<br>`prism_nova_staff` | 40 Mana | *40 Mana — Radiant starlight shockwave!* | Dual-faceted violet/cyan prism head with a blazing white-hot core and gold astrolabe collar. |
+| ![Brimstone Meteor Staff](evidence/previews/brimstone_meteor_staff-preview.png) | **Brimstone Meteor Staff**<br>`brimstone_meteor_staff` | 45 Mana | *45 Mana — Calls a safe fiery meteor!* | Volcanic obsidian-and-crimson claw prongs cradling a molten-gold & ember-orange meteor core. |
+| ![Twin-Star Harmony Staff](evidence/previews/twin_star_staff-preview.png) | **Twin-Star Harmony Staff**<br>`twin_star_staff` | 50 Mana | *50 Mana — Heals allies & pets while blasting nearby foes!* | Golden crescent & platinum wing cradle holding two orbiting harmony stars (amber-gold & starlight-cyan). |
