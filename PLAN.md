@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 5 — Stage 2 (*Mega-Jungle Worldgen*)** `DragonJungleDimension` upgraded from flat placeholder to `NoiseBasedChunkGenerator` (`DRAGON_JUNGLE_NOISE`) with `MultiNoiseBiomeSource` (`artilian:dragon_jungle` + `artilian:amber_volcanic_grove`), 12 new blocks (`jungle_turf`, `primal_basalt` + stairs/slab/wall, `amber_moss`, `dragonwood_*` wood set with 1×1 & 2×2 `MEGA_DRAGONWOOD_TREE`), textures, datagen, `./gradlew build`, and `./gradlew runGameTestServer` (`198/198` green) complete on `phase-5-stage-2-mega-jungle-worldgen`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stage 6–7 and Phase 5 Stages 1–2 (`qa/evidence/dragon-jungle-worldgen-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 3 (*Dragon Jungle Structures*)**: **Dragon Roost** and **Amber Temple**. |
+| **In progress** | **Phase 5 — Stage 3 (*Dragon Jungle Structures*)** **Dragon Roost** (`artilian:dragon_roost`, `15×15×15`, bound to `artilian:dragon_jungle`) and **Amber Temple** (`artilian:amber_temple`, `15×16×15`, bound to `artilian:amber_volcanic_grove`) with chest loot tables (`dragon_roost`, `amber_temple`), datagen, `./gradlew build`, and `./gradlew runGameTestServer` (`201/201` green) on `phase-5-stage-3-dragon-jungle-structures`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–3 (`qa/evidence/dragon-jungle-structures-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 4 (*First Dragon Species*)**: one wild dragon end-to-end establishing the shared GeckoLib dragon rig. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -635,7 +635,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 |---|---|---|---|
 | 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal (Steve's note: throw a boss drop into a Nether Portal to open the Dragon Jungle dimension) | 🔄 Code & GameTests complete (`194/194`); live client check pending |
 | 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | 🔄 Code & GameTests complete (`198/198`); live client check pending |
-| 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | [ ] Pending |
+| 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | 🔄 Code & GameTests complete (`201/201`); live client check pending |
 | 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | [ ] Pending |
 | 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | [ ] Pending |
 | 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | [ ] Pending |
@@ -688,6 +688,23 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`DragonJungleTerrainGameTests`):** `198/198` green (4 new tests). Red-proof recorded above.
 - **Security Gate:** `n/a` (worldgen, blocks, and biomes only).
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies mega-jungle terrain, giant Dragonwood trees, and both biomes.
+
+### Phase 5 — Stage 3: Dragon Jungle Structures
+- [ ] **In Progress (`201/201` GameTests Green; Live Client Check Pending)** — Two Dragon Jungle surface structures (**Dragon Roost** and **Amber Temple**) with recessed 3D depth, overhanging roofs, glowing `Amber Moss` focal accents, chest loot tables, and `DragonJungleStructuresGameTests`.
+- **Why & Decisions:** Give Steve's Dragon Jungle rewarding landmarks across both biomes before Stage 4 introduces the first wild dragon species:
+  1. **Dragon Roost (`artilian:dragon_roost`, `15×15×15`):** Bound to `DragonJungleDimension.DRAGON_JUNGLE_BIOME` (`ArtilianTags.Biomes.HAS_DRAGON_ROOST`). `Primal Basalt` & `Jungle Turf` foundation with `Amber Moss` accents, `Dragonwood Log` corner pillars, recessed `Dragonwood Planks` walls & `Orange Stained Glass Pane` windows, overhanging `Dragonwood Stairs` / `Primal Basalt Stairs` eaves, and an open-air sky-roost nest crown (`Hay Block` + `Gold Block` + `Amber Moss` perch). Reward chest (`artilian:chests/dragon_roost`) guarantees `Biome Treat` + `Capture Crystal` plus `Dragonwood Sapling`, `Amber Moss`, `Gold Ingot`, `Sunsteel Ingot`, `Blaze Powder`, `Golden Apple`, and rare `Starlight Crystal` (`spacing = 16, separation = 7, salt = 63748596`).
+  2. **Amber Temple (`artilian:amber_temple`, `15×16×15`):** Bound to `DragonJungleDimension.AMBER_GROVE_BIOME` (`ArtilianTags.Biomes.HAS_AMBER_TEMPLE`). Stepped `Primal Basalt` & `Gilded Blackstone` pyramid-plinth, double-height `Dragonwood Log` colonnade, recessed `Yellow Stained Glass Pane` windows & glowing `Amber Moss` altar, double-tiered overhanging volcanic roof & spire. Reward chest (`artilian:chests/amber_temple`) guarantees `Biome Treat`, `Capture Crystal`, and `Amber Moss` plus `Gold Ingot`, `Sunsteel Ingot`, `Dragonwood Log`, `Diamond`, `Golden Apple`, and `Starlight Crystal` (`spacing = 18, separation = 8, salt = 74859607`).
+  3. **Zero Guardians Until Stage 4:** `spawnOverrides(Map.of())` via shared `surfaceStructure(..., Map.of())` helper so no out-of-dimension mobs spawn prior to Dragon Jungle dragon species in Stage 4.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Templates, loot, worldgen & GameTests | Pending commit | `ArtilianTags.Biomes` (`HAS_DRAGON_ROOST`, `HAS_AMBER_TEMPLE`), `ArtilianBiomeTagsProvider`, `ArtilianStructures`, `ArtilianChestLootSubProvider`, `ArtilianStructureTemplateProvider`, `DragonJungleStructuresGameTests` (`201/201` green, `runData`, `build`). Red-proof: removed `AMBER_MOSS` pool from `buildAmberTempleChest` → `amberTemplePlacesTemplateWithoutBannedBlocksAndUnpacksChestLoot` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Dragon Roost & Amber Temple in `artilian:dragon_jungle` (`qa/evidence/dragon-jungle-structures-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonJungleStructuresGameTests`):** `201/201` green (3 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (worldgen structures & chest loot only; zero banned blocks).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies both Dragon Jungle structures in-game.
 
 ---
 

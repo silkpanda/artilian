@@ -56,6 +56,10 @@ public final class ArtilianTags {
                 TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/ocular_observatory"));
         public static final TagKey<Biome> HAS_GAZING_SANCTUM =
                 TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/gazing_sanctum"));
+        public static final TagKey<Biome> HAS_DRAGON_ROOST =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/dragon_roost"));
+        public static final TagKey<Biome> HAS_AMBER_TEMPLE =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/amber_temple"));
 
         private Biomes() {}
     }

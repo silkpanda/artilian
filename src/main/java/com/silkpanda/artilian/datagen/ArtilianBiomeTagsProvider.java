@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.dimension.DragonJungleDimension;
 import com.silkpanda.artilian.dimension.EyeRealmDimension;
 import com.silkpanda.artilian.registry.ArtilianTags;
 import com.silkpanda.artilian.worldgen.ArtilianBiomes;
@@ -46,5 +47,7 @@ public class ArtilianBiomeTagsProvider extends BiomeTagsProvider {
         tag(ArtilianTags.Biomes.HAS_BRIMSTONE_BASTION).add(ArtilianBiomes.EMBERBLOOM_MEADOWS);
         tag(ArtilianTags.Biomes.HAS_OCULAR_OBSERVATORY).add(EyeRealmDimension.EYE_REALM_BIOME);
         tag(ArtilianTags.Biomes.HAS_GAZING_SANCTUM).add(EyeRealmDimension.EYE_REALM_BIOME);
+        tag(ArtilianTags.Biomes.HAS_DRAGON_ROOST).add(DragonJungleDimension.DRAGON_JUNGLE_BIOME);
+        tag(ArtilianTags.Biomes.HAS_AMBER_TEMPLE).add(DragonJungleDimension.AMBER_GROVE_BIOME);
     }
 }

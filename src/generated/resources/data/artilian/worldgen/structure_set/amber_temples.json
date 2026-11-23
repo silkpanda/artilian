@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 74859607,
+    "separation": 8,
+    "spacing": 18
+  },
+  "structures": [
+    {
+      "structure": "artilian:amber_temple",
+      "weight": 1
+    }
+  ]
+}
