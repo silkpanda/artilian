@@ -85,6 +85,10 @@ def lint_pair(
     geo = json.loads(geo_path.read_text(encoding="utf-8"))
     sheet = Image.open(tex_path)
     width, height = sheet.size
+    desc = geo.get("minecraft:geometry", [{}])[0].get("description", {})
+    uv_w = desc.get("texture_width", width)
+    uv_h = desc.get("texture_height", height)
+    sx, sy = width / uv_w, height / uv_h
 
     if width < min_width or height < min_height:
         problems.append(f"Sheet size {width}x{height} is below minimum {min_width}x{min_height}")
@@ -103,14 +107,14 @@ def lint_pair(
 
         u, v = int(uv[0]), int(uv[1])
         w, h, d = int(round(size[0])), int(round(size[1])), int(round(size[2]))
-        if w <= 0 or h <= 0 or d <= 0:
+        if (w <= 0 and h <= 0) or (w <= 0 and d <= 0) or (h <= 0 and d <= 0):
             continue
 
         rect = box_rect(u, v, w, h, d)
         label = f"{bone_name}/{origin}"
 
-        if rect[0] < 0 or rect[1] < 0 or rect[0] + rect[2] > width or rect[1] + rect[3] > height:
-            problems.append(f"{label}: UV rect {rect} leaves {width}x{height} sheet")
+        if rect[0] < 0 or rect[1] < 0 or rect[0] + rect[2] > uv_w or rect[1] + rect[3] > uv_h:
+            problems.append(f"{label}: UV rect {rect} leaves {uv_w}x{uv_h} UV grid")
 
         is_mirror = bool(cube.get("mirror", False))
         for other_label, other, other_mirror in taken:
@@ -120,12 +124,24 @@ def lint_pair(
                 problems.append(f"{label}: UV rect {rect} partially overlaps {other_label} {other}")
         taken.append((label, rect, is_mirror))
 
+        # Allow intentional 1-bit alpha cutouts on armor filigree shells and 0-thickness planes
+        is_cutout = (w == 0 or h == 0 or d == 0) or (
+            name.startswith("armor/") and float(cube.get("inflate", 0.0)) >= 0.46
+        )
         for face, face_rect in box_faces(u, v, w, h, d).items():
+            if face_rect[2] <= 0 or face_rect[3] <= 0:
+                continue
             total_faces += 1
-            alpha, colors = _describe_face(sheet, face_rect)
-            if alpha < 0.99:
+            scaled_rect = (
+                int(round(face_rect[0] * sx)),
+                int(round(face_rect[1] * sy)),
+                max(1, int(round(face_rect[2] * sx))),
+                max(1, int(round(face_rect[3] * sy))),
+            )
+            alpha, colors = _describe_face(sheet, scaled_rect)
+            if not is_cutout and alpha < 0.99:
                 problems.append(f"{label}: {face} face {face_rect} is {alpha:.0%} opaque")
-            elif colors <= 1 and face_rect[2] >= 3 and face_rect[3] >= 3:
+            elif not is_cutout and colors <= 1 and face_rect[2] >= 3 and face_rect[3] >= 3:
                 flat_faces += 1
                 notes.append(f"{label}: {face} face {face_rect} is one flat colour")
 
