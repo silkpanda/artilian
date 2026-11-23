@@ -347,97 +347,106 @@ def build_starlight():
 
 
 # =====================================================================
-# 1.3 PRISMATIC BRIMSTONE — Heavy Dark Horned Juggernaut (Ref: Dark Horned)
+# 1.3 PRISMATIC BRIMSTONE — Cursed Pirate-Admiral Armor (Captain Brimstone + Prism Core)
 # =====================================================================
 
 def build_prismatic():
     b = ArmorBuilder("prismatic")
-    obsidian = [(14, 12, 16, 255), (26, 22, 30, 255), (42, 36, 48, 255), (64, 56, 72, 255)]
-    magma = [(160, 32, 10, 255), (235, 72, 16, 255), (255, 136, 28, 255), (255, 220, 96, 255)]
+    charcoal = [(18, 15, 20, 255), (32, 26, 36, 255), (50, 42, 56, 255), (74, 64, 82, 255)]
+    crimson = [(68, 16, 22, 255), (108, 26, 34, 255), (154, 44, 52, 255), (192, 68, 72, 255)]
+    gold = [(128, 74, 14, 255), (184, 116, 26, 255), (232, 168, 48, 255), (255, 224, 118, 255)]
+    magma = [(255, 96, 16, 255), (255, 212, 76, 255)]
     prism = [(108, 26, 152, 255), (172, 48, 224, 255), (218, 96, 255, 255), (246, 182, 255, 255)]
     pal = {
         ".": (0, 0, 0, 0),
-        "0": obsidian[0], "1": obsidian[1], "2": obsidian[2], "3": obsidian[3],
-        "e": magma[1], "E": magma[3], "p": prism[1], "P": prism[2],
+        "0": charcoal[0], "1": charcoal[1], "2": charcoal[2], "3": charcoal[3],
+        "r": crimson[1], "R": crimson[2],
+        "g": gold[1], "G": gold[2], "h": gold[3],
+        "e": magma[0], "E": magma[1], "p": prism[1], "P": prism[2],
     }
     glow_k = {"e", "E", "p", "P"}
 
-    # --- HEAD: Sculpted Dark Beast-Knight Helm + HUGE 3D Segmented Horns ---
+    # --- HEAD: Cursed Pirate Skull-Visor (Eyepatch + ONE Blazing Magma Eye) + 3D Tricorne Hat! ---
     uv_hi = b.add_cube("armorHead", [-4, 24, -4], [8, 8, 8], inflate=0.45)
-    b.paint_shaded_box(uv_hi, 8, 8, 8, obsidian, pattern="volcanic", glow_color=magma[1])
+    b.paint_shaded_box(uv_hi, 8, 8, 8, charcoal, pattern="plate", trim_color=gold[2])
     b.blit_face(box_faces(*uv_hi, 8, 8, 8)["north"], [
         "1111111111111111",
         "1000000000000001",
         "1000000000000001",
         "1000000000000001",
         "1000000000000001",
-        "100eEE0000EEe001",
-        "1000eE0000Ee0001",
-        "1000000000000001",
-        "1000000000000001",
-        "1000000000000001",
-        "1001110000111001",
-        "1001210000121001",
-        "1001110000111001",
+        "1001100000eEE001",
+        "10010100000eE001",
+        "1000110000000001",
+        "1000001000000001",
+        "1000000100000001",
+        "100gGGGGGGGGg001",
+        "1001111111111001",
+        "1001221221221001",
         "1111111111111111",
         "1111111111111111",
         "1111111111111111",
     ], pal, glow_k)
 
-    # Flared 3D brow ridge & heavy jaw plates
-    uv_brow = b.add_cube("armorHead", [-5.5, 29.8, -5.5], [11, 3, 5], pivot=[0, 31, -3], rotation=[14, 0, 0])
-    b.paint_shaded_box(uv_brow, 11, 3, 5, obsidian, pattern="plate", trim_color=obsidian[3])
-    uv_jaw = b.add_cube("armorHead", [-5.0, 23.2, -5.2], [3, 4, 5])
-    b.paint_shaded_box(uv_jaw, 3, 4, 5, obsidian, pattern="plate")
-    b.add_cube("armorHead", [2.0, 23.2, -5.2], [3, 4, 5], mirror=True, uv=uv_jaw)
+    # 3D Tricorne Pirate Hat (crown + front peak + left/right upturned brims + crimson plume!)
+    uv_hat = b.add_cube("armorHead", [-4.5, 31.8, -4.5], [9, 3, 9])
+    b.paint_shaded_box(uv_hat, 9, 3, 9, charcoal, pattern="cloth", trim_color=gold[2])
+    # Front tricorne peak
+    uv_peak = b.add_cube("armorHead", [-4.0, 31.5, -6.8], [8, 3, 3], pivot=[0, 32, -4.5], rotation=[18, 0, 0])
+    b.paint_shaded_box(uv_peak, 8, 3, 3, charcoal, pattern="cloth", trim_color=gold[2])
+    # Left & right upturned tricorne side brims
+    uv_brim = b.add_cube("armorHead", [-6.8, 31.2, -5.0], [3, 4, 10], pivot=[-4.5, 32, 0], rotation=[0, 0, -24])
+    b.paint_shaded_box(uv_brim, 3, 4, 10, charcoal, pattern="cloth", trim_color=gold[2])
+    b.add_cube("armorHead", [3.8, 31.2, -5.0], [3, 4, 10], pivot=[4.5, 32, 0], rotation=[0, 0, 24], mirror=True, uv=uv_brim)
+    # Tattered Crimson Plume on the hat
+    uv_plume = b.add_cube("armorHead", [2.5, 34.5, -1.0], [2, 3, 6], pivot=[3.5, 34.5, 0], rotation=[18, 12, 10])
+    b.paint_shaded_box(uv_plume, 2, 3, 6, crimson, pattern="cloth")
 
-    # HUGE 3D Multi-Segmented Curved Demon/Bull Horns (rising 11 units!)
-    uv_h1 = b.add_cube("armorHead", [-6.5, 31.5, -1.5], [3, 5, 3], pivot=[-5, 32, 0], rotation=[-8, 0, -20])
-    b.paint_shaded_box(uv_h1, 3, 5, 3, obsidian, pattern="volcanic", glow_color=magma[1])
-    b.add_cube("armorHead", [3.5, 31.5, -1.5], [3, 5, 3], pivot=[5, 32, 0], rotation=[-8, 0, 20], mirror=True, uv=uv_h1)
-
-    uv_h2 = b.add_cube("armorHead", [-7.5, 35.8, -2.5], [2, 5, 2], pivot=[-6.5, 36, -1.5], rotation=[18, 0, -8])
-    b.paint_shaded_box(uv_h2, 2, 5, 2, obsidian, pattern="volcanic", glow_color=magma[2])
-    b.add_cube("armorHead", [5.5, 35.8, -2.5], [2, 5, 2], pivot=[6.5, 36, -1.5], rotation=[18, 0, 8], mirror=True, uv=uv_h2)
-
-    uv_h3 = b.add_cube("armorHead", [-7.2, 40.0, -4.2], [1, 4, 2], pivot=[-6.7, 40, -3.2], rotation=[34, 0, 10])
-    b.paint_shaded_box(uv_h3, 1, 4, 2, magma, pattern="crystal", glow_color=magma[2])
-    b.add_cube("armorHead", [6.2, 40.0, -4.2], [1, 4, 2], pivot=[6.7, 40, -3.2], rotation=[34, 0, -10], mirror=True, uv=uv_h3)
-
-    # --- BODY: Massive Sculpted Juggernaut Breastplate + Cracked Magma + Prism Core ---
-    uv_bi = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.55)
-    b.paint_shaded_box(uv_bi, 8, 12, 4, obsidian, pattern="volcanic", glow_color=magma[1])
-    # Sculpted angular chest armor block + amethyst prism heart
-    uv_chest = b.add_cube("armorBody", [-4.5, 15.5, -3.6], [9, 7, 2], pivot=[0, 19, -2.6], rotation=[8, 0, 0])
-    b.paint_shaded_box(uv_chest, 9, 7, 2, obsidian, pattern="volcanic", glow_color=magma[2])
-    uv_core = b.add_cube("armorBody", [-1.5, 17.5, -4.4], [3, 3, 1])
+    # --- BODY: Crimson Pirate-Admiral Longcoat + Gold Trim + Amethyst Prism Core + Coattails ---
+    uv_bi = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.45)
+    b.paint_shaded_box(uv_bi, 8, 12, 4, crimson, pattern="cloth", trim_color=gold[2], stripe_y=20)
+    # Gold-trimmed coat lapels + glowing Amethyst Prism Core
+    uv_lapel = b.add_cube("armorBody", [-4.2, 14.5, -2.8], [8, 8, 1])
+    b.paint_shaded_box(uv_lapel, 8, 8, 1, charcoal, pattern="cloth", trim_color=gold[2])
+    uv_core = b.add_cube("armorBody", [-1.5, 17.5, -3.5], [3, 3, 1])
     b.paint_shaded_box(uv_core, 3, 3, 1, prism, pattern="crystal", glow_color=prism[2])
-    # Wide heavy armored tasset plates over hips
-    uv_tas = b.add_cube("armorBody", [-5.5, 7.5, -3.0], [4, 6, 6], pivot=[-4.5, 13, 0], rotation=[0, 0, 10])
-    b.paint_shaded_box(uv_tas, 4, 6, 6, obsidian, pattern="volcanic", glow_color=magma[1])
-    b.add_cube("armorBody", [1.5, 7.5, -3.0], [4, 6, 6], pivot=[4.5, 13, 0], rotation=[0, 0, -10], mirror=True, uv=uv_tas)
+    # Chunky Pirate Belt with Gold Buckle
+    uv_belt = b.add_cube("armorBody", [-4.6, 11.0, -2.7], [9, 2, 5])
+    b.paint_shaded_box(uv_belt, 9, 2, 5, charcoal, pattern="plate", trim_color=gold[2])
+    # Flared Crimson Pirate Longcoat Skirt (back & sides)
+    uv_coat = b.add_cube("armorBody", [-4.8, 4.0, -1.8], [9, 7, 4], pivot=[0, 11, 2.0], rotation=[10, 0, 0])
+    b.paint_shaded_box(uv_coat, 9, 7, 4, crimson, pattern="cloth", trim_color=gold[2], stripe_y=12)
 
-    # --- ARMS: Oversized 2-Tier Juggernaut Pauldrons ---
-    uv_arm = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.42)
-    b.paint_shaded_box(uv_arm, 4, 12, 4, obsidian, pattern="volcanic", glow_color=magma[1])
-    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.42, mirror=True, uv=uv_arm)
+    # --- ARMS: Crimson Sleeves + Banded Iron Broadside Cannon Pauldrons (Glowing Magma Bore!) ---
+    uv_arm = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.38)
+    b.paint_shaded_box(uv_arm, 4, 12, 4, crimson, pattern="cloth", trim_color=gold[2], stripe_y=18)
+    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.38, mirror=True, uv=uv_arm)
 
-    uv_p1 = b.add_cube("armorRightArm", [-11.5, 18.5, -3.5], [7, 5, 7], pivot=[-7.5, 21, 0], rotation=[0, 0, -12])
-    b.paint_shaded_box(uv_p1, 7, 5, 7, obsidian, pattern="volcanic", glow_color=magma[1])
-    b.add_cube("armorLeftArm", [4.5, 18.5, -3.5], [7, 5, 7], pivot=[7.5, 21, 0], rotation=[0, 0, 12], mirror=True, uv=uv_p1)
+    # Shoulder Broadside Cannon Barrels facing forward with glowing magma bores!
+    uv_can = b.add_cube("armorRightArm", [-9.8, 19.5, -4.5], [5, 5, 8], pivot=[-7.0, 22.0, 0], rotation=[-8, 0, -10])
+    b.paint_shaded_box(uv_can, 5, 5, 8, charcoal, pattern="plate", trim_color=gold[2])
+    b.blit_face(box_faces(*uv_can, 5, 5, 8)["north"], [
+        "gggggggggg",
+        "g11111111g",
+        "g10000001g",
+        "g10eEEe01g",
+        "g10EEEE01g",
+        "g10EEEE01g",
+        "g10eEEe01g",
+        "g10000001g",
+        "g11111111g",
+        "gggggggggg",
+    ], pal, glow_k)
+    b.add_cube("armorLeftArm", [4.8, 19.5, -4.5], [5, 5, 8], pivot=[7.0, 22.0, 0], rotation=[-8, 0, 10], mirror=True, uv=uv_can)
 
-    uv_p2 = b.add_cube("armorRightArm", [-12.2, 22.8, -3.0], [6, 3, 6], pivot=[-8.5, 23.5, 0], rotation=[0, 0, -24])
-    b.paint_shaded_box(uv_p2, 6, 3, 6, obsidian, pattern="plate", trim_color=magma[2])
-    b.add_cube("armorLeftArm", [6.2, 22.8, -3.0], [6, 3, 6], pivot=[8.5, 23.5, 0], rotation=[0, 0, 24], mirror=True, uv=uv_p2)
+    # --- LEGS & BOOTS: Dark Sea-Breeches + Iron-Banded Gold-Cuffed Pirate Boots ---
+    uv_leg = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.30)
+    b.paint_shaded_box(uv_leg, 4, 12, 4, charcoal, pattern="cloth", trim_color=crimson[2])
+    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.30, mirror=True, uv=uv_leg)
 
-    # --- LEGS & BOOTS: Slim Dark Greaves (making upper body look huge!) ---
-    uv_leg = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.28)
-    b.paint_shaded_box(uv_leg, 4, 12, 4, obsidian, pattern="plate", trim_color=obsidian[3])
-    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.28, mirror=True, uv=uv_leg)
-
-    uv_boot = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.52)
-    b.paint_shaded_box(uv_boot, 4, 12, 4, obsidian, pattern="volcanic", glow_color=magma[1])
-    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.52, mirror=True, uv=uv_boot)
+    uv_boot = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.55)
+    b.paint_shaded_box(uv_boot, 4, 12, 4, charcoal, pattern="plate", trim_color=gold[2], stripe_y=12)
+    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.55, mirror=True, uv=uv_boot)
 
     b.save()
 
