@@ -1,8 +1,10 @@
-"""Builds 4 genuinely distinct, reference-driven v3 armor sets (256x256, 2x UV density):
-- Starlight Crystal: Sleek hooded arcane mage-ranger (hood cowl, diagonal sash, pouches, no crown)
-- Prismatic Brimstone: Massive top-heavy dark horned juggernaut (3D bull horns, jaw guard, huge tiered pauldrons)
-- Dragonscale: Reptilian dragon-skull hunter (3D snout, swept horns, dorsal spine ridge, forearm claws, drake-claw boots)
-- Twin-Star: Grand winged halo seraph (huge spread celestial wings, massive vertical halo, seraph surcoat)
+"""Builds 4 genuinely distinct, Sunsteel-v3-grade bespoke armor sets (256x256, 2x UV density):
+- Starlight Crystal: Ornate Cyan-Hooded Arcane Ranger (alpha-cutout hood cowl, sash, pouches, crystal fins)
+- Prismatic Brimstone: Ornate Cursed Pirate-Admiral (0-thickness tricorne & plume, eyepatch+magma eye, gold-braided longcoat, prism core)
+- Dragonscale: Ornate Emerald Dragon-Hunter (carved drake-skull visor, 0-thickness curved horns, dorsal spine fins, forearm claws)
+- Twin-Star: Ornate Winged Halo Seraph (platinum+gold filigree cage, 20x20 radiant halo, 20x24 spread celestial wings)
+
+Zero 1px box borders, zero boxy add-ons, zero overlapping UVs.
 
 Usage:
     python tools/art/make_bespoke_armors.py
@@ -10,7 +12,6 @@ Usage:
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
 from pathlib import Path
 from PIL import Image
 
@@ -40,7 +41,7 @@ def box_faces(u: int, v: int, w: int, h: int, d: int) -> dict[str, tuple[int, in
 
 
 class ArmorBuilder:
-    """Packs non-overlapping UVs on a 128x128 grid (256x256 PNG) and paints cubes/planes."""
+    """Packs non-overlapping UVs on a 128x128 grid (256x256 PNG) and paints sprites/shells."""
 
     def __init__(self, set_name: str):
         self.set_name = set_name
@@ -105,7 +106,7 @@ class ArmorBuilder:
         self.bones[bone].append(cube)
         return uv
 
-    def paint_shaded_box(
+    def paint_inner_shell(
         self,
         uv: tuple[int, int],
         w: int,
@@ -114,12 +115,10 @@ class ArmorBuilder:
         tones: list[tuple[int, int, int, int]],
         *,
         pattern: str = "forged",
-        trim_color: tuple[int, int, int, int] | None = None,
-        glow_color: tuple[int, int, int, int] | None = None,
-        stripe_y: int | None = None,
+        accent: tuple[tuple[int, int, int, int], tuple[int, int, int, int]] | None = None,
     ):
+        """Paints a dark, richly shaded inner armor shell (zero box borders)."""
         px = self.img.load()
-        gpx = self.glow.load()
         biases = {"up": 1, "north": 0, "east": 0, "west": 0, "south": 0, "down": -1}
         for fname, rect in box_faces(uv[0], uv[1], w, h, d).items():
             rx, ry, rw, rh = rect
@@ -128,47 +127,31 @@ class ArmorBuilder:
             b = biases[fname]
             for dy in range(rh):
                 for dx in range(rw):
-                    hash_v = _hash(rx + dx, ry + dy)
-                    v_frac = dy / max(1, rh - 1)
-                    idx = 1 if v_frac < 0.65 else 0
-                    if v_frac < 0.25 and hash_v > 140:
+                    hv = _hash(rx + dx, ry + dy)
+                    vf = dy / max(1, rh - 1)
+                    idx = 1 if vf < 0.65 else 0
+                    if vf < 0.25 and hv > 140:
                         idx = 2
-                    elif hash_v > 220:
+                    elif hv > 220:
                         idx = min(3, idx + 1)
-                    elif hash_v < 55:
+                    elif hv < 55:
                         idx = max(0, idx - 1)
-                    rgb = tones[max(0, min(3, idx + b))]
-
                     if pattern == "scales":
-                        row_s = dy // 4
-                        lx = (dx + (2 if row_s % 2 else 0)) % 4
+                        rs = dy // 4
+                        lx = (dx + (2 if rs % 2 else 0)) % 4
                         ly = dy % 4
                         if ly == 3 or (ly == 2 and (lx == 0 or lx == 3)):
-                            rgb = tones[0]
+                            idx = 0
                         elif ly == 0 and (lx == 1 or lx == 2):
-                            rgb = tones[min(3, 2 + max(0, b))]
-                    elif pattern == "volcanic":
-                        if ((dx * 3 + dy * 5) % 17 == 0 and hash_v > 115) or ((dx * 5 - dy * 2) % 21 == 0 and hash_v > 135):
-                            if glow_color is not None:
-                                rgb = glow_color
-                                gpx[rx + dx, ry + dy] = glow_color
-                    elif pattern == "crystal":
-                        if (dx + dy) % 6 == 0 or (dx - dy) % 7 == 0:
-                            rgb = tones[min(3, idx + 1 + max(0, b))]
-                        elif (dx + dy) % 6 == 3:
-                            rgb = tones[0]
-                    elif pattern == "cloth":
-                        if (dx + dy) % 4 == 0 and hash_v > 160:
-                            rgb = tones[min(3, idx + 1)]
-                    elif pattern == "plate":
-                        if (dx == 0 or dy == 0) and trim_color is not None:
-                            rgb = trim_color
-                        elif dx == rw - 1 or dy == rh - 1:
-                            rgb = tones[0]
-
-                    if stripe_y is not None and dy in (stripe_y, stripe_y + 1) and trim_color is not None:
-                        rgb = trim_color
-
+                            idx = min(3, idx + 1)
+                    elif pattern == "ribbed":
+                        if dy % 4 == 0:
+                            idx = 0
+                        elif dy % 4 == 1:
+                            idx = min(3, idx + 1)
+                    rgb = tones[max(0, min(3, idx + b))]
+                    if accent and fname in ("north", "south") and abs(dx - (rw - 1) / 2.0) < rw * 0.26 and 2 <= dy <= rh - 3:
+                        rgb = accent[1] if (dy % 4 == 1 or hv > 180) else accent[0]
                     px[rx + dx, ry + dy] = rgb
 
     def blit_face(
@@ -252,30 +235,32 @@ class ArmorBuilder:
 
 
 # =====================================================================
-# 1.2 STARLIGHT CRYSTAL — Sleek Hooded Arcane Mage-Ranger (Ref: Cyan Hood)
+# 1.2 STARLIGHT CRYSTAL — Ornate Cyan-Hooded Arcane Ranger (Ref: Cyan Hood)
 # =====================================================================
 
 def build_starlight():
     b = ArmorBuilder("starlight")
-    navy = [(12, 16, 36, 255), (20, 28, 58, 255), (32, 46, 88, 255), (52, 74, 128, 255)]
-    cyan = [(18, 92, 118, 255), (38, 162, 194, 255), (72, 224, 240, 255), (176, 252, 255, 255)]
-    leather = [(42, 24, 16, 255), (72, 42, 26, 255), (108, 66, 40, 255), (144, 92, 58, 255)]
+    navy = [(10, 14, 34, 255), (18, 26, 56, 255), (30, 44, 88, 255), (50, 72, 130, 255)]
     pal = {
         ".": (0, 0, 0, 0),
         "0": navy[0], "1": navy[1], "2": navy[2], "3": navy[3],
-        "d": cyan[0], "c": cyan[1], "C": cyan[2], "h": cyan[3],
-        "l": leather[1], "L": leather[2],
-        "e": (56, 217, 192, 255),
-        "E": (190, 255, 255, 255),
+        "k": (10, 42, 68, 255),     # deep teal-navy outline
+        "d": (20, 98, 138, 255),    # dark cyan cloth
+        "c": (46, 174, 210, 255),   # starlight cyan
+        "C": (112, 234, 252, 255),  # bright ice-cyan
+        "h": (222, 254, 255, 255),  # frost glint
+        "l": (68, 38, 22, 255),     # dark leather strap
+        "L": (122, 72, 42, 255),    # warm leather highlight
+        "e": (56, 217, 192, 255),   # cyan glow
+        "E": (190, 255, 255, 255),  # starlight core glow
     }
     glow_k = {"e", "E"}
 
-    # --- HEAD: Deep Hooded Cowl (NO crown, NO filigree cage!) ---
-    # Inner shadowed cowl + glowing cyan eyes
+    # Inner dark shells
     uv_hi = b.add_cube("armorHead", [-4, 24, -4], [8, 8, 8], inflate=0.45)
-    b.paint_shaded_box(uv_hi, 8, 8, 8, navy, pattern="cloth")
+    b.paint_inner_shell(uv_hi, 8, 8, 8, navy)
     b.blit_face(box_faces(*uv_hi, 8, 8, 8)["north"], [
-        "1111111111111111",
+        "1112222222222111",
         "1000000000000001",
         "1000000000000001",
         "1000000000000001",
@@ -285,92 +270,252 @@ def build_starlight():
         "10000eE00Ee00001",
         "1000000000000001",
         "1000000000000001",
-        "1001111111111001",
-        "1011222222221101",
-        "1011111111111101",
+        "1000000000000001",
+        "1000111111110001",
+        "1001122222211001",
         "1111111111111111",
         "1111111111111111",
         "1111111111111111",
     ], pal, glow_k)
 
-    # Thick 3D hood brim framing the face (top, left, right, back taper)
-    uv_ht = b.add_cube("armorHead", [-5, 31.2, -5.2], [10, 2, 10], pivot=[0, 32, 0], rotation=[-6, 0, 0])
-    b.paint_shaded_box(uv_ht, 10, 2, 10, cyan, pattern="cloth")
-    uv_hl = b.add_cube("armorHead", [-5.2, 24.2, -5.0], [2, 8, 9], pivot=[-4.2, 28, 0], rotation=[0, 0, 4])
-    b.paint_shaded_box(uv_hl, 2, 8, 9, cyan, pattern="cloth")
-    b.add_cube("armorHead", [3.2, 24.2, -5.0], [2, 8, 9], pivot=[4.2, 28, 0], rotation=[0, 0, -4], mirror=True, uv=uv_hl)
-    # Swept-back pointed hood tail
-    uv_hb = b.add_cube("armorHead", [-3, 27.5, 4.0], [6, 5, 4], pivot=[0, 30, 4.0], rotation=[-22, 0, 0])
-    b.paint_shaded_box(uv_hb, 6, 5, 4, navy, pattern="cloth", trim_color=cyan[2])
-
-    # --- BODY: Sleek Arcane Tunic + Diagonal Leather Sash + Crystal Clasp + Split Coat ---
     uv_bi = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.45)
-    b.paint_shaded_box(uv_bi, 8, 12, 4, navy, pattern="cloth", trim_color=cyan[1], stripe_y=20)
-    # Diagonal bandolier sash across chest
-    uv_sash = b.add_cube("armorBody", [-1.2, 12.0, -2.7], [3, 12, 1], pivot=[0, 18, -2.2], rotation=[0, 0, 34])
-    b.paint_shaded_box(uv_sash, 3, 12, 1, leather, pattern="cloth", trim_color=cyan[2])
-    # Glowing crystal brooch on sash
-    uv_gem = b.add_cube("armorBody", [-1, 18.0, -3.3], [2, 3, 1])
-    b.paint_shaded_box(uv_gem, 2, 3, 1, [pal["e"], pal["E"], pal["E"], pal["h"]], pattern="crystal", glow_color=pal["E"])
-    # Neck scarf / hood cowl collar
-    uv_col = b.add_cube("armorBody", [-5, 21.5, -3.2], [10, 3, 6], pivot=[0, 23, 0], rotation=[8, 0, 0])
-    b.paint_shaded_box(uv_col, 10, 3, 6, cyan, pattern="cloth")
-    # Leather belt + asymmetric hip pouch
-    uv_belt = b.add_cube("armorBody", [-4.5, 11.2, -2.6], [9, 2, 5])
-    b.paint_shaded_box(uv_belt, 9, 2, 5, leather, pattern="cloth", trim_color=cyan[2])
-    uv_pouch = b.add_cube("armorBody", [3.2, 8.5, -2.2], [2, 3, 4], pivot=[4, 10, 0], rotation=[0, 0, -8])
-    b.paint_shaded_box(uv_pouch, 2, 3, 4, leather, pattern="cloth")
-    # Long flowing split mage-cloak tails at back
-    uv_tail = b.add_cube("armorBody", [-4, 3.0, 2.2], [3, 9, 1], pivot=[-2.5, 12, 2.2], rotation=[14, 0, -6])
-    b.paint_shaded_box(uv_tail, 3, 9, 1, navy, pattern="cloth", trim_color=cyan[2])
-    b.add_cube("armorBody", [1, 3.0, 2.2], [3, 9, 1], pivot=[2.5, 12, 2.2], rotation=[14, 0, 6], mirror=True, uv=uv_tail)
+    b.paint_inner_shell(uv_bi, 8, 12, 4, navy, pattern="ribbed")
+    uv_ai = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.38)
+    b.paint_inner_shell(uv_ai, 4, 12, 4, navy, pattern="ribbed")
+    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.38, mirror=True, uv=uv_ai)
+    uv_li = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.30)
+    b.paint_inner_shell(uv_li, 4, 12, 4, navy)
+    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.30, mirror=True, uv=uv_li)
+    uv_bti = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.55)
+    b.paint_inner_shell(uv_bti, 4, 12, 4, navy)
+    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.55, mirror=True, uv=uv_bti)
 
-    # --- ARMS: Slim Arcane Sleeves + Slanted Shoulder Mantle (NO bulky pauldrons) ---
-    uv_arm = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.38)
-    b.paint_shaded_box(uv_arm, 4, 12, 4, navy, pattern="cloth", trim_color=cyan[2], stripe_y=18)
-    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.38, mirror=True, uv=uv_arm)
+    # Outer 1-bit Alpha-Cutout Hood Cowl (NO crown, NO filigree cage!)
+    uv_ho = b.add_cube("armorHead", [-4, 24, -4], [8, 8, 8], inflate=0.92)
+    hf = box_faces(*uv_ho, 8, 8, 8)
+    b.blit_face(hf["north"], [
+        "..kcCChhhhcCck..",
+        ".kcCCccccccCCck.",
+        "kcCccddddddccCck",
+        "kCc..........cCk",
+        "cC............Cc",
+        "cC............Cc",
+        "dc............cd",
+        "kc............ck",
+        "dc............cd",
+        "cC............Cc",
+        "cC............Cc",
+        "kcC..........Cck",
+        ".kcC........Cck.",
+        "..kdcCccccCcdk..",
+        "...kkddddddkk...",
+        ".....kkkkkk.....",
+    ], pal, glow_k)
+    hood_side = [
+        "..kcCCChhCCCck..",
+        ".kcCCCccccCCCck.",
+        "kcCcddccccddccCk",
+        "kCc..........cCk",
+        "cC............Cc",
+        "dc............cd",
+        "kc............ck",
+        "cC............Cc",
+        "cC............Cc",
+        "dc............cd",
+        "kcC..........Cck",
+        ".kcCcc....ccCck.",
+        "..kddCCCCCCddk..",
+        "....kkkkkkkk....",
+        "................",
+        "................",
+    ]
+    b.blit_face(hf["east"], hood_side, pal, glow_k)
+    b.blit_face(hf["west"], hood_side, pal, glow_k, flip_x=True)
+    b.blit_face(hf["south"], [
+        "..kcCCChhCCCck..",
+        ".kcCCccccccCCck.",
+        "kcCcddddddddcCck",
+        "kCc..........cCk",
+        "cC....cCCc....Cc",
+        "dc...cChhCc...cd",
+        "kc...dC..Cd...ck",
+        "cC....dCCd....Cc",
+        "cC............Cc",
+        "dc............cd",
+        "kcC..........Cck",
+        ".kcCcc....ccCck.",
+        "..kddCCCCCCddk..",
+        "....kkkkkkkk....",
+        "................",
+        "................",
+    ], pal, glow_k)
+    b.blit_face(hf["up"], [
+        "..kcCCChhCCCck..",
+        ".kcCCccccccCCck.",
+        "kcCcddddddddcCck",
+        "kCc..........cCk",
+        "cC............Cc",
+        "cC............Cc",
+        "cC............Cc",
+        "cC............Cc",
+        "cC............Cc",
+        "cC............Cc",
+        "cC............Cc",
+        "kcC..........Cck",
+        ".kcCCccccccCCck.",
+        "..kddCCCCCCddk..",
+        "....kkkkkkkk....",
+        "................",
+    ], pal, glow_k)
 
-    uv_sh = b.add_cube("armorRightArm", [-9.2, 20.5, -2.5], [5, 3, 5], pivot=[-6.5, 22, 0], rotation=[0, 0, -20])
-    b.paint_shaded_box(uv_sh, 5, 3, 5, cyan, pattern="cloth")
-    b.add_cube("armorLeftArm", [4.2, 20.5, -2.5], [5, 3, 5], pivot=[6.5, 22, 0], rotation=[0, 0, 20], mirror=True, uv=uv_sh)
+    # 0-thickness Swept Hood Tail at back of head
+    uv_htail = b.add_cube("armorHead", [-4, 26.5, 4.8], [8, 7, 0], pivot=[0, 31, 4.8], rotation=[-26, 0, 0])
+    b.paint_plane_z(uv_htail, 8, 7, [
+        "kcCChhCCck......",
+        "dcCCCCCCck......",
+        ".kcCCCCck.......",
+        "..kcCCck........",
+        "...kcCk.........",
+        "....kCk.........",
+        ".....k..........",
+    ], pal, glow_k)
 
-    # --- LEGS & BOOTS: Slim Wrapped Greaves + Cyan Trim Boots ---
-    uv_leg = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.30)
-    b.paint_shaded_box(uv_leg, 4, 12, 4, navy, pattern="cloth", trim_color=leather[2], stripe_y=8)
-    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.30, mirror=True, uv=uv_leg)
+    # Outer 1-bit Alpha-Cutout Diagonal Sash + Crystal Clasp + Belt + Pouch
+    uv_bo = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.90)
+    bf = box_faces(*uv_bo, 8, 12, 4)
+    b.blit_face(bf["north"], [
+        "kcCChh....hhCCck",
+        "dcCCcL....LcCCcd",
+        "kCc.lL....Ll.cCk",
+        ".k..lLl..lLl..k.",
+        "....lLkcCkLl....",
+        "....lCcEEcCl....",
+        ".....cCEECc.....",
+        ".....dCEECd.....",
+        "......kLLl......",
+        "......lLLl......",
+        ".......lLl......",
+        ".......lLl......",
+        "........lLl.....",
+        "........lLl.....",
+        ".........lLl....",
+        ".........lLl....",
+        "..........lLl...",
+        "..........lLl...",
+        "kLLLLlChhClLLLLk",
+        "lLLLLlcEEcLLLLLl",
+        "kllllllCCllllllk",
+        "...ll......ll...",
+        "...LL......LL...",
+        "...ll......ll...",
+    ], pal, glow_k)
+    b.blit_face(bf["south"], [
+        "kcCChhCCCCChhCCk",
+        "dcCCcdddddddcCCd",
+        "kCc..........cCk",
+        "........lLl.....",
+        ".......lLl......",
+        "......lLl.......",
+        ".....lLl........",
+        "....lLl.........",
+        "...lLl..........",
+        "..lLl...........",
+        ".lLl............",
+        "lLl.............",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "kLLLLLLLLLLLLLLk",
+        "lLLLLlChhClLLLLl",
+        "klllllCCCClllllk",
+        "................",
+        "................",
+        "................",
+    ], pal, glow_k)
 
-    uv_boot = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.55)
-    b.paint_shaded_box(uv_boot, 4, 12, 4, leather, pattern="cloth", trim_color=cyan[2], stripe_y=14)
-    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.55, mirror=True, uv=uv_boot)
+    # 0-thickness Sleek Crystal Shoulder Mantle Planes (NO bulky knight pauldrons!)
+    uv_sm = b.add_cube("armorRightArm", [-10.5, 20.5, 0], [6, 5, 0], pivot=[-6.5, 22, 0], rotation=[0, 0, -24])
+    b.paint_plane_z(uv_sm, 6, 5, [
+        "....hcCck...",
+        "..hcCCCck...",
+        "hcCCCCCd....",
+        "cCCCCCk.....",
+        "kddddk......",
+    ], pal, glow_k)
+    b.add_cube("armorLeftArm", [4.5, 20.5, 0], [6, 5, 0], pivot=[6.5, 22, 0], rotation=[0, 0, 24], mirror=True, uv=uv_sm)
+
+    # Outer Arm Bracers & Leg/Boot Wraps
+    uv_ao = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.78)
+    for s in ("north", "south", "east", "west"):
+        b.blit_face(box_faces(*uv_ao, 4, 12, 4)[s], [
+            "........", "........", "........", "........",
+            "........", "........", "........", "........",
+            "kcCChhCk", "dcCCCCcd", "........", "........",
+            "........", "........", "..cEEc..", "..dCCd..",
+            "........", "........", "kLLLLLLk", "lLLCCLLl",
+            "lLLCCLLl", "kllllllk", "........", "........",
+        ], pal, glow_k)
+    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.78, mirror=True, uv=uv_ao)
+
+    uv_lo = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.68)
+    for s in ("north", "south", "east", "west"):
+        b.blit_face(box_faces(*uv_lo, 4, 12, 4)[s], [
+            "kLLLLLLk", "lLLCCLLl", "kllllllk", "........",
+            "........", "..cEEc..", "..dCCd..", "........",
+            "........", "kLLLLLLk", "lLLLLLLl", "kllllllk",
+            "........", "........", "........", "........",
+            "........", "........", "........", "kcCCCCck",
+            "dcCCCCcd", "kddddddk", "........", "........",
+        ], pal, glow_k)
+    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.68, mirror=True, uv=uv_lo)
+
+    uv_bto = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.94)
+    for s in ("north", "south", "east", "west"):
+        b.blit_face(box_faces(*uv_bto, 4, 12, 4)[s], [
+            "........", "........", "........", "........",
+            "........", "........", "........", "........",
+            "........", "........", "kcCChhCk", "dcCCCCcd",
+            "kllllllk", "lLLLLLLl", "lLLLLLLl", "kllllllk",
+            "........", "........", "kLLLLLLk", "lLLCCLLl",
+            "lLLLLLLl", "lLLCCLLl", "kllllllk", "........",
+        ], pal, glow_k)
+    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.94, mirror=True, uv=uv_bto)
 
     b.save()
 
 
 # =====================================================================
-# 1.3 PRISMATIC BRIMSTONE — Cursed Pirate-Admiral Armor (Captain Brimstone + Prism Core)
+# 1.3 PRISMATIC BRIMSTONE — Ornate Cursed Pirate-Admiral (Captain Brimstone + Prism Core)
 # =====================================================================
 
 def build_prismatic():
     b = ArmorBuilder("prismatic")
-    charcoal = [(18, 15, 20, 255), (32, 26, 36, 255), (50, 42, 56, 255), (74, 64, 82, 255)]
-    crimson = [(68, 16, 22, 255), (108, 26, 34, 255), (154, 44, 52, 255), (192, 68, 72, 255)]
-    gold = [(128, 74, 14, 255), (184, 116, 26, 255), (232, 168, 48, 255), (255, 224, 118, 255)]
-    magma = [(255, 96, 16, 255), (255, 212, 76, 255)]
-    prism = [(108, 26, 152, 255), (172, 48, 224, 255), (218, 96, 255, 255), (246, 182, 255, 255)]
+    charcoal = [(16, 13, 18, 255), (28, 22, 32, 255), (46, 36, 52, 255), (68, 56, 76, 255)]
+    crimson = [(68, 14, 20, 255), (108, 22, 32, 255), (156, 38, 48, 255), (204, 62, 68, 255)]
     pal = {
         ".": (0, 0, 0, 0),
         "0": charcoal[0], "1": charcoal[1], "2": charcoal[2], "3": charcoal[3],
-        "r": crimson[1], "R": crimson[2],
-        "g": gold[1], "G": gold[2], "h": gold[3],
-        "e": magma[0], "E": magma[1], "p": prism[1], "P": prism[2],
+        "r": crimson[1], "R": crimson[2], "x": crimson[3],
+        "k": (54, 22, 4, 255),      # dark bronze outline
+        "d": (128, 62, 10, 255),    # aged brass
+        "g": (208, 132, 24, 255),   # pirate gold braid
+        "G": (248, 194, 58, 255),   # bright gold
+        "h": (255, 240, 142, 255),  # gold glint
+        "e": (255, 96, 12, 255),    # magma ember glow
+        "E": (255, 220, 76, 255),   # bright magma core
+        "p": (168, 48, 224, 255),   # amethyst prism
+        "P": (232, 132, 255, 255),  # bright prism core
     }
     glow_k = {"e", "E", "p", "P"}
 
-    # --- HEAD: Cursed Pirate Skull-Visor (Eyepatch + ONE Blazing Magma Eye) + 3D Tricorne Hat! ---
+    # Inner dark shells
     uv_hi = b.add_cube("armorHead", [-4, 24, -4], [8, 8, 8], inflate=0.45)
-    b.paint_shaded_box(uv_hi, 8, 8, 8, charcoal, pattern="plate", trim_color=gold[2])
+    b.paint_inner_shell(uv_hi, 8, 8, 8, charcoal)
     b.blit_face(box_faces(*uv_hi, 8, 8, 8)["north"], [
-        "1111111111111111",
+        "1112222222222111",
         "1000000000000001",
         "1000000000000001",
         "1000000000000001",
@@ -380,96 +525,231 @@ def build_prismatic():
         "1000110000000001",
         "1000001000000001",
         "1000000100000001",
-        "100gGGGGGGGGg001",
-        "1001111111111001",
-        "1001221221221001",
+        "1000000010000001",
+        "1000111111110001",
+        "1001122222211001",
         "1111111111111111",
         "1111111111111111",
         "1111111111111111",
     ], pal, glow_k)
 
-    # 3D Tricorne Pirate Hat (crown + front peak + left/right upturned brims + crimson plume!)
-    uv_hat = b.add_cube("armorHead", [-4.5, 31.8, -4.5], [9, 3, 9])
-    b.paint_shaded_box(uv_hat, 9, 3, 9, charcoal, pattern="cloth", trim_color=gold[2])
-    # Front tricorne peak
-    uv_peak = b.add_cube("armorHead", [-4.0, 31.5, -6.8], [8, 3, 3], pivot=[0, 32, -4.5], rotation=[18, 0, 0])
-    b.paint_shaded_box(uv_peak, 8, 3, 3, charcoal, pattern="cloth", trim_color=gold[2])
-    # Left & right upturned tricorne side brims
-    uv_brim = b.add_cube("armorHead", [-6.8, 31.2, -5.0], [3, 4, 10], pivot=[-4.5, 32, 0], rotation=[0, 0, -24])
-    b.paint_shaded_box(uv_brim, 3, 4, 10, charcoal, pattern="cloth", trim_color=gold[2])
-    b.add_cube("armorHead", [3.8, 31.2, -5.0], [3, 4, 10], pivot=[4.5, 32, 0], rotation=[0, 0, 24], mirror=True, uv=uv_brim)
-    # Tattered Crimson Plume on the hat
-    uv_plume = b.add_cube("armorHead", [2.5, 34.5, -1.0], [2, 3, 6], pivot=[3.5, 34.5, 0], rotation=[18, 12, 10])
-    b.paint_shaded_box(uv_plume, 2, 3, 6, crimson, pattern="cloth")
-
-    # --- BODY: Crimson Pirate-Admiral Longcoat + Gold Trim + Amethyst Prism Core + Coattails ---
     uv_bi = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.45)
-    b.paint_shaded_box(uv_bi, 8, 12, 4, crimson, pattern="cloth", trim_color=gold[2], stripe_y=20)
-    # Gold-trimmed coat lapels + glowing Amethyst Prism Core
-    uv_lapel = b.add_cube("armorBody", [-4.2, 14.5, -2.8], [8, 8, 1])
-    b.paint_shaded_box(uv_lapel, 8, 8, 1, charcoal, pattern="cloth", trim_color=gold[2])
-    uv_core = b.add_cube("armorBody", [-1.5, 17.5, -3.5], [3, 3, 1])
-    b.paint_shaded_box(uv_core, 3, 3, 1, prism, pattern="crystal", glow_color=prism[2])
-    # Chunky Pirate Belt with Gold Buckle
-    uv_belt = b.add_cube("armorBody", [-4.6, 11.0, -2.7], [9, 2, 5])
-    b.paint_shaded_box(uv_belt, 9, 2, 5, charcoal, pattern="plate", trim_color=gold[2])
-    # Flared Crimson Pirate Longcoat Skirt (back & sides)
-    uv_coat = b.add_cube("armorBody", [-4.8, 4.0, -1.8], [9, 7, 4], pivot=[0, 11, 2.0], rotation=[10, 0, 0])
-    b.paint_shaded_box(uv_coat, 9, 7, 4, crimson, pattern="cloth", trim_color=gold[2], stripe_y=12)
+    b.paint_inner_shell(uv_bi, 8, 12, 4, charcoal, accent=(crimson[1], crimson[2]))
+    uv_ai = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.38)
+    b.paint_inner_shell(uv_ai, 4, 12, 4, charcoal)
+    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.38, mirror=True, uv=uv_ai)
+    uv_li = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.30)
+    b.paint_inner_shell(uv_li, 4, 12, 4, charcoal)
+    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.30, mirror=True, uv=uv_li)
+    uv_bti = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.55)
+    b.paint_inner_shell(uv_bti, 4, 12, 4, charcoal)
+    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.55, mirror=True, uv=uv_bti)
 
-    # --- ARMS: Crimson Sleeves + Banded Iron Broadside Cannon Pauldrons (Glowing Magma Bore!) ---
-    uv_arm = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.38)
-    b.paint_shaded_box(uv_arm, 4, 12, 4, crimson, pattern="cloth", trim_color=gold[2], stripe_y=18)
-    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.38, mirror=True, uv=uv_arm)
-
-    # Shoulder Broadside Cannon Barrels facing forward with glowing magma bores!
-    uv_can = b.add_cube("armorRightArm", [-9.8, 19.5, -4.5], [5, 5, 8], pivot=[-7.0, 22.0, 0], rotation=[-8, 0, -10])
-    b.paint_shaded_box(uv_can, 5, 5, 8, charcoal, pattern="plate", trim_color=gold[2])
-    b.blit_face(box_faces(*uv_can, 5, 5, 8)["north"], [
-        "gggggggggg",
-        "g11111111g",
-        "g10000001g",
-        "g10eEEe01g",
-        "g10EEEE01g",
-        "g10EEEE01g",
-        "g10eEEe01g",
-        "g10000001g",
-        "g11111111g",
-        "gggggggggg",
+    # Outer 1-bit Alpha-Cutout Pirate Collar & Hat Band (NO crown!)
+    uv_ho = b.add_cube("armorHead", [-4, 24, -4], [8, 8, 8], inflate=0.88)
+    hf = box_faces(*uv_ho, 8, 8, 8)
+    b.blit_face(hf["north"], [
+        "kddGGGGGGGGGgddk",
+        "k00000000000000k",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "k0............0k",
+        "r0............0r",
+        "R0k..........k0R",
+        ".R0gGGGGGGGGg0R.",
+        "..kddGGGGGGddk..",
+        "....kkkkkkkk....",
     ], pal, glow_k)
-    b.add_cube("armorLeftArm", [4.8, 19.5, -4.5], [5, 5, 8], pivot=[7.0, 22.0, 0], rotation=[-8, 0, 10], mirror=True, uv=uv_can)
+    for s in ("east", "west", "south"):
+        b.blit_face(hf[s], [
+            "kddGGGGGGGGGGddk",
+            "k00000000000000k",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "kR............Rk",
+            ".kR0000000000Rk.",
+            "..kddGGGGGGddk..",
+            "....kkkkkkkk....",
+            "................",
+        ], pal, glow_k)
 
-    # --- LEGS & BOOTS: Dark Sea-Breeches + Iron-Banded Gold-Cuffed Pirate Boots ---
-    uv_leg = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.30)
-    b.paint_shaded_box(uv_leg, 4, 12, 4, charcoal, pattern="cloth", trim_color=crimson[2])
-    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.30, mirror=True, uv=uv_leg)
+    # 0-thickness Curved Pirate Tricorne Hat + Crimson Plume (ZERO boxy cubes!)
+    uv_tri_f = b.add_cube("armorHead", [-7.0, 30.0, -5.4], [14, 8, 0], pivot=[0, 31, -5.4], rotation=[14, 0, 0])
+    b.paint_plane_z(uv_tri_f, 14, 8, [
+        "..............",
+        ".........xR...",
+        "........xRRr..",
+        "..kGGGGGGGGGGk",
+        ".kG000000000Gk",
+        "kG0000gG0000Gk",
+        "dG0000GG0000Gd",
+        ".kddGGGGGGddk.",
+    ], pal, glow_k)
+    uv_tri_s = b.add_cube("armorHead", [-5.4, 30.0, -6.0], [0, 8, 12], pivot=[-5.4, 31, 0], rotation=[0, 0, -18])
+    b.paint_plane_x(uv_tri_s, 8, 12, [
+        "......xRx...",
+        ".....xRRRr..",
+        "....xRRr....",
+        "kGGGGGGGGGGk",
+        "G0000000000G",
+        "G0000000000G",
+        "dG00000000Gd",
+        ".kddGGGGddk.",
+    ], pal, glow_k)
+    b.add_cube("armorHead", [5.4, 30.0, -6.0], [0, 8, 12], pivot=[5.4, 31, 0], rotation=[0, 0, 18], mirror=True, uv=uv_tri_s)
 
-    uv_boot = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.55)
-    b.paint_shaded_box(uv_boot, 4, 12, 4, charcoal, pattern="plate", trim_color=gold[2], stripe_y=12)
-    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.55, mirror=True, uv=uv_boot)
+    # Outer 1-bit Alpha-Cutout Crimson Pirate-Admiral Longcoat + Gold Braid + Prism Core
+    uv_bo = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.90)
+    bf = box_faces(*uv_bo, 8, 12, 4)
+    b.blit_face(bf["north"], [
+        "kGGRR......RRGGk",
+        "dGGRRr....rRRGGd",
+        "kG.rRRk..kRRr.Gk",
+        "rR..rRkpPkRr..Rr",
+        "RR...pPPPPp...RR",
+        "rR...pPPPPp...Rr",
+        "kR....kppk....Rk",
+        "rR...gG..Gg...Rr",
+        "RR..gG....Gg..RR",
+        "rR..dG....Gd..Rr",
+        "kR............Rk",
+        "rR.gG......Gg.Rr",
+        "RR.dG......Gd.RR",
+        "rR............Rr",
+        "kR.gG......Gg.Rk",
+        "rR.dG......Gd.Rr",
+        "RR............RR",
+        "kR............Rk",
+        "kGGGGGGGGGGGGGGk",
+        "dGGGGGhhhhGGGGGd",
+        "kddGGGgGGgGGGddk",
+        "rRRr..gGGg..rRRr",
+        "rRRr...kk...rRRr",
+        ".rr..........rr.",
+    ], pal, glow_k)
+    b.blit_face(bf["south"], [
+        "kGGGGGGGGGGGGGGk",
+        "dGGRRRRRRRRRRGGd",
+        "kR............Rk",
+        "rR............Rr",
+        "RR....kGGk....RR",
+        "rR...gGhhGg...Rr",
+        "kR...dG..Gd...Rk",
+        "rR....kGGk....Rr",
+        "RR............RR",
+        "rR............Rr",
+        "kR............Rk",
+        "rR............Rr",
+        "RR............RR",
+        "rR............Rr",
+        "kR............Rk",
+        "rR............Rr",
+        "RR............RR",
+        "kR............Rk",
+        "kGGGGGGGGGGGGGGk",
+        "dGGGGGhhhhGGGGGd",
+        "kddGGGgGGgGGGddk",
+        "rRRr........rRRr",
+        "rRRr........rRRr",
+        ".rr..........rr.",
+    ], pal, glow_k)
+
+    # Pirate Coat Skirt (0.98 inflate cutout)
+    uv_sk = b.add_cube("armorBody", [-4, 6, -2], [8, 6, 4], inflate=1.06)
+    wf = box_faces(*uv_sk, 8, 6, 4)
+    b.blit_face(wf["north"], [
+        "kGGGGGg..gGGGGGk",
+        "rRR..Gk..kG..RRr",
+        "rRR..G....G..RRr",
+        "rRR..........RRr",
+        "kRR..........RRk",
+        ".kk..........kk.",
+    ], pal, glow_k)
+    b.blit_face(wf["south"], [
+        "kGGGGGGGGGGGGGGk",
+        "rRRRRRRRRRRRRRRr",
+        "rRRRRRRRRRRRRRRr",
+        "rRRRr..RR..rRRRr",
+        "kRRr........rRRk",
+        ".kk..........kk.",
+    ], pal, glow_k)
+
+    # 0-thickness Broadside Shoulder Cannon & Epaulette Planes (NO boxy cannon bricks!)
+    uv_ep = b.add_cube("armorRightArm", [-11.5, 21.0, 0], [7, 6, 0], pivot=[-7.0, 22.0, 0], rotation=[0, 0, -18])
+    b.paint_plane_z(uv_ep, 7, 6, [
+        "....kGGk....",
+        "..kGG00GGk..",
+        ".kG00eE00Gk.",
+        "kGG0eEEe0GGk",
+        "dGG00eE00GGd",
+        ".kddGGGGddk.",
+    ], pal, glow_k)
+    b.add_cube("armorLeftArm", [4.5, 21.0, 0], [7, 6, 0], pivot=[7.0, 22.0, 0], rotation=[0, 0, 18], mirror=True, uv=uv_ep)
+
+    # Outer Crimson Pirate Cuffs & Gold-Buckled Sea-Boots
+    uv_ao = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.78)
+    for s in ("north", "south", "east", "west"):
+        b.blit_face(box_faces(*uv_ao, 4, 12, 4)[s], [
+            "........", "........", "........", "........",
+            "........", "........", "kGGGGGGk", "rRRRRRRr",
+            "rRRRRRRr", "rRRRRRRr", "krrrrrrk", "........",
+            "........", "........", "........", "........",
+            "........", "........", "kGGGGGGk", "dGGhhGGd",
+            "rRRRRRRr", "kddddddk", "........", "........",
+        ], pal, glow_k)
+    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.78, mirror=True, uv=uv_ao)
+
+    uv_bto = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.94)
+    for s in ("north", "south", "east", "west"):
+        b.blit_face(box_faces(*uv_bto, 4, 12, 4)[s], [
+            "........", "........", "........", "........",
+            "........", "........", "........", "........",
+            "........", "........", "kGGGGGGk", "dGGhhGGd",
+            "k000000k", "k000000k", "........", "........",
+            "........", "........", "kGGGGGGk", "dG0000Gd",
+            "k000000k", "kddGGddk", "........", "........",
+        ], pal, glow_k)
+    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.94, mirror=True, uv=uv_bto)
 
     b.save()
 
 
 # =====================================================================
-# 1.4 DRAGONSCALE — Reptilian Dragon-Skull, Snout, Dorsal Spines & Claws
+# 1.4 DRAGONSCALE — Ornate Emerald Dragon-Hunter (Carved Drake Skull + Dorsal Spines)
 # =====================================================================
 
 def build_dragonscale():
     b = ArmorBuilder("dragonscale")
-    emerald = [(8, 28, 18, 255), (16, 56, 34, 255), (28, 96, 56, 255), (52, 152, 88, 255)]
-    bone_iron = [(32, 38, 44, 255), (58, 68, 78, 255), (96, 110, 124, 255), (148, 166, 182, 255)]
-    amber = [(255, 132, 12, 255), (255, 224, 82, 255)]
+    emerald = [(8, 28, 18, 255), (15, 52, 32, 255), (26, 88, 52, 255), (44, 134, 78, 255)]
     pal = {
         ".": (0, 0, 0, 0),
         "0": emerald[0], "1": emerald[1], "2": emerald[2], "3": emerald[3],
-        "e": amber[0], "E": amber[1],
+        "k": (16, 22, 26, 255),     # dark slate-iron outline
+        "d": (46, 56, 66, 255),     # dark drake-bone
+        "g": (28, 148, 78, 255),    # vivid emerald scale
+        "G": (74, 212, 126, 255),   # bright jade scale
+        "h": (196, 255, 214, 255),  # pale jade-bone glint
+        "e": (255, 128, 12, 255),   # molten amber glow
+        "E": (255, 228, 88, 255),   # dragon-heart core glow
     }
     glow_k = {"e", "E"}
 
-    # --- HEAD: Dragon Cranium Helm + Protruding 3D Snout + Swept-Back Horns ---
+    # Inner emerald-scale shells
     uv_hi = b.add_cube("armorHead", [-4, 24, -4], [8, 8, 8], inflate=0.45)
-    b.paint_shaded_box(uv_hi, 8, 8, 8, emerald, pattern="scales")
+    b.paint_inner_shell(uv_hi, 8, 8, 8, emerald, pattern="scales")
     b.blit_face(box_faces(*uv_hi, 8, 8, 8)["north"], [
         "1112222222222111",
         "1000000000000001",
@@ -481,114 +761,285 @@ def build_dragonscale():
         "1000000000000001",
         "1000000000000001",
         "1000000000000001",
-        "1001111111111001",
-        "1001222222221001",
-        "1001111111111001",
+        "1000111111110001",
+        "1001122222211001",
+        "1111111111111111",
         "1111111111111111",
         "1111111111111111",
         "1111111111111111",
     ], pal, glow_k)
 
-    # Protruding 3D Dragon Snout & Lower Jaw
-    uv_snout = b.add_cube("armorHead", [-3, 27.5, -8.5], [6, 3, 5], pivot=[0, 29, -4], rotation=[8, 0, 0])
-    b.paint_shaded_box(uv_snout, 6, 3, 5, emerald, pattern="scales")
-    uv_ljaw = b.add_cube("armorHead", [-2.5, 25.0, -7.2], [5, 2, 4])
-    b.paint_shaded_box(uv_ljaw, 5, 2, 4, bone_iron, pattern="plate")
-
-    # Swept-back 3D Dragon Horns
-    uv_dh1 = b.add_cube("armorHead", [-5.5, 30.5, -1.0], [2, 3, 6], pivot=[-4.5, 31.5, 0], rotation=[28, -16, -10])
-    b.paint_shaded_box(uv_dh1, 2, 3, 6, bone_iron, pattern="plate")
-    b.add_cube("armorHead", [3.5, 30.5, -1.0], [2, 3, 6], pivot=[4.5, 31.5, 0], rotation=[28, 16, 10], mirror=True, uv=uv_dh1)
-
-    uv_dh2 = b.add_cube("armorHead", [-6.5, 32.5, 4.0], [2, 2, 5], pivot=[-5.5, 33, 4.5], rotation=[40, -20, -10])
-    b.paint_shaded_box(uv_dh2, 2, 2, 5, bone_iron, pattern="plate", glow_color=amber[0])
-    b.add_cube("armorHead", [4.5, 32.5, 4.0], [2, 2, 5], pivot=[5.5, 33, 4.5], rotation=[40, 20, 10], mirror=True, uv=uv_dh2)
-
-    # --- BODY: Scaled Cuirass + 5-Spike Central Dorsal Dragon Spine Ridge ---
     uv_bi = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.45)
-    b.paint_shaded_box(uv_bi, 8, 12, 4, emerald, pattern="scales")
-    uv_sc = b.add_cube("armorBody", [-3.5, 16.0, -3.2], [7, 6, 1])
-    b.paint_shaded_box(uv_sc, 7, 6, 1, emerald, pattern="scales", trim_color=bone_iron[2])
-    # 5 angled 3D dorsal dragon spines down the back!
-    uv_sp = b.add_cube("armorBody", [-1, 21.0, 2.2], [2, 3, 4], pivot=[0, 22, 2.5], rotation=[-22, 0, 0])
-    b.paint_shaded_box(uv_sp, 2, 3, 4, bone_iron, pattern="plate")
-    for sy in (18.0, 15.0, 12.0, 9.0):
-        b.add_cube("armorBody", [-1, sy, 2.2], [2, 3, 4], pivot=[0, sy + 1, 2.5], rotation=[-22, 0, 0], uv=uv_sp)
+    b.paint_inner_shell(uv_bi, 8, 12, 4, emerald, pattern="scales")
+    uv_ai = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.38)
+    b.paint_inner_shell(uv_ai, 4, 12, 4, emerald, pattern="scales")
+    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.38, mirror=True, uv=uv_ai)
+    uv_li = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.30)
+    b.paint_inner_shell(uv_li, 4, 12, 4, emerald, pattern="scales")
+    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.30, mirror=True, uv=uv_li)
+    uv_bti = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.55)
+    b.paint_inner_shell(uv_bti, 4, 12, 4, emerald, pattern="scales")
+    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.55, mirror=True, uv=uv_bti)
 
-    # --- ARMS: Scaled Sleeves + Jagged Pauldrons + Forearm Dragon Claws ---
-    uv_arm = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.38)
-    b.paint_shaded_box(uv_arm, 4, 12, 4, emerald, pattern="scales")
-    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.38, mirror=True, uv=uv_arm)
+    # Outer 1-bit Alpha-Cutout Carved Dragon-Skull Visor
+    uv_ho = b.add_cube("armorHead", [-4, 24, -4], [8, 8, 8], inflate=0.88)
+    hf = box_faces(*uv_ho, 8, 8, 8)
+    b.blit_face(hf["north"], [
+        "kGhGgk....kgGhGk",
+        "dGGgGGk..kGGgGGd",
+        "kG..gGGkkGGg..Gk",
+        "gG...gGGGGg...Gg",
+        "GG....kGGk....GG",
+        "gG............Gg",
+        "dG............Gd",
+        "kG............Gk",
+        "gGk..........kGg",
+        "GGgk........kgGG",
+        "dGGgk......kgGGd",
+        "kGGgGk....kGgGGk",
+        ".kGGgGk..kGgGGk.",
+        "..kGGgGkkGgGGk..",
+        "...kddGGGGddk...",
+        ".....kkkkkk.....",
+    ], pal, glow_k)
+    for s in ("east", "west", "south"):
+        b.blit_face(hf[s], [
+            "kGhGGGGGGGGGGhGk",
+            "dGGgddGGGGddgGGd",
+            "kG..gGGkkGGg..Gk",
+            ".kGg.GG..GG.gGk.",
+            "..kGgGG..GGgGk..",
+            "kG............Gk",
+            "gG............Gg",
+            "dG............Gd",
+            "kG............Gk",
+            "gGk..........kGg",
+            "dGGgk......kgGGd",
+            ".kGGgk....kgGGk.",
+            "..kddGGggGGddk..",
+            "....kkkkkkkk....",
+            "................",
+            "................",
+        ], pal, glow_k)
 
-    uv_dp = b.add_cube("armorRightArm", [-10.0, 19.5, -3.0], [6, 5, 6], pivot=[-7, 22, 0], rotation=[0, 0, -18])
-    b.paint_shaded_box(uv_dp, 6, 5, 6, emerald, pattern="scales", trim_color=bone_iron[2])
-    b.add_cube("armorLeftArm", [4.0, 19.5, -3.0], [6, 5, 6], pivot=[7, 22, 0], rotation=[0, 0, 18], mirror=True, uv=uv_dp)
+    # 0-thickness Curved Swept Dragon Horns (side of head — crisp tapered horn curve!)
+    uv_dhorn = b.add_cube("armorHead", [-5.2, 29.0, -3.5], [0, 10, 12], pivot=[-5.2, 30, 0], rotation=[8, 0, -16])
+    b.paint_plane_x(uv_dhorn, 10, 12, [
+        "..........h.",
+        ".........hG.",
+        "........hGG.",
+        ".......dGGk.",
+        "......dGGk..",
+        ".....dGGk...",
+        "...hdGGk....",
+        "..hGGGk.....",
+        ".gGGGk......",
+        "kddk........",
+    ], pal, glow_k)
+    b.add_cube("armorHead", [5.2, 29.0, -3.5], [0, 10, 12], pivot=[5.2, 30, 0], rotation=[8, 0, 16], mirror=True, uv=uv_dhorn)
 
-    # 3D Forearm Dragon Claw Blades
-    uv_claw = b.add_cube("armorRightArm", [-9.5, 11.5, -1.0], [1, 6, 3], pivot=[-8.5, 15, 0.5], rotation=[-12, 0, -10])
-    b.paint_shaded_box(uv_claw, 1, 6, 3, bone_iron, pattern="plate")
-    b.add_cube("armorLeftArm", [8.5, 11.5, -1.0], [1, 6, 3], pivot=[8.5, 15, 0.5], rotation=[-12, 0, 10], mirror=True, uv=uv_claw)
+    # Outer 1-bit Alpha-Cutout Overlapping V-Chevron Dragon Scales on Body
+    uv_bo = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.90)
+    bf = box_faces(*uv_bo, 8, 12, 4)
+    b.blit_face(bf["north"], [
+        "kGhGgk....kgGhGk",
+        "dGGgGGk..kGGgGGd",
+        ".kGGgGGkkGGgGGk.",
+        "..kGGgGGGGgGGk..",
+        "...kGGgEEgGGk...",
+        "....kGEEEEGk....",
+        "kGhGgkEEEEkgGhGk",
+        ".dGGgGGEEGGgGGd.",
+        "..kGGgGGGGgGGk..",
+        "...kGGgGGgGGk...",
+        "....kGGGGGGk....",
+        "kGhGgkGGGGkgGhGk",
+        ".dGGgGGGGGGgGGd.",
+        "..kGGgGGGGgGGk..",
+        "...kGGgGGgGGk...",
+        "....kGGGGGGk....",
+        ".....kGGGGk.....",
+        "......kGGk......",
+        "kGhGGGGGGGGGGhGk",
+        "dGGhGGGGGGGGhGGd",
+        "kddGGGgGGgGGGddk",
+        "...kkkGGGGkkk...",
+        "......gGGg......",
+        ".......kk.......",
+    ], pal, glow_k)
+    b.blit_face(bf["south"], [
+        "kGhGGGGGGGGGGhGk",
+        "dGGhGGGGGGGGhGGd",
+        "kG..gGG..GGg..Gk",
+        ".kGg.GG..GG.gGk.",
+        "..kGgGG..GGgGk..",
+        "...kGGG..GGGk...",
+        "kGhGgkG..GkGhGGk",
+        ".dGGgGG..GGgGGd.",
+        "..kGGgG..GgGGk..",
+        "...kGGG..GGGk...",
+        "....kGG..GGk....",
+        "kGhGgkG..GkGhGGk",
+        ".dGGgGG..GGgGGd.",
+        "..kGGgG..GgGGk..",
+        "...kGGG..GGGk...",
+        "....kGG..GGk....",
+        ".....kG..Gk.....",
+        "......k..k......",
+        "kGhGGGGGGGGGGhGk",
+        "dGGhGGGGGGGGhGGd",
+        "kddGGGgGGgGGGddk",
+        "....kkkkkkkk....",
+        "................",
+        "................",
+    ], pal, glow_k)
 
-    # --- LEGS & BOOTS: Scaled Greaves + Reptilian Drake Toe-Claws ---
-    uv_leg = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.30)
-    b.paint_shaded_box(uv_leg, 4, 12, 4, emerald, pattern="scales")
-    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.30, mirror=True, uv=uv_leg)
+    # 0-thickness Serrated Dorsal Dragon Spine Ridge down the back!
+    uv_spine = b.add_cube("armorBody", [0, 10.0, 2.5], [0, 14, 6], pivot=[0, 17, 2.5], rotation=[0, 0, 0])
+    b.paint_plane_x(uv_spine, 14, 6, [
+        "....h.",
+        "...hG.",
+        "..dGk.",
+        ".dGk..",
+        "....h.",
+        "...hG.",
+        "..dGk.",
+        ".dGk..",
+        "....h.",
+        "...hG.",
+        "..dGk.",
+        ".dGk..",
+        "..k...",
+        "......",
+    ], pal, glow_k)
 
-    uv_boot = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.55)
-    b.paint_shaded_box(uv_boot, 4, 12, 4, emerald, pattern="scales", trim_color=bone_iron[2])
-    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.55, mirror=True, uv=uv_boot)
+    # 0-thickness Jagged Drake-Wing Pauldron Spires & Forearm Claw Fins
+    uv_dp = b.add_cube("armorRightArm", [-11.5, 20.5, 0], [7, 7, 0], pivot=[-7.0, 22.0, 0], rotation=[0, 0, -22])
+    b.paint_plane_z(uv_dp, 7, 7, [
+        "..........h.",
+        ".........gG.",
+        "......h.gGG.",
+        ".....gGgGGk.",
+        "..h.gGGGGk..",
+        ".gGgGGhGk...",
+        "kddGGGdk....",
+    ], pal, glow_k)
+    b.add_cube("armorLeftArm", [4.5, 20.5, 0], [7, 7, 0], pivot=[7.0, 22.0, 0], rotation=[0, 0, 22], mirror=True, uv=uv_dp)
 
-    uv_toe = b.add_cube("armorRightBoot", [-3.5, -0.4, -4.5], [3, 2, 3])
-    b.paint_shaded_box(uv_toe, 3, 2, 3, bone_iron, pattern="plate")
-    b.add_cube("armorLeftBoot", [0.5, -0.4, -4.5], [3, 2, 3], mirror=True, uv=uv_toe)
+    uv_claw = b.add_cube("armorRightArm", [-9.2, 11.5, -1.5], [0, 6, 4], pivot=[-8.5, 15, 0.5], rotation=[0, 0, -12])
+    b.paint_plane_x(uv_claw, 6, 4, [
+        "...h",
+        "..hG",
+        ".dGk",
+        ".dGk",
+        "..k.",
+        "....",
+    ], pal, glow_k)
+    b.add_cube("armorLeftArm", [9.2, 11.5, -1.5], [0, 6, 4], pivot=[8.5, 15, 0.5], rotation=[0, 0, 12], mirror=True, uv=uv_claw)
 
     b.save()
 
 
 # =====================================================================
-# 1.5 TWIN-STAR — Grand Winged Halo Celestial Seraph (Ref: Winged Halo + Winged Purple/Teal)
+# 1.5 TWIN-STAR — Ornate Winged Halo Celestial Seraph (Ref: Winged Halo)
 # =====================================================================
 
 def build_twin_star():
     b = ArmorBuilder("twin_star")
-    white = [(148, 158, 180, 255), (202, 212, 232, 255), (234, 240, 252, 255), (255, 255, 255, 255)]
-    indigo = [(18, 12, 42, 255), (34, 24, 76, 255), (56, 42, 114, 255), (84, 66, 156, 255)]
-    gold = [(154, 102, 14, 255), (218, 158, 28, 255), (248, 206, 68, 255), (255, 242, 148, 255)]
+    indigo = [(14, 10, 32, 255), (24, 16, 54, 255), (42, 28, 86, 255), (68, 48, 128, 255)]
     pal = {
         ".": (0, 0, 0, 0),
-        "0": indigo[0], "1": indigo[1], "2": indigo[2],
-        "w": white[1], "W": white[3],
-        "g": gold[1], "G": gold[2], "h": gold[3],
-        "e": (104, 238, 255, 255),
-        "E": (212, 255, 255, 255),
+        "0": indigo[0], "1": indigo[1], "2": indigo[2], "3": indigo[3],
+        "k": (58, 66, 86, 255),     # slate-silver outline
+        "d": (132, 144, 172, 255),  # shaded pearl-silver
+        "w": (204, 214, 234, 255),  # bright platinum-silver
+        "W": (244, 248, 255, 255),  # pure seraph white
+        "g": (222, 158, 28, 255),   # celestial gold
+        "G": (252, 212, 74, 255),   # radiant gold
+        "h": (255, 244, 168, 255),  # starlight glint
+        "e": (104, 238, 255, 255),  # celestial cyan glow
+        "E": (218, 255, 255, 255),  # pure cyan-white core glow
     }
     glow_k = {"e", "E"}
 
-    # --- HEAD: Sleek Platinum Seraph Knight Helm + MASSIVE Vertical Celestial Halo ---
+    # Inner deep void-indigo shells
     uv_hi = b.add_cube("armorHead", [-4, 24, -4], [8, 8, 8], inflate=0.45)
-    b.paint_shaded_box(uv_hi, 8, 8, 8, white, pattern="plate", trim_color=gold[2])
+    b.paint_inner_shell(uv_hi, 8, 8, 8, indigo)
     b.blit_face(box_faces(*uv_hi, 8, 8, 8)["north"], [
-        "wwwwWWGGGGWWwwww",
-        "wwwWWGhhhhGWWwww",
-        "wwWWgGGGGGGgWWww",
-        "w00000gGGg00000w",
-        "w00000gGGg00000w",
-        "w00eEEgGGgEEe00w",
-        "w000eEgGGgEe000w",
-        "w00000gGGg00000w",
-        "w00000gGGg00000w",
-        "w000000GG000000w",
-        "ww00000GG00000ww",
-        "www0000gg0000www",
-        "wwwwWWwwwwWWwwww",
-        "wwwwWWwwwwWWwwww",
-        "wwwwwwwwwwwwwwww",
-        "wwwwwwwwwwwwwwww",
+        "1112222222222111",
+        "1000000000000001",
+        "1000000000000001",
+        "1000000000000001",
+        "1000000000000001",
+        "1000000000000001",
+        "100eEE0000EEe001",
+        "1000eE0000Ee0001",
+        "1000000000000001",
+        "1000000000000001",
+        "1000000000000001",
+        "1000111111110001",
+        "1001122222211001",
+        "1111111111111111",
+        "1111111111111111",
+        "1111111111111111",
     ], pal, glow_k)
+
+    uv_bi = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.45)
+    b.paint_inner_shell(uv_bi, 8, 12, 4, indigo, pattern="ribbed")
+    uv_ai = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.38)
+    b.paint_inner_shell(uv_ai, 4, 12, 4, indigo)
+    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.38, mirror=True, uv=uv_ai)
+    uv_li = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.30)
+    b.paint_inner_shell(uv_li, 4, 12, 4, indigo)
+    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.30, mirror=True, uv=uv_li)
+    uv_bti = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.55)
+    b.paint_inner_shell(uv_bti, 4, 12, 4, indigo)
+    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.55, mirror=True, uv=uv_bti)
+
+    # Outer 1-bit Alpha-Cutout Platinum & Gold Seraph T-Visor Cage
+    uv_ho = b.add_cube("armorHead", [-4, 24, -4], [8, 8, 8], inflate=0.88)
+    hf = box_faces(*uv_ho, 8, 8, 8)
+    b.blit_face(hf["north"], [
+        "kwWWWWGGGGWWWWwk",
+        "dwWWWGhhhhGWWWwd",
+        "kwWWgGGGGGGgWWwk",
+        "wW....gGGg....Ww",
+        "WW....gGGg....WW",
+        "wW....gGGg....Ww",
+        "dw....gGGg....wd",
+        "kw....gGGg....wk",
+        "wW....gGGg....Ww",
+        "WWk...gGGg...kWW",
+        "dwWk...GG...kWwd",
+        ".kwWk..GG..kWwk.",
+        "..kwWggggggWwk..",
+        "...kddWWWWddk...",
+        ".....kkkkkk.....",
+        "................",
+    ], pal, glow_k)
+    for s in ("east", "west", "south"):
+        b.blit_face(hf[s], [
+            "kwWWWWGGGGWWWWwk",
+            "dwWWWWGGGGWWWWwd",
+            "kW.....GG.....Wk",
+            "wW....gGGg....Ww",
+            "WW...gGhhGg...WW",
+            "wW..dw....wd..Ww",
+            "dw............wd",
+            "kw............wk",
+            "wW............Ww",
+            "WWk..........kWW",
+            "dwWk........kWwd",
+            ".kwWggkkkkggWwk.",
+            "..kddWWWWWWddk..",
+            "....kkkkkkkk....",
+            "................",
+            "................",
+        ], pal, glow_k)
 
     # MASSIVE 20x20 Vertical Radiant Halo Ring behind the head!
     uv_halo = b.add_cube("armorHead", [-10, 22.0, 5.2], [20, 20, 0], pivot=[0, 32, 5.2], rotation=[-10, 0, 0])
-    halo_sprite = [
+    b.paint_plane_z(uv_halo, 20, 20, [
         ".........EE.........",
         "......eeEEEEee......",
         "....eeEEGGGGEEee....",
@@ -609,20 +1060,67 @@ def build_twin_star():
         "....eeEEGGGGEEee....",
         "......eeEEEEee......",
         ".........EE.........",
-    ]
-    b.paint_plane_z(uv_halo, 20, 20, halo_sprite, pal, glow_k)
+    ], pal, glow_k)
 
-    # --- BODY: Royal Platinum & Indigo Surcoat + GIANT Spread Celestial Wings! ---
-    uv_bi = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.45)
-    b.paint_shaded_box(uv_bi, 8, 12, 4, indigo, pattern="cloth", trim_color=gold[2], stripe_y=20)
-    uv_chest = b.add_cube("armorBody", [-4.2, 15.0, -2.8], [8, 7, 5])
-    b.paint_shaded_box(uv_chest, 8, 7, 5, white, pattern="plate", trim_color=gold[2])
-    # Dual Cyan+Gold Twin-Star Chest Core
-    uv_star = b.add_cube("armorBody", [-1.5, 17.5, -3.4], [3, 3, 1])
-    b.paint_shaded_box(uv_star, 3, 3, 1, [pal["e"], pal["E"], pal["E"], pal["h"]], pattern="crystal", glow_color=pal["E"])
+    # Outer 1-bit Alpha-Cutout Platinum & Gold Seraph Filigree on Body
+    uv_bo = b.add_cube("armorBody", [-4, 12, -2], [8, 12, 4], inflate=0.90)
+    bf = box_faces(*uv_bo, 8, 12, 4)
+    b.blit_face(bf["north"], [
+        "kwWWwk....kwWWwk",
+        "dwWWwWk..kWwWWwd",
+        "kW..wWWkkWWw..Wk",
+        "wW...wGGGGw...Ww",
+        "WW...gGEEGg...WW",
+        "wW..gGEEEEGg..Ww",
+        "dw..GGEhhEGG..wd",
+        "kw..gGEEEEGg..wk",
+        "wW...gGEEGg...Ww",
+        "WW....gGGg....WW",
+        "wW...wW..Ww...Ww",
+        "dw..wW....Ww..wd",
+        "kW.wW......Ww.Wk",
+        "wW.dW..GG..Wd.Ww",
+        "WW....gGGg....WW",
+        "wW....dGGd....Ww",
+        "dw............wd",
+        "kW............Wk",
+        "kwWWGGGGGGGGWWwk",
+        "dwWWGGhhhhGGWWwd",
+        "kddWWgGGGGgWWddk",
+        "...kkkGGGGkkk...",
+        "......gGGg......",
+        ".......kk.......",
+    ], pal, glow_k)
+    b.blit_face(bf["south"], [
+        "kwWWWWGGGGWWWWwk",
+        "dwWWWWGGGGWWWWwd",
+        "kW.....GG.....Wk",
+        "wW....gGGg....Ww",
+        "WW...gGhhGg...WW",
+        "wW..wWw..wWw..Ww",
+        "dw..Ww....wW..wd",
+        "kW..wW....Ww..Wk",
+        "wW...wW..Ww...Ww",
+        "WW....wWWw....WW",
+        "wW.....WW.....Ww",
+        "dw............wd",
+        "kW............Wk",
+        "wW............Ww",
+        "WW............WW",
+        "wW............Ww",
+        "dw............wd",
+        "kW............Wk",
+        "kwWWGGGGGGGGWWwk",
+        "dwWWGGhhhhGGWWwd",
+        "kddWWWWWWWWWWddk",
+        "....kkkkkkkk....",
+        "................",
+        "................",
+    ], pal, glow_k)
 
-    # GIANT 20x24 Spread Celestial Wings on each side (40+ units wide!)
-    wing_sprite = [
+    # GIANT 20x24 Spread Celestial Wings on each side!
+    uv_wing = b.add_cube("armorBody", [-22.0, 10.0, 4.2], [20, 24, 0], pivot=[-2.0, 20.0, 4.2], rotation=[-8, 22, -6])
+    b.paint_plane_z(uv_wing, 20, 24, [
         "..................EE",
         "................eeEW",
         "..............eeEEWW",
@@ -647,32 +1145,33 @@ def build_twin_star():
         "......eEGGWw........",
         "......EGWw..........",
         "......w.............",
-    ]
-    uv_wing = b.add_cube("armorBody", [-22.0, 10.0, 4.2], [20, 24, 0], pivot=[-2.0, 20.0, 4.2], rotation=[-8, 22, -6])
-    b.paint_plane_z(uv_wing, 20, 24, wing_sprite, pal, glow_k)
+    ], pal, glow_k)
     b.add_cube("armorBody", [2.0, 10.0, 4.2], [20, 24, 0], pivot=[2.0, 20.0, 4.2], rotation=[-8, -22, 6], mirror=True, uv=uv_wing)
 
-    # Flowing Royal Indigo & Gold Robe Skirt
-    uv_skirt = b.add_cube("armorBody", [-4.5, 4.0, -2.5], [9, 8, 5], inflate=0.25)
-    b.paint_shaded_box(uv_skirt, 9, 8, 5, indigo, pattern="cloth", trim_color=gold[2], stripe_y=14)
+    # Outer Platinum & Gold Arm, Leg, Boot Filigree
+    uv_ao = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.78)
+    for s in ("north", "south", "east", "west"):
+        b.blit_face(box_faces(*uv_ao, 4, 12, 4)[s], [
+            "........", "........", "........", "........",
+            "........", "........", "kwWWGGwk", "kdd..ddk",
+            "........", "..wGGw..", ".dW..Wd.", "..kGGk..",
+            "........", "..wWWw..", ".wW..Ww.", ".W.EE.W.",
+            ".dW..Wd.", "..kWWk..", "........", "kwWWGGwk",
+            "dW.hh.Wd", "kW....Wk", "kddGGddk", "..kkkk..",
+        ], pal, glow_k)
+    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.78, mirror=True, uv=uv_ao)
 
-    # --- ARMS: Platinum Sleeves + Winged Gold-Trimmed Pauldrons ---
-    uv_arm = b.add_cube("armorRightArm", [-8, 12, -2], [4, 12, 4], inflate=0.38)
-    b.paint_shaded_box(uv_arm, 4, 12, 4, white, pattern="plate", trim_color=gold[2])
-    b.add_cube("armorLeftArm", [4, 12, -2], [4, 12, 4], inflate=0.38, mirror=True, uv=uv_arm)
-
-    uv_tp = b.add_cube("armorRightArm", [-10.0, 19.8, -3.0], [6, 4, 6], pivot=[-7, 22, 0], rotation=[0, 0, -20])
-    b.paint_shaded_box(uv_tp, 6, 4, 6, white, pattern="plate", trim_color=gold[2])
-    b.add_cube("armorLeftArm", [4.0, 19.8, -3.0], [6, 4, 6], pivot=[7, 22, 0], rotation=[0, 0, 20], mirror=True, uv=uv_tp)
-
-    # --- LEGS & BOOTS: Indigo & Platinum Greaves + Gold-Trimmed Seraph Boots ---
-    uv_leg = b.add_cube("armorRightLeg", [-4, 0, -2], [4, 12, 4], inflate=0.28)
-    b.paint_shaded_box(uv_leg, 4, 12, 4, indigo, pattern="cloth", trim_color=gold[2])
-    b.add_cube("armorLeftLeg", [0, 0, -2], [4, 12, 4], inflate=0.28, mirror=True, uv=uv_leg)
-
-    uv_boot = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.52)
-    b.paint_shaded_box(uv_boot, 4, 12, 4, white, pattern="plate", trim_color=gold[2])
-    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.52, mirror=True, uv=uv_boot)
+    uv_bto = b.add_cube("armorRightBoot", [-4, 0, -2], [4, 12, 4], inflate=0.94)
+    for s in ("north", "south", "east", "west"):
+        b.blit_face(box_faces(*uv_bto, 4, 12, 4)[s], [
+            "........", "........", "........", "........",
+            "........", "........", "........", "........",
+            "........", "........", "kwWWGGwk", "kdd..ddk",
+            "...WW...", "..w..w..", ".wW..Ww.", ".dW..Wd.",
+            "..w..w..", "...WW...", "kwWh.hWk", "dW.EE.Wd",
+            "kW....Wk", "wW.GG.Ww", "dWWGGWWd", "kddGGddk",
+        ], pal, glow_k)
+    b.add_cube("armorLeftBoot", [0, 0, -2], [4, 12, 4], inflate=0.94, mirror=True, uv=uv_bto)
 
     b.save()
 
