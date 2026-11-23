@@ -101,6 +101,9 @@ public class ArtilianItems {
     public static final DeferredItem<DeferredSpawnEggItem> LENS_GUARDIAN_SPAWN_EGG =
             ITEMS.register("lens_guardian_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.LENS_GUARDIAN, 0x3A2F4D, 0xD946EF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> BLINKY_SPAWN_EGG =
+            ITEMS.register("blinky_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.BLINKY, 0x3C305E, 0x7DF9FF, new Item.Properties()));
 
     // Blocks
     public static final DeferredItem<BlockItem> SUNSTEEL_ORE_ITEM =

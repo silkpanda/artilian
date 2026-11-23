@@ -47,7 +47,14 @@
   "spawners": {
     "ambient": [],
     "axolotls": [],
-    "creature": [],
+    "creature": [
+      {
+        "type": "artilian:blinky",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 12
+      }
+    ],
     "misc": [],
     "monster": [
       {

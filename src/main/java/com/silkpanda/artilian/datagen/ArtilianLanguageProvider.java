@@ -204,6 +204,9 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.PEEPER_SPAWN_EGG, "Peeper Spawn Egg");
         this.addItem(ArtilianItems.OCULUS_SLIME_SPAWN_EGG, "Oculus Slime Spawn Egg");
         this.addItem(ArtilianItems.LENS_GUARDIAN_SPAWN_EGG, "Lens Guardian Spawn Egg");
+        // Phase 4 Stage 4: Blinky Pet
+        this.addEntityType(ArtilianEntities.BLINKY, "Blinky");
+        this.addItem(ArtilianItems.BLINKY_SPAWN_EGG, "Blinky Spawn Egg");
         this.addItem(ArtilianItems.CAPTURE_CRYSTAL, "Capture Crystal");
         this.add("item.artilian.capture_crystal.filled", "Capture Crystal (%s)");
         this.add("item.artilian.capture_crystal.tooltip", "Captures Biome Pets — Right-click a wild pet!");

@@ -11,6 +11,7 @@ import com.silkpanda.artilian.enemy.LensGuardianEntity;
 import com.silkpanda.artilian.enemy.OculusSlimeEntity;
 import com.silkpanda.artilian.enemy.PeeperEntity;
 import com.silkpanda.artilian.enemy.PrismSentinelEntity;
+import com.silkpanda.artilian.pet.BlinkyEntity;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
@@ -196,6 +197,14 @@ public class ArtilianEntities {
                     .eyeHeight(2.00F)
                     .clientTrackingRange(10)
                     .build("lens_guardian"));
+
+    /** Blinky: Alex's friendly Starlight/Shadow ocular familiar native to the Eye Realm. */
+    public static final DeferredHolder<EntityType<?>, EntityType<BlinkyEntity>> BLINKY =
+            ENTITY_TYPES.register("blinky", () -> EntityType.Builder.of(BlinkyEntity::new, MobCategory.CREATURE)
+                    .sized(0.85F, 0.95F)
+                    .eyeHeight(0.60F)
+                    .clientTrackingRange(10)
+                    .build("blinky"));
 
     /** Test-only boss for the boss framework. Not in the creative tab and has no spawn egg. */
     public static final DeferredHolder<EntityType<?>, EntityType<TrainingGolemEntity>> TRAINING_GOLEM =

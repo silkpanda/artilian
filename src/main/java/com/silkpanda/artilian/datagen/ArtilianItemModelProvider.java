@@ -41,6 +41,7 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.withExistingParent("peeper_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("oculus_slime_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("lens_guardian_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("blinky_spawn_egg", mcLoc("item/template_spawn_egg"));
         captureCrystalModels();
         this.basicItem(ArtilianItems.RAW_SUNSTEEL.get());
         this.basicItem(ArtilianItems.SUNSTEEL_INGOT.get());
