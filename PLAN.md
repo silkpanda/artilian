@@ -6,14 +6,14 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 ## Now
 
-*Updated 2026-11-22 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
+*Updated 2026-11-23 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
 
 | | |
 |---|---|
-| **In progress** | None — **Phase 5 locked** (`229/229` GameTests green, `lint_art.py --phase5 --strict` exit `0`, bespoke `128×128` Dragonscale & Twin-Star armors + `_glowmask.png` layers, `mod_version=0.2.0`, `build/libs/adventures-in-artilian-0.2.0.jar`, merged to `main` via PR #17). |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4–5 (`qa/evidence/`) and family LAN co-op playtest with Alex and Steve using `adventures-in-artilian-0.2.0.jar`. |
-| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework**, **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, **Embercrown Sovereign**, **Twin-Star Endgame**, and family LAN co-op playtest across Phases 1–5 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | `phase-4-stage-6-great-all-seer` (PR #16, `187/187`) is superseded/included in PR #17 (`main`). |
+| **In progress** | **Art Pass — Section 1 (Armor Sets)** complete on branch `art/pass-1-armor` (built on `art/sunsteel-armor-redesign`): all 5 sets (`sunsteel`, `starlight`, `prismatic`, `dragonscale`, `twin_star`) upgraded to `256×256` double-layer alpha-cutout filigree + `0`-thickness 3D silhouettes + `_glowmask.png` (`AutoGlowingGeoLayer`), `check_armor_sheets.py` clean, `lint_art.py --phase5 --strict` green, `./gradlew build` green. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for all 5 v3 armor sets (`qa/evidence/`), then open PR for `art/pass-1-armor` → `main`. 2. Proceed to **Section 2 (Weapons, Tools, Wands & Item Icons)** or **Section 5 (Bosses)** per `art_pass_plan.md`. |
+| **Waiting on the owner** | 1. In-game look & screenshots when home for the 5 v3 armor sets, **Boss Framework**, **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, **Embercrown Sovereign**, **Twin-Star Endgame**, and family LAN co-op playtest across Phases 1–5 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | `art/sunsteel-armor-redesign` (Sunsteel v3 prototype commit) is ancestor of `art/pass-1-armor`. |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
