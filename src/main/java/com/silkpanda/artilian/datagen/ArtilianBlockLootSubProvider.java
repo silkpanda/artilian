@@ -91,6 +91,22 @@ public class ArtilianBlockLootSubProvider extends BlockLootSubProvider {
         add(ArtilianBlocks.OCULAR_LEAVES.get(),
                 block -> createLeavesDrops(block, ArtilianBlocks.OCULAR_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES));
         dropSelf(ArtilianBlocks.OCULAR_SAPLING.get());
+
+        // Phase 5 Stage 2: Mega-Jungle Worldgen
+        add(ArtilianBlocks.JUNGLE_TURF.get(),
+                block -> createSingleItemTableWithSilkTouch(block, net.minecraft.world.level.block.Blocks.DIRT));
+        dropSelf(ArtilianBlocks.PRIMAL_BASALT.get());
+        dropSelf(ArtilianBlocks.PRIMAL_BASALT_STAIRS.get());
+        add(ArtilianBlocks.PRIMAL_BASALT_SLAB.get(), block -> createSlabItemTable(block));
+        dropSelf(ArtilianBlocks.PRIMAL_BASALT_WALL.get());
+        dropSelf(ArtilianBlocks.AMBER_MOSS.get());
+        dropSelf(ArtilianBlocks.DRAGONWOOD_LOG.get());
+        dropSelf(ArtilianBlocks.DRAGONWOOD_PLANKS.get());
+        dropSelf(ArtilianBlocks.DRAGONWOOD_STAIRS.get());
+        add(ArtilianBlocks.DRAGONWOOD_SLAB.get(), block -> createSlabItemTable(block));
+        add(ArtilianBlocks.DRAGONWOOD_LEAVES.get(),
+                block -> createLeavesDrops(block, ArtilianBlocks.DRAGONWOOD_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES));
+        dropSelf(ArtilianBlocks.DRAGONWOOD_SAPLING.get());
     }
 
     @Override

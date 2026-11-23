@@ -28,9 +28,12 @@ import net.minecraft.world.level.levelgen.feature.configurations.SimpleBlockConf
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.levelgen.feature.featuresize.TwoLayersFeatureSize;
 import net.minecraft.world.level.levelgen.feature.foliageplacers.AcaciaFoliagePlacer;
+import net.minecraft.world.level.levelgen.feature.foliageplacers.BlobFoliagePlacer;
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FancyFoliagePlacer;
+import net.minecraft.world.level.levelgen.feature.foliageplacers.MegaJungleFoliagePlacer;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.ForkingTrunkPlacer;
+import net.minecraft.world.level.levelgen.feature.trunkplacers.MegaJungleTrunkPlacer;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.StraightTrunkPlacer;
 import net.minecraft.world.level.levelgen.placement.BiomeFilter;
 import net.minecraft.world.level.levelgen.placement.CountPlacement;
@@ -70,6 +73,12 @@ public final class ArtilianWorldGen {
             ResourceKey.create(Registries.CONFIGURED_FEATURE, ArtilianMod.id("ocular_tree"));
     public static final ResourceKey<ConfiguredFeature<?, ?>> BLINKING_EYE_PATCH =
             ResourceKey.create(Registries.CONFIGURED_FEATURE, ArtilianMod.id("blinking_eye_patch"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> DRAGONWOOD_TREE =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, ArtilianMod.id("dragonwood_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> MEGA_DRAGONWOOD_TREE =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, ArtilianMod.id("mega_dragonwood_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> AMBER_MOSS_PATCH =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, ArtilianMod.id("amber_moss_patch"));
 
     public static final ResourceKey<PlacedFeature> ORE_SUNSTEEL_PLACED =
             ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("ore_sunsteel_placed"));
@@ -91,6 +100,12 @@ public final class ArtilianWorldGen {
             ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("ocular_tree_placed"));
     public static final ResourceKey<PlacedFeature> BLINKING_EYE_PATCH_PLACED =
             ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("blinking_eye_patch_placed"));
+    public static final ResourceKey<PlacedFeature> DRAGONWOOD_TREE_PLACED =
+            ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("dragonwood_tree_placed"));
+    public static final ResourceKey<PlacedFeature> MEGA_DRAGONWOOD_TREE_PLACED =
+            ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("mega_dragonwood_tree_placed"));
+    public static final ResourceKey<PlacedFeature> AMBER_MOSS_PATCH_PLACED =
+            ResourceKey.create(Registries.PLACED_FEATURE, ArtilianMod.id("amber_moss_patch_placed"));
 
     public static final ResourceKey<BiomeModifier> ADD_SUNSTEEL_ORE =
             ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ArtilianMod.id("add_sunsteel_ore"));
@@ -175,6 +190,45 @@ public final class ArtilianWorldGen {
                                         net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.matchesBlocks(
                                                 net.minecraft.core.Direction.DOWN.getNormal(),
                                                 ArtilianBlocks.EYE_TURF.get()))))));
+
+        context.register(DRAGONWOOD_TREE, new ConfiguredFeature<>(
+                Feature.TREE,
+                new TreeConfiguration.TreeConfigurationBuilder(
+                        BlockStateProvider.simple(ArtilianBlocks.DRAGONWOOD_LOG.get()),
+                        new StraightTrunkPlacer(6, 3, 2),
+                        BlockStateProvider.simple(ArtilianBlocks.DRAGONWOOD_LEAVES.get()),
+                        new BlobFoliagePlacer(ConstantInt.of(2), ConstantInt.of(0), 3),
+                        new TwoLayersFeatureSize(1, 0, 1))
+                        .dirt(BlockStateProvider.simple(ArtilianBlocks.PRIMAL_BASALT.get()))
+                        .build()));
+
+        context.register(MEGA_DRAGONWOOD_TREE, new ConfiguredFeature<>(
+                Feature.TREE,
+                new TreeConfiguration.TreeConfigurationBuilder(
+                        BlockStateProvider.simple(ArtilianBlocks.DRAGONWOOD_LOG.get()),
+                        new MegaJungleTrunkPlacer(14, 4, 14),
+                        BlockStateProvider.simple(ArtilianBlocks.DRAGONWOOD_LEAVES.get()),
+                        new MegaJungleFoliagePlacer(ConstantInt.of(3), ConstantInt.of(0), 2),
+                        new TwoLayersFeatureSize(1, 1, 2))
+                        .dirt(BlockStateProvider.simple(ArtilianBlocks.PRIMAL_BASALT.get()))
+                        .build()));
+
+        context.register(AMBER_MOSS_PATCH, new ConfiguredFeature<>(
+                Feature.RANDOM_PATCH,
+                new RandomPatchConfiguration(
+                        4,
+                        5,
+                        2,
+                        PlacementUtils.filtered(
+                                Feature.SIMPLE_BLOCK,
+                                new SimpleBlockConfiguration(
+                                        BlockStateProvider.simple(ArtilianBlocks.AMBER_MOSS.get())),
+                                net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.allOf(
+                                        net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.ONLY_IN_AIR_PREDICATE,
+                                        net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate.matchesBlocks(
+                                                net.minecraft.core.Direction.DOWN.getNormal(),
+                                                ArtilianBlocks.JUNGLE_TURF.get(),
+                                                Blocks.MOSS_BLOCK))))));
     }
 
     private static ConfiguredFeature<RandomPatchConfiguration, Feature<RandomPatchConfiguration>> flowerPatch(
@@ -238,6 +292,22 @@ public final class ArtilianWorldGen {
         context.register(BLINKING_EYE_PATCH_PLACED, new PlacedFeature(
                 configured.getOrThrow(BLINKING_EYE_PATCH),
                 surfacePatch(1)));
+
+        context.register(DRAGONWOOD_TREE_PLACED, new PlacedFeature(
+                configured.getOrThrow(DRAGONWOOD_TREE),
+                VegetationPlacements.treePlacement(
+                        PlacementUtils.countExtra(6, 0.2F, 1),
+                        ArtilianBlocks.DRAGONWOOD_SAPLING.get())));
+
+        context.register(MEGA_DRAGONWOOD_TREE_PLACED, new PlacedFeature(
+                configured.getOrThrow(MEGA_DRAGONWOOD_TREE),
+                VegetationPlacements.treePlacement(
+                        PlacementUtils.countExtra(2, 0.5F, 1),
+                        ArtilianBlocks.DRAGONWOOD_SAPLING.get())));
+
+        context.register(AMBER_MOSS_PATCH_PLACED, new PlacedFeature(
+                configured.getOrThrow(AMBER_MOSS_PATCH),
+                surfacePatch(2)));
     }
 
     private static List<PlacementModifier> surfacePatch(int countPerChunk) {

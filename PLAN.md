@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 5 — Stage 1 (*Giant Dragon Jungle Dimension & Primal Portal*)** `DragonJungleDimension`, `PrimalPortalBlock` / `PrimalPortalShape`, `PrimalPortalEvents` (throw any `artilian:boss_drops` trophy into a Nether Portal to convert it into a Primal Portal), `primal_portal.png` + `.mcmeta`, datagen, `P5-01` safety gate, `./gradlew build`, and `./gradlew runGameTestServer` (`194/194` green) complete on `phase-5-stage-1-dragon-jungle-portal`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stage 6–7 and Phase 5 Stage 1 (`qa/evidence/dragon-jungle-portal-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 2 (*Mega-Jungle Worldgen*)**. |
+| **In progress** | **Phase 5 — Stage 2 (*Mega-Jungle Worldgen*)** `DragonJungleDimension` upgraded from flat placeholder to `NoiseBasedChunkGenerator` (`DRAGON_JUNGLE_NOISE`) with `MultiNoiseBiomeSource` (`artilian:dragon_jungle` + `artilian:amber_volcanic_grove`), 12 new blocks (`jungle_turf`, `primal_basalt` + stairs/slab/wall, `amber_moss`, `dragonwood_*` wood set with 1×1 & 2×2 `MEGA_DRAGONWOOD_TREE`), textures, datagen, `./gradlew build`, and `./gradlew runGameTestServer` (`198/198` green) complete on `phase-5-stage-2-mega-jungle-worldgen`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stage 6–7 and Phase 5 Stages 1–2 (`qa/evidence/dragon-jungle-worldgen-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 3 (*Dragon Jungle Structures*)**: **Dragon Roost** and **Amber Temple**. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -634,7 +634,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | Stage | Name | Scope | Status |
 |---|---|---|---|
 | 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal (Steve's note: throw a boss drop into a Nether Portal to open the Dragon Jungle dimension) | 🔄 Code & GameTests complete (`194/194`); live client check pending |
-| 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | [ ] Pending |
+| 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | 🔄 Code & GameTests complete (`198/198`); live client check pending |
 | 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | [ ] Pending |
 | 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | [ ] Pending |
 | 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | [ ] Pending |
@@ -667,6 +667,27 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`DragonJunglePortalGameTests`):** `194/194` green (5 new tests including `P5-01`). Red-proof recorded above.
 - **Security / Safety Gate (`P5-01`):** `HELD` in `194/194` suite (`security/FINDINGS.md`).
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies throwing a boss drop into a Nether Portal and stepping into `artilian:dragon_jungle`.
+
+### Phase 5 — Stage 2: Mega-Jungle Worldgen
+- [ ] **In Progress (`198/198` GameTests Green; Live Client Check Pending)** — Prehistoric mega-jungle noise terrain (`DRAGON_JUNGLE_NOISE`), `MultiNoiseBiomeSource` (`artilian:dragon_jungle` + `artilian:amber_volcanic_grove`), 12 new blocks (`jungle_turf`, `primal_basalt` + variants, `amber_moss`, `dragonwood_*` wood set), 1×1 & 2×2 `MEGA_DRAGONWOOD_TREE`, and `DragonJungleTerrainGameTests`.
+- **Why & Decisions:** Replace Stage 1's flat placeholder with Steve's towering prehistoric Dragon Jungle:
+  1. **Mega-Jungle Blocks & Dragonwood Set (`ArtilianBlocks`, `ArtilianItems`, `ArtilianTreeGrowers.DRAGONWOOD`):**
+     - `jungle_turf` (`Jungle Turf`), `primal_basalt` (`Primal Basalt` + stairs/slab/wall), and glowing `amber_moss` (`Amber Moss`, light level `8`) for kid-friendly under-canopy visibility.
+     - `dragonwood_log`, `dragonwood_planks`, `dragonwood_stairs`, `dragonwood_slab`, `dragonwood_leaves` (light level `3`), `dragonwood_sapling` (light level `5`).
+     - `ArtilianTreeGrowers.DRAGONWOOD` supports both 1×1 `DRAGONWOOD_TREE` and 2×2 `MEGA_DRAGONWOOD_TREE` (`MegaJungleTrunkPlacer(14, 4, 14)` + `MegaJungleFoliagePlacer`).
+  2. **Multi-Biome Noise Terrain (`DragonJungleDimension`, `ArtilianWorldGen`):**
+     - `DRAGON_JUNGLE_NOISE` (`NoiseGeneratorSettings`, `Primal Basalt` base, `Jungle Turf` / `Moss Block` floor, `Dirt` under-floor, `seaLevel = 63`).
+     - `MultiNoiseBiomeSource` splitting `artilian:dragon_jungle` (Canopy Emerald `#22C55E`, mega Dragonwood trees, Amber Moss) and `artilian:amber_volcanic_grove` (Ember Amber `#F97316`, volcanic fern grove, Amber Moss).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Mega-Jungle blocks, Dragonwood set, multi-biome noise terrain & GameTests | Pending commit | 12 blocks/items, `tools/art/make_dragon_jungle_art.py` textures, `DRAGON_JUNGLE_NOISE`, `AMBER_GROVE_BIOME`, `MEGA_DRAGONWOOD_TREE`, datagen (`runData`), `build`, and 4 `DragonJungleTerrainGameTests` (`198/198` green). Red-proof: removed `JUNGLE_TURF` from `BlockTags.DIRT` → `dragonJungleBlocksHaveExpectedTagsAndLightLevels` and `dragonwoodSaplingGrowsSingleAndMegaTreesOnJungleTurf` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Dragon Jungle terrain, giant 2×2 Dragonwood trees, and Amber Volcanic Grove (`qa/evidence/dragon-jungle-worldgen-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonJungleTerrainGameTests`):** `198/198` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (worldgen, blocks, and biomes only).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies mega-jungle terrain, giant Dragonwood trees, and both biomes.
 
 ---
 

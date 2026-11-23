@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "artilian:block/dragonwood_log_top",
+    "side": "artilian:block/dragonwood_log"
+  }
+}

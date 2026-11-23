@@ -27,7 +27,25 @@
     "water_color": 3003583,
     "water_fog_color": 1265226
   },
-  "features": [],
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "artilian:mega_dragonwood_tree_placed",
+      "artilian:dragonwood_tree_placed",
+      "artilian:amber_moss_patch_placed",
+      "minecraft:patch_grass_jungle",
+      "minecraft:patch_sugar_cane",
+      "minecraft:patch_pumpkin"
+    ]
+  ],
   "has_precipitation": true,
   "spawn_costs": {},
   "spawners": {

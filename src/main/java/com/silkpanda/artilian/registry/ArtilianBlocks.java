@@ -327,6 +327,62 @@ public class ArtilianBlocks {
                     .pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK)
                     .noLootTable()));
 
+    // Phase 5 Stage 2: Mega-Jungle Worldgen
+    public static final DeferredBlock<Block> JUNGLE_TURF = BLOCKS.register("jungle_turf",
+            () -> new Block(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.EMERALD)
+                    .strength(0.65F)
+                    .sound(SoundType.GRASS)));
+
+    public static final DeferredBlock<Block> PRIMAL_BASALT = BLOCKS.register("primal_basalt",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(1.8F, 6.0F)));
+
+    public static final DeferredBlock<StairBlock> PRIMAL_BASALT_STAIRS = BLOCKS.register("primal_basalt_stairs",
+            () -> new StairBlock(PRIMAL_BASALT.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(PRIMAL_BASALT.get())));
+
+    public static final DeferredBlock<SlabBlock> PRIMAL_BASALT_SLAB = BLOCKS.register("primal_basalt_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(PRIMAL_BASALT.get())));
+
+    public static final DeferredBlock<WallBlock> PRIMAL_BASALT_WALL = BLOCKS.register("primal_basalt_wall",
+            () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(PRIMAL_BASALT.get())));
+
+    public static final DeferredBlock<Block> AMBER_MOSS = BLOCKS.register("amber_moss",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.MOSS_BLOCK)
+                    .mapColor(MapColor.COLOR_ORANGE)
+                    .strength(1.0F, 3.0F)
+                    .lightLevel(state -> 8)));
+
+    public static final DeferredBlock<RotatedPillarBlock> DRAGONWOOD_LOG = BLOCKS.register("dragonwood_log",
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG)
+                    .mapColor(MapColor.COLOR_BROWN)));
+
+    public static final DeferredBlock<Block> DRAGONWOOD_PLANKS = BLOCKS.register("dragonwood_planks",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
+                    .mapColor(MapColor.COLOR_BROWN)));
+
+    public static final DeferredBlock<StairBlock> DRAGONWOOD_STAIRS = BLOCKS.register("dragonwood_stairs",
+            () -> new StairBlock(DRAGONWOOD_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS)
+                            .mapColor(MapColor.COLOR_BROWN)));
+
+    public static final DeferredBlock<SlabBlock> DRAGONWOOD_SLAB = BLOCKS.register("dragonwood_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB)
+                    .mapColor(MapColor.COLOR_BROWN)));
+
+    public static final DeferredBlock<LeavesBlock> DRAGONWOOD_LEAVES = BLOCKS.register("dragonwood_leaves",
+            () -> new LeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES)
+                    .mapColor(MapColor.EMERALD)
+                    .lightLevel(state -> 3)));
+
+    public static final DeferredBlock<SaplingBlock> DRAGONWOOD_SAPLING = BLOCKS.register("dragonwood_sapling",
+            () -> new SaplingBlock(ArtilianTreeGrowers.DRAGONWOOD,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)
+                            .mapColor(MapColor.EMERALD)
+                            .lightLevel(state -> 5)));
+
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
     }

@@ -89,6 +89,26 @@ public class ArtilianRecipeProvider extends RecipeProvider {
         logToPlanks(output, ArtilianBlocks.CRYSTAL_CANOPY_LOG.get(), ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get());
         logToPlanks(output, ArtilianBlocks.EMBERWOOD_LOG.get(), ArtilianBlocks.EMBERWOOD_PLANKS.get());
         logToPlanks(output, ArtilianBlocks.OCULAR_LOG.get(), ArtilianBlocks.OCULAR_PLANKS.get());
+        logToPlanks(output, ArtilianBlocks.DRAGONWOOD_LOG.get(), ArtilianBlocks.DRAGONWOOD_PLANKS.get());
+
+        ItemLike dragonwoodPlanks = ArtilianBlocks.DRAGONWOOD_PLANKS.get();
+        stairBuilder(ArtilianBlocks.DRAGONWOOD_STAIRS.get(), Ingredient.of(dragonwoodPlanks))
+                .unlockedBy(getHasName(dragonwoodPlanks), has(dragonwoodPlanks))
+                .save(output);
+        slab(output, RecipeCategory.BUILDING_BLOCKS, ArtilianBlocks.DRAGONWOOD_SLAB.get(), dragonwoodPlanks);
+
+        ItemLike primalBasalt = ArtilianBlocks.PRIMAL_BASALT.get();
+        ItemLike primalBasaltStairs = ArtilianBlocks.PRIMAL_BASALT_STAIRS.get();
+        ItemLike primalBasaltSlab = ArtilianBlocks.PRIMAL_BASALT_SLAB.get();
+        ItemLike primalBasaltWall = ArtilianBlocks.PRIMAL_BASALT_WALL.get();
+        stairBuilder(primalBasaltStairs, Ingredient.of(primalBasalt))
+                .unlockedBy(getHasName(primalBasalt), has(primalBasalt))
+                .save(output);
+        slab(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltSlab, primalBasalt);
+        wall(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltWall, primalBasalt);
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltStairs, primalBasalt);
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltSlab, primalBasalt, 2);
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltWall, primalBasalt);
 
         ItemLike ocularPlanks = ArtilianBlocks.OCULAR_PLANKS.get();
         stairBuilder(ArtilianBlocks.OCULAR_STAIRS.get(), Ingredient.of(ocularPlanks))

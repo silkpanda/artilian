@@ -438,6 +438,32 @@ public class ArtilianItems {
                     "item.artilian.all_seers_lens.tooltip",
                     ChatFormatting.AQUA));
 
+    // Phase 5 Stage 2: Mega-Jungle Worldgen
+    public static final DeferredItem<BlockItem> JUNGLE_TURF_ITEM =
+            ITEMS.registerSimpleBlockItem("jungle_turf", ArtilianBlocks.JUNGLE_TURF);
+    public static final DeferredItem<BlockItem> PRIMAL_BASALT_ITEM =
+            ITEMS.registerSimpleBlockItem("primal_basalt", ArtilianBlocks.PRIMAL_BASALT);
+    public static final DeferredItem<BlockItem> PRIMAL_BASALT_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("primal_basalt_stairs", ArtilianBlocks.PRIMAL_BASALT_STAIRS);
+    public static final DeferredItem<BlockItem> PRIMAL_BASALT_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("primal_basalt_slab", ArtilianBlocks.PRIMAL_BASALT_SLAB);
+    public static final DeferredItem<BlockItem> PRIMAL_BASALT_WALL_ITEM =
+            ITEMS.registerSimpleBlockItem("primal_basalt_wall", ArtilianBlocks.PRIMAL_BASALT_WALL);
+    public static final DeferredItem<BlockItem> AMBER_MOSS_ITEM =
+            ITEMS.registerSimpleBlockItem("amber_moss", ArtilianBlocks.AMBER_MOSS);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_LOG_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_log", ArtilianBlocks.DRAGONWOOD_LOG);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_PLANKS_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_planks", ArtilianBlocks.DRAGONWOOD_PLANKS);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_stairs", ArtilianBlocks.DRAGONWOOD_STAIRS);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_slab", ArtilianBlocks.DRAGONWOOD_SLAB);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_LEAVES_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_leaves", ArtilianBlocks.DRAGONWOOD_LEAVES);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_SAPLING_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_sapling", ArtilianBlocks.DRAGONWOOD_SAPLING);
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
     }

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_dragonwood_planks": {
+      "conditions": {
+        "items": [
+          {
+            "items": "artilian:dragonwood_planks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "artilian:dragonwood_stairs"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_dragonwood_planks"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "artilian:dragonwood_stairs"
+    ]
+  }
+}

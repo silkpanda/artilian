@@ -24,7 +24,10 @@ public class ArtilianWorldGenProvider extends DatapackBuiltinEntriesProvider {
             .add(Registries.TEMPLATE_POOL, ArtilianStructures::bootstrapTemplatePools)
             .add(Registries.STRUCTURE, ArtilianStructures::bootstrapStructures)
             .add(Registries.STRUCTURE_SET, ArtilianStructures::bootstrapStructureSets)
-            .add(Registries.NOISE_SETTINGS, EyeRealmDimension::bootstrapNoiseSettings)
+            .add(Registries.NOISE_SETTINGS, context -> {
+                EyeRealmDimension.bootstrapNoiseSettings(context);
+                DragonJungleDimension.bootstrapNoiseSettings(context);
+            })
             .add(Registries.DIMENSION_TYPE, context -> {
                 EyeRealmDimension.bootstrapDimensionType(context);
                 DragonJungleDimension.bootstrapDimensionType(context);

@@ -281,5 +281,20 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         // Phase 5 Stage 1: Giant Dragon Jungle
         this.addBlock(ArtilianBlocks.PRIMAL_PORTAL, "Primal Portal");
         this.add("biome.artilian.dragon_jungle", "Dragon Jungle");
+
+        // Phase 5 Stage 2: Mega-Jungle Worldgen
+        this.add("biome.artilian.amber_volcanic_grove", "Amber Volcanic Grove");
+        this.addBlock(ArtilianBlocks.JUNGLE_TURF, "Jungle Turf");
+        this.addBlock(ArtilianBlocks.PRIMAL_BASALT, "Primal Basalt");
+        this.addBlock(ArtilianBlocks.PRIMAL_BASALT_STAIRS, "Primal Basalt Stairs");
+        this.addBlock(ArtilianBlocks.PRIMAL_BASALT_SLAB, "Primal Basalt Slab");
+        this.addBlock(ArtilianBlocks.PRIMAL_BASALT_WALL, "Primal Basalt Wall");
+        this.addBlock(ArtilianBlocks.AMBER_MOSS, "Amber Moss");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_LOG, "Dragonwood Log");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_PLANKS, "Dragonwood Planks");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_STAIRS, "Dragonwood Stairs");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_SLAB, "Dragonwood Slab");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_LEAVES, "Dragonwood Leaves");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_SAPLING, "Dragonwood Sapling");
     }
 }

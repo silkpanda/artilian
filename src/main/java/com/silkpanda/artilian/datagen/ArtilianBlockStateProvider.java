@@ -111,6 +111,28 @@ public class ArtilianBlockStateProvider extends BlockStateProvider {
 
         // Phase 5 Stage 1: Giant Dragon Jungle
         portalBlock(ArtilianBlocks.PRIMAL_PORTAL.get(), "primal_portal", PrimalPortalBlock.AXIS);
+
+        // Phase 5 Stage 2: Mega-Jungle Worldgen
+        turfBlock(ArtilianBlocks.JUNGLE_TURF, "jungle_turf", mcLoc("block/dirt"));
+        simpleCube(ArtilianBlocks.PRIMAL_BASALT);
+        slateVariants(
+                ArtilianBlocks.PRIMAL_BASALT_STAIRS,
+                ArtilianBlocks.PRIMAL_BASALT_SLAB,
+                ArtilianBlocks.PRIMAL_BASALT_WALL);
+        simpleCube(ArtilianBlocks.AMBER_MOSS);
+        woodSet(
+                ArtilianBlocks.DRAGONWOOD_LOG,
+                ArtilianBlocks.DRAGONWOOD_PLANKS,
+                ArtilianBlocks.DRAGONWOOD_LEAVES,
+                ArtilianBlocks.DRAGONWOOD_SAPLING);
+        stairsBlock(ArtilianBlocks.DRAGONWOOD_STAIRS.get(), blockTexture(ArtilianBlocks.DRAGONWOOD_PLANKS.get()));
+        simpleBlockItem(ArtilianBlocks.DRAGONWOOD_STAIRS.get(),
+                models().getExistingFile(modLoc("block/dragonwood_stairs")));
+        slabBlock(ArtilianBlocks.DRAGONWOOD_SLAB.get(),
+                blockTexture(ArtilianBlocks.DRAGONWOOD_PLANKS.get()),
+                blockTexture(ArtilianBlocks.DRAGONWOOD_PLANKS.get()));
+        simpleBlockItem(ArtilianBlocks.DRAGONWOOD_SLAB.get(),
+                models().getExistingFile(modLoc("block/dragonwood_slab")));
     }
 
     private void gazingPortalBlock() {

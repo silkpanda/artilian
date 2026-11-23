@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "artilian:block/dragonwood_slab"
+    },
+    "type=double": {
+      "model": "artilian:block/dragonwood_planks"
+    },
+    "type=top": {
+      "model": "artilian:block/dragonwood_slab_top"
+    }
+  }
+}

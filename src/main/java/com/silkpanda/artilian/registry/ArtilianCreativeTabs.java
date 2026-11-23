@@ -141,6 +141,18 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.GREAT_ALL_SEER_SPAWN_EGG.get());
                         output.accept(ArtilianItems.OCULAR_KEY.get());
                         output.accept(ArtilianItems.ALL_SEERS_LENS.get());
+                        output.accept(ArtilianItems.JUNGLE_TURF_ITEM.get());
+                        output.accept(ArtilianItems.PRIMAL_BASALT_ITEM.get());
+                        output.accept(ArtilianItems.PRIMAL_BASALT_STAIRS_ITEM.get());
+                        output.accept(ArtilianItems.PRIMAL_BASALT_SLAB_ITEM.get());
+                        output.accept(ArtilianItems.PRIMAL_BASALT_WALL_ITEM.get());
+                        output.accept(ArtilianItems.AMBER_MOSS_ITEM.get());
+                        output.accept(ArtilianItems.DRAGONWOOD_LOG_ITEM.get());
+                        output.accept(ArtilianItems.DRAGONWOOD_PLANKS_ITEM.get());
+                        output.accept(ArtilianItems.DRAGONWOOD_STAIRS_ITEM.get());
+                        output.accept(ArtilianItems.DRAGONWOOD_SLAB_ITEM.get());
+                        output.accept(ArtilianItems.DRAGONWOOD_LEAVES_ITEM.get());
+                        output.accept(ArtilianItems.DRAGONWOOD_SAPLING_ITEM.get());
                     })
                     .build());
 
