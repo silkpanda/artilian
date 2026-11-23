@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 4 — Stage 5 (*Eye Realm Structures*)** Merged with Stage 4 (*Blinky Pet*) and all Phase 3–4 branches on `phase-4-stage-5-eye-realm-structures`; verifying `runData`, `build`, and `runGameTestServer` before PR into `main` and copying the release `.jar` to CurseForge. |
-| **Next** | 1. Live `./gradlew runClient` / CurseForge visual check & screenshot (`qa/evidence/eye-realm-structures-2026-11-22.png`) for Phase 4 Stage 5. 2. Begin **Phase 4 — Stage 6 (*The Great All-Seer*)**. |
+| **In progress** | **Phase 4 — Stage 6 (*The Great All-Seer*)** Code, `256×128` GeckoLib art (`lint_art.py --strict` clean), `Ocular Key`, `All-Seer's Lens`, datagen, and `GreatAllSeerGameTests` (`187/187` green) complete on `phase-4-stage-6-great-all-seer`; awaiting live `./gradlew runClient` visual check & PR into `main`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshot (`qa/evidence/great-all-seer-2026-11-22.png`) for Phase 4 Stage 6, then open PR into `main`. 2. Begin **Phase 4 — Stage 7 (*Phase 4 Art Pass*)**. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, and family LAN co-op playtest across Phases 1–3 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | None (all Phase 3–4 branches consolidated onto `phase-4-stage-5-eye-realm-structures` for PR into `main`). |
+| **Other work in flight** | None. |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -464,8 +464,8 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 2 | Terrain & Sky | Eye-covered blocks, trees, terrain generation, blinking skybox | ✅ Complete (`173/173` + client verified) |
 | 3 | Eye Realm Enemies | **Peepers**, **Oculus Slimes**, **Lens Guardians** | ✅ Complete (`177/177` + client verified) |
 | 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | ✅ Complete (`180/180` + client verified) |
-| 5 | Eye Realm Structures | Dimension structures & chests | 🔄 Code & GameTests complete; live client check pending |
-| 6 | The Great All-Seer | Phase 4 boss (`ArtilianBossEntity`) with telegraphed attacks & rematch altar | [ ] Pending |
+| 5 | Eye Realm Structures | Dimension structures & chests | ✅ Merged into `main` (`c346c90`, `183/183`; client screenshot pending) |
+| 6 | The Great All-Seer | Phase 4 boss (`ArtilianBossEntity`) with telegraphed attacks & rematch altar | 🔄 Code & GameTests complete (`187/187`); live client check pending |
 | 7 | Phase 4 Art Pass | Final art polish against Alex's specs + co-op verification | [ ] Pending |
 
 ### Phase 4 — Stage 1: Dimension & Gazing Portal
@@ -580,6 +580,33 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`EyeRealmStructuresGameTests`):** `183/183` green (3 new tests). Red-proof recorded above.
 - **Security Gate:** `n/a` (worldgen structures & chest loot only; zero banned blocks, `Starlight Gravity TNT` is non-destructive, guardians are `EyeRealmEnemyEntity` with `KidSafeTargets`).
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies both Eye Realm structures in-game.
+
+### Phase 4 — Stage 6: The Great All-Seer
+- [ ] **In Progress** — Phase 4 Eye Realm boss **The Great All-Seer** (`artilian:great_all_seer`, `GreatAllSeerEntity extends ArtilianBossEntity`), `256×128` GeckoLib model & `_glowmask.png`, `Ocular Key` summon item + `BossAltarBlock` rematch support, `All-Seer's Lens` trophy, datagen, and `GreatAllSeerGameTests`.
+- **Art Brief (`qa/reference/`):**
+  - **Target Scale:** `1.8 × 2.8` hovering eldritch-cartoony ocular sovereign (`~3.0` blocks tall).
+  - **Silhouette Inspiration:** Towering floating cyclopean sovereign with a domed armored eyelid-crown, central recessed Great Eye, 4 angled Twilight Magenta eye-wings (`wing_upper_*`, `wing_lower_*`), 4 orbiting Sentinel Mini-Eyes (`orbiter_1..4`), and a segmented cosmic robe/tail (`tail_1..3` + `tail_gem`).
+  - **Palette & Structural Anchor:** Deep Artilian Slate & Void Indigo plates (`#140F1D`–`#584672`), forged Sunsteel Gold (`#EE962E`–`#FFEEB4`) ocular bezel & crown horns, creamy sclera (`#E2E0F2`), Pupil Glow (`#7DF9FF`) iris, and Twilight Magenta (`#D946EF`) eye-wings.
+  - **Key 3D Recessed/Angled Features:** Deeply recessed 3D central eye socket with stepped bezel, articulated upper/lower eyelids (`lid_top`, `lid_bottom`), swept 4-wing geometry, and rotating 4-orbiter ring.
+  - **Glowmask Zones (`great_all_seer_glowmask.png`):** Central cyan iris, 4 mini-eye irises, wing eye-sigils & tips, crown Starlight crystal, and tail rune gem.
+- **Why & Decisions:**
+  1. **`GreatAllSeerEntity` (`SHADOW / STARLIGHT`):** `240` HP, `0.23` speed, `7.5` attack damage, `9.0` armor, `150` XP; immune to fall damage (`causeFallDamage = false`) with gentle hover fall-damping; never breaks blocks and spares `ChesterEntity`.
+  2. **Three Telegraphed Attacks (`>= 30` ticks windup) + Phase 2 (`<= 50%` HP *All-Seeing Overdrive*):**
+     - `GAZING_BEAM` (`45`t, `3.2`r, `7.5F`, `STARLIGHT`) — locks onto target position, vertical End Rod/Glow beam, applies `Glowing` (`80`t).
+     - `TWILIGHT_PULSE` (`40`t, `5.0`r, `7.0F`, `SHADOW`) — boss-centered AoE with outward knockback + `Slowness` & `Weakness` (`40`t).
+     - `ALL_SEEING_NOVA` (`50`t, `7.5`r, `9.5F`, `SHADOW`) — unlocked at `<= 50%` HP (`isAllSeeing()`, `PURPLE` boss bar, `42`t cooldown), wide twilight-cyan ring burst + `Glowing` (`100`t).
+  3. **Summon & Trophy (`Ocular Key` & `All-Seer's Lens`):** `OCULAR_KEY` (`BossSummonItem`) crafted from `Gazing Eye` + `Starlight Crystal` + `Amethyst Shard` + `Ender Pearl` summons The Great All-Seer on `BossAltarBlock`; drops `ALL_SEERS_LENS` (`BossTrophyItem`), `Starlight Crystal`, `Amethyst Shard`, `Ender Pearl`, and `Biome Treat`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `256×128` GeckoLib model, texture, glowmask & sprites | Pending commit | `tools/art/make_great_all_seer_art.py`, `lint_art.py --strict` clean (`entity/great_all_seer`), `preview_geo.py` (`qa/evidence/previews/great_all_seer-preview.png`). |
+  | 2 `GreatAllSeerEntity`, renderer, items, datagen & GameTests | Pending commit | `GreatAllSeerEntity`, `GreatAllSeerRenderer` (`AutoGlowingGeoLayer`), `OCULAR_KEY`, `ALL_SEERS_LENS`, `GREAT_ALL_SEER_SPAWN_EGG`, datagen (`runData`), `build`, and 4 `GreatAllSeerGameTests` (`187/187` green). Red-proof: `GreatAllSeerEntity.causeFallDamage` delegating to `super` → `greatAllSeerAttributesElementsTagEggHoverAndLootTable` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of The Great All-Seer & Boss Altar in the Eye Realm (`qa/evidence/great-all-seer-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`GreatAllSeerGameTests`):** `187/187` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (inherits `P3-01`–`P3-03` `BossAltarBlockEntity` single-boss lock, zero block-breaking, and `ChesterEntity` immunity).
+- **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green, and live `./gradlew runClient` verifies The Great All-Seer in-game.
 
 ---
 

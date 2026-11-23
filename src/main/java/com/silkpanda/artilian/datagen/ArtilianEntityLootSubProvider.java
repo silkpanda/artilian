@@ -35,6 +35,31 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
         this.add(ArtilianEntities.TRAINING_GOLEM.get(), LootTable.lootTable());
         this.add(ArtilianEntities.CRYSTAL_COLOSSUS.get(), crystalColossusTable());
         this.add(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), captainBrimstoneTable());
+        this.add(ArtilianEntities.GREAT_ALL_SEER.get(), greatAllSeerTable());
+    }
+
+    private static LootTable.Builder greatAllSeerTable() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.ALL_SEERS_LENS.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 3)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 6)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(Items.AMETHYST_SHARD)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 6)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(Items.ENDER_PEARL)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.BIOME_TREAT.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))));
     }
 
     private static LootTable.Builder captainBrimstoneTable() {
@@ -100,7 +125,8 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
                 ArtilianEntities.LENS_GUARDIAN.get(),
                 ArtilianEntities.TRAINING_GOLEM.get(),
                 ArtilianEntities.CRYSTAL_COLOSSUS.get(),
-                ArtilianEntities.CAPTAIN_BRIMSTONE.get()
+                ArtilianEntities.CAPTAIN_BRIMSTONE.get(),
+                ArtilianEntities.GREAT_ALL_SEER.get()
         );
     }
 }

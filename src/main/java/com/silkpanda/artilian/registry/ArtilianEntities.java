@@ -3,6 +3,7 @@ package com.silkpanda.artilian.registry;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.boss.CaptainBrimstoneEntity;
 import com.silkpanda.artilian.boss.CrystalColossusEntity;
+import com.silkpanda.artilian.boss.GreatAllSeerEntity;
 import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.enemy.AstralStalkerEntity;
@@ -229,6 +230,14 @@ public class ArtilianEntities {
                     .eyeHeight(3.2F)
                     .clientTrackingRange(12)
                     .build("captain_brimstone"));
+
+    /** The Great All-Seer: hovering Shadow/Starlight ocular sovereign boss of the Eye Realm. */
+    public static final DeferredHolder<EntityType<?>, EntityType<GreatAllSeerEntity>> GREAT_ALL_SEER =
+            ENTITY_TYPES.register("great_all_seer", () -> EntityType.Builder.of(GreatAllSeerEntity::new, MobCategory.MONSTER)
+                    .sized(1.8F, 2.8F)
+                    .eyeHeight(2.0F)
+                    .clientTrackingRange(12)
+                    .build("great_all_seer"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

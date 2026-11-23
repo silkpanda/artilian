@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_gazing_eye": {
+      "conditions": {
+        "items": [
+          {
+            "items": "artilian:gazing_eye"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "artilian:ocular_key"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_gazing_eye"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "artilian:ocular_key"
+    ]
+  }
+}

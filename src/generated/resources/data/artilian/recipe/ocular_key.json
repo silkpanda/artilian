@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "C": {
+      "item": "artilian:starlight_crystal"
+    },
+    "G": {
+      "item": "artilian:gazing_eye"
+    },
+    "P": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "pattern": [
+    " A ",
+    "CGC",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:ocular_key"
+  }
+}

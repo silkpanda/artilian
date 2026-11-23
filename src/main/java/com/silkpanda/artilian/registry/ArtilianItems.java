@@ -422,6 +422,22 @@ public class ArtilianItems {
     public static final DeferredItem<BlockItem> OCULAR_SAPLING_ITEM =
             ITEMS.registerSimpleBlockItem("ocular_sapling", ArtilianBlocks.OCULAR_SAPLING);
 
+    // Phase 4 Stage 6: The Great All-Seer
+    public static final DeferredItem<DeferredSpawnEggItem> GREAT_ALL_SEER_SPAWN_EGG =
+            ITEMS.register("great_all_seer_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.GREAT_ALL_SEER, 0x2B2338, 0xD946EF, new Item.Properties()));
+    public static final DeferredItem<BossSummonItem> OCULAR_KEY =
+            ITEMS.register("ocular_key", () -> new BossSummonItem(
+                    ArtilianEntities.GREAT_ALL_SEER,
+                    new Item.Properties().stacksTo(16).rarity(Rarity.RARE),
+                    "item.artilian.ocular_key.tooltip",
+                    ChatFormatting.LIGHT_PURPLE));
+    public static final DeferredItem<BossTrophyItem> ALL_SEERS_LENS =
+            ITEMS.register("all_seers_lens", () -> new BossTrophyItem(
+                    new Item.Properties().stacksTo(16).rarity(Rarity.EPIC),
+                    "item.artilian.all_seers_lens.tooltip",
+                    ChatFormatting.AQUA));
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
     }

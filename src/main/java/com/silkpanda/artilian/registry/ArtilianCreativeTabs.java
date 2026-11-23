@@ -138,6 +138,9 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.OCULAR_SLAB_ITEM.get());
                         output.accept(ArtilianItems.OCULAR_LEAVES_ITEM.get());
                         output.accept(ArtilianItems.OCULAR_SAPLING_ITEM.get());
+                        output.accept(ArtilianItems.GREAT_ALL_SEER_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.OCULAR_KEY.get());
+                        output.accept(ArtilianItems.ALL_SEERS_LENS.get());
                     })
                     .build());
 

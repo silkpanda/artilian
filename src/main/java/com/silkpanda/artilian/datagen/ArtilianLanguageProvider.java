@@ -207,6 +207,14 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         // Phase 4 Stage 4: Blinky Pet
         this.addEntityType(ArtilianEntities.BLINKY, "Blinky");
         this.addItem(ArtilianItems.BLINKY_SPAWN_EGG, "Blinky Spawn Egg");
+        // Phase 4 Stage 6: The Great All-Seer
+        this.addEntityType(ArtilianEntities.GREAT_ALL_SEER, "The Great All-Seer");
+        this.addItem(ArtilianItems.GREAT_ALL_SEER_SPAWN_EGG, "Great All-Seer Spawn Egg");
+        this.addItem(ArtilianItems.OCULAR_KEY, "Ocular Key");
+        this.add("item.artilian.ocular_key.tooltip", "Use on a Boss Altar to summon The Great All-Seer!");
+        this.addItem(ArtilianItems.ALL_SEERS_LENS, "All-Seer's Lens");
+        this.add("item.artilian.all_seers_lens.tooltip", "Boss Trophy — Relic of The Great All-Seer!");
+        this.add("message.artilian.great_all_seer.all_seeing", "The Great All-Seer opens its All-Seeing Gaze!");
         this.addItem(ArtilianItems.CAPTURE_CRYSTAL, "Capture Crystal");
         this.add("item.artilian.capture_crystal.filled", "Capture Crystal (%s)");
         this.add("item.artilian.capture_crystal.tooltip", "Captures Biome Pets — Right-click a wild pet!");

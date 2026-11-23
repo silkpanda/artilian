@@ -190,6 +190,18 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .define('E', ArtilianBlocks.EMBER_BLOOM.get())
                 .unlockedBy("has_sunsteel_ingot", has(ArtilianItems.SUNSTEEL_INGOT.get()))
                 .save(output);
+
+        // Phase 4 Stage 6: The Great All-Seer summon item
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ArtilianItems.OCULAR_KEY.get())
+                .pattern(" A ")
+                .pattern("CGC")
+                .pattern(" P ")
+                .define('A', Items.AMETHYST_SHARD)
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('G', ArtilianItems.GAZING_EYE.get())
+                .define('P', Items.ENDER_PEARL)
+                .unlockedBy("has_gazing_eye", has(ArtilianItems.GAZING_EYE.get()))
+                .save(output);
     }
 
     private static void slateStonecutting(RecipeOutput output, ItemLike result, ItemLike base, int count) {
