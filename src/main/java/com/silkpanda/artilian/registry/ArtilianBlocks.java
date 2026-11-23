@@ -102,6 +102,9 @@ public class ArtilianBlocks {
     public static final DeferredBlock<ArtilianTntBlock> BRIMSTONE_METEOR_TNT = BLOCKS.register("brimstone_meteor_tnt",
             () -> new ArtilianTntBlock(TntVariant.BRIMSTONE_METEOR,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.TNT).mapColor(MapColor.COLOR_RED)));
+    public static final DeferredBlock<ArtilianTntBlock> DRAGONFIRE_MEGA_TNT = BLOCKS.register("dragonfire_mega_tnt",
+            () -> new ArtilianTntBlock(TntVariant.DRAGONFIRE_MEGA,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TNT).mapColor(MapColor.EMERALD)));
 
     // Crystal Canopy Woods (Phase 2 Stage 1)
     public static final DeferredBlock<Block> CRYSTAL_TURF = BLOCKS.register("crystal_turf",

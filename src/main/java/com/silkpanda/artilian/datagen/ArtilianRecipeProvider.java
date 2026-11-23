@@ -77,12 +77,26 @@ public class ArtilianRecipeProvider extends RecipeProvider {
 
         prismaticGearSet(output);
 
+        gearSet(
+                output,
+                ArtilianItems.DRAGON_SCALE.get(),
+                ArtilianItems.DRAGONSCALE_SWORD.get(),
+                ArtilianItems.DRAGONSCALE_PICKAXE.get(),
+                ArtilianItems.DRAGONSCALE_AXE.get(),
+                ArtilianItems.DRAGONSCALE_SHOVEL.get(),
+                ArtilianItems.DRAGONSCALE_HOE.get(),
+                ArtilianItems.DRAGONSCALE_HELMET.get(),
+                ArtilianItems.DRAGONSCALE_CHESTPLATE.get(),
+                ArtilianItems.DRAGONSCALE_LEGGINGS.get(),
+                ArtilianItems.DRAGONSCALE_BOOTS.get());
+
         customTntRecipe(output, ArtilianBlocks.PARTY_TNT.get(), Items.SUGAR, ArtilianItems.SUNSTEEL_INGOT.get());
         customTntRecipe(output, ArtilianBlocks.BOUNCE_TNT.get(), Items.SLIME_BALL, ArtilianItems.SUNSTEEL_INGOT.get());
         customTntRecipe(output, ArtilianBlocks.FROST_NOVA_TNT.get(), Items.SNOWBALL, ArtilianItems.STARLIGHT_CRYSTAL.get());
         customTntRecipe(output, ArtilianBlocks.CLUSTER_QUARRY_TNT.get(), ArtilianItems.STARLIGHT_CRYSTAL.get(), ArtilianItems.SUNSTEEL_INGOT.get());
         customTntRecipe(output, ArtilianBlocks.STARLIGHT_GRAVITY_TNT.get(), ArtilianItems.PRISM_CORE.get(), ArtilianItems.STARLIGHT_CRYSTAL.get());
         customTntRecipe(output, ArtilianBlocks.BRIMSTONE_METEOR_TNT.get(), ArtilianItems.BRIMSTONE_DOUBLOON.get(), Items.BLAZE_POWDER);
+        customTntRecipe(output, ArtilianBlocks.DRAGONFIRE_MEGA_TNT.get(), ArtilianItems.DRAGON_SCALE.get(), Items.BLAZE_POWDER);
 
         wandRecipes(output);
 

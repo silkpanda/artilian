@@ -8,6 +8,7 @@ import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
 import com.silkpanda.artilian.gear.ArtilianSwordItem;
 import com.silkpanda.artilian.gear.ArtilianTiers;
+import com.silkpanda.artilian.gear.DragonscaleSwordItem;
 import com.silkpanda.artilian.gear.PrismaticSwordItem;
 import com.silkpanda.artilian.mana.ArtilianWandItem;
 import com.silkpanda.artilian.mana.WandSpell;
@@ -132,6 +133,8 @@ public class ArtilianItems {
             ITEMS.registerSimpleBlockItem("starlight_gravity_tnt", ArtilianBlocks.STARLIGHT_GRAVITY_TNT);
     public static final DeferredItem<BlockItem> BRIMSTONE_METEOR_TNT_ITEM =
             ITEMS.registerSimpleBlockItem("brimstone_meteor_tnt", ArtilianBlocks.BRIMSTONE_METEOR_TNT);
+    public static final DeferredItem<BlockItem> DRAGONFIRE_MEGA_TNT_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonfire_mega_tnt", ArtilianBlocks.DRAGONFIRE_MEGA_TNT);
 
     // Crystal Canopy Woods blocks
     public static final DeferredItem<BlockItem> CRYSTAL_TURF_ITEM =
@@ -495,6 +498,39 @@ public class ArtilianItems {
     public static final DeferredItem<DeferredSpawnEggItem> STORM_DRAGONLING_SPAWN_EGG =
             ITEMS.register("storm_dragonling_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.STORM_DRAGONLING, 0x1E2848, 0x7DF9FF, new Item.Properties()));
+
+    // Phase 5 Stage 7: Dragonscale Gear
+    public static final DeferredItem<SwordItem> DRAGONSCALE_SWORD = ITEMS.register("dragonscale_sword",
+            () -> new DragonscaleSwordItem(
+                    ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(SwordItem.createAttributes(ArtilianTiers.DRAGONSCALE, 4, -2.1F)),
+                    "item.artilian.dragonscale_sword.tooltip",
+                    ChatFormatting.GREEN));
+    public static final DeferredItem<PickaxeItem> DRAGONSCALE_PICKAXE = ITEMS.register("dragonscale_pickaxe",
+            () -> new PickaxeItem(ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(PickaxeItem.createAttributes(ArtilianTiers.DRAGONSCALE, 1.0F, -2.8F))));
+    public static final DeferredItem<AxeItem> DRAGONSCALE_AXE = ITEMS.register("dragonscale_axe",
+            () -> new AxeItem(ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(AxeItem.createAttributes(ArtilianTiers.DRAGONSCALE, 5.0F, -3.0F))));
+    public static final DeferredItem<ShovelItem> DRAGONSCALE_SHOVEL = ITEMS.register("dragonscale_shovel",
+            () -> new ShovelItem(ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(ShovelItem.createAttributes(ArtilianTiers.DRAGONSCALE, 1.5F, -3.0F))));
+    public static final DeferredItem<HoeItem> DRAGONSCALE_HOE = ITEMS.register("dragonscale_hoe",
+            () -> new HoeItem(ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(HoeItem.createAttributes(ArtilianTiers.DRAGONSCALE, -4.0F, 0.0F))));
+    public static final DeferredItem<ArmorItem> DRAGONSCALE_HELMET =
+            armor("dragonscale_helmet", "dragonscale", ArtilianArmorMaterials.DRAGONSCALE, ArmorItem.Type.HELMET, 40, true);
+    public static final DeferredItem<ArmorItem> DRAGONSCALE_CHESTPLATE =
+            armor("dragonscale_chestplate", "dragonscale", ArtilianArmorMaterials.DRAGONSCALE, ArmorItem.Type.CHESTPLATE, 40, true);
+    public static final DeferredItem<ArmorItem> DRAGONSCALE_LEGGINGS =
+            armor("dragonscale_leggings", "dragonscale", ArtilianArmorMaterials.DRAGONSCALE, ArmorItem.Type.LEGGINGS, 40, true);
+    public static final DeferredItem<ArmorItem> DRAGONSCALE_BOOTS =
+            armor("dragonscale_boots", "dragonscale", ArtilianArmorMaterials.DRAGONSCALE, ArmorItem.Type.BOOTS, 40, true);
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

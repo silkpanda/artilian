@@ -56,7 +56,14 @@ public enum TntVariant implements StringRepresentable {
             ChatFormatting.RED,
             "block.artilian.brimstone_meteor_tnt.tooltip",
             new DustParticleOptions(new Vector3f(1.000F, 0.302F, 0.353F), 1.5F),
-            ArtilianBlocks.BRIMSTONE_METEOR_TNT);
+            ArtilianBlocks.BRIMSTONE_METEOR_TNT),
+    DRAGONFIRE_MEGA(
+            "dragonfire_mega_tnt",
+            true,
+            ChatFormatting.GOLD,
+            "block.artilian.dragonfire_mega_tnt.tooltip",
+            new DustParticleOptions(new Vector3f(0.976F, 0.451F, 0.086F), 1.6F),
+            ArtilianBlocks.DRAGONFIRE_MEGA_TNT);
 
     private final String serializedName;
     private final boolean destructiveCapable;

@@ -48,6 +48,15 @@ public class ArtilianArmorMaterials {
             3.0F,
             0.15F);
 
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> DRAGONSCALE = register(
+            "dragonscale",
+            4, 8, 10, 4, 12,
+            26,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            () -> ArtilianItems.DRAGON_SCALE.get(),
+            3.5F,
+            0.20F);
+
     private static DeferredHolder<ArmorMaterial, ArmorMaterial> register(
             String name,
             int boots,

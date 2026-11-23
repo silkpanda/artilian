@@ -35,24 +35,33 @@ public class ArtilianItemTagsProvider extends ItemTagsProvider {
         tag(Tags.Items.GEMS).add(ArtilianItems.STARLIGHT_CRYSTAL.get());
 
         tag(ItemTags.SWORDS).add(
-                ArtilianItems.SUNSTEEL_SWORD.get(), ArtilianItems.STARLIGHT_SWORD.get(), ArtilianItems.PRISMATIC_SWORD.get());
+                ArtilianItems.SUNSTEEL_SWORD.get(), ArtilianItems.STARLIGHT_SWORD.get(),
+                ArtilianItems.PRISMATIC_SWORD.get(), ArtilianItems.DRAGONSCALE_SWORD.get());
         tag(ItemTags.PICKAXES).add(
-                ArtilianItems.SUNSTEEL_PICKAXE.get(), ArtilianItems.STARLIGHT_PICKAXE.get(), ArtilianItems.PRISMATIC_PICKAXE.get());
+                ArtilianItems.SUNSTEEL_PICKAXE.get(), ArtilianItems.STARLIGHT_PICKAXE.get(),
+                ArtilianItems.PRISMATIC_PICKAXE.get(), ArtilianItems.DRAGONSCALE_PICKAXE.get());
         tag(ItemTags.AXES).add(
-                ArtilianItems.SUNSTEEL_AXE.get(), ArtilianItems.STARLIGHT_AXE.get(), ArtilianItems.PRISMATIC_AXE.get());
+                ArtilianItems.SUNSTEEL_AXE.get(), ArtilianItems.STARLIGHT_AXE.get(),
+                ArtilianItems.PRISMATIC_AXE.get(), ArtilianItems.DRAGONSCALE_AXE.get());
         tag(ItemTags.SHOVELS).add(
-                ArtilianItems.SUNSTEEL_SHOVEL.get(), ArtilianItems.STARLIGHT_SHOVEL.get(), ArtilianItems.PRISMATIC_SHOVEL.get());
+                ArtilianItems.SUNSTEEL_SHOVEL.get(), ArtilianItems.STARLIGHT_SHOVEL.get(),
+                ArtilianItems.PRISMATIC_SHOVEL.get(), ArtilianItems.DRAGONSCALE_SHOVEL.get());
         tag(ItemTags.HOES).add(
-                ArtilianItems.SUNSTEEL_HOE.get(), ArtilianItems.STARLIGHT_HOE.get(), ArtilianItems.PRISMATIC_HOE.get());
+                ArtilianItems.SUNSTEEL_HOE.get(), ArtilianItems.STARLIGHT_HOE.get(),
+                ArtilianItems.PRISMATIC_HOE.get(), ArtilianItems.DRAGONSCALE_HOE.get());
 
         tag(ItemTags.HEAD_ARMOR).add(
-                ArtilianItems.SUNSTEEL_HELMET.get(), ArtilianItems.STARLIGHT_HELMET.get(), ArtilianItems.PRISMATIC_HELMET.get());
+                ArtilianItems.SUNSTEEL_HELMET.get(), ArtilianItems.STARLIGHT_HELMET.get(),
+                ArtilianItems.PRISMATIC_HELMET.get(), ArtilianItems.DRAGONSCALE_HELMET.get());
         tag(ItemTags.CHEST_ARMOR).add(
-                ArtilianItems.SUNSTEEL_CHESTPLATE.get(), ArtilianItems.STARLIGHT_CHESTPLATE.get(), ArtilianItems.PRISMATIC_CHESTPLATE.get());
+                ArtilianItems.SUNSTEEL_CHESTPLATE.get(), ArtilianItems.STARLIGHT_CHESTPLATE.get(),
+                ArtilianItems.PRISMATIC_CHESTPLATE.get(), ArtilianItems.DRAGONSCALE_CHESTPLATE.get());
         tag(ItemTags.LEG_ARMOR).add(
-                ArtilianItems.SUNSTEEL_LEGGINGS.get(), ArtilianItems.STARLIGHT_LEGGINGS.get(), ArtilianItems.PRISMATIC_LEGGINGS.get());
+                ArtilianItems.SUNSTEEL_LEGGINGS.get(), ArtilianItems.STARLIGHT_LEGGINGS.get(),
+                ArtilianItems.PRISMATIC_LEGGINGS.get(), ArtilianItems.DRAGONSCALE_LEGGINGS.get());
         tag(ItemTags.FOOT_ARMOR).add(
-                ArtilianItems.SUNSTEEL_BOOTS.get(), ArtilianItems.STARLIGHT_BOOTS.get(), ArtilianItems.PRISMATIC_BOOTS.get());
+                ArtilianItems.SUNSTEEL_BOOTS.get(), ArtilianItems.STARLIGHT_BOOTS.get(),
+                ArtilianItems.PRISMATIC_BOOTS.get(), ArtilianItems.DRAGONSCALE_BOOTS.get());
 
         copy(BlockTags.LOGS_THAT_BURN, ItemTags.LOGS_THAT_BURN);
         copy(BlockTags.PLANKS, ItemTags.PLANKS);

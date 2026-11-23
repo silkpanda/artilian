@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 5 — Stage 6 (*Hatchable Pet Dragons*)** Added 3 hatchable dragon companions (`CanopyDragonlingEntity`, `AmberDragonlingEntity`, `StormDragonlingEntity` extending `PetDragonEntity` → `ArtilianPetEntity`), 3 hatchable `DragonEggBlock`s (`canopy_wyvern_egg`, `amber_wyvern_egg`, `storm_glidewing_egg` with `HATCH` stages `0..2`, warm-block boost on `Amber Moss` / `Jungle Turf` / `Moss` / `Hay` / `Magma`, and `Biome Treat` / `Blaze Powder` acceleration), `50%` wild dragon egg loot drops, dedicated `128×128` GeckoLib models & glowmasks (`lint_art.py --phase5 --strict` clean), `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`212/212` green) on `phase-5-stage-6-hatchable-pet-dragons`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–6 (`qa/evidence/hatchable-pet-dragons-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 7 (*Dragonscale Gear & Mega TNT*)**: Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honoring `allowDestructiveCustomTnt`). |
+| **In progress** | **Phase 5 — Stage 7 (*Dragonscale Gear & Mega TNT*)** Added `ArtilianTiers.DRAGONSCALE` (`2350` durability, Netherite-tier), `ArtilianArmorMaterials.DRAGONSCALE` (`26` total defense, `3.5F` toughness, `0.20F` knockback resistance), `DragonscaleSwordItem` (ignites targets + `Weakness`), full 9-piece Dragonscale gear set (`dragonscale_sword/pickaxe/axe/shovel/hoe` + `dragonscale_helmet/chestplate/leggings/boots` with `DragonscaleArmorRenderer` & full-set Fire Resistance + Strength bonus), **Dragonfire Mega TNT** (`TntVariant.DRAGONFIRE_MEGA`, `7.5F` blast honoring `allowDestructiveCustomTnt` + `SAFE_QUARRY_DAMAGE_CALCULATOR`), `make_ores_and_gear_art.py` + `make_tnt_art.py` textures, `check_armor_sheets.py` clean, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`218/218` green, including `P5-02` red-proof) on `phase-5-stage-7-dragonscale-gear-mega-tnt`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–7 (`qa/evidence/dragonscale-gear-mega-tnt-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 8 (*Apex Dragon Boss*)**: Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -639,7 +639,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | 🔄 Code & GameTests complete (`205/205`); live client check pending |
 | 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | 🔄 Code & GameTests complete (`208/208`); live client check pending |
 | 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | 🔄 Code & GameTests complete (`212/212`); live client check pending |
-| 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | [ ] Pending |
+| 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | 🔄 Code & GameTests complete (`218/218`); live client check pending |
 | 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | [ ] Pending |
 | 9 | Twin-Star Endgame Rewards | Combined endgame rewards uniting Alex's and Steve's realms | [ ] Pending |
 | 10 | Phase 5 Art Pass & Finale | Final art polish & full family co-op finale verification | [ ] Pending |
@@ -773,6 +773,22 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`DragonPetsGameTests`):** `212/212` green (4 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
 - **Security Gate:** `n/a` (inherits `P2-01`–`P2-04` `CaptureCrystalItem` ownership, non-lethal fainting, and `KidSafeTargets`).
 - **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Dragon Egg hatching and dragonling companions.
+
+### Phase 5 — Stage 7: Dragonscale Gear & Mega TNT
+- [ ] **In Progress (`218/218` GameTests Green; Live Client Check Pending)** — Full 9-piece **Dragonscale** gear set (`ArtilianTiers.DRAGONSCALE`, `ArtilianArmorMaterials.DRAGONSCALE`, `DragonscaleSwordItem`, `DragonscaleArmorRenderer`) crafted from `Dragon Scale`, plus **Dragonfire Mega TNT** (`TntVariant.DRAGONFIRE_MEGA`) honoring `allowDestructiveCustomTnt` (`P5-02`).
+- **Why & Decisions:**
+  1. **Dragonscale Gear (`ArtilianTiers.DRAGONSCALE`, `ArtilianArmorMaterials.DRAGONSCALE`):** Fire-resistant Netherite-plus tier (`2350` durability, `10.0F` mining speed, `5.0F` attack bonus, `26` enchantability) and armor (`26` total defense, `3.5F` toughness, `0.20F` knockback resistance). `DragonscaleSwordItem` ignites targets (`3s`) and applies `MobEffects.WEAKNESS` (`60` ticks) with `DRAGON_BREATH` + `FLAME` particles. Full 4-piece Dragonscale armor grants passive `Fire Resistance` + `Strength`.
+  2. **Dragonfire Mega TNT (`TntVariant.DRAGONFIRE_MEGA`):** Crafted from `Dragon Scale` + `Blaze Powder` + `TNT`. Detonates with a `7.5F` blast radius, `DRAGON_BREATH` + `FLAME` + `LAVA` particles, `ENDER_DRAGON_GROWL` sound, and `16.0F` hostile-only blast damage (`KidSafeTargets.isValidOffensiveTarget`), while strictly enforcing `ArtilianConfig.isDestructiveTntAllowed()` and `SAFE_QUARRY_DAMAGE_CALCULATOR`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Gear, Mega TNT, art (`make_ores_and_gear_art.py`, `make_tnt_art.py`), datagen & GameTests | Pending commit | `DragonscaleSwordItem`, `DragonscaleArmorRenderer`, `dragonscale_armor.geo.json`, `ArtilianTiers.DRAGONSCALE`, `ArtilianArmorMaterials.DRAGONSCALE`, `TntVariant.DRAGONFIRE_MEGA`, `ArtilianPrimedTnt#explodeDragonfireMega`, `check_armor_sheets.py` clean, datagen (`runData`), `build`, `DragonscaleGearAndMegaTntGameTests` + `TntSecurityProbes.p5_02` (`218/218` green). Red-proof: replaced `SAFE_QUARRY_DAMAGE_CALCULATOR` with `null` and forced `Level.ExplosionInteraction.TNT` in `explodeDragonfireMega` → `p5_02_dragonfiremegatnthonorsdestructiveconfigandkidsafetargets` & `p1_07` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Dragonscale armor/weapons & Dragonfire Mega TNT (`qa/evidence/dragonscale-gear-mega-tnt-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonscaleGearAndMegaTntGameTests` + `TntSecurityProbes`):** `218/218` green (6 new tests including `P5-02`). Red-proof recorded above.
+- **Security Gate (`P5-02`):** `HELD` in `218/218` suite (`security/FINDINGS.md`).
+- **Done When:** `check_armor_sheets.py`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Dragonscale gear & Dragonfire Mega TNT in-game.
 
 ---
 

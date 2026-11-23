@@ -76,6 +76,18 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.PRISMATIC_BOOTS, "Prismatic Boots");
         this.add("item.artilian.prismatic_armor.tooltip", "Full Set — Grants Fire Resistance!");
 
+        this.addItem(ArtilianItems.DRAGONSCALE_SWORD, "Dragonscale Sword");
+        this.add("item.artilian.dragonscale_sword.tooltip", "Dragon-forged blade — Scorches and weakens foes!");
+        this.addItem(ArtilianItems.DRAGONSCALE_PICKAXE, "Dragonscale Pickaxe");
+        this.addItem(ArtilianItems.DRAGONSCALE_AXE, "Dragonscale Axe");
+        this.addItem(ArtilianItems.DRAGONSCALE_SHOVEL, "Dragonscale Shovel");
+        this.addItem(ArtilianItems.DRAGONSCALE_HOE, "Dragonscale Hoe");
+        this.addItem(ArtilianItems.DRAGONSCALE_HELMET, "Dragonscale Helmet");
+        this.addItem(ArtilianItems.DRAGONSCALE_CHESTPLATE, "Dragonscale Chestplate");
+        this.addItem(ArtilianItems.DRAGONSCALE_LEGGINGS, "Dragonscale Leggings");
+        this.addItem(ArtilianItems.DRAGONSCALE_BOOTS, "Dragonscale Boots");
+        this.add("item.artilian.dragonscale_armor.tooltip", "Full Set — Grants Fire Resistance & Strength!");
+
         this.addEntityType(ArtilianEntities.PRIMED_TNT, "Primed Artilian TNT");
         this.addBlock(ArtilianBlocks.PARTY_TNT, "Party TNT");
         this.add("block.artilian.party_tnt.tooltip", "Safe Blast — Fireworks, speed, and heal!");
@@ -89,6 +101,8 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("block.artilian.starlight_gravity_tnt.tooltip", "Safe Blast — Pulls foes inward and floats them!");
         this.addBlock(ArtilianBlocks.BRIMSTONE_METEOR_TNT, "Brimstone Meteor TNT");
         this.add("block.artilian.brimstone_meteor_tnt.tooltip", "Meteor Blast — Safe unless enabled in config!");
+        this.addBlock(ArtilianBlocks.DRAGONFIRE_MEGA_TNT, "Dragonfire Mega TNT");
+        this.add("block.artilian.dragonfire_mega_tnt.tooltip", "Dragonfire Blast — Safe unless enabled in config!");
         this.add("message.artilian.tnt.safe_mode", "Safe Blast Mode is ON — no blocks broken!");
 
         this.addItem(ArtilianItems.SPARK_WAND, "Spark Wand");

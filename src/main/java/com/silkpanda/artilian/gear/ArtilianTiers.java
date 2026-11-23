@@ -33,4 +33,12 @@ public final class ArtilianTiers {
             4.5F,
             24,
             () -> Ingredient.of(ArtilianItems.PRISM_CORE.get()));
+
+    public static final Tier DRAGONSCALE = new SimpleTier(
+            BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
+            2350,
+            10.0F,
+            5.0F,
+            26,
+            () -> Ingredient.of(ArtilianItems.DRAGON_SCALE.get()));
 }

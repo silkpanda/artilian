@@ -217,6 +217,7 @@ public class ArtilianPrimedTnt extends PrimedTnt {
             case CLUSTER_QUARRY -> explodeClusterQuarry(serverLevel);
             case STARLIGHT_GRAVITY -> explodeStarlightGravity(serverLevel);
             case BRIMSTONE_METEOR -> explodeBrimstoneMeteor(serverLevel);
+            case DRAGONFIRE_MEGA -> explodeDragonfireMega(serverLevel);
         }
     }
 
@@ -329,6 +330,42 @@ public class ArtilianPrimedTnt extends PrimedTnt {
                 45, 1.8, 0.8, 1.8, 0.1);
         level.sendParticles(ParticleTypes.LAVA, this.getX(), this.getY() + 0.5, this.getZ(),
                 18, 1.4, 0.6, 1.4, 0.05);
+    }
+
+    private void explodeDragonfireMega(ServerLevel level) {
+        boolean destructive = ArtilianConfig.isDestructiveTntAllowed();
+        level.explode(
+                this,
+                Explosion.getDefaultDamageSource(level, this),
+                SAFE_QUARRY_DAMAGE_CALCULATOR,
+                this.getX(),
+                this.getY(0.0625),
+                this.getZ(),
+                7.5F,
+                false,
+                destructive ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+
+        if (!destructive) {
+            notifySafeMode(level);
+        }
+
+        double radius = 8.0;
+        AABB box = this.getBoundingBox().inflate(radius);
+        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, box)) {
+            if (KidSafeTargets.isValidOffensiveTarget(null, target)
+                    && target.distanceToSqr(this) <= radius * radius) {
+                target.hurt(level.damageSources().explosion(this, this.getOwner()), 16.0F);
+                target.igniteForSeconds(4);
+            }
+        }
+        level.sendParticles(ParticleTypes.DRAGON_BREATH, this.getX(), this.getY() + 0.7, this.getZ(),
+                56, 2.2, 1.0, 2.2, 0.12);
+        level.sendParticles(ParticleTypes.FLAME, this.getX(), this.getY() + 0.6, this.getZ(),
+                48, 2.0, 0.9, 2.0, 0.12);
+        level.sendParticles(ParticleTypes.LAVA, this.getX(), this.getY() + 0.5, this.getZ(),
+                22, 1.6, 0.7, 1.6, 0.06);
+        level.playSound(null, this.getX(), this.getY(), this.getZ(),
+                SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1.4F, 0.95F);
     }
 
     private void explodeParty(ServerLevel level) {

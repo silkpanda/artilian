@@ -163,6 +163,16 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.CANOPY_DRAGONLING_SPAWN_EGG.get());
                         output.accept(ArtilianItems.AMBER_DRAGONLING_SPAWN_EGG.get());
                         output.accept(ArtilianItems.STORM_DRAGONLING_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.DRAGONSCALE_SWORD.get());
+                        output.accept(ArtilianItems.DRAGONSCALE_PICKAXE.get());
+                        output.accept(ArtilianItems.DRAGONSCALE_AXE.get());
+                        output.accept(ArtilianItems.DRAGONSCALE_SHOVEL.get());
+                        output.accept(ArtilianItems.DRAGONSCALE_HOE.get());
+                        output.accept(ArtilianItems.DRAGONSCALE_HELMET.get());
+                        output.accept(ArtilianItems.DRAGONSCALE_CHESTPLATE.get());
+                        output.accept(ArtilianItems.DRAGONSCALE_LEGGINGS.get());
+                        output.accept(ArtilianItems.DRAGONSCALE_BOOTS.get());
+                        output.accept(ArtilianItems.DRAGONFIRE_MEGA_TNT_ITEM.get());
                     })
                     .build());
 

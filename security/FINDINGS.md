@@ -227,3 +227,13 @@ Template for an entry:
 - **Impact:** Without the `artilian:boss_drops` tag guard, any junk item would convert Nether Portals; without clamped safe surface Y, cleared headspace, a `5x5` Moss Block landing pad, and frame-first + flag `18` placement, the return portal could collapse or strand players.
 - **Fix:** `PrimalPortalEvents` enforces `ArtilianTags.Items.BOSS_DROPS`, and `PrimalPortalBlock#createReturnPortalWithPlatform` reuses `GazingPortalBlock#findSafeSurfaceY`, builds a `5x5` `Moss Block` landing pad, clears a `5x5x5` air pocket, places the `4x5` `Obsidian` frame edges first, and fills the `2x3` `Primal Portal` interior with flag `18`. Phase 5 Stage 1 (`phase-5-stage-1-dragon-jungle-portal`).
 - **Proof:** GameTests `DragonJunglePortalGameTests.nonBossDropItemInNetherPortalDoesNotTransformPortal` & `p5_01_primalPortalArrivalIsAlwaysSafeAndCreatesLandingPad`. Red-proof: removed `BOSS_DROPS` tag check → `nonbossdropiteminnetherportaldoesnottransformportal` failed; HELD with controls on (`194/194` tests passing).
+
+---
+
+### P5-02 — Dragonfire Mega TNT bypasses `allowDestructiveCustomTnt` or kid-safe targeting — FIXED
+- **Severity:** High
+- **Where:** `tnt/ArtilianPrimedTnt.java` (`explodeDragonfireMega`, `SAFE_QUARRY_DAMAGE_CALCULATOR`)
+- **Attack:** Under default config (`allowDestructiveCustomTnt = false`), a player detonates `Dragonfire Mega TNT` inside an arena containing Glass/Oak Planks, Stone, a `Chest`, a `Player`, `ChesterEntity`, a `Villager`, a tamed `CrystalFoxEntity`, and a hostile `Zombie`.
+- **Impact:** Without `SAFE_QUARRY_DAMAGE_CALCULATOR` and `allowDestructiveCustomTnt` enforcement, Dragonfire Mega TNT would destroy player bases/chests and injure players, Chester, villagers, and tamed pets.
+- **Fix:** `ArtilianPrimedTnt#explodeDragonfireMega` uses `SAFE_QUARRY_DAMAGE_CALCULATOR` and `Level.ExplosionInteraction.NONE` when `allowDestructiveCustomTnt` is `false` (and `fire = false`), while filtering bonus dragonfire blast damage via `KidSafeTargets.isValidOffensiveTarget`. Phase 5 Stage 7 (`phase-5-stage-7-dragonscale-gear-mega-tnt`).
+- **Proof:** GameTest `TntSecurityProbes.p5_02_dragonfireMegaTntHonorsDestructiveConfigAndKidSafeTargets`. EXPLOITED (`p5_02_dragonfiremegatnthonorsdestructiveconfigandkidsafetargets` failed) when `SAFE_QUARRY_DAMAGE_CALCULATOR` was replaced with `null` and `Level.ExplosionInteraction.TNT` was forced; HELD with the controls on (`218/218` tests passing).
