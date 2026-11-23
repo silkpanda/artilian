@@ -101,17 +101,56 @@ def lint_pair(
         origin = cube.get("origin", [0, 0, 0])
         size = cube["size"]
         uv = cube.get("uv")
-        if not isinstance(uv, (list, tuple)) or len(uv) < 2:
-            notes.append(f"{bone_name}/{origin}: per-face UV dict (skipped box-UV check)")
-            continue
-
-        u, v = int(uv[0]), int(uv[1])
         w, h, d = int(round(size[0])), int(round(size[1])), int(round(size[2]))
         if (w <= 0 and h <= 0) or (w <= 0 and d <= 0) or (h <= 0 and d <= 0):
             continue
 
-        rect = box_rect(u, v, w, h, d)
         label = f"{bone_name}/{origin}"
+        is_cutout = (w == 0 or h == 0 or d == 0) or (
+            name.startswith("armor/") and float(cube.get("inflate", 0.0)) >= 0.46
+        )
+
+        if isinstance(uv, dict):
+            for face in ("north", "south", "east", "west", "up", "down"):
+                entry = uv.get(face)
+                if not isinstance(entry, dict):
+                    continue
+                fuv = entry.get("uv")
+                fsize = entry.get("uv_size")
+                if not isinstance(fuv, (list, tuple)) or not isinstance(fsize, (list, tuple)):
+                    continue
+                fu, fv = float(fuv[0]), float(fuv[1])
+                su, sv = float(fsize[0]), float(fsize[1])
+                rx = int(round(fu + su if su < 0 else fu))
+                ry = int(round(fv + sv if sv < 0 else fv))
+                rw = int(round(abs(su)))
+                rh = int(round(abs(sv)))
+                if rw <= 0 or rh <= 0:
+                    continue
+                if rx < 0 or ry < 0 or rx + rw > uv_w or ry + rh > uv_h:
+                    problems.append(f"{label}: {face} UV rect {(rx, ry, rw, rh)} leaves {uv_w}x{uv_h} UV grid")
+                    continue
+                total_faces += 1
+                scaled_rect = (
+                    int(round(rx * sx)),
+                    int(round(ry * sy)),
+                    max(1, int(round(rw * sx))),
+                    max(1, int(round(rh * sy))),
+                )
+                alpha, colors = _describe_face(sheet, scaled_rect)
+                if not is_cutout and alpha < 0.99:
+                    problems.append(f"{label}: {face} face {(rx, ry, rw, rh)} is {alpha:.0%} opaque")
+                elif not is_cutout and colors <= 1 and rw >= 3 and rh >= 3:
+                    flat_faces += 1
+                    notes.append(f"{label}: {face} face {(rx, ry, rw, rh)} is one flat colour")
+            continue
+
+        if not isinstance(uv, (list, tuple)) or len(uv) < 2:
+            notes.append(f"{bone_name}/{origin}: invalid UV entry")
+            continue
+
+        u, v = int(uv[0]), int(uv[1])
+        rect = box_rect(u, v, w, h, d)
 
         if rect[0] < 0 or rect[1] < 0 or rect[0] + rect[2] > uv_w or rect[1] + rect[3] > uv_h:
             problems.append(f"{label}: UV rect {rect} leaves {uv_w}x{uv_h} UV grid")
@@ -124,10 +163,6 @@ def lint_pair(
                 problems.append(f"{label}: UV rect {rect} partially overlaps {other_label} {other}")
         taken.append((label, rect, is_mirror))
 
-        # Allow intentional 1-bit alpha cutouts on armor filigree shells and 0-thickness planes
-        is_cutout = (w == 0 or h == 0 or d == 0) or (
-            name.startswith("armor/") and float(cube.get("inflate", 0.0)) >= 0.46
-        )
         for face, face_rect in box_faces(u, v, w, h, d).items():
             if face_rect[2] <= 0 or face_rect[3] <= 0:
                 continue
@@ -151,8 +186,18 @@ def lint_pair(
     return problems, notes
 
 
-def collect_pairs(phase3_only: bool, phase4_only: bool, phase5_only: bool) -> list[tuple[str, Path, Path, int, int]]:
+def collect_pairs(
+    phase3_only: bool,
+    phase4_only: bool,
+    phase5_only: bool,
+    entities: list[str] | None = None,
+) -> list[tuple[str, Path, Path, int, int]]:
     pairs: list[tuple[str, Path, Path, int, int]] = []
+    if entities:
+        for eid in entities:
+            pairs.append((f"entity/{eid}", ENTITY_GEO_DIR / f"{eid}.geo.json", ENTITY_TEX_DIR / f"{eid}.png", 128, 128))
+        return pairs
+
     if phase3_only:
         for eid in PHASE3_ENTITIES:
             min_w = 256 if eid in ("crystal_colossus", "captain_brimstone") else 128
@@ -186,8 +231,11 @@ def collect_pairs(phase3_only: bool, phase4_only: bool, phase5_only: bool) -> li
             for species_id in SHARED_RIGS[eid]:
                 pairs.append((f"entity/{species_id}", geo_path, ENTITY_TEX_DIR / f"{species_id}.png", 256, 128))
             continue
-        min_w = 256 if eid in ("crystal_colossus", "captain_brimstone", "great_all_seer") else (128 if eid != "chester" else 64)
-        min_h = 128 if eid in BOSS_ENTITIES else 64
+        if eid in ("chester", "chester_sleep"):
+            min_w, min_h = 128, 128
+        else:
+            min_w = 256 if eid in ("crystal_colossus", "captain_brimstone", "great_all_seer") else 128
+            min_h = 128 if eid in BOSS_ENTITIES else 64
         pairs.append((f"entity/{eid}", geo_path, ENTITY_TEX_DIR / f"{eid}.png", min_w, min_h))
 
     for geo_path in sorted(ARMOR_GEO_DIR.glob("*.geo.json")):
@@ -202,11 +250,12 @@ def main() -> int:
     parser.add_argument("--phase3", action="store_true", help="Check only Phase 3 bosses and armor.")
     parser.add_argument("--phase4", action="store_true", help="Check only Phase 4 Eye Realm entities.")
     parser.add_argument("--phase5", action="store_true", help="Check only Phase 5 Dragon Jungle entities.")
+    parser.add_argument("--entity", action="append", default=[], help="Check specific entity ID(s), e.g. --entity chester --entity chester_sleep")
     parser.add_argument("--strict", action="store_true", help="Fail if any flat single-colour faces are found.")
     args = parser.parse_args()
 
     failed = False
-    for name, geo_path, tex_path, min_w, min_h in collect_pairs(args.phase3, args.phase4, args.phase5):
+    for name, geo_path, tex_path, min_w, min_h in collect_pairs(args.phase3, args.phase4, args.phase5, args.entity):
         problems, notes = lint_pair(name, geo_path, tex_path, min_width=min_w, min_height=min_h)
         print(f"== {name} ==")
         for p in problems:
