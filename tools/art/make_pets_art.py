@@ -639,55 +639,49 @@ def make_biome_treat():
 
 
 def make_shadow_wisp():
-    """256x128 (2x scale over 128x64 UV grid) Shadow Wisp coat, glowing runes & glowmask."""
+    """256x128 (2x scale over 128x64 UV grid) Shadow Wisp matching Steve's drawing & original look."""
     S = 2
     img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
     glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # 8-stop Charcoal-Obsidian & Twilight-Slate ramp for the oversized shadow head
+    # Charcoal-violet blocky head ramp faithful to Steve's shaded sketch & original Shadow Wisp
     HEAD_RAMP = [
-        (18, 14, 28, 255),   # 0: Deep void-obsidian crevice
-        (28, 23, 40, 255),   # 1: Charcoal-shadow deep
-        (42, 36, 58, 255),   # 2: Dark twilight-slate
-        (56, 48, 76, 255),   # 3: Charcoal-violet base
-        (72, 62, 96, 255),   # 4: Mid twilight-slate
-        (90, 78, 118, 255),  # 5: Soft upper highlight
-        (108, 94, 140, 255), # 6: Arcane ridge highlight
-        (126, 110, 158, 255),# 7: Edge sheen
+        (22, 18, 32, 255),   # 0: Shadow speckle
+        (28, 23, 40, 255),   # 1: Deep charcoal-violet
+        (36, 30, 50, 255),   # 2: Low-mid charcoal
+        (44, 38, 60, 255),   # 3: Shaded slate
+        (54, 46, 72, 255),   # 4: Mid charcoal-violet
+        (64, 55, 84, 255),   # 5: Charcoal-violet base
+        (74, 64, 96, 255),   # 6: Soft upper highlight
+        (86, 76, 108, 255),  # 7: Edge sheen
     ]
-    # 8-stop Vivid Shadow-Violet & Spectral Amethyst ramp for torso, arms, claws & legs
+    # Vivid purple V-torso & tendril ramp faithful to Steve's drawing & original Shadow Wisp
     BODY_RAMP = [
-        (42, 14, 78, 255),   # 0: Abyssal violet crevice
-        (68, 26, 122, 255),  # 1: Deep royal violet
-        (96, 38, 164, 255),  # 2: Shaded shadow-purple
-        (126, 54, 198, 255), # 3: Rich amethyst midtone
-        (152, 76, 224, 255), # 4: Vivid shadow-violet base
-        (178, 108, 248, 255),# 5: Luminous violet highlight
-        (202, 146, 255, 255),# 6: Spectral orchid glint
-        (226, 190, 255, 255),# 7: Pale wisp crest
+        (62, 24, 112, 255),  # 0: Deep shadow purple
+        (78, 30, 138, 255),  # 1: Royal violet shade
+        (98, 40, 166, 255),  # 2: Shaded purple
+        (118, 52, 192, 255), # 3: Rich violet midtone
+        (138, 66, 214, 255), # 4: Vivid shadow-purple base
+        (158, 84, 232, 255), # 5: Upper purple highlight
+        (174, 104, 244, 255),# 6: Soft wisp highlight
+        (188, 124, 250, 255),# 7: Top edge highlight
     ]
-    # Emissive Twilight Magenta & Starlight Orchid palette (DESIGN.md #D946EF)
+    # Glowing violet-magenta eyes, chest core, and subtle tendril tips
     MAG = {
-        "k": (44, 14, 62, 255),     # Dark magenta-violet lash/bevel
-        "d": (112, 26, 117, 255),   # Deep magenta bezel
-        "m": (162, 28, 175, 255),   # Rich magenta shade
-        "e": (217, 70, 239, 255),   # #D946EF Twilight Magenta
-        "l": (240, 171, 252, 255),  # Bright spectral pink-violet
-        "w": (250, 232, 255, 255),  # White-hot wisp core
-        "V": HEAD_RAMP[0],
-        "C": HEAD_RAMP[2],
-        "S": HEAD_RAMP[3],
-        "B": BODY_RAMP[1],
-        "P": BODY_RAMP[4],
-        "H": BODY_RAMP[6],
+        "d": (164, 44, 194, 255),   # Shaded magenta bevel
+        "m": (196, 56, 220, 255),   # Rich violet-magenta
+        "e": (217, 70, 239, 255),   # #D946EF Eye/Shadow magenta
+        "l": (236, 152, 249, 255),  # Soft lavender-pink glow
+        "g": (248, 208, 255, 255),  # Glowing lavender-white
+        "w": (253, 232, 255, 255),  # Bright core glint
     }
 
     def f2x(u, v, w, h, d):
         return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    def shade_ramp_box(u, v, w, h, d, ramp, *, seed=0, bottom_glow=False):
+    def shade_ramp_box(u, v, w, h, d, ramp, *, seed=0, texture_scale=1):
         f = f2x(u, v, w, h, d)
-        face_bias = {"top": 5.2, "front": 4.5, "east": 3.8, "west": 3.4, "back": 2.9, "bottom": 1.9}
+        face_bias = {"top": 5.3, "front": 4.6, "east": 4.0, "west": 3.6, "back": 3.2, "bottom": 2.2}
         for name, (rx, ry, rw, rh) in f.items():
             bias = face_bias[name]
             for ly in range(rh):
@@ -698,19 +692,21 @@ def make_shadow_wisp():
                         cx = abs(tx - 0.5) * 2.0
                         cy = abs(ty - 0.5) * 2.0
                         edge_dist = max(cx, cy)
-                        idx = bias + (1.0 - edge_dist) * (2.6 if bottom_glow else 1.8) - edge_dist * 1.3
+                        idx = bias + (1.0 - edge_dist) * 1.9 - edge_dist * 1.1
                     elif name == "top":
                         edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
-                        idx = bias - (0.9 if edge == 0 else 0.0) + (0.6 if ty < 0.4 else -0.2)
+                        idx = bias + (0.6 if edge == 0 else 0.0) + (0.4 if ty < 0.45 else -0.2)
                     else:
-                        idx = bias + (0.45 - ty) * 2.1 + (0.2 - tx) * 0.4
-                    mottle = ((lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 11)
+                        idx = bias + (0.45 - ty) * 1.9 + (0.2 - tx) * 0.35
+                    sx = lx // texture_scale
+                    sy = ly // texture_scale
+                    mottle = ((sx * 7 + sy * 13 + seed * 5 + (sx ^ sy) * 3) % 11)
                     if mottle <= 1:
-                        idx += 0.55
+                        idx += 0.45
                     elif mottle >= 9:
-                        idx -= 0.55
+                        idx -= 0.45
                     if name not in ("top", "bottom") and ly == rh - 1:
-                        idx -= 0.8
+                        idx -= 0.65
                     c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
                     put(img, rx + lx, ry + ly, ramp[c_idx])
 
@@ -723,211 +719,96 @@ def make_shadow_wisp():
             )
             paint_grid(target, rx, ry, grid, palette)
 
-    # 1. Upper V-torso [5, 4, 4] at [0, 0] -> 10x8x8 px
-    shade_ramp_box(0, 0, 5, 4, 4, BODY_RAMP, seed=1, bottom_glow=True)
-    ut = f2x(0, 0, 5, 4, 4)
-    # Recessed dark shadow frame around the glowing chest core on front
-    fx, fy, fw, fh = ut["front"]
-    for dy in range(1, 7):
-        for dx in range(2, 8):
-            is_edge = (dx in (2, 7) or dy in (1, 6))
-            put(img, fx + dx, fy + dy, BODY_RAMP[0] if is_edge else BODY_RAMP[1])
-    # Shoulder armor bevels & glowing magenta trim on sides
-    for side in ("east", "west"):
-        sx, sy, sw, sh = ut[side]
-        for dx in range(2, 6):
-            put(img, sx + dx, sy + 1, BODY_RAMP[6])
-            put(img, sx + dx, sy + 2, MAG["m"] if dx in (3, 4) else BODY_RAMP[4])
-        put(img, sx + 3, sy + 2, MAG["e"])
-        put(img, sx + 4, sy + 2, MAG["e"])
-        put(glow, sx + 3, sy + 2, MAG["e"])
-        put(glow, sx + 4, sy + 2, MAG["e"])
-    # Dorsal spectral-magenta spine runes on back (10x8)
-    bx, by, bw, bh = ut["back"]
-    for dy, col in [(1, MAG["m"]), (2, MAG["e"]), (3, MAG["l"]), (4, MAG["e"]), (5, MAG["m"]), (6, MAG["d"])]:
-        put(img, bx + 4, by + dy, col)
-        put(img, bx + 5, by + dy, col)
-        if 2 <= dy <= 4:
-            put(glow, bx + 4, by + dy, col)
-            put(glow, bx + 5, by + dy, col)
-    # Subtle magenta wisp core glint at center of upper torso bottom face
-    ubx, uby, ubw, ubh = ut["bottom"]
-    for dx in (4, 5):
-        for dy in (3, 4):
-            put(img, ubx + dx, uby + dy, BODY_RAMP[5])
+    # 1. Upper & lower tapered V-torso [5, 4, 4]@[0, 0] and [3, 3, 3]@[20, 0] — clean shaded purple
+    shade_ramp_box(0, 0, 5, 4, 4, BODY_RAMP, seed=1, texture_scale=2)
+    shade_ramp_box(20, 0, 3, 3, 3, BODY_RAMP, seed=2, texture_scale=2)
 
-    # 2. Lower tapered V-torso [3, 3, 3] at [20, 0] -> 6x6x6 px
-    shade_ramp_box(20, 0, 3, 3, 3, BODY_RAMP, seed=2, bottom_glow=True)
-    lt = f2x(20, 0, 3, 3, 3)
-    for fname in ("front", "back"):
-        lx0, ly0, lw, lh = lt[fname]
-        put(img, lx0 + 2, ly0 + 2, MAG["e"] if fname == "front" else MAG["m"])
-        put(img, lx0 + 3, ly0 + 2, MAG["e"] if fname == "front" else MAG["m"])
-        put(img, lx0 + 2, ly0 + 3, BODY_RAMP[6])
-        put(img, lx0 + 3, ly0 + 3, BODY_RAMP[6])
-        if fname == "front":
-            put(glow, lx0 + 2, ly0 + 2, MAG["e"])
-            put(glow, lx0 + 3, ly0 + 2, MAG["e"])
-
-    # 3. Glowing Outset Chest Core [2, 2, 1] at [34, 0] -> 4x4x2 px
-    shade_ramp_box(34, 0, 2, 2, 1, [MAG["d"], MAG["m"], MAG["e"], MAG["l"], MAG["w"]], seed=3)
+    # 2. Glowing chest core [2, 2, 1] at [34, 0] -> 4x4x2 px (clean soft lavender-magenta core)
+    shade_ramp_box(34, 0, 2, 2, 1, [MAG["d"], MAG["m"], MAG["e"], MAG["l"], MAG["g"]], seed=3)
     paint_box_2x(img, 34, 0, 2, 2, 1, {
         "front": [
-            "dmmd",
-            "elwe",
-            "ewwl",
-            "dmed",
+            "lggl",
+            "gwwg",
+            "gwwg",
+            "lggl",
         ],
+        "top": ["elge", "emle"],
+        "bottom": ["dmed", "deed"],
     }, MAG)
     paint_box_2x(glow, 34, 0, 2, 2, 1, {
         "front": [
-            ".mm.",
-            "elwe",
-            "ewwl",
-            ".me.",
-        ],
-        "top": [
-            ".ee.",
-            ".ll.",
+            "lggl",
+            "gwwg",
+            "gwwg",
+            "lggl",
         ],
     }, MAG)
 
-    # 4. Boxy Charcoal-Obsidian Head [8, 6, 7] at [0, 10] -> 16x12x14 px
-    shade_ramp_box(0, 10, 8, 6, 7, HEAD_RAMP, seed=4)
+    # 3. Boxy charcoal-violet head [8, 6, 7] at [0, 10] -> 16x12x14 px with Steve's shadowy speckles
+    shade_ramp_box(0, 10, 8, 6, 7, HEAD_RAMP, seed=4, texture_scale=2)
     hf = f2x(0, 10, 8, 6, 7)
-    # Brow shadow ridge & dark socket accents on front (16x12)
-    hfx, hfy, hfw, hfh = hf["front"]
-    for dx in range(1, 15):
-        put(img, hfx + dx, hfy + 3, HEAD_RAMP[1] if dx in (2, 3, 4, 5, 10, 11, 12, 13) else HEAD_RAMP[2])
-    # Eye socket recessed shadow border behind eyes
-    for sx_off in (2, 3, 4, 5, 10, 11, 12, 13):
-        for sy_off in (4, 5, 6, 7):
-            put(img, hfx + sx_off, hfy + sy_off, HEAD_RAMP[0])
-    # Subtle glowing third-eye/brow wisp slit between the eyes & crown speckles matching Steve's drawing
-    put(img, hfx + 7, hfy + 3, MAG["d"])
-    put(img, hfx + 8, hfy + 3, MAG["d"])
-    put(img, hfx + 7, hfy + 4, MAG["m"])
-    put(img, hfx + 8, hfy + 4, MAG["m"])
-    put(glow, hfx + 7, hfy + 4, MAG["m"])
-    put(glow, hfx + 8, hfy + 4, MAG["m"])
-    for sx, sy in [(2, 1), (3, 1), (12, 1), (13, 1), (6, 2), (9, 2), (4, 9), (5, 10), (11, 9), (10, 10), (2, 10), (13, 10)]:
-        put(img, hfx + sx, hfy + sy, HEAD_RAMP[0])
-    # Top charcoal shadow-mottle clusters & subtle twilight crown rim (16x14)
-    htx, hty, htw, hth = hf["top"]
-    for sx, sy in [(3, 3), (4, 4), (11, 3), (12, 4), (6, 7), (9, 8), (5, 10), (10, 10)]:
-        put(img, htx + sx, hty + sy, HEAD_RAMP[0])
-    # Bottom neck-collar transition shading on head bottom face (16x14)
-    hbx, hby, hbw, hbh = hf["bottom"]
-    for dy in range(4, 10):
-        for dx in range(5, 11):
-            dist = abs(dx - 7.5) + abs(dy - 6.5)
-            put(img, hbx + dx, hby + dy, BODY_RAMP[2] if dist < 2.2 else (BODY_RAMP[1] if dist < 4.0 else HEAD_RAMP[1]))
-    # Side & back subtle twilight rune cracks
-    for side in ("east", "west", "back"):
-        sx0, sy0, sw, sh = hf[side]
-        mid = sw // 2
-        put(img, sx0 + mid, sy0 + 4, HEAD_RAMP[0])
-        put(img, sx0 + mid, sy0 + 5, BODY_RAMP[2])
-        put(img, sx0 + mid, sy0 + 6, HEAD_RAMP[0])
+    hfx, hfy, _, _ = hf["front"]
+    # Subtle crayon-like vertical texture & dark shadow speckles matching Steve's drawing + original look
+    for sx, sy in [(2, 2), (12, 2), (6, 4), (8, 6), (4, 8), (10, 8), (2, 10), (12, 10)]:
+        for oy in range(2):
+            for ox in range(2):
+                put(img, hfx + sx + ox, hfy + sy + oy, HEAD_RAMP[0] if (ox + oy) % 2 == 0 else HEAD_RAMP[1])
+    htx, hty, _, _ = hf["top"]
+    for sx, sy in [(4, 4), (10, 4), (6, 8), (8, 10)]:
+        for oy in range(2):
+            for ox in range(2):
+                put(img, htx + sx + ox, hty + sy + oy, HEAD_RAMP[0] if (ox + oy) % 2 == 0 else HEAD_RAMP[1])
 
-    # 5. Glowing Shadow Eyes: eye_left [2,2,1]@[34,10], eye_right [2,2,1]@[42,10] -> 4x4x2 px
-    for is_left, eye_u in ((True, 34), (False, 42)):
-        shade_ramp_box(eye_u, 10, 2, 2, 1, [HEAD_RAMP[0], HEAD_RAMP[1], MAG["k"], MAG["d"]], seed=5)
-        if is_left:
-            front_eye = [
-                "kkdk",
-                "klwe",
-                "deel",
-                "kmmk",
-            ]
-            glow_eye = [
-                "....",
-                ".lwe",
-                "deel",
-                ".mm.",
-            ]
-        else:
-            front_eye = [
-                "kdkk",
-                "ewlk",
-                "leed",
-                "kmmk",
-            ]
-            glow_eye = [
-                "....",
-                "ewl.",
-                "leed",
-                ".mm.",
-            ]
-        paint_box_2x(img, eye_u, 10, 2, 2, 1, {"front": front_eye}, MAG)
-        paint_box_2x(glow, eye_u, 10, 2, 2, 1, {"front": glow_eye}, MAG)
+    # 4. Glowing Shadow eyes: [2, 2, 1]@[34, 10] and [42, 10] -> 4x4x2 px
+    # Clean 2x upscale of the original 2x2 diagonal-glow magenta/lavender eyes
+    for eye_u in (34, 42):
+        shade_ramp_box(eye_u, 10, 2, 2, 1, [MAG["d"], MAG["m"], MAG["e"], MAG["l"]], seed=5)
+        eye_front = [
+            "ggee",
+            "wgee",
+            "eelg",
+            "eegg",
+        ]
+        paint_box_2x(img, eye_u, 10, 2, 2, 1, {"front": eye_front}, MAG)
+        paint_box_2x(glow, eye_u, 10, 2, 2, 1, {"front": eye_front}, MAG)
 
-    # 6. Spindly Purple Arms [1, 5, 1] at [0, 26] & [24, 26] -> 2x10x2 px
+    # 5. Spindly purple arms [1, 5, 1] at [0, 26] & [24, 26] -> 2x10x2 px
     for idx, au in enumerate((0, 24)):
-        shade_ramp_box(au, 26, 1, 5, 1, BODY_RAMP, seed=6 + idx)
-        af = f2x(au, 26, 1, 5, 1)
-        for fname in ("front", "back", "east", "west"):
-            ax, ay, aw, ah = af[fname]
-            put(img, ax, ay + 7, BODY_RAMP[6])
-            put(img, ax + 1, ay + 7, MAG["e"])
-            put(img, ax, ay + 8, MAG["m"])
-            put(img, ax + 1, ay + 8, MAG["e"])
-            put(glow, ax + 1, ay + 7, MAG["e"])
-            put(glow, ax + 1, ay + 8, MAG["m"])
+        shade_ramp_box(au, 26, 1, 5, 1, BODY_RAMP, seed=6 + idx, texture_scale=2)
 
-    # 7. Six Splayed Claw Tendrils [1, 3, 1] at u in (6, 12, 18, 30, 36, 42), v=26 -> 2x6x2 px
+    # 6. Six splayed purple claw tendrils [1, 3, 1] at u in (6, 12, 18, 30, 36, 42), v=26 -> 2x6x2 px
     for idx, cu in enumerate((6, 12, 18, 30, 36, 42)):
-        shade_ramp_box(cu, 26, 1, 3, 1, BODY_RAMP, seed=10 + idx)
+        shade_ramp_box(cu, 26, 1, 3, 1, BODY_RAMP, seed=10 + idx, texture_scale=2)
         cf = f2x(cu, 26, 1, 3, 1)
         for fname in ("front", "back", "east", "west"):
-            cx, cy, cw, ch = cf[fname]
-            put(img, cx, cy + 4, MAG["e"])
-            put(img, cx + 1, cy + 4, MAG["l"])
-            put(img, cx, cy + 5, MAG["l"])
-            put(img, cx + 1, cy + 5, MAG["w"])
-            put(glow, cx, cy + 4, MAG["e"])
-            put(glow, cx + 1, cy + 4, MAG["l"])
-            put(glow, cx, cy + 5, MAG["l"])
-            put(glow, cx + 1, cy + 5, MAG["w"])
+            cx, cy, _, _ = cf[fname]
+            put(img, cx, cy + 5, MAG["e"])
+            put(img, cx + 1, cy + 5, MAG["e"])
+            put(glow, cx, cy + 5, MAG["e"])
+            put(glow, cx + 1, cy + 5, MAG["e"])
         bx, by, _, _ = cf["bottom"]
-        paint_grid(img, bx, by, ["lw", "wl"], MAG)
-        paint_grid(glow, bx, by, ["lw", "wl"], MAG)
+        paint_grid(img, bx, by, ["lg", "gl"], MAG)
+        paint_grid(glow, bx, by, ["lg", "gl"], MAG)
 
-    # 8. Two Segmented Purple Lower Legs [2, 4, 2] at [0, 36] & [20, 36] -> 4x8x4 px
+    # 7. Two curved purple lower legs [2, 4, 2]@[0, 36] & [20, 36] and tips [2, 3, 2]@[10, 36] & [30, 36]
     for idx, lu in enumerate((0, 20)):
-        shade_ramp_box(lu, 36, 2, 4, 2, BODY_RAMP, seed=16 + idx, bottom_glow=True)
-        lf = f2x(lu, 36, 2, 4, 2)
-        fx0, fy0, fw, fh = lf["front"]
-        put(img, fx0 + 1, fy0 + 5, BODY_RAMP[6])
-        put(img, fx0 + 2, fy0 + 5, MAG["e"])
-        put(glow, fx0 + 2, fy0 + 5, MAG["e"])
-
-    # 9. Two Ethereal Lower Leg Tendril Tips [2, 3, 2] at [10, 36] & [30, 36] -> 4x6x4 px
+        shade_ramp_box(lu, 36, 2, 4, 2, BODY_RAMP, seed=16 + idx, texture_scale=2)
     for idx, tu in enumerate((10, 30)):
-        shade_ramp_box(tu, 36, 2, 3, 2, BODY_RAMP, seed=20 + idx, bottom_glow=True)
-        tf = f2x(tu, 36, 2, 3, 2)
-        for fname in ("front", "back", "east", "west"):
-            tx0, ty0, tw, th = tf[fname]
-            for lx in range(tw):
-                put(img, tx0 + lx, ty0 + 3, BODY_RAMP[5] if lx in (1, 2) else BODY_RAMP[3])
-                put(img, tx0 + lx, ty0 + 4, MAG["e"] if lx in (1, 2) else MAG["m"])
-                put(img, tx0 + lx, ty0 + 5, MAG["l"] if lx in (1, 2) else MAG["e"])
-                put(glow, tx0 + lx, ty0 + 4, MAG["e"] if lx in (1, 2) else MAG["m"])
-                put(glow, tx0 + lx, ty0 + 5, MAG["l"] if lx in (1, 2) else MAG["e"])
+        shade_ramp_box(tu, 36, 2, 3, 2, BODY_RAMP[:7], seed=20 + idx, texture_scale=2)
         paint_box_2x(img, tu, 36, 2, 3, 2, {
             "bottom": [
                 "dmmd",
-                "elwe",
-                "ewle",
+                "meem",
+                "meem",
                 "dmmd",
             ],
         }, MAG)
         paint_box_2x(glow, tu, 36, 2, 3, 2, {
             "bottom": [
-                ".mm.",
-                "elwe",
-                "ewle",
-                ".mm.",
+                "....",
+                ".ee.",
+                ".ee.",
+                "....",
             ],
         }, MAG)
 

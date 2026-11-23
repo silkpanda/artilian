@@ -42,9 +42,10 @@ def _rot_z(p, deg):
 
 def _apply_bone_transform(pt, pivot, rot):
     x, y, z = pt[0] - pivot[0], pt[1] - pivot[1], pt[2] - pivot[2]
-    x, y, z = _rot_x((x, y, z), rot[0])
-    x, y, z = _rot_y((x, y, z), rot[1])
-    x, y, z = _rot_z((x, y, z), rot[2])
+    # Bedrock/GeckoLib rotations negate X, Y, Z relative to right-handed +X/+Y/+Z axes.
+    x, y, z = _rot_x((x, y, z), -rot[0])
+    x, y, z = _rot_y((x, y, z), -rot[1])
+    x, y, z = _rot_z((x, y, z), -rot[2])
     return (x + pivot[0], y + pivot[1], z + pivot[2])
 
 
