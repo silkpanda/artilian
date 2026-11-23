@@ -115,159 +115,426 @@ def smooth_coat(img, u, v, w, h, d, hi, base, shade, deep):
 
 
 def make_crystal_fox():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Crystal Fox coat, faceted Starlight crystal & glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # 1. Body [6, 4, 9] at [0, 0] — sleek pearl-frost coat with a soft crystal-teal spine stripe
-    smooth_coat(img, 0, 0, 6, 4, 9, FUR_HI, FUR_BASE, FUR_SHADE, FUR_DEEP)
-    bf = faces(0, 0, 6, 4, 9)
+    # 8-stop Pearl-Frost & Ice-Mist fur ramp (no harsh flat white or alpha holes)
+    FUR = {
+        "0": (94, 150, 166, 255),   # Deep ice-slate crevice shadow
+        "1": (128, 184, 198, 255),  # Cool shadow
+        "2": (162, 214, 222, 255),  # Soft ice-teal shade
+        "3": (194, 234, 236, 255),  # Mist midtone
+        "4": (218, 245, 245, 255),  # Pearl-frost base
+        "5": (236, 251, 251, 255),  # Upper coat highlight
+        "6": (248, 254, 253, 255),  # Soft cream ruff/muzzle highlight
+    }
+    # 7-stop Starlight Crystal + Prism Violet accent palette
+    CRYS = {
+        "k": (16, 62, 74, 255),     # Deep crystal bevel
+        "d": (24, 102, 114, 255),   # Dark crystal facet
+        "s": (34, 156, 158, 255),   # Shaded Starlight teal
+        "m": (56, 217, 192, 255),   # #38D9C0 Starlight Teal
+        "l": (96, 238, 232, 255),   # Light cyan facet
+        "b": (125, 249, 255, 255),  # #7DF9FF Bright cyan glow
+        "c": (226, 255, 254, 255),  # Specular white-aqua glint
+        "V": (72, 42, 128, 255),    # Deep prism amethyst
+        "v": (134, 84, 218, 255),   # Prism violet
+        "p": (188, 150, 255, 255),  # Pale prism highlight
+    }
+    EYE_PAL = {
+        **FUR,
+        **CRYS,
+        "L": (26, 18, 46, 255),     # Upper lash / dark outline
+        "P": (34, 22, 64, 255),     # Deep pupil
+        "I": (68, 42, 126, 255),    # Indigo upper iris
+        "T": (44, 142, 168, 255),   # Mid teal iris
+        "G": (76, 234, 218, 255),   # Glowing lower iris crescent
+        "W": (244, 250, 255, 255),  # Sclera white
+        "S": (200, 222, 238, 255),  # Sclera shade
+        "H": (255, 255, 255, 255),  # Crisp specular catchlight
+        "N": (28, 20, 48, 255),     # Nose dark
+        "M": (54, 40, 86, 255),     # Nose mid
+        "U": (124, 104, 164, 255),  # Nose glint
+    }
+
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
+
+    def shade_fur_box(u, v, w, h, d, *, cream_bottom=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        ramp = [FUR["0"], FUR["1"], FUR["2"], FUR["3"], FUR["4"], FUR["5"], FUR["6"]]
+        face_bias = {"top": 5.3, "front": 4.5, "east": 3.8, "west": 3.6, "back": 3.1, "bottom": 3.4 if cream_bottom else 1.8}
+        for name, (rx, ry, rw, rh) in f.items():
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        # Radial cushion shading so bottom faces are never flat
+                        cx = abs(tx - 0.5) * 2.0
+                        cy = abs(ty - 0.5) * 2.0
+                        edge_dist = max(cx, cy)
+                        idx = bias + (1.0 - edge_dist) * (2.2 if cream_bottom else 1.5) - edge_dist * 1.4
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.6 if edge == 0 else 0.0) + (0.4 if ty < 0.4 else -0.2)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.8 + (0.25 - tx) * 0.4
+                    tuft = ((lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 11)
+                    if tuft <= 1:
+                        idx += 0.45
+                    elif tuft >= 9:
+                        idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.7
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+
+    def shade_crystal_box(u, v, w, h, d, *, glow_thresh=3, prism_trim=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        ramp = [CRYS["k"], CRYS["d"], CRYS["s"], CRYS["m"], CRYS["l"], CRYS["b"], CRYS["c"]]
+        face_bias = {"top": 5.2, "front": 4.4, "east": 3.6, "west": 3.2, "back": 2.6, "bottom": 1.8}
+        for name, (rx, ry, rw, rh) in f.items():
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    is_rim = (lx == 0 or ly == 0 or lx == rw - 1 or ly == rh - 1)
+                    # Faceted diagonal crystal planes
+                    facet = ((lx + ly + seed) % 4 == 0)
+                    diag = (lx * rh + ly * rw) / max(1, rw * rh * 2)
+                    idx = bias + (0.5 - diag) * 2.2
+                    if facet:
+                        idx += 0.9
+                    if is_rim and (lx == rw - 1 or ly == rh - 1) and rw >= 4 and rh >= 4:
+                        idx -= 1.3
+                    elif is_rim and (lx == 0 or ly == 0) and rw >= 4 and rh >= 4:
+                        idx += 0.6
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    col = ramp[c_idx]
+                    if prism_trim and is_rim and (lx + ly) % 3 == 0:
+                        col = CRYS["v"] if c_idx >= 3 else CRYS["V"]
+                    put(img, rx + lx, ry + ly, col)
+                    if c_idx >= glow_thresh:
+                        put(glow, rx + lx, ry + ly, col)
+
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    # 1. Body [6, 4, 9] at [0, 0] -> 12x8x18 px
+    shade_fur_box(0, 0, 6, 4, 9, cream_bottom=True, seed=1)
+    bf = f2x(0, 0, 6, 4, 9)
+    # Starlight crystal dorsal ridge & shoulder/hip markings
     tx, ty, tw, th = bf["top"]
     for dy in range(1, th - 1):
-        put(img, tx + 2, ty + dy, STAR_MAIN if dy % 2 == 0 else STAR_SHADE)
-        put(img, tx + 3, ty + dy, STAR_MAIN if dy % 2 == 1 else STAR_BRIGHT)
-    # Soft teal hip gradient
+        half_w = 2 if 4 <= dy <= 13 else 1
+        for dx in range(tw // 2 - half_w, tw // 2 + half_w):
+            is_center = (dx in (tw // 2 - 1, tw // 2))
+            if is_center and (dy % 3 != 0):
+                col = CRYS["b"] if 6 <= dy <= 11 else CRYS["l"]
+                put(img, tx + dx, ty + dy, col)
+                if 5 <= dy <= 12:
+                    put(glow, tx + dx, ty + dy, col)
+            elif is_center:
+                put(img, tx + dx, ty + dy, CRYS["m"])
+            else:
+                put(img, tx + dx, ty + dy, CRYS["s"] if dy % 2 == 0 else FUR["3"])
+    # Subtle crystal flank markings on east & west
     for side in ("east", "west"):
         sx, sy, sw, sh = bf[side]
-        put(img, sx + (sw - 2 if side == "east" else 1), sy + 1, STAR_MAIN)
-        put(img, sx + (sw - 3 if side == "east" else 2), sy + 1, FUR_SHADE)
-    fill(img, bf["bottom"], FUR_CHEST)
+        hi_x = sx + sw - 5 if side == "east" else sx + 3
+        for ox, oy, c in [(0, 2, CRYS["m"]), (1, 2, CRYS["b"]), (1, 3, CRYS["m"]), (2, 3, CRYS["s"]), (0, 3, FUR["3"])]:
+            put(img, hi_x + ox, sy + oy, c)
+    # Back crystal stripe continuation
+    bx, by, bw, bh = bf["back"]
+    for dy in range(1, 5):
+        put(img, bx + bw // 2 - 1, by + dy, CRYS["m"] if dy < 3 else CRYS["s"])
+        put(img, bx + bw // 2, by + dy, CRYS["l"] if dy < 3 else CRYS["m"])
 
-    # 2. Fluffy Frost Chest Ruff [7, 3, 2] at [32, 0] with jagged bottom edge
-    smooth_coat(img, 32, 0, 7, 3, 2, FUR_CHEST, FUR_HI, FUR_BASE, FUR_SHADE)
-    rf = faces(32, 0, 7, 3, 2)
-    rx, ry, rw, rh = rf["front"]
-    for rx_i in (0, 2, 4, 6):
-        put(img, rx + rx_i, ry + rh - 1, (0, 0, 0, 0))
+    # Dorsal crystal spines [1, 2, 1] at [60, 0] and [1, 3, 1] at [66, 0]
+    shade_crystal_box(60, 0, 1, 2, 1, glow_thresh=4, seed=2)
+    shade_crystal_box(66, 0, 1, 3, 1, glow_thresh=3, seed=3)
 
-    # 3. Single Diamond Chest Gem [2, 2, 1] at [52, 0]
-    paint_geo_box(img, 52, 0, 2, 2, 1, {
-        "top": ["vh"],
-        "bottom": ["ms"],
-        "east": ["h", "m"],
-        "west": ["b", "s"],
-        "front": ["gh", "bm"],
-        "back": ["pp", "PP"],
-    }, CRYSTAL_PALETTE)
+    # 2. Fluffy Frost Chest Ruff [5, 4, 2] at [32, 0] -> 10x8x4 px (100% opaque, sculpted V-tuft shading!)
+    shade_fur_box(32, 0, 5, 4, 2, cream_bottom=True, seed=4)
+    paint_box_2x(img, 32, 0, 5, 4, 2, {
+        "front": [
+            "5666666665",
+            "4666666664",
+            "3566556653",
+            "3456556543",
+            "2356666532",
+            "1245665421",
+            "1324554231",
+            "0112332110",
+        ],
+    }, FUR)
 
-    # 4. Head [7, 5, 6] at [0, 15] — sleek pearl-frost face with teal-crystal cheek/crown markings
-    smooth_coat(img, 0, 15, 7, 5, 6, FUR_HI, FUR_BASE, FUR_SHADE, FUR_DEEP)
-    hf = faces(0, 15, 7, 5, 6)
+    # 3. Chest Gem [2, 2, 1] at [52, 0] -> 4x4x2 px (Starlight diamond & prism-violet bezel)
+    shade_crystal_box(52, 0, 2, 2, 1, glow_thresh=3, prism_trim=True, seed=5)
+    paint_box_2x(img, 52, 0, 2, 2, 1, {
+        "front": [
+            "VcbV",
+            "cbbl",
+            "blms",
+            "VsPV",
+        ],
+    }, CRYS)
+    paint_box_2x(glow, 52, 0, 2, 2, 1, {
+        "front": [
+            ".cb.",
+            "cbbl",
+            "blm.",
+            "....",
+        ],
+    }, CRYS)
+
+    # 4. Head [8, 5, 6] at [80, 0] -> 16x10x12 px
+    shade_fur_box(80, 0, 8, 5, 6, cream_bottom=True, seed=6)
+    hf = f2x(80, 0, 8, 5, 6)
+    # Soft cream cheeks & muzzle halo + subtle ice-teal temple accents on front
     hx, hy, hw, hh = hf["front"]
-    # Cream cheeks & lower face
-    fill(img, (hx + 1, hy + hh - 2, hw - 2, 2), FUR_CHEST)
-    # Subtle crystal crown stripe at top of head
-    tx, ty, tw, th = hf["top"]
-    for dy in range(1, th):
-        put(img, tx + 3, ty + dy, STAR_MAIN if dy > 2 else STAR_BRIGHT)
+    for dy in range(6, 10):
+        for dx in range(2, 14):
+            col = FUR["6"] if dy <= 8 and 3 <= dx <= 12 else (FUR["4"] if dy == 9 else FUR["5"])
+            if dy == 9 and dx in (2, 13):
+                col = FUR["3"]
+            put(img, hx + dx, hy + dy, col)
+    # Subtle Starlight-teal cheek whiskers & brow mark
+    for sx_off in (1, 14):
+        put(img, hx + sx_off, hy + 5, CRYS["m"])
+        put(img, hx + sx_off, hy + 6, CRYS["s"])
+    # Crown crystal stripe on top of head
+    htx, hty, htw, hth = hf["top"]
+    for dy in range(2, hth - 1):
+        put(img, htx + 7, hty + dy, CRYS["b"] if dy < 6 else CRYS["m"])
+        put(img, htx + 8, hty + dy, CRYS["l"] if dy < 6 else CRYS["s"])
+    # Cheek ruffs [2, 2, 2] at [0, 16] -> 4x4x4 px
+    shade_fur_box(0, 16, 2, 2, 2, cream_bottom=False, seed=7)
+    cf_ruff = f2x(0, 16, 2, 2, 2)
+    for fname in ("front", "back"):
+        rx, ry, rw, rh = cf_ruff[fname]
+        put(img, rx + 2, ry + 1, FUR["6"])
+        put(img, rx + 3, ry + 2, CRYS["l"])
 
-    # 5. Delicate Tapered Fox Snout [3, 2, 3] at [28, 15]
-    smooth_coat(img, 28, 15, 3, 2, 3, FUR_CHEST, FUR_HI, FUR_BASE, FUR_SHADE)
-    sf = faces(28, 15, 3, 2, 3)
-    sx, sy, sw, sh = sf["front"]
-    put(img, sx + 1, sy, NOSE)
+    # 5. Delicate Fox Snout [3, 2, 3] at [110, 0] -> 6x4x6 px
+    shade_fur_box(110, 0, 3, 2, 3, cream_bottom=True, seed=8)
+    paint_box_2x(img, 110, 0, 3, 2, 3, {
+        "front": [
+            "56UN65",
+            "66MM66",
+            "566665",
+            "345543",
+        ],
+        "top": [
+            "344443",
+            "455554",
+            "455554",
+            "566665",
+            "566665",
+            "46NN64",
+        ],
+    }, EYE_PAL)
 
-    # 6. Single Diamond Forehead Gem [2, 2, 1] at [42, 15]
-    paint_geo_box(img, 42, 15, 2, 2, 1, {
-        "top": ["gh"],
-        "bottom": ["ms"],
-        "east": ["h", "m"],
-        "west": ["b", "s"],
-        "front": ["gh", "bm"],
-        "back": ["pp", "PP"],
-    }, CRYSTAL_PALETTE)
+    # 6. Forehead Brow Gem [1, 1, 1] at [36, 16] -> 2x2x2 px
+    shade_crystal_box(36, 16, 1, 1, 1, glow_thresh=2, prism_trim=True, seed=9)
+    paint_box_2x(img, 36, 16, 1, 1, 1, {"front": ["cb", "lp"]}, CRYS)
+    paint_box_2x(glow, 36, 16, 1, 1, 1, {"front": ["cb", "lp"]}, CRYS)
 
-    # 7. Sleek Crystal-Tipped Fox Ears [3, 5, 2] at [50, 15] & [62, 15]
-    # Base fur fades smoothly into a sharp tapered Starlight Crystal ear tip!
-    for eu in (50, 62):
-        paint_geo_box(img, eu, 15, 3, 5, 2, {
-            "top": [".g.", ".h."],
-            "bottom": ["FFF", "FFF"],
-            "east": [".h", "gb", "bm", "FD", "FF"],
-            "front": [".g.", "ghb", "bCb", "FCF", "FFF"],
-            "west": ["h.", "bg", "mb", "DF", "FF"],
-            "back": [".h.", "bmb", "sms", "DDD", "DDD"],
-        }, {
-            **CRYSTAL_PALETTE,
-            "F": FUR_BASE,
-            "D": FUR_SHADE,
-            "C": STAR_BRIGHT,
-        })
+    # 7. Tapered 3-Tier Crystal-Tipped Ears (shared UVs at [12,16], [22,16], [30,16])
+    # Base [3, 3, 1] at [12, 16] -> 6x6 front/back, 2x6 sides
+    shade_fur_box(12, 16, 3, 3, 1, cream_bottom=False, seed=10)
+    paint_box_2x(img, 12, 16, 3, 3, 1, {
+        "front": [
+            "5lbbm5",
+            "4smms4",
+            "4sdms4",
+            "3sdds3",
+            "3kVVk3",
+            "234432",
+        ],
+        "back": [
+            "3ssmm3",
+            "44ss44",
+            "454454",
+            "344443",
+            "233332",
+            "122221",
+        ],
+    }, {**FUR, **CRYS})
+    paint_box_2x(glow, 12, 16, 3, 3, 1, {
+        "front": [
+            ".lbbm.",
+            "..mm..",
+            "......",
+            "......",
+            "......",
+            "......",
+        ],
+    }, CRYS)
 
-    # 8. Soulful Monster-Tamer Eyes [2, 2, 1] at [74, 15] & [82, 15]
-    for idx, eye_u in enumerate((74, 82)):
-        ef = faces(eye_u, 15, 2, 2, 1)
-        for rect in ef.values():
-            fill(img, rect, EYE_WHITE)
-        fx, fy, fw, fh = ef["front"]
-        inner_x = fx if idx == 0 else fx + 1
-        outer_x = fx + 1 if idx == 0 else fx
-        put(img, inner_x, fy, EYE_IRIS)
-        put(img, inner_x, fy + 1, EYE_PUPIL)
-        put(img, outer_x, fy, EYE_WHITE)
-        put(img, outer_x, fy + 1, EYE_SPARK)
+    # Mid [2, 2, 1] at [22, 16] -> 4x4 front/back, 2x4 sides
+    shade_crystal_box(22, 16, 2, 2, 1, glow_thresh=4, seed=11)
+    paint_box_2x(img, 22, 16, 2, 2, 1, {
+        "front": [
+            "lcbm",
+            "mbbs",
+            "smmd",
+            "4ss3",
+        ],
+        "back": [
+            "smms",
+            "dssd",
+            "3ss2",
+            "3442",
+        ],
+    }, {**FUR, **CRYS})
+    paint_box_2x(glow, 22, 16, 2, 2, 1, {
+        "front": [
+            "lcbm",
+            ".bb.",
+            "....",
+            "....",
+        ],
+    }, CRYS)
 
-    # 9. Tapering 3-Segment Tail ending in a Faceted Crystal Spearhead!
-    # Tail Base [3, 3, 4] at [0, 30] — soft fur transitioning to mist-teal
-    smooth_coat(img, 0, 30, 3, 3, 4, FUR_HI, FUR_BASE, FUR_SHADE, FUR_DEEP)
-    tbf = faces(0, 30, 3, 3, 4)
-    fill(img, tbf["back"], STAR_MAIN)
+    # Tip [1, 1, 1] at [30, 16] -> 2x2 per face (glowing crystal spear tip)
+    shade_crystal_box(30, 16, 1, 1, 1, glow_thresh=2, seed=12)
+    paint_box_2x(img, 30, 16, 1, 1, 1, {
+        "front": ["cb", "bl"],
+        "back": ["bm", "ms"],
+    }, CRYS)
+    paint_box_2x(glow, 30, 16, 1, 1, 1, {
+        "front": ["cb", "bl"],
+        "back": ["bm", "ms"],
+        "top": ["cc", "bb"],
+    }, CRYS)
 
-    # Tail Mid [2, 2, 4] at [16, 30] — blends smoothly from fur into translucent-cyan crystal!
-    paint_geo_box(img, 16, 30, 2, 2, 4, {
-        "top": ["FF", "Db", "bm", "gh"],
-        "bottom": ["DD", "Dm", "ms", "bh"],
-        "east": ["FDmg", "DDsb"],
-        "front": ["FF", "DD"],
-        "west": ["gmDF", "bsDD"],
-        "back": ["gh", "bm"],
-    }, {
-        **CRYSTAL_PALETTE,
-        "F": FUR_BASE,
-        "D": FUR_SHADE,
-    })
+    # 8. Soulful Monster-Tamer Eyes: eye_left [2,3,1]@[44,16] (inner=left, outer=right)
+    #                                 eye_right [2,3,1]@[52,16] (outer=left, inner=right)
+    for is_left, eye_u in ((True, 44), (False, 52)):
+        shade_fur_box(eye_u, 16, 2, 3, 1, cream_bottom=False, seed=13)
+        if is_left:
+            front_eye = [
+                "LLL2",
+                "PHIW",
+                "PPPW",
+                "PGGW",
+                "ITGS",
+                "3562",
+            ]
+            glow_eye = [
+                "....",
+                ".H..",
+                "....",
+                ".GG.",
+                "..G.",
+                "....",
+            ]
+        else:
+            front_eye = [
+                "2LLL",
+                "WIHP",
+                "WPPP",
+                "WGGP",
+                "SGTI",
+                "2653",
+            ]
+            glow_eye = [
+                "....",
+                "..H.",
+                "....",
+                ".GG.",
+                ".G..",
+                "....",
+            ]
+        paint_box_2x(img, eye_u, 16, 2, 3, 1, {"front": front_eye}, EYE_PAL)
+        paint_box_2x(glow, eye_u, 16, 2, 3, 1, {"front": glow_eye}, EYE_PAL)
 
-    # Tail Crystal Cluster: central prism + 3 angled faceted crystal shards fanning from the tapered tip!
-    paint_geo_box(img, 30, 30, 2, 2, 4, {
-        "top": ["bm", "hb", "gh", ".g"],
-        "bottom": ["ms", "bm", "bh", ".h"],
-        "east": ["mbh.", "smg."],
-        "front": ["hb", "ms"],
-        "west": [".hbm", ".gms"],
-        "back": [".g", ".h"],
-    }, CRYSTAL_PALETTE)
+    # 9. Tapering 3-Segment Crystal-Tipped Tail
+    # Tail base [3, 3, 4] at [0, 24] -> 6x6x8 px
+    shade_fur_box(0, 24, 3, 3, 4, cream_bottom=True, seed=14)
+    tbf = f2x(0, 24, 3, 3, 4)
+    ttx, tty, ttw, tth = tbf["top"]
+    for dy in range(tth):
+        put(img, ttx + 2, tty + dy, CRYS["m"] if dy < 5 else CRYS["s"])
+        put(img, ttx + 3, tty + dy, CRYS["l"] if dy < 4 else CRYS["m"])
 
-    for shard_u in (44, 54):
-        paint_geo_box(img, shard_u, 30, 1, 2, 3, {
-            "top": ["m", "b", "g"],
-            "bottom": ["s", "m", "h"],
-            "east": ["bh.", "mg."],
-            "front": ["b", "s"],
-            "west": [".hb", ".gm"],
-            "back": ["g", "h"],
-        }, CRYSTAL_PALETTE)
+    # Tail mid [4, 4, 5] at [16, 24] -> 8x8x10 px (fluffy frosted plume fading into crystal at z1 tip)
+    shade_fur_box(16, 24, 4, 4, 5, cream_bottom=True, seed=15)
+    tmf = f2x(16, 24, 4, 4, 5)
+    for fname in ("top", "east", "west"):
+        rx, ry, rw, rh = tmf[fname]
+        for ly in range(rh):
+            for lx in range(rw):
+                dist_tip = ly if fname == "top" else (lx if fname == "east" else (rw - 1 - lx))
+                if dist_tip <= 1:
+                    col = CRYS["b"] if (lx + ly) % 2 == 0 else CRYS["l"]
+                    put(img, rx + lx, ry + ly, col)
+                    put(glow, rx + lx, ry + ly, col)
+                elif dist_tip == 2 or (dist_tip == 3 and (lx + ly) % 2 == 0):
+                    put(img, rx + lx, ry + ly, CRYS["m"])
+                elif dist_tip == 3:
+                    put(img, rx + lx, ry + ly, CRYS["s"])
+    # Back face of tail_mid meets the crystal collar
+    bx, by, bw, bh = tmf["back"]
+    for ly in range(bh):
+        for lx in range(bw):
+            is_inner = (1 <= lx <= bw - 2 and 1 <= ly <= bh - 2)
+            col = CRYS["l"] if is_inner and (lx + ly) % 2 == 0 else (CRYS["m"] if is_inner else CRYS["s"])
+            put(img, bx + lx, by + ly, col)
 
-    paint_geo_box(img, 64, 30, 1, 1, 3, {
-        "top": ["b", "h", "g"],
-        "bottom": ["m", "b", "h"],
-        "east": ["bh."],
-        "front": ["h"],
-        "west": [".hb"],
-        "back": ["g"],
-    }, CRYSTAL_PALETTE)
+    # Tail Crystal Collar [3, 3, 2] at [36, 24] -> 6x6x4 px
+    shade_crystal_box(36, 24, 3, 3, 2, glow_thresh=4, prism_trim=True, seed=16)
+    # Tail Crystal Central Spearhead [2, 2, 3] at [48, 24] -> 4x4x6 px
+    shade_crystal_box(48, 24, 2, 2, 3, glow_thresh=3, seed=17)
+    # Tail Crystal Angled Side Shards [1, 1, 3] at [60, 24] -> 2x2x6 px
+    shade_crystal_box(60, 24, 1, 1, 3, glow_thresh=3, seed=18)
 
-    # 10. Agile Fox Legs [2, 4, 2] at [0, 42], [10, 42], [20, 42], [30, 42]
-    # Pearl-frost leg fading organically into glowing crystal-dipped paws!
-    for lu in (0, 10, 20, 30):
-        smooth_coat(img, lu, 42, 2, 4, 2, FUR_HI, FUR_BASE, FUR_SHADE, FUR_DEEP)
-        lf = faces(lu, 42, 2, 4, 2)
-        for face_name in ("front", "back", "east", "west"):
-            fx, fy, fw, fh = lf[face_name]
-            fill(img, (fx, fy + 2, fw, 1), STAR_MAIN)
-            fill(img, (fx, fy + 3, fw, 1), STAR_BRIGHT if face_name == "front" else STAR_SHADE)
-        fill(img, lf["bottom"], STAR_DARK)
+    # 10. Agile Fox Legs [2, 5, 2] at [0, 40], [10, 40], [20, 40], [30, 40] -> 4x10x4 px
+    for idx, lu in enumerate((0, 10, 20, 30)):
+        shade_fur_box(lu, 40, 2, 5, 2, cream_bottom=False, seed=20 + idx)
+        lf = f2x(lu, 40, 2, 5, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = lf[fname]
+            # Frosted crystal cuff (rows 6..7) & sculpted crystal paw (rows 8..9)
+            for lx in range(rw):
+                put(img, rx + lx, ry + 6, CRYS["l"] if (lx + idx) % 2 == 0 else CRYS["m"])
+                put(img, rx + lx, ry + 7, CRYS["m"] if fname == "front" else CRYS["s"])
+                put(img, rx + lx, ry + 8, CRYS["s"] if fname != "back" else CRYS["d"])
+                put(img, rx + lx, ry + 9, CRYS["d"] if lx in (0, 3) else CRYS["k"])
+            if fname == "front":
+                # Subtle bright crystal paw glint & toe split
+                put(img, rx + 1, ry + 7, CRYS["b"])
+                put(img, rx + 2, ry + 7, CRYS["b"])
+                put(img, rx + 1, ry + 8, CRYS["m"])
+                put(img, rx + 2, ry + 8, CRYS["m"])
+                put(glow, rx + 1, ry + 6, CRYS["l"])
+                put(glow, rx + 2, ry + 6, CRYS["l"])
+        # Multi-tone shaded crystal paw-pad on bottom face (4x4)
+        paint_box_2x(img, lu, 40, 2, 5, 2, {
+            "bottom": [
+                "dkkd",
+                "kVVk",
+                "kVmk",
+                "ddkd",
+            ],
+        }, CRYS)
 
-    dest = OUT / "entity/crystal_fox.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "crystal_fox.png")
+    glow.save(entity_dir / "crystal_fox_glowmask.png")
 
 
 def draw_crystal(core_dark, core_mid, core_hi, ring_color=None):
@@ -2214,6 +2481,10 @@ def make_zapkin():
 def main():
     import sys
 
+    if "--crystal-fox" in sys.argv:
+        make_crystal_fox()
+        print("Generated Crystal Fox 256x128 texture and glowmask.")
+        return
     if "--zapkin" in sys.argv:
         make_zapkin()
         print("Generated Zapkin 64x64 texture and glowmask.")
