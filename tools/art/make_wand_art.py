@@ -161,6 +161,25 @@ BRIMSTONE_METEOR_STAFF = [
     "................",
 ]
 
+TWIN_STAR_STAFF = [
+    ".........KKGG...",
+    "........KVVYYG..",
+    ".......KVUHBBHG.",
+    "......KVUHBTTBG.",
+    ".....KVUHMTYYTG.",
+    "......KVUMMEETG.",
+    "......OGGYGEEG..",
+    ".....OSGgOOGG...",
+    "....OSsO..OO....",
+    "...OSsO.........",
+    "..OSsO..........",
+    ".OGgO...........",
+    ".OSSO...........",
+    "OGgO............",
+    ".OO.............",
+    "................",
+]
+
 
 def main():
     paint(SPARK_WAND, "spark_wand.png")
@@ -168,6 +187,7 @@ def main():
     paint(ZEPHYR_DASH_WAND, "zephyr_dash_wand.png")
     paint(PRISM_NOVA_STAFF, "prism_nova_staff.png")
     paint(BRIMSTONE_METEOR_STAFF, "brimstone_meteor_staff.png")
+    paint(TWIN_STAR_STAFF, "twin_star_staff.png")
 
 
 if __name__ == "__main__":

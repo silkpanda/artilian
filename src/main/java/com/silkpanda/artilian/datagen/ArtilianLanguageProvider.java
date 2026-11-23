@@ -340,5 +340,18 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.SOVEREIGNS_EMBER_HEART, "Sovereign's Ember Heart");
         this.add("item.artilian.sovereigns_ember_heart.tooltip", "Boss Trophy — Heart of the Embercrown Sovereign!");
         this.add("message.artilian.embercrown_sovereign.primal_fury", "Embercrown Sovereign unleashes Primal Fury!");
+
+        // Phase 5 Stage 9: Twin-Star Endgame Rewards
+        this.addItem(ArtilianItems.TWIN_STAR_CORE, "Twin-Star Core");
+        this.add("item.artilian.twin_star_core.tooltip", "Unites the Eye Realm and Dragon Jungle in twin-star harmony!");
+        this.addItem(ArtilianItems.TWIN_STAR_BLADE, "Twin-Star Blade");
+        this.add("item.artilian.twin_star_blade.tooltip", "Twin-Realm Blade — Ignites, weakens, and reveals foes!");
+        this.addItem(ArtilianItems.TWIN_STAR_STAFF, "Twin-Star Harmony Staff");
+        this.add("item.artilian.twin_star_staff.tooltip", "50 Mana — Heals allies & pets while blasting nearby foes!");
+        this.addItem(ArtilianItems.TWIN_STAR_HELMET, "Twin-Star Helmet");
+        this.addItem(ArtilianItems.TWIN_STAR_CHESTPLATE, "Twin-Star Chestplate");
+        this.addItem(ArtilianItems.TWIN_STAR_LEGGINGS, "Twin-Star Leggings");
+        this.addItem(ArtilianItems.TWIN_STAR_BOOTS, "Twin-Star Boots");
+        this.add("item.artilian.twin_star_armor.tooltip", "Full Set — Grants Fire Resistance, Strength, Night Vision & Regeneration!");
     }
 }

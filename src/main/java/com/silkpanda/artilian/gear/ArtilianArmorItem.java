@@ -5,6 +5,7 @@ import com.silkpanda.artilian.client.DragonscaleArmorRenderer;
 import com.silkpanda.artilian.client.PrismaticArmorRenderer;
 import com.silkpanda.artilian.client.StarlightArmorRenderer;
 import com.silkpanda.artilian.client.SunsteelArmorRenderer;
+import com.silkpanda.artilian.client.TwinStarArmorRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Holder;
@@ -56,6 +57,7 @@ public final class ArtilianArmorItem extends ArmorItem implements GeoItem {
                     @Nullable HumanoidModel<T> original) {
                 if (this.renderer == null) {
                     this.renderer = switch (ArtilianArmorItem.this.set) {
+                        case "twin_star" -> new TwinStarArmorRenderer();
                         case "dragonscale" -> new DragonscaleArmorRenderer();
                         case "prismatic" -> new PrismaticArmorRenderer();
                         case "starlight" -> new StarlightArmorRenderer();
@@ -84,10 +86,15 @@ public final class ArtilianArmorItem extends ArmorItem implements GeoItem {
         return true;
     }
 
-    /** Applies passive full-set bonuses (Prismatic: Fire Resistance; Dragonscale: Fire Resistance + Strength). */
+    /** Applies passive full-set bonuses (Prismatic: Fire Resistance; Dragonscale: Fire Resistance + Strength; Twin-Star: Fire Resistance + Strength + Night Vision + Regeneration). */
     public static void applySetBonus(Player player) {
         if (!player.level().isClientSide && player.isAlive()) {
-            if (hasFullSet(player, "dragonscale")) {
+            if (hasFullSet(player, "twin_star")) {
+                player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 60, 0, true, false, true));
+                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 60, 0, true, false, true));
+                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 260, 0, true, false, true));
+                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 0, true, false, true));
+            } else if (hasFullSet(player, "dragonscale")) {
                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 60, 0, true, false, true));
                 player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 60, 0, true, false, true));
             } else if (hasFullSet(player, "prismatic")) {
@@ -98,7 +105,10 @@ public final class ArtilianArmorItem extends ArmorItem implements GeoItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> tooltip, TooltipFlag flag) {
-        if ("dragonscale".equals(this.set)) {
+        if ("twin_star".equals(this.set)) {
+            tooltip.add(Component.translatable("item.artilian.twin_star_armor.tooltip")
+                    .withStyle(ChatFormatting.AQUA));
+        } else if ("dragonscale".equals(this.set)) {
             tooltip.add(Component.translatable("item.artilian.dragonscale_armor.tooltip")
                     .withStyle(ChatFormatting.GREEN));
         } else if ("prismatic".equals(this.set)) {

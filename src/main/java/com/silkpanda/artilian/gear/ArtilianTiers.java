@@ -41,4 +41,12 @@ public final class ArtilianTiers {
             5.0F,
             26,
             () -> Ingredient.of(ArtilianItems.DRAGON_SCALE.get()));
+
+    public static final Tier TWIN_STAR = new SimpleTier(
+            BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
+            2800,
+            11.0F,
+            6.0F,
+            30,
+            () -> Ingredient.of(ArtilianItems.TWIN_STAR_CORE.get()));
 }

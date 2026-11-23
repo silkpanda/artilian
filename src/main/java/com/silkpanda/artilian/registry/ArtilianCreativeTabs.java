@@ -176,6 +176,13 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.EMBERCROWN_SOVEREIGN_SPAWN_EGG.get());
                         output.accept(ArtilianItems.PRIMAL_DRAGON_CREST.get());
                         output.accept(ArtilianItems.SOVEREIGNS_EMBER_HEART.get());
+                        output.accept(ArtilianItems.TWIN_STAR_CORE.get());
+                        output.accept(ArtilianItems.TWIN_STAR_BLADE.get());
+                        output.accept(ArtilianItems.TWIN_STAR_STAFF.get());
+                        output.accept(ArtilianItems.TWIN_STAR_HELMET.get());
+                        output.accept(ArtilianItems.TWIN_STAR_CHESTPLATE.get());
+                        output.accept(ArtilianItems.TWIN_STAR_LEGGINGS.get());
+                        output.accept(ArtilianItems.TWIN_STAR_BOOTS.get());
                     })
                     .build());
 

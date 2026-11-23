@@ -439,6 +439,77 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .requires(Items.AMETHYST_SHARD)
                 .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
                 .save(output);
+
+        // Phase 5 Stage 9: Twin-Star Endgame Rewards (uniting Alex's Eye Realm & Steve's Dragon Jungle)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ArtilianItems.TWIN_STAR_CORE.get(), 2)
+                .pattern("DSD")
+                .pattern("LGH")
+                .pattern("DSD")
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('L', ArtilianItems.ALL_SEERS_LENS.get())
+                .define('G', ArtilianItems.SUNSTEEL_INGOT.get())
+                .define('H', ArtilianItems.SOVEREIGNS_EMBER_HEART.get())
+                .unlockedBy("has_all_seers_lens", has(ArtilianItems.ALL_SEERS_LENS.get()))
+                .unlockedBy("has_sovereigns_ember_heart", has(ArtilianItems.SOVEREIGNS_EMBER_HEART.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_BLADE.get())
+                .pattern("T")
+                .pattern("T")
+                .pattern("R")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('R', Items.BLAZE_ROD)
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_STAFF.get())
+                .pattern(" TC")
+                .pattern(" CT")
+                .pattern("R  ")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('R', Items.BLAZE_ROD)
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_HELMET.get())
+                .pattern("DTD")
+                .pattern("S S")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_CHESTPLATE.get())
+                .pattern("D D")
+                .pattern("STS")
+                .pattern("DSD")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_LEGGINGS.get())
+                .pattern("DTD")
+                .pattern("S S")
+                .pattern("D D")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_BOOTS.get())
+                .pattern("S S")
+                .pattern("DTD")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
     }
 
     private static void customTntRecipe(

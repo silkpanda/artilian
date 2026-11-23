@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "D": {
+      "item": "artilian:dragon_scale"
+    },
+    "S": {
+      "item": "artilian:starlight_crystal"
+    },
+    "T": {
+      "item": "artilian:twin_star_core"
+    }
+  },
+  "pattern": [
+    "S S",
+    "DTD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:twin_star_boots"
+  }
+}

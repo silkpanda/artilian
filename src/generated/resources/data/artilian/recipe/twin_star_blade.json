@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": {
+      "item": "minecraft:blaze_rod"
+    },
+    "T": {
+      "item": "artilian:twin_star_core"
+    }
+  },
+  "pattern": [
+    "T",
+    "T",
+    "R"
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:twin_star_blade"
+  }
+}

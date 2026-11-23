@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "artilian:dragon_scale"
+    },
+    "G": {
+      "item": "artilian:sunsteel_ingot"
+    },
+    "H": {
+      "item": "artilian:sovereigns_ember_heart"
+    },
+    "L": {
+      "item": "artilian:all_seers_lens"
+    },
+    "S": {
+      "item": "artilian:starlight_crystal"
+    }
+  },
+  "pattern": [
+    "DSD",
+    "LGH",
+    "DSD"
+  ],
+  "result": {
+    "count": 2,
+    "id": "artilian:twin_star_core"
+  }
+}

@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 5 — Stage 8 (*Apex Dragon Boss*)** Added **Embercrown Sovereign** (`artilian:embercrown_sovereign`, `Dragon / Fire`, `300.0` HP, fire-immune, fall-immune, `256×128` GeckoLib boss rig + `AutoGlowingGeoLayer`), 3 telegraphed attacks (`EMBER_BREATH`, `SOVEREIGN_ROAR`, `METEOR_SLAM`, all `>= 35` ticks windup, zero block breaking) + half-health **Primal Fury** phase, **Primal Dragon Crest** (`BossSummonItem` for `Boss Altar`), **Sovereign's Ember Heart** (`BossTrophyItem` in `artilian:boss_drops`), `make_embercrown_sovereign_art.py`, `lint_art.py --phase5 --strict` clean, `preview_geo.py` (`qa/evidence/previews/embercrown_sovereign-preview.png`), datagen (`runData`), `build`, and 4 `EmbercrownSovereignGameTests` (`222/222` green, including red-proof) on `phase-5-stage-8-apex-dragon-boss`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–8 (`qa/evidence/embercrown-sovereign-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 9 (*Twin-Star Endgame Rewards*)**: Combined endgame rewards uniting Alex's and Steve's realms. |
+| **In progress** | **Phase 5 — Stage 9 (*Twin-Star Endgame Rewards*)** Added **Twin-Star Core** (`artilian:twin_star_core`, uniting `All-Seer's Lens` + `Sovereign's Ember Heart` + `Starlight Crystal` + `Sunsteel Ingot` + `Dragon Scale`, yielding `2` for co-op), **Twin-Star Blade** (`ArtilianTiers.TWIN_STAR`, `2800` durability, ignites + weakens + reveals foes), **Twin-Star Harmony Staff** (`WandSpell.TWIN_STAR_HARMONY`, `50` Mana, heals/buffs allies & pets while blasting hostiles safely), and 4-piece **Twin-Star Armor** (`ArtilianArmorMaterials.TWIN_STAR`, `30` defense, `4.0F` toughness, `0.25F` KB res, `TwinStarArmorRenderer` + `twin_star_armor.geo.json`, full-set `Fire Resistance` + `Strength` + `Night Vision` + `Regeneration`), `make_ores_and_gear_art.py`, `make_wand_art.py`, `check_armor_sheets.py` clean, datagen (`runData`), `build`, and 4 `TwinStarEndgameGameTests` (`226/226` green, including red-proof) on `phase-5-stage-9-twin-star-endgame-rewards`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–9 (`qa/evidence/twin-star-endgame-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 10 (*Phase 5 Art Pass & Finale*)**: Final art polish & full family co-op finale verification. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -641,7 +641,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | 🔄 Code & GameTests complete (`212/212`); live client check pending |
 | 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | 🔄 Code & GameTests complete (`218/218`); live client check pending |
 | 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | 🔄 Code & GameTests complete (`222/222`); live client check pending |
-| 9 | Twin-Star Endgame Rewards | Combined endgame rewards uniting Alex's and Steve's realms | [ ] Pending |
+| 9 | Twin-Star Endgame Rewards | Combined endgame rewards uniting Alex's and Steve's realms | 🔄 Code & GameTests complete (`226/226`); live client check pending |
 | 10 | Phase 5 Art Pass & Finale | Final art polish & full family co-op finale verification | [ ] Pending |
 
 ### Phase 5 — Stage 1: Dimension & Primal Portal
@@ -813,6 +813,24 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`EmbercrownSovereignGameTests`):** `222/222` green (4 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
 - **Security Gate:** `n/a` (inherits `P3-01`–`P3-03` `BossAltarBlockEntity` single-boss lock, zero block-breaking, and `ChesterEntity` immunity).
 - **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Embercrown Sovereign in-game.
+
+### Phase 5 — Stage 9: Twin-Star Endgame Rewards
+- [ ] **In Progress (`226/226` GameTests Green; Live Client Check Pending)** — Combined endgame rewards uniting Alex's Eye Realm (`All-Seer's Lens`) and Steve's Dragon Jungle (`Sovereign's Ember Heart`): **Twin-Star Core**, **Twin-Star Blade**, **Twin-Star Harmony Staff**, and 4-piece **Twin-Star Armor**.
+- **Why & Decisions:**
+  1. **Twin-Star Core (`artilian:twin_star_core`):** Crafted from `All-Seer's Lens` + `Sovereign's Ember Heart` + `Starlight Crystal` + `Sunsteel Ingot` + `Dragon Scale`, yielding `2` cores per boss pair so Alex and Steve can both craft endgame rewards from one co-op victory.
+  2. **Twin-Star Blade (`TwinStarBladeItem`, `ArtilianTiers.TWIN_STAR`):** Fire-resistant `Rarity.EPIC` sword (`2800` durability, `11.0F` speed, `6.0F` bonus damage, `30` enchantability). Ignites foes (`3s`), applies `Weakness` (`60` ticks) + `Glowing` (`80` ticks), and bursts `END_ROD`, `PORTAL`, and `DRAGON_BREATH` particles.
+  3. **Twin-Star Harmony Staff (`WandSpell.TWIN_STAR_HARMONY`):** `50` Mana, `35` ticks cooldown. Heals & buffs nearby allies/Chester/pets (`4.0F` HP + `Regeneration II` + `Speed I`) while damaging (`10.0F` magic), illuminating (`Glowing`), and knocking back nearby hostiles (`KidSafeTargets`).
+  4. **Twin-Star Armor (`ArtilianArmorMaterials.TWIN_STAR`, `TwinStarArmorRenderer`):** `30` total defense (`5/9/11/5`), `4.0F` toughness, `0.25F` knockback resistance, `30` enchantability, `twin_star_armor.geo.json` + `128×64` shaded sheet. Full 4-piece set grants passive `Fire Resistance`, `Strength`, `Night Vision`, and `Regeneration`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Core, Blade, Harmony Staff, 4-piece Armor, art (`make_ores_and_gear_art.py`, `make_wand_art.py`), datagen & GameTests | Pending commit | `TwinStarBladeItem`, `TwinStarArmorRenderer`, `twin_star_armor.geo.json`, `ArtilianTiers.TWIN_STAR`, `ArtilianArmorMaterials.TWIN_STAR`, `WandSpell.TWIN_STAR_HARMONY`, `ManaService#castTwinStarHarmonyStaff`, `check_armor_sheets.py` clean, datagen (`runData`), `build`, and 4 `TwinStarEndgameGameTests` (`226/226` green). Red-proof: commented out `MobEffects.NIGHT_VISION` in `ArtilianArmorItem.applySetBonus` → `twinstarfullarmorsetgrantsallfourendgamebuffs` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Twin-Star Blade, Harmony Staff, and Armor (`qa/evidence/twin-star-endgame-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`TwinStarEndgameGameTests`):** `226/226` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (endgame crafting, armor buffs, and `KidSafeTargets`-filtered staff).
+- **Done When:** `check_armor_sheets.py`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Twin-Star endgame rewards in-game.
 
 ---
 

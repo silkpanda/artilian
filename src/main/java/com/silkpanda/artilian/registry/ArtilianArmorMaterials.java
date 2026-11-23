@@ -57,6 +57,15 @@ public class ArtilianArmorMaterials {
             3.5F,
             0.20F);
 
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TWIN_STAR = register(
+            "twin_star",
+            5, 9, 11, 5, 14,
+            30,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            () -> ArtilianItems.TWIN_STAR_CORE.get(),
+            4.0F,
+            0.25F);
+
     private static DeferredHolder<ArmorMaterial, ArmorMaterial> register(
             String name,
             int boots,

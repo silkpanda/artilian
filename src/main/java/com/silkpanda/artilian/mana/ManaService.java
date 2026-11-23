@@ -45,6 +45,7 @@ public final class ManaService {
     private static final double PRISM_NOVA_RADIUS = 6.5;
     private static final double METEOR_RANGE = 20.0;
     private static final double METEOR_IMPACT_RADIUS = 4.0;
+    private static final double TWIN_STAR_HARMONY_RADIUS = 8.0;
 
     private ManaService() {}
 
@@ -107,6 +108,7 @@ public final class ManaService {
             case ZEPHYR_DASH -> castZephyrDashWand(level, player);
             case PRISM_NOVA -> castPrismNovaStaff(level, player);
             case BRIMSTONE_METEOR -> castBrimstoneMeteorStaff(level, player);
+            case TWIN_STAR_HARMONY -> castTwinStarHarmonyStaff(level, player);
         }
         return true;
     }
@@ -361,6 +363,50 @@ public final class ManaService {
         level.sendParticles(ParticleTypes.FLAME, impact.x, impact.y + 0.5, impact.z, 28, 1.2, 0.5, 1.2, 0.08);
         level.playSound(null, impact.x, impact.y, impact.z,
                 SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.9F, 1.0F);
+    }
+
+    private static void castTwinStarHarmonyStaff(ServerLevel level, Player caster) {
+        Vec3 center = caster.position();
+        double maxDistSqr = TWIN_STAR_HARMONY_RADIUS * TWIN_STAR_HARMONY_RADIUS;
+        AABB area = caster.getBoundingBox().inflate(TWIN_STAR_HARMONY_RADIUS);
+
+        List<LivingEntity> allies = level.getEntitiesOfClass(
+                LivingEntity.class,
+                area,
+                entity -> entity.distanceToSqr(caster) <= maxDistSqr && isValidHealingTarget(entity));
+        for (LivingEntity ally : allies) {
+            ally.heal(4.0F);
+            ally.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 80, 1));
+            ally.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 100, 0));
+            level.sendParticles(ParticleTypes.HEART,
+                    ally.getX(), ally.getY(0.85), ally.getZ(),
+                    4, 0.25, 0.25, 0.25, 0.02);
+        }
+
+        List<LivingEntity> foes = level.getEntitiesOfClass(
+                LivingEntity.class,
+                area,
+                entity -> isValidOffensiveTarget(caster, entity) && entity.distanceToSqr(center) <= maxDistSqr);
+        for (LivingEntity foe : foes) {
+            foe.hurt(level.damageSources().indirectMagic(caster, caster), 10.0F);
+            foe.addEffect(new MobEffectInstance(MobEffects.GLOWING, 80, 0));
+            double dx = foe.getX() - caster.getX();
+            double dz = foe.getZ() - caster.getZ();
+            double dist = Math.hypot(dx, dz);
+            if (dist > 1.0E-4) {
+                foe.setDeltaMovement((dx / dist) * 0.65, Math.max(foe.getDeltaMovement().y, 0.28), (dz / dist) * 0.65);
+                foe.hurtMarked = true;
+                foe.hasImpulse = true;
+            }
+        }
+
+        level.sendParticles(ParticleTypes.END_ROD, center.x, center.y + 1.0, center.z, 26, 2.0, 0.6, 2.0, 0.06);
+        level.sendParticles(ParticleTypes.PORTAL, center.x, center.y + 0.8, center.z, 24, 1.8, 0.5, 1.8, 0.12);
+        level.sendParticles(ParticleTypes.DRAGON_BREATH, center.x, center.y + 0.8, center.z, 20, 1.6, 0.4, 1.6, 0.05);
+        level.playSound(null, center.x, center.y, center.z,
+                SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.1F, 1.25F);
+        level.playSound(null, center.x, center.y, center.z,
+                SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 0.9F, 1.15F);
     }
 
     private static void emitParticleLine(

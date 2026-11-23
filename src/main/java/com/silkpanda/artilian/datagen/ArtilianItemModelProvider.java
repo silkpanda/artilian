@@ -104,6 +104,14 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.basicItem(ArtilianItems.DRAGONSCALE_LEGGINGS.get());
         this.basicItem(ArtilianItems.DRAGONSCALE_BOOTS.get());
 
+        this.basicItem(ArtilianItems.TWIN_STAR_CORE.get());
+        this.handheldItem(ArtilianItems.TWIN_STAR_BLADE.get());
+        this.handheldItem(ArtilianItems.TWIN_STAR_STAFF.get());
+        this.basicItem(ArtilianItems.TWIN_STAR_HELMET.get());
+        this.basicItem(ArtilianItems.TWIN_STAR_CHESTPLATE.get());
+        this.basicItem(ArtilianItems.TWIN_STAR_LEGGINGS.get());
+        this.basicItem(ArtilianItems.TWIN_STAR_BOOTS.get());
+
         this.handheldItem(ArtilianItems.SPARK_WAND.get());
         this.handheldItem(ArtilianItems.HEART_BLOOM_STAFF.get());
         this.handheldItem(ArtilianItems.ZEPHYR_DASH_WAND.get());

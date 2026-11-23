@@ -10,6 +10,7 @@ import com.silkpanda.artilian.gear.ArtilianSwordItem;
 import com.silkpanda.artilian.gear.ArtilianTiers;
 import com.silkpanda.artilian.gear.DragonscaleSwordItem;
 import com.silkpanda.artilian.gear.PrismaticSwordItem;
+import com.silkpanda.artilian.gear.TwinStarBladeItem;
 import com.silkpanda.artilian.mana.ArtilianWandItem;
 import com.silkpanda.artilian.mana.WandSpell;
 import com.silkpanda.artilian.pet.BiomeTreatItem;
@@ -547,6 +548,44 @@ public class ArtilianItems {
                     new Item.Properties().stacksTo(16).rarity(Rarity.EPIC).fireResistant(),
                     "item.artilian.sovereigns_ember_heart.tooltip",
                     ChatFormatting.GOLD));
+
+    // Phase 5 Stage 9: Twin-Star Endgame Rewards
+    public static final DeferredItem<BossTrophyItem> TWIN_STAR_CORE =
+            ITEMS.register("twin_star_core", () -> new BossTrophyItem(
+                    new Item.Properties().stacksTo(16).rarity(Rarity.EPIC).fireResistant(),
+                    "item.artilian.twin_star_core.tooltip",
+                    ChatFormatting.AQUA));
+    public static final DeferredItem<SwordItem> TWIN_STAR_BLADE = ITEMS.register("twin_star_blade",
+            () -> new TwinStarBladeItem(
+                    ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(SwordItem.createAttributes(ArtilianTiers.TWIN_STAR, 4, -2.2F)),
+                    "item.artilian.twin_star_blade.tooltip",
+                    ChatFormatting.AQUA));
+    public static final DeferredItem<ArtilianWandItem> TWIN_STAR_STAFF = ITEMS.register("twin_star_staff",
+            () -> new ArtilianWandItem(
+                    WandSpell.TWIN_STAR_HARMONY,
+                    new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+    public static final DeferredItem<ArmorItem> TWIN_STAR_HELMET = ITEMS.register("twin_star_helmet",
+            () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.HELMET,
+                    new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(46))
+                            .fireResistant().rarity(Rarity.EPIC),
+                    "twin_star"));
+    public static final DeferredItem<ArmorItem> TWIN_STAR_CHESTPLATE = ITEMS.register("twin_star_chestplate",
+            () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.CHESTPLATE,
+                    new Item.Properties().durability(ArmorItem.Type.CHESTPLATE.getDurability(46))
+                            .fireResistant().rarity(Rarity.EPIC),
+                    "twin_star"));
+    public static final DeferredItem<ArmorItem> TWIN_STAR_LEGGINGS = ITEMS.register("twin_star_leggings",
+            () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.LEGGINGS,
+                    new Item.Properties().durability(ArmorItem.Type.LEGGINGS.getDurability(46))
+                            .fireResistant().rarity(Rarity.EPIC),
+                    "twin_star"));
+    public static final DeferredItem<ArmorItem> TWIN_STAR_BOOTS = ITEMS.register("twin_star_boots",
+            () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.BOOTS,
+                    new Item.Properties().durability(ArmorItem.Type.BOOTS.getDurability(46))
+                            .fireResistant().rarity(Rarity.EPIC),
+                    "twin_star"));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
