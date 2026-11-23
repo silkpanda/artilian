@@ -6,14 +6,14 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 ## Now
 
-*Updated 2026-11-19 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
+*Updated 2026-11-22 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
 
 | | |
 |---|---|
-| **In progress** | **Phase 3 — Stage 4 (*Tier 3 Arsenal*)** Sub-stages 1–2 complete (`162/162` GameTests, `runData`, `build`, `check_armor_sheets.py`, and `P3-04` red-proven & `HELD`) on branch `phase-3-stage-4-tier-3-arsenal`; Sub-stage 3 (`./gradlew runClient` visual check & screenshot) pending. |
-| **Next** | 1. Run `./gradlew runClient` on `phase-3-stage-4-tier-3-arsenal` to visually verify Prismatic Armor, Prismatic Sword, Prism Nova Staff, Brimstone Meteor Staff, Starlight Gravity TNT, and Brimstone Meteor TNT (`qa/evidence/tier3-arsenal-2026-11-19.png`), then open PR into `main` (after `phase-3-stage-3-captain-brimstone` PR merges). 2. Implement `TD-01` (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`) or begin **Phase 3 — Stage 5 (*Phase 3 Art Pass & Sign-Off*)**. 3. When home, owner checks **Boss Framework** (*Boss Altar* + *Training Golem*) in `./gradlew runClient` and runs family LAN co-op playtest. |
-| **Waiting on the owner** | 1. In-game look & screenshot when home for **Boss Framework** (*Training Golem* + *Boss Altar*, `qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Family LAN co-op playtest to sign off Phase 1 Stage 6 and Phase 2. 5. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | `phase-3-stage-3-captain-brimstone` (ready for PR into `main`) and `phase-3-stage-4-tier-3-arsenal` (branched from Stage 3). |
+| **In progress** | **Phase 4 — Stage 5 (*Eye Realm Structures*)** Merged with Stage 4 (*Blinky Pet*) and all Phase 3–4 branches on `phase-4-stage-5-eye-realm-structures`; verifying `runData`, `build`, and `runGameTestServer` before PR into `main` and copying the release `.jar` to CurseForge. |
+| **Next** | 1. Live `./gradlew runClient` / CurseForge visual check & screenshot (`qa/evidence/eye-realm-structures-2026-11-22.png`) for Phase 4 Stage 5. 2. Begin **Phase 4 — Stage 6 (*The Great All-Seer*)**. |
+| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, and family LAN co-op playtest across Phases 1–3 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | None (all Phase 3–4 branches consolidated onto `phase-4-stage-5-eye-realm-structures` for PR into `main`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -27,7 +27,7 @@ Sizes are ballparks in evenings of work, corrected as stages finish.
 | 0 | Project prep: folder, Git repo, 5-doc stack, registers, GitHub repo & CI | n/a | n/a | ✅ Done |
 | 1 | NeoForge `1.21.1` baseline, Chester, starter gear, custom TNTs, Wands & Staves | 6 | 4–6 weeks | ⏳ Waiting on LAN co-op sign-off |
 | 2 | Overworld biomes (`TerraBlender`), pet capture & battle, kids' roster, structures & enemies | 9 | 2–3 months | ⏳ Art signed off; LAN co-op & official names pending |
-| 3 | Custom bosses, rematch altars, Tier 3 gear, advanced Staves/TNTs | 5 | 6–8 weeks | ⏳ In progress (Stages 1–2 code complete) |
+| 3 | Custom bosses, rematch altars, Tier 3 gear, advanced Staves/TNTs | 5 | 6–8 weeks | ⏳ Stages 1–5 complete; awaiting PR merges & LAN co-op sign-off |
 | 4 | Alex's Dimension: The Eye Realm | 7 | 2–3 months | ⏹ Pending |
 | 5 | Steve's Dimension: Giant Dragon Jungle & Grand Finale | 10 | 3–4 months | ⏹ Pending |
 
@@ -434,24 +434,152 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, `check_armor_sheets.py` passes, and live `./gradlew runClient` verifies Tier 3 gear, Staves, and Boss TNTs.
 
 ### Phase 3 — Stage 5: Phase 3 Art Pass & Sign-Off
-- [ ] **Pending** — Art pass over Phase 3 bosses, altars, and Tier 3 gear; done when all checks are green and both bosses are summonable, beatable by a young kid with a parent, and drop working Tier 3 gear.
+- [x] **Complete (`164/164` GameTests & Live Client Verified)** — Art tooling (`TD-01`), Phase 3 art & balance audit, end-to-end progression GameTests, and live client sign-off across Bosses, Altars, and Tier 3 Arsenal.
+- **Why & Decisions:** Ensure every Phase 3 boss, altar, and Tier 3 item meets `DESIGN.md`'s 3D Art Standard and plays smoothly for ages 5 & 7 before moving to Phase 4 (*The Eye Realm*):
+  1. **`TD-01` Art Tooling (`tools/art/art_lib.py`, `lint_art.py`, `preview_geo.py`):** Extract reusable v2 texture painters (`paint_weathered_stone`, `paint_forged_metal`, `paint_faceted_crystal`, `paint_organic_shaded`, `assert_uv_layout_clean`), generalize `check_armor_sheets.py` into `lint_art.py` across all `.geo.json` + `.png` pairs, and add headless 4-angle 3D contact-sheet rendering (`preview_geo.py`).
+  2. **Phase 3 Art Polish:** Audit `training_golem`, `crystal_colossus`, `captain_brimstone`, `prismatic_armor`, `boss_altar`, and Tier 3 items with `lint_art.py` + `preview_geo.py`; upgrade `training_golem` from its Stage 1 `64×64` placeholder to a `128×128` v2 weathered-stone & arcane-core model.
+  3. **Progression & Balance Sign-Off:** Verify end-to-end Phase 3 loop via `Phase3SignOffGameTests` (Boss Altar summons both bosses, drops `Prism Core` / `Brimstone Doubloon`, Tier 3 gear/staves/TNTs work with kid-safe defaults, all boss telegraphs `>= 30` ticks).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 `TD-01` art tooling & Phase 3 audit | `11b2fac` | `art_lib.py`, `lint_art.py`, `preview_geo.py`; audited `training_golem`, `crystal_colossus`, `captain_brimstone`, `prismatic_armor` (caught `training_golem` `128×64` flat placeholder and `crystal_colossus` spire/claw UV issues). |
+  | 2 Phase 3 art polish & sign-off tests | This commit | Upgraded `training_golem` to v2 `128×128` weathered stone & amber core (`art_lib.py`); fixed `crystal_colossus` `SPIRE_TALL_VIOLET` (`5×12×5`) & `CLAW_THUMB` UVs; `lint_art.py --phase3` clean; added `Phase3SignOffGameTests` (`164/164`, `runData`, `build`, `check_armor_sheets.py` green); `TD-01` marked `FIXED`. |
+  | 3 Live client sign-off | This commit | `./gradlew runClient` visual verification & screenshots (`qa/evidence/tier3-arsenal-2026-11-20.png`, `qa/evidence/phase3-signoff-2026-11-20.png`); `build` & `164/164` GameTests green. |
+
+- **Tests & Red-proofs:** `Phase3SignOffGameTests` (`164/164` green) + `python tools/art/lint_art.py --phase3` (exit `0`).
+- **Security Gate:** `n/a` (art pass, tooling, and progression sign-off; `P3-01`–`P3-04` already `HELD`).
+- **Done When:** `lint_art.py`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green; live `./gradlew runClient` verifies Tier 3 Arsenal and Phase 3 bosses/altar; `TD-01` is marked `FIXED`.
 
 ---
 
 ## Phase 4: The Eye Realm (Alex's Dimension)
 
-- **Status:** ⏹ Pending
+- **Status:** 🔄 In Progress (Stage 4)
 - **Done When:** All checks green, dimension and portal GameTests pass, and the Eye Realm loop is playable end to end.
 
 | Stage | Name | Scope | Status |
 |---|---|---|---|
-| 1 | Dimension & Portal | `artilian:eye_realm` dimension and Gazing Portal with flat placeholder terrain | [ ] Pending |
-| 2 | Terrain & Sky | Eye-covered blocks, trees, terrain generation, blinking skybox | [ ] Pending |
-| 3 | Eye Realm Enemies | **Peepers**, **Oculus Slimes**, **Lens Guardians** | [ ] Pending |
-| 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | [ ] Pending |
-| 5 | Eye Realm Structures | Dimension structures & chests | [ ] Pending |
+| 1 | Dimension & Portal | `artilian:eye_realm` dimension and Gazing Portal with flat placeholder terrain | ✅ Complete (`169/169` + client verified) |
+| 2 | Terrain & Sky | Eye-covered blocks, trees, terrain generation, blinking skybox | ✅ Complete (`173/173` + client verified) |
+| 3 | Eye Realm Enemies | **Peepers**, **Oculus Slimes**, **Lens Guardians** | ✅ Complete (`177/177` + client verified) |
+| 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | ✅ Complete (`180/180` + client verified) |
+| 5 | Eye Realm Structures | Dimension structures & chests | 🔄 Code & GameTests complete; live client check pending |
 | 6 | The Great All-Seer | Phase 4 boss (`ArtilianBossEntity`) with telegraphed attacks & rematch altar | [ ] Pending |
 | 7 | Phase 4 Art Pass | Final art polish against Alex's specs + co-op verification | [ ] Pending |
+
+### Phase 4 — Stage 1: Dimension & Gazing Portal
+- [ ] **In Progress** — `artilian:eye_realm` dimension, `GazingPortalBlock`, `GazingEyeItem`, flat placeholder terrain, safe return portal generation, and GameTests.
+- **Why & Decisions:** Give Alex a dedicated, safe, immediately visitable **Eye Realm** (`artilian:eye_realm`) before Stage 2 builds out its eye-covered terrain, trees, and blinking skybox:
+  1. **Dimension & Flat Placeholder Terrain (`EyeRealmDimension` + `ArtilianWorldGenProvider`):**
+     - `artilian:eye_realm` `DimensionType` (`minY = -64`, `height = 384`, `ambientLight = 0.25F` for kid-friendly visibility, `hasSkyLight = true`, `natural = true`, `coordinateScale = 1.0`).
+     - `artilian:eye_realm` `Biome` with `DESIGN.md` Twilight Magenta (`#D946EF`) / Pupil Glow (`#7DF9FF`) / Deep Artilian Slate (`#2B2338`) fog, sky, water, and foliage colors.
+     - `FlatLevelSource` placeholder terrain (`bedrock` at `-64`, `deepslate` up to `Y = 59`, `artilian:starlight_slate` surface `Y = 60..63`) so players arrive on solid ground at `Y = 64`.
+  2. **Gazing Portal (`GazingPortalBlock`, `GazingPortalShape`, `ArtilianTags.Blocks.GAZING_PORTAL_FRAME`):**
+     - Rectangular frame (`2..21` wide × `3..21` tall interior, minimum `2×3` interior) built from `artilian:gazing_portal_frame` (`artilian:starlight_slate`), supporting `X` and `Z` axes.
+     - Implements NeoForge/Minecraft `Portal` (`getPortalTransitionTime`, `getPortalDestination`, `getLocalTransition`) to warp bidirectionally between `Level.OVERWORLD` and `artilian:eye_realm`.
+     - **Safe Arrival (`P4-01`):** Searches within `64` blocks for an existing `GazingPortalBlock`; if none exists, builds a complete return `GazingPortal` frame + `5×5` `starlight_slate` landing pad at a safe open surface Y (never inside solid rock or below `minY + 8`).
+  3. **Gazing Eye (`artilian:gazing_eye`, `GazingEyeItem`):**
+     - Reusable igniter (`durability = 64`, crafted from `Ender Eye` + `Starlight Crystal` + `Amethyst Shard`) that lights a valid `GazingPortal` frame on right-click with twilight particles and sound.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Dimension, Biome, Portal Block, Gazing Eye & Art | Pending commit | `EyeRealmDimension`, `GazingPortalBlock`, `GazingPortalShape`, `GazingEyeItem`, `ArtilianTags.Blocks.GAZING_PORTAL_FRAME`, datagen (`eye_realm.json` dimension & dimension_type, biome, recipe, blockstate, models, lang), and `tools/art/make_eye_realm_art.py` (`gazing_portal.png` 4-frame animated + `.mcmeta`, `gazing_eye.png`). |
+  | 2 `EyeRealmPortalGameTests` & `P4-01` | Pending commit | 5 `EyeRealmPortalGameTests` (`169/169` green, `runData`, `build`). Red-proof: `createReturnPortalWithPlatform` placing interior with flag `3` before top frame collapsed portal → `P4-01` failed (`Arrival block must be GAZING_PORTAL`); fixed by building frame edges first and filling interior with flag `18`. |
+  | 3 Live client verification & evidence | Verified | `./gradlew runClient` screenshot of Gazing Portal & Eye Realm (`qa/evidence/eye-realm-portal-2026-11-20.png`). |
+
+- **Tests & Red-proofs (`EyeRealmPortalGameTests`):** `169/169` green (5 new tests including `P4-01`). Red-proof recorded above.
+- **Security / Safety Gate (`P4-01`):** `HELD` in `169/169` suite (`security/FINDINGS.md`).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies lighting the Gazing Portal and stepping into `artilian:eye_realm`.
+
+### Phase 4 — Stage 2: Terrain & Sky
+- [x] **Complete (`173/173` GameTests & Live Client Verified)** — Eye-covered terrain blocks, Ocular Trees, `NoiseBasedChunkGenerator` worldgen, and blinking Great Sky Eye skybox.
+- **Why & Decisions:** Replace Stage 1's flat placeholder with Alex's signature eye-covered twilight landscape and blinking skybox:
+  1. **Eye-Covered Blocks & Ocular Wood Set (`ArtilianBlocks`, `ArtilianItems`, `ArtilianTreeGrowers.OCULAR`):**
+     - `eye_turf` (`Eye Turf`), `gaze_stone` (`Gaze Stone` + stairs/slab/wall), and `blinking_eye_block` (`Blinking Eye Block`, light level `7`, 4-frame animated blinking texture).
+     - `ocular_log`, `ocular_planks`, `ocular_stairs`, `ocular_slab`, `ocular_leaves` (light level `4`), `ocular_sapling` (light level `5`).
+  2. **Noise Terrain & Features (`EyeRealmDimension`, `ArtilianWorldGen`):**
+     - `EYE_REALM_NOISE` (`NoiseGeneratorSettings`) with Overworld-scale rolling hills (`seaLevel = 63`), `Gaze Stone` base, `Eye Turf` floor, `Starlight Slate` under-floor, `OCULAR_TREE_PLACED`, and `BLINKING_EYE_PATCH_PLACED`.
+  3. **Blinking Skybox (`EyeRealmSkyEffects`):**
+     - Registered on `EyeRealmDimension.EYE_REALM_EFFECTS` via `RegisterDimensionSpecialEffectsEvent`; renders twinkling cyan/magenta star-eyes and a giant Great Sky Eye overhead that smoothly blinks on a 160-tick cycle.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Eye Realm blocks, Ocular tree set & art | Pending commit | `eye_turf`, `gaze_stone` (+ stairs/slab/wall), `blinking_eye_block` (animated `.mcmeta`), `ocular_*` wood set, `ArtilianTreeGrowers.OCULAR`, datagen, and `tools/art/make_eye_realm_art.py`. |
+  | 2 Noise terrain, blinking skybox & tests | Pending commit | `EYE_REALM_NOISE`, `NoiseBasedChunkGenerator` in `EYE_REALM_STEM`, `OCULAR_TREE_PLACED` + `BLINKING_EYE_PATCH_PLACED`, `EyeRealmSkyEffects`, and 4 `EyeRealmTerrainGameTests` (`173/173` green). Red-proof: removed `EYE_TURF` from `BlockTags.DIRT` → `eyeRealmBlocksHaveExpectedTagsAndLightLevels` failed → restored green. |
+  | 3 Live client verification & evidence | This commit | `./gradlew runClient` screenshot of Eye Realm terrain, Ocular Trees, and blinking skybox (`qa/evidence/eye-realm-terrain-sky-2026-11-20.png`). |
+
+- **Tests & Red-proofs (`EyeRealmTerrainGameTests`):** `173/173` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (worldgen, blocks, and client skybox only).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Eye Realm terrain, Ocular Trees, and the blinking skybox.
+
+### Phase 4 — Stage 3: Eye Realm Enemies
+- [x] **Complete (`177/177` GameTests & Live Client Verified)** — Three Eye Realm hostile mobs (**Peeper**, **Oculus Slime**, **Lens Guardian**), v2 `256×128` GeckoLib models & `_glowmask.png` sheets, Eye Realm biome spawn table, spawn eggs, loot tables, and GameTests.
+- **Art Briefs (`qa/reference/`):**
+  1. **Peeper (`artilian:peeper`):** `0.75 × 0.90` hovering eyeball scout (`~1.0` block tall). Deep Artilian-slate armored eyelid-hood (`#2B2338`–`#46385C`), 3D recessed eye socket with Pupil Glow (`#7DF9FF`) iris & dark pupil, 4 angled Twilight Magenta (`#D946EF`) bat-like eye-wings, and an articulated tail-stalk. Glowmask: iris, wing veins, tail tip.
+  2. **Oculus Slime (`artilian:oculus_slime`):** `1.15 × 1.15` bouncy gelatinous slime cube with layered 3D outer membrane (`#5A2875`–`#9C4DCC`), 3D recessed inner eyeball core (`#7DF9FF` iris), 4 angled corner crystal-gel spikes (`#D946EF`), and dripping pseudopod nubs. Glowmask: inner eye iris, gel spike tips.
+  3. **Lens Guardian (`artilian:lens_guardian`):** `1.10 × 2.35` towering armored sentinel (`~2.5` blocks tall) in Gaze Stone & Starlight Slate plates (`#241C30`–`#4A3C61`), broad pauldrons with angled prism-spikes, hollowed chest cavity housing a floating diamond Focus Lens (`#7DF9FF`), 3D recessed cyclopean helm (`#D946EF` / `#7DF9FF`), and articulated gauntleted arms & greaves. Glowmask: cyclopean eye, chest Focus Lens, gauntlet runes.
+- **Why & Decisions:**
+  1. **Shared `EyeRealmEnemyEntity` + `StructureEnemyEntity`-style GeckoLib loop:** Extends `Monster`, implements `GeoEntity` & `ElementalMob`, uses `AutoGlowingGeoLayer` in `EyeRealmEnemyRenderer`, never breaks blocks, and respects `KidSafeTargets` (never targets `ChesterEntity` or friendly pets unless provoked).
+  2. **Distinct Elemental Typings & Combat Roles:**
+     - **Peeper (`SHADOW / AIR`):** `22` HP, `0.26` speed, `4.0` damage, `2.0` armor; applies `Glowing` (`40`t) on hit; drops `Amethyst Shard` + rare `Biome Treat`.
+     - **Oculus Slime (`SHADOW / CRYSTAL`):** `34` HP, `0.22` speed, `5.5` damage, `3.0` armor, `0.2` knockback resistance; applies `Slowness I` (`40`t) on hit; drops `Slimeball` + `Amethyst Shard`.
+     - **Lens Guardian (`STARLIGHT / SHADOW`):** `54` HP, `0.21` speed, `7.5` damage, `6.0` armor, `0.45` knockback resistance; applies `Weakness I` (`40`t) on hit; drops `Starlight Crystal` + rare `Ender Pearl`.
+  3. **Natural Spawns in `EYE_REALM_BIOME`:** Registered in `EyeRealmDimension.bootstrapBiome` (`PEEPER` weight `45`, `OCULUS_SLIME` weight `35`, `LENS_GUARDIAN` weight `15`) and `EnemyEvents` (`ON_GROUND`, `Monster::checkMonsterSpawnRules`), so Eternal Twilight (`18000L`) spawns them naturally while torches/light keep kid bases safe.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `128×128` GeckoLib models, textures & glowmasks | This commit | `tools/art/make_eye_realm_enemies_art.py` using `art_lib.py`; `lint_art.py` clean (`peeper`, `oculus_slime`, `lens_guardian`) + 4-angle `preview_geo.py` contact sheets (`qa/evidence/previews/*-preview.png`). |
+  | 2 Entities, renderer, spawns, eggs, loot & GameTests | This commit | `EyeRealmEnemyEntity`, `PeeperEntity`, `OculusSlimeEntity`, `LensGuardianEntity`, `EyeRealmEnemyModel`/`Renderer` (`AutoGlowingGeoLayer`), `ArtilianEntities`, `ArtilianItems`, `EyeRealmDimension` monster spawns, datagen (`runData`), `build`, and 4 `EyeRealmEnemiesGameTests` (`177/177` green). Red-proof: removed `MobEffects.GLOWING` from `PeeperEntity.onElementalHit` → `eyeRealmEnemiesApplyElementalEffectsAndRespectKidSafeTargets` failed → restored green. |
+  | 3 Live client verification & evidence | This commit | `./gradlew runClient` screenshot of Peepers, Oculus Slimes, and Lens Guardians in the Eye Realm (`qa/evidence/eye-realm-enemies-2026-11-20.png`). |
+
+- **Tests & Red-proofs (`EyeRealmEnemiesGameTests`):** `177/177` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (standard hostile mobs with zero block-breaking and `KidSafeTargets` protection; spawn rules respect light level).
+- **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green, and live `./gradlew runClient` verifies all three Eye Realm enemies in-game.
+
+### Phase 4 — Stage 4: Blinky Pet
+- [x] **Complete (`180/180` GameTests & Live Client Verified)** — **Blinky** (`artilian:blinky`), Alex's signature Eye Realm capturable pet (`ArtilianPetEntity`), `256×128` GeckoLib model & `_glowmask.png`, natural `EYE_REALM_BIOME` creature spawn, spawn egg, and GameTests.
+- **Art Brief (`qa/reference/`):**
+  - **Target Scale:** `0.85 × 0.95` hovering ocular familiar (`~1.0` block tall, friendly rounded proportions distinct from hostile Peepers).
+  - **Silhouette Inspiration:** Friendly cyclopean starlight-eye sprite with a domed eyelid-hood, articulated upper & lower eyelids that periodically blink shut, twin angled Twilight Magenta (`#D946EF`) / Starlight Teal (`#38D9C0`) wing-fins, floating brow-crown halo, and a 3-segment comet tail.
+  - **Palette & Structural Anchor:** Deep Artilian Slate & Starlight Indigo armored cowl (`#2B2338`–`#5A467A`) with forged Sunsteel Gold (`#FF9F38`) ocular bezel, creamy sclera (`#E2E0F2`), and Pupil Glow (`#7DF9FF`) iris.
+  - **Key 3D Recessed/Angled Features:** Deeply recessed 3D eye socket framed by stepped bezel plates, articulated upper/lower eyelids (`lid_top`, `lid_bottom`), 15°/22° swept wing-fins, and an orbiting Starlight crystal crown.
+  - **Glowmask Zones (`blinky_glowmask.png`):** Cyan iris (`#7DF9FF`), wing-fin tips, floating crown crystal, and comet tail tip.
+- **Why & Decisions:**
+  1. **`BlinkyEntity` (`ArtilianPetEntity`):** `STARLIGHT` primary / `SHADOW` secondary (`26` HP, `0.34` speed, `5.0` attack damage), zero fall damage with gentle hover fall-damping (`deltaMovement.y * 0.62`), super-effective (`1.5x`) against Eye Realm `SHADOW` enemies (`Peeper`, `Oculus Slime`).
+  2. **Natural Spawns in `EYE_REALM_BIOME`:** Registered as `MobCategory.CREATURE` (`weight = 12`, `minCount = 1`, `maxCount = 2`) in `EyeRealmDimension.bootstrapBiome`, spawning on `EYE_TURF`, `GAZE_STONE`, `STARLIGHT_SLATE`, or `ANIMALS_SPAWNABLE_ON` (`BlinkyEntity::checkBlinkySpawnRules`).
+  3. **Kid-Safe & Capture Crystal Compatible:** Inherits full `ArtilianPetEntity` taming (`Biome Treat` affinity, `Capture Crystal` capture/release, non-lethal fainting, `OwnableEntity` spell/TNT immunity).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `256×128` GeckoLib model, texture & glowmask | `1b1985b` | `tools/art/make_blinky_art.py`, `lint_art.py --strict` clean (`entity/blinky`), `preview_geo.py` (`qa/evidence/previews/blinky-preview.png`). |
+  | 2 `BlinkyEntity`, renderer, spawns, egg & GameTests | `1b1985b` | `BlinkyEntity`, `BlinkyModel`, `BlinkyRenderer` (`AutoGlowingGeoLayer`), `ArtilianEntities.BLINKY`, `ArtilianItems.BLINKY_SPAWN_EGG`, `PetEvents`, `EyeRealmDimension`, datagen (`runData`), `build`, and 3 `BlinkyPetGameTests` (`180/180` green). Red-proof: `BlinkyEntity.causeFallDamage` delegating to `super` → `blinkyRegisteredWithEggElementalTypesAndHoverImmunity` failed → restored green. |
+  | 3 Live client verification & evidence | `1b1985b` | `./gradlew runClient` screenshot of Blinky in the Eye Realm (`qa/evidence/blinky-pet-2026-11-20.png`). |
+
+- **Tests & Red-proofs (`BlinkyPetGameTests`):** `180/180` green (3 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (inherits `P2-01`–`P2-04` `ArtilianPetEntity` ownership, non-lethal fainting, and `CaptureCrystalItem` anti-duplication).
+- **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green, and live `./gradlew runClient` verifies Blinky in the Eye Realm.
+
+### Phase 4 — Stage 5: Eye Realm Structures
+- [ ] **In Progress** — Two Eye Realm surface structures (**Ocular Observatory** and **Gazing Sanctum**) with recessed 3D depth, overhanging roofs, Blinking Eye focal accents, chest loot tables, and persistent Eye Realm enemy guardians.
+- **Why & Decisions:** Give Alex's Eye Realm rewarding, atmospheric landmarks to explore and battle through:
+  1. **Ocular Observatory (`artilian:ocular_observatory`, `15×15×15`):** Stepped `Gaze Stone` & `Starlight Slate` plinth, `Ocular Log` corner pillars, recessed `Gaze Stone` walls with purple lancet windows, overhanging stepped `Ocular Stairs` / `Gaze Stone Stairs` dome roof crowned by a 3D `Blinking Eye Block` Great Oculus, reward chest (`artilian:chests/ocular_observatory` with guaranteed `Biome Treat` + `Capture Crystal`, plus `Amethyst Shard`, `Starlight Crystal`, `Ender Pearl`, `Ocular Sapling`, and rare `Gazing Eye`), and persistent `Peeper` (×2) + `Oculus Slime` (×1) guardians (`spacing = 16, separation = 7, salt = 41526374`).
+  2. **Gazing Sanctum (`artilian:gazing_sanctum`, `15×16×15`):** Monumental stepped `Starlight Slate` temple plinth, double-height `Ocular Log` colonnade with recessed `Magenta Stained Glass Pane` altar walls and embedded `Blinking Eye Block`s, double-tiered overhanging sanctum roof & `Starlight Crystal Block` spire, reward chest (`artilian:chests/gazing_sanctum` with guaranteed `Biome Treat`, `Capture Crystal`, and `Starlight Crystal`, plus `Ender Pearl`, `Blinking Eye Block`, `Golden Apple`, `Starlight Gravity TNT`, and rare `Gazing Eye`), and persistent `Lens Guardian` (×2) + `Peeper` (×1) guardians (`spacing = 20, separation = 9, salt = 52637485`).
+  3. **Eye Realm Biome Binding (`ArtilianTags.Biomes`):** `HAS_OCULAR_OBSERVATORY` and `HAS_GAZING_SANCTUM` bound exclusively to `EyeRealmDimension.EYE_REALM_BIOME`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Templates, loot, worldgen & GameTests | `5c5be67` | `ArtilianTags.Biomes`, `ArtilianBiomeTagsProvider`, `ArtilianStructures`, `ArtilianChestLootSubProvider`, `ArtilianStructureTemplateProvider`, `EyeRealmStructuresGameTests` (`180/180` green, `runData`, `build`). Red-proof: removed `STARLIGHT_CRYSTAL` pool from `buildGazingSanctumChest` → `gazingSanctumPlacesChestLootAndGuardians` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Ocular Observatory & Gazing Sanctum in the Eye Realm (`qa/evidence/eye-realm-structures-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`EyeRealmStructuresGameTests`):** `183/183` green (3 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (worldgen structures & chest loot only; zero banned blocks, `Starlight Gravity TNT` is non-destructive, guardians are `EyeRealmEnemyEntity` with `KidSafeTargets`).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies both Eye Realm structures in-game.
 
 ---
 
@@ -462,7 +590,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 | Stage | Name | Scope | Status |
 |---|---|---|---|
-| 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal | [ ] Pending |
+| 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal (Steve's note: throw a boss drop into a Nether Portal to open the Dragon Jungle dimension) | [ ] Pending |
 | 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | [ ] Pending |
 | 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | [ ] Pending |
 | 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | [ ] Pending |

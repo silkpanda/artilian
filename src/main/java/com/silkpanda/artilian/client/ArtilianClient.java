@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.client;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.dimension.EyeRealmDimension;
 import com.silkpanda.artilian.pet.CaptureCrystalItem;
 import com.silkpanda.artilian.registry.ArtilianEntities;
 import com.silkpanda.artilian.registry.ArtilianItems;
@@ -11,6 +12,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
@@ -49,6 +51,13 @@ public final class ArtilianClient {
                 ctx -> new StructureEnemyRenderer<>(ctx, "cinder_raider", 0.45F));
         event.registerEntityRenderer(ArtilianEntities.ASTRAL_STALKER.get(),
                 ctx -> new StructureEnemyRenderer<>(ctx, "astral_stalker", 0.48F));
+        event.registerEntityRenderer(ArtilianEntities.PEEPER.get(),
+                ctx -> new EyeRealmEnemyRenderer<>(ctx, "peeper", 0.45F));
+        event.registerEntityRenderer(ArtilianEntities.OCULUS_SLIME.get(),
+                ctx -> new EyeRealmEnemyRenderer<>(ctx, "oculus_slime", 0.65F));
+        event.registerEntityRenderer(ArtilianEntities.LENS_GUARDIAN.get(),
+                ctx -> new EyeRealmEnemyRenderer<>(ctx, "lens_guardian", 0.65F));
+        event.registerEntityRenderer(ArtilianEntities.BLINKY.get(), BlinkyRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.TRAINING_GOLEM.get(),
                 ctx -> new TrainingGolemRenderer<>(ctx, "training_golem", 1.0F));
         event.registerEntityRenderer(ArtilianEntities.CRYSTAL_COLOSSUS.get(), CrystalColossusRenderer::new);
@@ -58,5 +67,10 @@ public final class ArtilianClient {
     @SubscribeEvent
     public static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, ArtilianMod.id("mana_bar"), ManaHudOverlay::render);
+    }
+
+    @SubscribeEvent
+    public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
+        event.register(EyeRealmDimension.EYE_REALM_EFFECTS, new EyeRealmSkyEffects());
     }
 }

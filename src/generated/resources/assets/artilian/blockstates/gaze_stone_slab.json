@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "artilian:block/gaze_stone_slab"
+    },
+    "type=double": {
+      "model": "artilian:block/starlight_slate"
+    },
+    "type=top": {
+      "model": "artilian:block/gaze_stone_slab_top"
+    }
+  }
+}

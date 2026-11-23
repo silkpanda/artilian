@@ -23,6 +23,9 @@ public final class EnemyEvents {
             event.put(ArtilianEntities.PRISM_SENTINEL.get(), PrismSentinelEntity.createAttributes().build());
             event.put(ArtilianEntities.CINDER_RAIDER.get(), CinderRaiderEntity.createAttributes().build());
             event.put(ArtilianEntities.ASTRAL_STALKER.get(), AstralStalkerEntity.createAttributes().build());
+            event.put(ArtilianEntities.PEEPER.get(), PeeperEntity.createAttributes().build());
+            event.put(ArtilianEntities.OCULUS_SLIME.get(), OculusSlimeEntity.createAttributes().build());
+            event.put(ArtilianEntities.LENS_GUARDIAN.get(), LensGuardianEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -39,6 +42,21 @@ public final class EnemyEvents {
                         SpawnPlacementTypes.ON_GROUND,
                         Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                         Monster::checkMonsterSpawnRules,
+                        RegisterSpawnPlacementsEvent.Operation.REPLACE
+                );
+            }
+            for (var type : new net.minecraft.world.entity.EntityType[]{
+                    ArtilianEntities.PEEPER.get(),
+                    ArtilianEntities.OCULUS_SLIME.get(),
+                    ArtilianEntities.LENS_GUARDIAN.get()
+            }) {
+                @SuppressWarnings("unchecked")
+                var monsterType = (net.minecraft.world.entity.EntityType<Monster>) type;
+                event.register(
+                        monsterType,
+                        SpawnPlacementTypes.ON_GROUND,
+                        Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                        EyeRealmEnemyEntity::checkEyeRealmSpawnRules,
                         RegisterSpawnPlacementsEvent.Operation.REPLACE
                 );
             }

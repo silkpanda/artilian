@@ -47,6 +47,10 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/crystal_colossus_arena"));
     public static final ResourceKey<LootTable> BRIMSTONE_BASTION_CHEST =
             ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/brimstone_bastion"));
+    public static final ResourceKey<LootTable> OCULAR_OBSERVATORY_CHEST =
+            ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/ocular_observatory"));
+    public static final ResourceKey<LootTable> GAZING_SANCTUM_CHEST =
+            ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/gazing_sanctum"));
 
     public static final ResourceKey<StructureTemplatePool> CRYSTAL_GROVE_SHRINE_POOL =
             ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("crystal_grove_shrine"));
@@ -58,6 +62,10 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("crystal_colossus_arena"));
     public static final ResourceKey<StructureTemplatePool> BRIMSTONE_BASTION_POOL =
             ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("brimstone_bastion"));
+    public static final ResourceKey<StructureTemplatePool> OCULAR_OBSERVATORY_POOL =
+            ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("ocular_observatory"));
+    public static final ResourceKey<StructureTemplatePool> GAZING_SANCTUM_POOL =
+            ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("gazing_sanctum"));
 
     public static final ResourceKey<Structure> CRYSTAL_GROVE_SHRINE =
             ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("crystal_grove_shrine"));
@@ -69,6 +77,10 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("crystal_colossus_arena"));
     public static final ResourceKey<Structure> BRIMSTONE_BASTION =
             ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("brimstone_bastion"));
+    public static final ResourceKey<Structure> OCULAR_OBSERVATORY =
+            ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("ocular_observatory"));
+    public static final ResourceKey<Structure> GAZING_SANCTUM =
+            ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("gazing_sanctum"));
 
     public static final ResourceKey<StructureSet> CRYSTAL_GROVE_SHRINES =
             ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("crystal_grove_shrines"));
@@ -80,6 +92,10 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("crystal_colossus_arenas"));
     public static final ResourceKey<StructureSet> BRIMSTONE_BASTIONS =
             ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("brimstone_bastions"));
+    public static final ResourceKey<StructureSet> OCULAR_OBSERVATORIES =
+            ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("ocular_observatories"));
+    public static final ResourceKey<StructureSet> GAZING_SANCTUMS =
+            ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("gazing_sanctums"));
 
     public static void bootstrapTemplatePools(BootstrapContext<StructureTemplatePool> context) {
         HolderGetter<StructureTemplatePool> pools = context.lookup(Registries.TEMPLATE_POOL);
@@ -90,6 +106,8 @@ public final class ArtilianStructures {
         registerSinglePool(context, STARLIGHT_WATCHTOWER_POOL, emptyFallback, "artilian:starlight_watchtower");
         registerSinglePool(context, CRYSTAL_COLOSSUS_ARENA_POOL, emptyFallback, "artilian:crystal_colossus_arena");
         registerSinglePool(context, BRIMSTONE_BASTION_POOL, emptyFallback, "artilian:brimstone_bastion");
+        registerSinglePool(context, OCULAR_OBSERVATORY_POOL, emptyFallback, "artilian:ocular_observatory");
+        registerSinglePool(context, GAZING_SANCTUM_POOL, emptyFallback, "artilian:gazing_sanctum");
     }
 
     public static void bootstrapStructures(BootstrapContext<Structure> context) {
@@ -111,6 +129,12 @@ public final class ArtilianStructures {
         context.register(BRIMSTONE_BASTION, bossArenaStructure(
                 biomes, pools, ArtilianTags.Biomes.HAS_BRIMSTONE_BASTION,
                 BRIMSTONE_BASTION_POOL));
+        context.register(OCULAR_OBSERVATORY, surfaceStructure(
+                biomes, pools, ArtilianTags.Biomes.HAS_OCULAR_OBSERVATORY,
+                OCULAR_OBSERVATORY_POOL, ArtilianEntities.PEEPER.get()));
+        context.register(GAZING_SANCTUM, surfaceStructure(
+                biomes, pools, ArtilianTags.Biomes.HAS_GAZING_SANCTUM,
+                GAZING_SANCTUM_POOL, ArtilianEntities.LENS_GUARDIAN.get()));
     }
 
     public static void bootstrapStructureSets(BootstrapContext<StructureSet> context) {
@@ -121,6 +145,8 @@ public final class ArtilianStructures {
         context.register(STARLIGHT_WATCHTOWERS, spreadSet(structures, STARLIGHT_WATCHTOWER, 83604233));
         context.register(CRYSTAL_COLOSSUS_ARENAS, spreadSet(structures, CRYSTAL_COLOSSUS_ARENA, 26, 12, 94715344));
         context.register(BRIMSTONE_BASTIONS, spreadSet(structures, BRIMSTONE_BASTION, 26, 12, 95826455));
+        context.register(OCULAR_OBSERVATORIES, spreadSet(structures, OCULAR_OBSERVATORY, 16, 7, 41526374));
+        context.register(GAZING_SANCTUMS, spreadSet(structures, GAZING_SANCTUM, 20, 9, 52637485));
     }
 
     private static void registerSinglePool(

@@ -15,7 +15,7 @@ When you fix an item, update its row and add the commit to its section. An item 
 
 | ID | Severity | Area | Item | Effort | Status |
 |---|---|---|---|---|---|
-| `TD-01` | Medium | `tools/art/` | Extract shared v2 texture painters (`art_lib.py`) and add entity art linter + headless previewer (`lint_art.py`, `preview_geo.py`) | M | OPEN |
+| `TD-01` | Medium | `tools/art/` | Extract shared v2 texture painters (`art_lib.py`) and add entity art linter + headless previewer (`lint_art.py`, `preview_geo.py`) | M | FIXED (`phase-3-stage-5-art-pass`) |
 
 Effort: **S** takes under half a day, **M** takes one to three days, **L** takes longer.
 

@@ -34,6 +34,11 @@ public class ArtilianEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 ArtilianEntities.CINDER_RAIDER.get(),
                 ArtilianEntities.ASTRAL_STALKER.get()
         );
+        tag(ArtilianTags.EntityTypes.EYE_REALM_ENEMIES).add(
+                ArtilianEntities.PEEPER.get(),
+                ArtilianEntities.OCULUS_SLIME.get(),
+                ArtilianEntities.LENS_GUARDIAN.get()
+        );
         tag(ArtilianTags.EntityTypes.BOSSES).add(
                 ArtilianEntities.TRAINING_GOLEM.get(),
                 ArtilianEntities.CRYSTAL_COLOSSUS.get(),

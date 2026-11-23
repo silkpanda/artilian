@@ -1,0 +1,11 @@
+{
+  "type": "artilian:eye_realm",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "artilian:eye_realm"
+    },
+    "settings": "artilian:eye_realm"
+  }
+}

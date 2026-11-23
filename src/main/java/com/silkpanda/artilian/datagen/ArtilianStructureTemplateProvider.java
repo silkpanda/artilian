@@ -77,6 +77,8 @@ public class ArtilianStructureTemplateProvider implements DataProvider {
             writeTemplate(cachedOutput, "starlight_watchtower", buildStarlightWatchtower());
             writeTemplate(cachedOutput, "crystal_colossus_arena", buildCrystalColossusArena());
             writeTemplate(cachedOutput, "brimstone_bastion", buildBrimstoneBastion());
+            writeTemplate(cachedOutput, "ocular_observatory", buildOcularObservatory());
+            writeTemplate(cachedOutput, "gazing_sanctum", buildGazingSanctum());
         });
     }
 
@@ -1102,6 +1104,253 @@ public class ArtilianStructureTemplateProvider implements DataProvider {
             b.set(ox, 2, oz + 2 * dz, slateWall);
             b.set(ox, 3, oz + 2 * dz, lantern);
         }
+
+        b.connectFencesAndWalls();
+        return b.build();
+    }
+
+    private static CompoundTag buildOcularObservatory() {
+        TemplateBuilder b = new TemplateBuilder(15, 15, 15);
+        BlockState gazeStone = ArtilianBlocks.GAZE_STONE.get().defaultBlockState();
+        BlockState starlightSlate = ArtilianBlocks.STARLIGHT_SLATE.get().defaultBlockState();
+        BlockState eyeTurf = ArtilianBlocks.EYE_TURF.get().defaultBlockState();
+        BlockState blinkingEye = ArtilianBlocks.BLINKING_EYE_BLOCK.get().defaultBlockState();
+        BlockState ocularLog = ArtilianBlocks.OCULAR_LOG.get().defaultBlockState()
+                .setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
+        BlockState ocularPlanks = ArtilianBlocks.OCULAR_PLANKS.get().defaultBlockState();
+        BlockState crystalBlock = ArtilianBlocks.STARLIGHT_CRYSTAL_BLOCK.get().defaultBlockState();
+        BlockState chiseledStone = Blocks.CHISELED_STONE_BRICKS.defaultBlockState();
+        BlockState gazeWall = ArtilianBlocks.GAZE_STONE_WALL.get().defaultBlockState();
+        BlockState purplePane = Blocks.PURPLE_STAINED_GLASS_PANE.defaultBlockState();
+        BlockState soulLantern = Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, false);
+        BlockState hangingLantern = Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true);
+        BlockState amethystUp = Blocks.AMETHYST_CLUSTER.defaultBlockState()
+                .setValue(AmethystClusterBlock.FACING, Direction.UP);
+        Block gazeStairs = ArtilianBlocks.GAZE_STONE_STAIRS.get();
+        Block ocularStairs = ArtilianBlocks.OCULAR_STAIRS.get();
+        Block ocularSlab = ArtilianBlocks.OCULAR_SLAB.get();
+
+        b.fillBox(0, 1, 0, 14, 14, 14, Blocks.AIR.defaultBlockState());
+
+        // y = 0: Twilight Gaze Stone & Starlight Slate base with Eye Turf corners
+        for (int x = 0; x <= 14; x++) {
+            for (int z = 0; z <= 14; z++) {
+                b.set(x, 0, z, ((x + z) % 3 == 0) ? starlightSlate : gazeStone);
+            }
+        }
+        for (int[] c : new int[][]{{0, 0}, {1, 0}, {0, 1}, {14, 0}, {13, 0}, {14, 1},
+                {0, 14}, {1, 14}, {0, 13}, {14, 14}, {13, 14}, {14, 13}}) {
+            b.set(c[0], 0, c[1], eyeTurf);
+        }
+
+        // y = 1: Stepped Starlight Slate plinth + checkered interior floor + South entry stairs
+        b.fillBox(2, 1, 2, 12, 1, 12, starlightSlate);
+        for (int x = 4; x <= 10; x++) {
+            for (int z = 4; z <= 10; z++) {
+                b.set(x, 1, z, ((x + z) % 2 == 0) ? ocularPlanks : starlightSlate);
+            }
+        }
+        for (int x = 6; x <= 8; x++) {
+            b.set(x, 1, 13, stair(gazeStairs, Direction.NORTH, Half.BOTTOM));
+        }
+        for (int[] p : new int[][]{{1, 1}, {13, 1}, {1, 13}, {13, 13}}) {
+            b.set(p[0], 1, p[1], gazeWall);
+            b.set(p[0], 2, p[1], soulLantern);
+        }
+
+        // y = 2..6: Recessed Gaze Stone & Ocular Planks walls + Ocular Log corner pillars
+        for (int y = 2; y <= 6; y++) {
+            for (int i = 3; i <= 11; i++) {
+                BlockState wallMat = (y == 2 || y == 6) ? starlightSlate : gazeStone;
+                b.set(i, y, 3, wallMat);
+                b.set(i, y, 11, wallMat);
+                b.set(3, y, i, wallMat);
+                b.set(11, y, i, wallMat);
+            }
+            for (int[] c : new int[][]{{2, 2}, {12, 2}, {2, 12}, {12, 12}}) {
+                b.set(c[0], y, c[1], ocularLog);
+            }
+            for (int[] m : new int[][]{{7, 2}, {2, 7}, {12, 7}}) {
+                b.set(m[0], y, m[1], ocularPlanks);
+            }
+        }
+        // Arched South doorway
+        b.fillBox(6, 2, 11, 8, 4, 11, Blocks.AIR.defaultBlockState());
+        b.set(6, 4, 11, stair(gazeStairs, Direction.EAST, Half.TOP));
+        b.set(8, 4, 11, stair(gazeStairs, Direction.WEST, Half.TOP));
+        // Recessed lancet windows
+        for (int y = 3; y <= 4; y++) {
+            b.set(5, y, 3, purplePane);
+            b.set(9, y, 3, purplePane);
+            b.set(3, y, 5, purplePane);
+            b.set(3, y, 9, purplePane);
+            b.set(11, y, 5, purplePane);
+            b.set(11, y, 9, purplePane);
+        }
+        b.set(7, 4, 3, blinkingEye);
+
+        // Interior pedestal, chest & lighting
+        b.set(7, 2, 7, chiseledStone);
+        b.set(7, 3, 7, crystalBlock);
+        b.set(7, 4, 7, amethystUp);
+        b.setChest(7, 2, 5, Direction.SOUTH, ArtilianStructures.OCULAR_OBSERVATORY_CHEST);
+        b.set(4, 5, 4, hangingLantern);
+        b.set(10, 5, 4, hangingLantern);
+        b.set(4, 5, 10, hangingLantern);
+        b.set(10, 5, 10, hangingLantern);
+
+        // y = 7..10: Overhanging stepped dome roof
+        for (int step = 0; step < 4; step++) {
+            int y = 7 + step;
+            int min = 1 + step;
+            int max = 13 - step;
+            Block roofStair = (step % 2 == 0) ? ocularStairs : gazeStairs;
+            for (int i = min; i <= max; i++) {
+                b.set(i, y, min, stair(roofStair, Direction.SOUTH, Half.BOTTOM));
+                b.set(i, y, max, stair(roofStair, Direction.NORTH, Half.BOTTOM));
+                b.set(min, y, i, stair(roofStair, Direction.EAST, Half.BOTTOM));
+                b.set(max, y, i, stair(roofStair, Direction.WEST, Half.BOTTOM));
+            }
+            if (step == 0) {
+                for (int[] c : new int[][]{{1, 1}, {13, 1}, {1, 13}, {13, 13}}) {
+                    b.set(c[0], y, c[1], slab(ocularSlab, SlabType.BOTTOM));
+                    b.set(c[0], y + 1, c[1], soulLantern);
+                }
+            }
+        }
+
+        // y = 11..14: Crown Great Oculus
+        b.fillBox(5, 11, 5, 9, 11, 9, starlightSlate);
+        b.set(7, 11, 7, crystalBlock);
+        b.set(7, 12, 7, blinkingEye);
+        b.set(7, 13, 7, amethystUp);
+        for (int[] r : new int[][]{{6, 7}, {8, 7}, {7, 6}, {7, 8}}) {
+            b.set(r[0], 12, r[1], gazeWall);
+            b.set(r[0], 13, r[1], soulLantern);
+        }
+
+        // Guardians
+        b.addGuardian(ArtilianEntities.PEEPER.get(), 4.5, 2.5, 9.5);
+        b.addGuardian(ArtilianEntities.PEEPER.get(), 10.5, 2.5, 9.5);
+        b.addGuardian(ArtilianEntities.OCULUS_SLIME.get(), 7.5, 2.0, 12.5);
+
+        b.connectFencesAndWalls();
+        return b.build();
+    }
+
+    private static CompoundTag buildGazingSanctum() {
+        TemplateBuilder b = new TemplateBuilder(15, 16, 15);
+        BlockState gazeStone = ArtilianBlocks.GAZE_STONE.get().defaultBlockState();
+        BlockState starlightSlate = ArtilianBlocks.STARLIGHT_SLATE.get().defaultBlockState();
+        BlockState eyeTurf = ArtilianBlocks.EYE_TURF.get().defaultBlockState();
+        BlockState blinkingEye = ArtilianBlocks.BLINKING_EYE_BLOCK.get().defaultBlockState();
+        BlockState ocularLog = ArtilianBlocks.OCULAR_LOG.get().defaultBlockState()
+                .setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
+        BlockState ocularPlanks = ArtilianBlocks.OCULAR_PLANKS.get().defaultBlockState();
+        BlockState crystalBlock = ArtilianBlocks.STARLIGHT_CRYSTAL_BLOCK.get().defaultBlockState();
+        BlockState slateWall = ArtilianBlocks.STARLIGHT_SLATE_WALL.get().defaultBlockState();
+        BlockState magentaPane = Blocks.MAGENTA_STAINED_GLASS_PANE.defaultBlockState();
+        BlockState soulLantern = Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, false);
+        BlockState hangingLantern = Blocks.SOUL_LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true);
+        BlockState amethystUp = Blocks.AMETHYST_CLUSTER.defaultBlockState()
+                .setValue(AmethystClusterBlock.FACING, Direction.UP);
+        Block gazeStairs = ArtilianBlocks.GAZE_STONE_STAIRS.get();
+        Block slateStairs = ArtilianBlocks.STARLIGHT_SLATE_STAIRS.get();
+        Block slateSlab = ArtilianBlocks.STARLIGHT_SLATE_SLAB.get();
+
+        b.fillBox(0, 1, 0, 14, 15, 14, Blocks.AIR.defaultBlockState());
+
+        // y = 0..2: Monumental stepped sanctum plinth
+        for (int x = 0; x <= 14; x++) {
+            for (int z = 0; z <= 14; z++) {
+                b.set(x, 0, z, ((x + z) % 2 == 0) ? starlightSlate : gazeStone);
+            }
+        }
+        b.set(0, 0, 0, eyeTurf);
+        b.set(14, 0, 0, eyeTurf);
+        b.set(0, 0, 14, eyeTurf);
+        b.set(14, 0, 14, eyeTurf);
+
+        b.fillBox(1, 1, 1, 13, 1, 13, starlightSlate);
+        b.fillBox(2, 2, 2, 12, 2, 12, gazeStone);
+        for (int x = 4; x <= 10; x++) {
+            for (int z = 4; z <= 10; z++) {
+                b.set(x, 2, z, ((x + z) % 2 == 0) ? starlightSlate : ocularPlanks);
+            }
+        }
+        // South ceremonial steps
+        for (int x = 5; x <= 9; x++) {
+            b.set(x, 1, 13, stair(slateStairs, Direction.NORTH, Half.BOTTOM));
+            b.set(x, 2, 12, stair(gazeStairs, Direction.NORTH, Half.BOTTOM));
+        }
+
+        // y = 3..8: Pillared colonnade & recessed altar walls
+        int[][] pillars = {{2, 2}, {12, 2}, {2, 12}, {12, 12}, {6, 2}, {8, 2}, {2, 6}, {2, 8}, {12, 6}, {12, 8}};
+        for (int y = 3; y <= 8; y++) {
+            for (int[] p : pillars) {
+                b.set(p[0], y, p[1], (y == 3 || y == 8) ? starlightSlate : ocularLog);
+            }
+            for (int i = 3; i <= 11; i++) {
+                if (y == 3 || y >= 7) {
+                    b.set(i, y, 3, gazeStone);
+                    b.set(3, y, i, gazeStone);
+                    b.set(11, y, i, gazeStone);
+                }
+            }
+        }
+        for (int y = 4; y <= 6; y++) {
+            b.set(4, y, 3, magentaPane);
+            b.set(10, y, 3, magentaPane);
+            b.set(3, y, 5, magentaPane);
+            b.set(3, y, 9, magentaPane);
+            b.set(11, y, 5, magentaPane);
+            b.set(11, y, 9, magentaPane);
+        }
+        b.set(7, 5, 3, blinkingEye);
+        b.set(5, 4, 3, blinkingEye);
+        b.set(9, 4, 3, blinkingEye);
+
+        // Central Sanctum Altar, chest & braziers
+        b.fillBox(6, 3, 6, 8, 3, 8, starlightSlate);
+        b.set(7, 4, 7, crystalBlock);
+        b.set(7, 5, 7, blinkingEye);
+        b.set(7, 6, 7, amethystUp);
+        b.setChest(7, 3, 5, Direction.SOUTH, ArtilianStructures.GAZING_SANCTUM_CHEST);
+        for (int[] br : new int[][]{{3, 11}, {11, 11}, {4, 4}, {10, 4}}) {
+            b.set(br[0], 3, br[1], slateWall);
+            b.set(br[0], 4, br[1], soulLantern);
+        }
+        b.set(4, 7, 10, hangingLantern);
+        b.set(10, 7, 10, hangingLantern);
+
+        // y = 9..15: Double-tiered overhanging sanctum roof & spire
+        for (int step = 0; step < 3; step++) {
+            int y = 9 + step;
+            int min = 1 + step;
+            int max = 13 - step;
+            for (int i = min; i <= max; i++) {
+                b.set(i, y, min, stair(gazeStairs, Direction.SOUTH, Half.BOTTOM));
+                b.set(i, y, max, stair(gazeStairs, Direction.NORTH, Half.BOTTOM));
+                b.set(min, y, i, stair(gazeStairs, Direction.EAST, Half.BOTTOM));
+                b.set(max, y, i, stair(gazeStairs, Direction.WEST, Half.BOTTOM));
+            }
+        }
+        b.fillBox(4, 12, 4, 10, 12, 10, starlightSlate);
+        for (int i = 4; i <= 10; i++) {
+            b.set(i, 12, 4, slab(slateSlab, SlabType.BOTTOM));
+            b.set(i, 12, 10, slab(slateSlab, SlabType.BOTTOM));
+            b.set(4, 12, i, slab(slateSlab, SlabType.BOTTOM));
+            b.set(10, 12, i, slab(slateSlab, SlabType.BOTTOM));
+        }
+        b.fillBox(5, 13, 5, 9, 13, 9, gazeStone);
+        b.set(7, 13, 7, crystalBlock);
+        b.set(7, 14, 7, blinkingEye);
+        b.set(7, 15, 7, amethystUp);
+
+        // Guardians
+        b.addGuardian(ArtilianEntities.LENS_GUARDIAN.get(), 4.5, 3.0, 9.5);
+        b.addGuardian(ArtilianEntities.LENS_GUARDIAN.get(), 10.5, 3.0, 9.5);
+        b.addGuardian(ArtilianEntities.PEEPER.get(), 7.5, 4.5, 9.5);
 
         b.connectFencesAndWalls();
         return b.build();

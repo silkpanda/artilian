@@ -2,15 +2,24 @@ package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.ArtilianMod;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 
 /** Custom Artilian item, block, entity, and biome tags. */
 public final class ArtilianTags {
     private ArtilianTags() {}
+
+    public static final class Blocks {
+        public static final TagKey<Block> GAZING_PORTAL_FRAME =
+                BlockTags.create(ArtilianMod.id("gazing_portal_frame"));
+
+        private Blocks() {}
+    }
 
     public static final class Items {
         public static final TagKey<Item> BIOME_BLOOMS = ItemTags.create(ArtilianMod.id("biome_blooms"));
@@ -21,6 +30,8 @@ public final class ArtilianTags {
     public static final class EntityTypes {
         public static final TagKey<EntityType<?>> STRUCTURE_ENEMIES =
                 TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("structure_enemies"));
+        public static final TagKey<EntityType<?>> EYE_REALM_ENEMIES =
+                TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("eye_realm_enemies"));
         public static final TagKey<EntityType<?>> BOSSES =
                 TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("bosses"));
 
@@ -38,6 +49,10 @@ public final class ArtilianTags {
                 TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/crystal_colossus_arena"));
         public static final TagKey<Biome> HAS_BRIMSTONE_BASTION =
                 TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/brimstone_bastion"));
+        public static final TagKey<Biome> HAS_OCULAR_OBSERVATORY =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/ocular_observatory"));
+        public static final TagKey<Biome> HAS_GAZING_SANCTUM =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/gazing_sanctum"));
 
         private Biomes() {}
     }

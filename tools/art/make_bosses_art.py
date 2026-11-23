@@ -14,6 +14,8 @@ import json
 from pathlib import Path
 from PIL import Image
 
+from art_lib import assert_uv_layout_clean, paint_faceted_crystal, paint_weathered_stone
+
 ASSETS = Path("src/main/resources/assets/artilian")
 
 
@@ -135,106 +137,139 @@ def make_animations(entity_id):
 
 def build_training_golem():
     eid = "training_golem"
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    img = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
 
-    # Blocky humanoid: 10 px legs + 20 px torso + 12 px head = 42 px, about 2.6 blocks.
-    tw, th, td = 16, 20, 10
-    hw, hh, hd = 10, 12, 10
-    aw, ah, ad = 5, 18, 5
-    lw, lh, ld = 6, 10, 6
-    leg_top = lh
-    torso_top = leg_top + th
+    # 7-stop weathered mossy-slate ramp (darkest -> brightest)
+    stone_ramp = [
+        (54, 56, 54, 255),
+        (74, 76, 72, 255),
+        (94, 96, 90, 255),
+        (114, 116, 108, 255),
+        (134, 136, 126, 255),
+        (154, 156, 144, 255),
+        (174, 176, 162, 255),
+    ]
+    dark_stone_ramp = [
+        (38, 40, 42, 255),
+        (52, 54, 56, 255),
+        (68, 70, 72, 255),
+        (84, 86, 86, 255),
+        (100, 102, 100, 255),
+        (116, 118, 114, 255),
+    ]
+    amber_ramp = [
+        (132, 76, 16, 255),
+        (184, 114, 24, 255),
+        (228, 164, 40, 255),
+        (255, 208, 78, 255),
+        (255, 242, 142, 255),
+        (255, 252, 210, 255),
+    ]
+    moss_color = (82, 132, 62, 255)
+    crack_color = (42, 44, 42, 255)
 
-    palette = {
-        "stone": ((158, 158, 150, 255), (124, 124, 116, 255), (96, 96, 90, 255), (66, 66, 62, 255)),
-        "moss": ((126, 176, 92, 255), (82, 132, 62, 255), (54, 96, 44, 255), (36, 66, 32, 255)),
-        "eye": ((255, 246, 138, 255), (255, 220, 56, 255), (226, 174, 28, 255), (120, 88, 16, 255)),
-        "pupil": (38, 32, 12, 255),
-    }
+    # Non-overlapping UV rectangles on 128x128:
+    # Row 0 (y=0..25):
+    uv_chest = (0, 0)       # 16x14x10 -> 52x24
+    uv_waist = (54, 0)      # 12x6x8   -> 40x14
+    uv_core = (96, 0)       # 6x6x2    -> 16x8
+    uv_visor = (96, 10)     # 8x3x2    -> 20x5
+    # Row 1 (y=26..48):
+    uv_head = (0, 26)       # 10x10x10 -> 40x20
+    uv_brow = (42, 26)      # 12x3x11  -> 46x14
+    uv_pauldron_l = (90, 26)  # 7x5x7 -> 28x12 (x=90..118)
+    # Row 2 (y=48..70):
+    uv_pauldron_r = (0, 48)   # 7x5x7 -> 28x12
+    uv_arm_l = (30, 48)       # 5x8x5 -> 20x13
+    uv_arm_r = (52, 48)       # 5x8x5 -> 20x13
+    uv_gaunt_l = (74, 48)     # 6x9x6 -> 24x15
+    uv_gaunt_r = (100, 48)    # 6x9x6 -> 24x15
+    # Row 3 (y=66..84):
+    uv_leg_l = (0, 66)        # 6x6x6 -> 24x12
+    uv_leg_r = (26, 66)       # 6x6x6 -> 24x12
+    uv_boot_l = (52, 66)      # 7x4x7 -> 28x11
+    uv_boot_r = (82, 66)      # 7x4x7 -> 28x11
 
-    # Non-overlapping UV rectangles in 128x64.
-    uv_torso = (0, 0)
-    uv_head = (52, 0)
-    uv_arm_l = (0, 30)
-    uv_arm_r = (20, 30)
-    uv_leg_l = (40, 30)
-    uv_leg_r = (60, 30)
+    paint_weathered_stone(img, *uv_chest, 16, 14, 10, stone_ramp, crack_color=crack_color, moss_color=moss_color, seed=1)
+    paint_weathered_stone(img, *uv_waist, 12, 6, 8, dark_stone_ramp, crack_color=crack_color, seed=2)
+    paint_faceted_crystal(img, *uv_core, 6, 6, 2, amber_ramp, vein_color=(255, 252, 224, 255), seed=3)
+    paint_faceted_crystal(img, *uv_visor, 8, 3, 2, amber_ramp, vein_color=(255, 252, 224, 255), seed=4)
+    paint_weathered_stone(img, *uv_head, 10, 10, 10, stone_ramp, crack_color=crack_color, moss_color=moss_color, seed=5)
+    paint_weathered_stone(img, *uv_brow, 12, 3, 11, dark_stone_ramp, crack_color=crack_color, moss_color=moss_color, seed=6)
+    paint_weathered_stone(img, *uv_pauldron_l, 7, 5, 7, dark_stone_ramp, crack_color=crack_color, moss_color=moss_color, seed=7)
+    paint_weathered_stone(img, *uv_pauldron_r, 7, 5, 7, dark_stone_ramp, crack_color=crack_color, moss_color=moss_color, seed=8)
+    paint_weathered_stone(img, *uv_arm_l, 5, 8, 5, stone_ramp, crack_color=crack_color, seed=9)
+    paint_weathered_stone(img, *uv_arm_r, 5, 8, 5, stone_ramp, crack_color=crack_color, seed=10)
+    paint_weathered_stone(img, *uv_gaunt_l, 6, 9, 6, dark_stone_ramp, crack_color=crack_color, moss_color=moss_color, seed=11)
+    paint_weathered_stone(img, *uv_gaunt_r, 6, 9, 6, dark_stone_ramp, crack_color=crack_color, moss_color=moss_color, seed=12)
+    paint_weathered_stone(img, *uv_leg_l, 6, 6, 6, stone_ramp, crack_color=crack_color, seed=13)
+    paint_weathered_stone(img, *uv_leg_r, 6, 6, 6, stone_ramp, crack_color=crack_color, seed=14)
+    paint_weathered_stone(img, *uv_boot_l, 7, 4, 7, dark_stone_ramp, crack_color=crack_color, moss_color=moss_color, seed=15)
+    paint_weathered_stone(img, *uv_boot_r, 7, 4, 7, dark_stone_ramp, crack_color=crack_color, moss_color=moss_color, seed=16)
 
-    paint_box(img, *uv_torso, tw, th, td, *palette["stone"])
-    paint_box(img, *uv_head, hw, hh, hd, *palette["stone"])
-    paint_box(img, *uv_arm_l, aw, ah, ad, *palette["stone"])
-    paint_box(img, *uv_arm_r, aw, ah, ad, *palette["stone"])
-    paint_box(img, *uv_leg_l, lw, lh, ld, *palette["stone"])
-    paint_box(img, *uv_leg_r, lw, lh, ld, *palette["stone"])
+    # Dark pupils inside the recessed glowing eye visor front
+    vf = faces(*uv_visor, 8, 3, 2)["front"]
+    put(img, vf[0] + 1, vf[1] + 1, (38, 28, 12, 255))
+    put(img, vf[0] + 6, vf[1] + 1, (38, 28, 12, 255))
 
-    # Moss-green accents: shoulders, torso patch, and the top of the head.
-    torso_front = faces(*uv_torso, tw, th, td)["front"]
-    fill(img, (torso_front[0] + 1, torso_front[1] + 2, 6, 3), palette["moss"][1])
-    fill(img, (torso_front[0] + 10, torso_front[1] + 5, 4, 4), palette["moss"][2])
-    head_top = faces(*uv_head, hw, hh, hd)["top"]
-    fill(img, (head_top[0], head_top[1], head_top[2], 3), palette["moss"][1])
-    for arm_uv in (uv_arm_l, uv_arm_r):
-        af = faces(*arm_uv, aw, ah, ad)
-        fill(img, (af["front"][0], af["front"][1] + 2, aw, 2), palette["moss"][1])
-
-    # Glowing yellow eyes on the head front, with dark pupils.
-    head_front = faces(*uv_head, hw, hh, hd)["front"]
-    ex, ey = head_front[0], head_front[1] + 4
-    fill(img, (ex + 1, ey, 3, 3), palette["eye"][0])
-    fill(img, (ex + 6, ey, 3, 3), palette["eye"][0])
-    put(img, ex + 2, ey + 1, palette["pupil"])
-    put(img, ex + 7, ey + 1, palette["pupil"])
-
-    arm_x = tw / 2.0 + aw / 2.0 + 0.5
-    leg_x = 4.0
     bones = [
         {"name": "root", "pivot": [0, 0, 0]},
         {
             "name": "body",
             "parent": "root",
-            "pivot": [0, leg_top + th / 2.0, 0],
+            "pivot": [0, 20, 0],
             "cubes": [
-                {"origin": [-tw / 2.0, leg_top, -td / 2.0], "size": [tw, th, td], "uv": list(uv_torso)},
+                {"origin": [-6, 10, -4], "size": [12, 6, 8], "uv": list(uv_waist)},
+                {"origin": [-8, 16, -5], "size": [16, 14, 10], "uv": list(uv_chest)},
+                {"origin": [-3, 20, -6.2], "size": [6, 6, 2], "pivot": [0, 23, -5.2], "rotation": [0, 0, 45], "uv": list(uv_core)},
             ],
         },
         {
             "name": "head",
             "parent": "body",
-            "pivot": [0, torso_top, 0],
+            "pivot": [0, 30, 0],
             "cubes": [
-                {"origin": [-hw / 2.0, torso_top, -hd / 2.0], "size": [hw, hh, hd], "uv": list(uv_head)},
+                {"origin": [-5, 30, -5], "size": [10, 10, 10], "uv": list(uv_head)},
+                {"origin": [-6, 37, -5.8], "size": [12, 3, 11], "uv": list(uv_brow)},
+                {"origin": [-4, 33, -5.6], "size": [8, 3, 2], "uv": list(uv_visor)},
             ],
         },
         {
             "name": "arm_left",
             "parent": "body",
-            "pivot": [arm_x, torso_top - 2.0, 0],
+            "pivot": [11, 28, 0],
             "cubes": [
-                {"origin": [arm_x - aw / 2.0, torso_top - ah, -ad / 2.0], "size": [aw, ah, ad], "uv": list(uv_arm_l)},
+                {"origin": [8, 25.5, -3.5], "size": [7, 5, 7], "pivot": [11, 28, 0], "rotation": [0, 0, 8], "uv": list(uv_pauldron_l)},
+                {"origin": [8.5, 18, -2.5], "size": [5, 8, 5], "uv": list(uv_arm_l)},
+                {"origin": [8, 10, -3], "size": [6, 9, 6], "uv": list(uv_gaunt_l)},
             ],
         },
         {
             "name": "arm_right",
             "parent": "body",
-            "pivot": [-arm_x, torso_top - 2.0, 0],
+            "pivot": [-11, 28, 0],
             "cubes": [
-                {"origin": [-arm_x - aw / 2.0, torso_top - ah, -ad / 2.0], "size": [aw, ah, ad], "uv": list(uv_arm_r)},
+                {"origin": [-15, 25.5, -3.5], "size": [7, 5, 7], "pivot": [-11, 28, 0], "rotation": [0, 0, -8], "uv": list(uv_pauldron_r)},
+                {"origin": [-13.5, 18, -2.5], "size": [5, 8, 5], "uv": list(uv_arm_r)},
+                {"origin": [-14, 10, -3], "size": [6, 9, 6], "uv": list(uv_gaunt_r)},
             ],
         },
         {
             "name": "leg_left",
             "parent": "root",
-            "pivot": [leg_x, leg_top, 0],
+            "pivot": [4.5, 10, 0],
             "cubes": [
-                {"origin": [leg_x - lw / 2.0, 0, -ld / 2.0], "size": [lw, lh, ld], "uv": list(uv_leg_l)},
+                {"origin": [1.5, 4, -3], "size": [6, 6, 6], "uv": list(uv_leg_l)},
+                {"origin": [1, 0, -3.8], "size": [7, 4, 7], "uv": list(uv_boot_l)},
             ],
         },
         {
             "name": "leg_right",
             "parent": "root",
-            "pivot": [-leg_x, leg_top, 0],
+            "pivot": [-4.5, 10, 0],
             "cubes": [
-                {"origin": [-leg_x - lw / 2.0, 0, -ld / 2.0], "size": [lw, lh, ld], "uv": list(uv_leg_r)},
+                {"origin": [-7.5, 4, -3], "size": [6, 6, 6], "uv": list(uv_leg_r)},
+                {"origin": [-8, 0, -3.8], "size": [7, 4, 7], "uv": list(uv_boot_r)},
             ],
         },
     ]
@@ -246,7 +281,7 @@ def build_training_golem():
                 "description": {
                     "identifier": f"geometry.{eid}",
                     "texture_width": 128,
-                    "texture_height": 64,
+                    "texture_height": 128,
                     "visible_bounds_width": 3.0,
                     "visible_bounds_height": 2.8,
                     "visible_bounds_offset": [0, 1.3, 0],
@@ -255,6 +290,7 @@ def build_training_golem():
             }
         ],
     }
+    assert_uv_layout_clean(geo, (128, 128))
 
     (ASSETS / "textures/entity").mkdir(parents=True, exist_ok=True)
     (ASSETS / "geo/entity").mkdir(parents=True, exist_ok=True)
@@ -516,7 +552,7 @@ def build_crystal_colossus():
     KNEE_SPUR = (230, 66, 4, 7, 4)         # 16x11
 
     SPIRE_TALL_TEAL = (0, 84, 5, 12, 5)    # 20x17
-    SPIRE_TALL_VIOLET = (22, 84, 5, 11, 5) # 20x16
+    SPIRE_TALL_VIOLET = (22, 84, 5, 12, 5) # 20x17
     SPIRE_MED_TEAL = (44, 84, 4, 9, 4)     # 16x13
     SPIRE_MED_VIOLET = (62, 84, 4, 9, 4)   # 16x13
     SPIRE_SM_TEAL = (80, 84, 3, 7, 3)      # 12x10
@@ -526,6 +562,7 @@ def build_crystal_colossus():
     CROWN_CREST = (140, 84, 4, 8, 5)       # 18x13
     FOREARM_BLADE = (160, 84, 3, 9, 4)     # 14x13
     CLAW_FINGER = (176, 84, 3, 6, 3)       # 12x9
+    CLAW_THUMB = (232, 84, 3, 5, 3)        # 12x8
 
     SHARD_TEAL = (0, 104, 4, 9, 4)         # 16x13
     SHARD_VIOLET = (18, 104, 4, 9, 4)      # 16x13
@@ -539,7 +576,7 @@ def build_crystal_colossus():
         FOREARM_L, FOREARM_R, THIGH_L, THIGH_R, GREAVE_L, GREAVE_R, TOE_CAP, KNEE_SPUR,
         SPIRE_TALL_TEAL, SPIRE_TALL_VIOLET, SPIRE_MED_TEAL, SPIRE_MED_VIOLET,
         SPIRE_SM_TEAL, SPIRE_SM_VIOLET, HORN_BASE, HORN_TIP, CROWN_CREST,
-        FOREARM_BLADE, CLAW_FINGER, SHARD_TEAL, SHARD_VIOLET, SHARD_CAP_TEAL, SHARD_CAP_VIOLET,
+        FOREARM_BLADE, CLAW_FINGER, CLAW_THUMB, SHARD_TEAL, SHARD_VIOLET, SHARD_CAP_TEAL, SHARD_CAP_VIOLET,
     ]
     occupied = set()
     for u, v, w, h, d in all_uv_boxes:
@@ -721,6 +758,7 @@ def build_crystal_colossus():
     paint_crystal_spire_box(CROWN_CREST, palette="teal", seed=309)
     paint_crystal_spire_box(FOREARM_BLADE, palette="teal", seed=310)
     paint_crystal_spire_box(CLAW_FINGER, palette="teal", seed=311)
+    paint_crystal_spire_box(CLAW_THUMB, palette="teal", seed=317)
     paint_crystal_spire_box(KNEE_SPUR, palette="violet", seed=312)
     paint_crystal_spire_box(SHARD_TEAL, palette="teal", seed=313)
     paint_crystal_spire_box(SHARD_VIOLET, palette="violet", seed=314)
@@ -904,7 +942,7 @@ def build_crystal_colossus():
                 # Articulated crystal claw fingers curving slightly inward
                 {"origin": [18.0, 6, -3.8], "size": [3, 6, 3], "pivot": [19.5, 11, -2.3], "rotation": [0, 0, -14], "uv": [176, 84]},
                 {"origin": [18.0, 6, 0.8], "size": [3, 6, 3], "pivot": [19.5, 11, 2.3], "rotation": [0, 0, -14], "uv": [176, 84]},
-                {"origin": [12.5, 7, -4.2], "size": [3, 5, 3], "pivot": [14.0, 11, -2.7], "rotation": [0, 0, 12], "uv": [176, 84]},
+                {"origin": [12.5, 7, -4.2], "size": [3, 5, 3], "pivot": [14.0, 11, -2.7], "rotation": [0, 0, 12], "uv": [232, 84]},
             ],
         },
         {
@@ -920,7 +958,7 @@ def build_crystal_colossus():
                 # Articulated crystal claw fingers curving slightly inward
                 {"origin": [-21.0, 6, -3.8], "size": [3, 6, 3], "pivot": [-19.5, 11, -2.3], "rotation": [0, 0, 14], "uv": [176, 84]},
                 {"origin": [-21.0, 6, 0.8], "size": [3, 6, 3], "pivot": [-19.5, 11, 2.3], "rotation": [0, 0, 14], "uv": [176, 84]},
-                {"origin": [-15.5, 7, -4.2], "size": [3, 5, 3], "pivot": [-14.0, 11, -2.7], "rotation": [0, 0, -12], "uv": [176, 84]},
+                {"origin": [-15.5, 7, -4.2], "size": [3, 5, 3], "pivot": [-14.0, 11, -2.7], "rotation": [0, 0, -12], "uv": [232, 84]},
             ],
         },
         {

@@ -2,6 +2,7 @@ package com.silkpanda.artilian.registry;
 
 import com.silkpanda.artilian.boss.BossSummonItem;
 import com.silkpanda.artilian.boss.BossTrophyItem;
+import com.silkpanda.artilian.dimension.GazingEyeItem;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
@@ -91,6 +92,18 @@ public class ArtilianItems {
     public static final DeferredItem<DeferredSpawnEggItem> ASTRAL_STALKER_SPAWN_EGG =
             ITEMS.register("astral_stalker_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.ASTRAL_STALKER, 0x2B2338, 0xD946EF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> PEEPER_SPAWN_EGG =
+            ITEMS.register("peeper_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.PEEPER, 0x2B2338, 0x7DF9FF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> OCULUS_SLIME_SPAWN_EGG =
+            ITEMS.register("oculus_slime_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.OCULUS_SLIME, 0x9C4DCC, 0x7DF9FF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> LENS_GUARDIAN_SPAWN_EGG =
+            ITEMS.register("lens_guardian_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.LENS_GUARDIAN, 0x3A2F4D, 0xD946EF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> BLINKY_SPAWN_EGG =
+            ITEMS.register("blinky_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.BLINKY, 0x3C305E, 0x7DF9FF, new Item.Properties()));
 
     // Blocks
     public static final DeferredItem<BlockItem> SUNSTEEL_ORE_ITEM =
@@ -377,6 +390,37 @@ public class ArtilianItems {
                     new Item.Properties().stacksTo(16).rarity(Rarity.EPIC),
                     "item.artilian.brimstone_doubloon.tooltip",
                     ChatFormatting.RED));
+
+    // Phase 4 Stage 1: Eye Realm
+    public static final DeferredItem<GazingEyeItem> GAZING_EYE =
+            ITEMS.register("gazing_eye", () -> new GazingEyeItem(
+                    new Item.Properties().stacksTo(1).durability(64).rarity(Rarity.RARE)));
+
+    // Phase 4 Stage 2: Eye Realm Terrain & Trees
+    public static final DeferredItem<BlockItem> EYE_TURF_ITEM =
+            ITEMS.registerSimpleBlockItem("eye_turf", ArtilianBlocks.EYE_TURF);
+    public static final DeferredItem<BlockItem> GAZE_STONE_ITEM =
+            ITEMS.registerSimpleBlockItem("gaze_stone", ArtilianBlocks.GAZE_STONE);
+    public static final DeferredItem<BlockItem> GAZE_STONE_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("gaze_stone_stairs", ArtilianBlocks.GAZE_STONE_STAIRS);
+    public static final DeferredItem<BlockItem> GAZE_STONE_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("gaze_stone_slab", ArtilianBlocks.GAZE_STONE_SLAB);
+    public static final DeferredItem<BlockItem> GAZE_STONE_WALL_ITEM =
+            ITEMS.registerSimpleBlockItem("gaze_stone_wall", ArtilianBlocks.GAZE_STONE_WALL);
+    public static final DeferredItem<BlockItem> BLINKING_EYE_BLOCK_ITEM =
+            ITEMS.registerSimpleBlockItem("blinking_eye_block", ArtilianBlocks.BLINKING_EYE_BLOCK);
+    public static final DeferredItem<BlockItem> OCULAR_LOG_ITEM =
+            ITEMS.registerSimpleBlockItem("ocular_log", ArtilianBlocks.OCULAR_LOG);
+    public static final DeferredItem<BlockItem> OCULAR_PLANKS_ITEM =
+            ITEMS.registerSimpleBlockItem("ocular_planks", ArtilianBlocks.OCULAR_PLANKS);
+    public static final DeferredItem<BlockItem> OCULAR_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("ocular_stairs", ArtilianBlocks.OCULAR_STAIRS);
+    public static final DeferredItem<BlockItem> OCULAR_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("ocular_slab", ArtilianBlocks.OCULAR_SLAB);
+    public static final DeferredItem<BlockItem> OCULAR_LEAVES_ITEM =
+            ITEMS.registerSimpleBlockItem("ocular_leaves", ArtilianBlocks.OCULAR_LEAVES);
+    public static final DeferredItem<BlockItem> OCULAR_SAPLING_ITEM =
+            ITEMS.registerSimpleBlockItem("ocular_sapling", ArtilianBlocks.OCULAR_SAPLING);
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

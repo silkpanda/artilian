@@ -197,6 +197,16 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG, "Prism Sentinel Spawn Egg");
         this.addItem(ArtilianItems.CINDER_RAIDER_SPAWN_EGG, "Cinder Raider Spawn Egg");
         this.addItem(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG, "Astral Stalker Spawn Egg");
+        // Phase 4 Stage 3: Eye Realm Enemies
+        this.addEntityType(ArtilianEntities.PEEPER, "Peeper");
+        this.addEntityType(ArtilianEntities.OCULUS_SLIME, "Oculus Slime");
+        this.addEntityType(ArtilianEntities.LENS_GUARDIAN, "Lens Guardian");
+        this.addItem(ArtilianItems.PEEPER_SPAWN_EGG, "Peeper Spawn Egg");
+        this.addItem(ArtilianItems.OCULUS_SLIME_SPAWN_EGG, "Oculus Slime Spawn Egg");
+        this.addItem(ArtilianItems.LENS_GUARDIAN_SPAWN_EGG, "Lens Guardian Spawn Egg");
+        // Phase 4 Stage 4: Blinky Pet
+        this.addEntityType(ArtilianEntities.BLINKY, "Blinky");
+        this.addItem(ArtilianItems.BLINKY_SPAWN_EGG, "Blinky Spawn Egg");
         this.addItem(ArtilianItems.CAPTURE_CRYSTAL, "Capture Crystal");
         this.add("item.artilian.capture_crystal.filled", "Capture Crystal (%s)");
         this.add("item.artilian.capture_crystal.tooltip", "Captures Biome Pets — Right-click a wild pet!");
@@ -238,6 +248,26 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("message.artilian.crystal.not_yours", "This Capture Crystal belongs to %s");
         this.add("message.artilian.crystal.summoned", "Go, %s!");
         this.add("message.artilian.crystal.recalled", "Recalled %s!");
+
+        // Phase 4 Stage 1: Eye Realm
+        this.addBlock(ArtilianBlocks.GAZING_PORTAL, "Gazing Portal");
+        this.addItem(ArtilianItems.GAZING_EYE, "Gazing Eye");
+        this.add("tooltip.artilian.gazing_eye", "Right-click a Starlight Slate portal frame to open the Eye Realm!");
+        this.add("biome.artilian.eye_realm", "Eye Realm");
         this.add("message.artilian.crystal.resting", "%s is resting (%ss left) — Hold a Biome Treat to wake early!");
+
+        // Phase 4 Stage 2: Eye Realm Terrain & Trees
+        this.addBlock(ArtilianBlocks.EYE_TURF, "Eye Turf");
+        this.addBlock(ArtilianBlocks.GAZE_STONE, "Gaze Stone");
+        this.addBlock(ArtilianBlocks.GAZE_STONE_STAIRS, "Gaze Stone Stairs");
+        this.addBlock(ArtilianBlocks.GAZE_STONE_SLAB, "Gaze Stone Slab");
+        this.addBlock(ArtilianBlocks.GAZE_STONE_WALL, "Gaze Stone Wall");
+        this.addBlock(ArtilianBlocks.BLINKING_EYE_BLOCK, "Blinking Eye Block");
+        this.addBlock(ArtilianBlocks.OCULAR_LOG, "Ocular Log");
+        this.addBlock(ArtilianBlocks.OCULAR_PLANKS, "Ocular Planks");
+        this.addBlock(ArtilianBlocks.OCULAR_STAIRS, "Ocular Stairs");
+        this.addBlock(ArtilianBlocks.OCULAR_SLAB, "Ocular Slab");
+        this.addBlock(ArtilianBlocks.OCULAR_LEAVES, "Ocular Leaves");
+        this.addBlock(ArtilianBlocks.OCULAR_SAPLING, "Ocular Sapling");
     }
 }

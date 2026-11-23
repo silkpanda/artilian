@@ -1,0 +1,84 @@
+{
+  "carvers": {},
+  "downfall": 0.2,
+  "effects": {
+    "fog_color": 5972344,
+    "foliage_color": 14239471,
+    "grass_color": 10243532,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000
+    },
+    "music": {
+      "max_delay": 24000,
+      "min_delay": 12000,
+      "replace_current_music": false,
+      "sound": "minecraft:music.end"
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:portal"
+      },
+      "probability": 0.004
+    },
+    "sky_color": 4005466,
+    "water_color": 8255999,
+    "water_fog_color": 2827064
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "artilian:ocular_tree_placed",
+      "artilian:blinking_eye_patch_placed"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [
+      {
+        "type": "artilian:blinky",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 12
+      }
+    ],
+    "misc": [],
+    "monster": [
+      {
+        "type": "artilian:peeper",
+        "maxCount": 3,
+        "minCount": 1,
+        "weight": 45
+      },
+      {
+        "type": "artilian:oculus_slime",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 35
+      },
+      {
+        "type": "artilian:lens_guardian",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 15
+      }
+    ],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.7
+}

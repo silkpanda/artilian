@@ -43,6 +43,66 @@ public class ArtilianChestLootSubProvider implements LootTableSubProvider {
 
         output.accept(ArtilianStructures.CRYSTAL_COLOSSUS_ARENA_CHEST, buildCrystalColossusArenaChest());
         output.accept(ArtilianStructures.BRIMSTONE_BASTION_CHEST, buildBrimstoneBastionChest());
+        output.accept(ArtilianStructures.OCULAR_OBSERVATORY_CHEST, buildOcularObservatoryChest());
+        output.accept(ArtilianStructures.GAZING_SANCTUM_CHEST, buildGazingSanctumChest());
+    }
+
+    private static LootTable.Builder buildOcularObservatoryChest() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.BIOME_TREAT.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 5)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.CAPTURE_CRYSTAL.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(UniformGenerator.between(2, 3))
+                        .add(LootItem.lootTableItem(Items.AMETHYST_SHARD)
+                                .setWeight(4)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4))))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                                .setWeight(3)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3))))
+                        .add(LootItem.lootTableItem(Items.ENDER_PEARL)
+                                .setWeight(2)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2))))
+                        .add(LootItem.lootTableItem(ArtilianBlocks.OCULAR_SAPLING.get())
+                                .setWeight(2)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2))))
+                        .add(LootItem.lootTableItem(ArtilianItems.GAZING_EYE.get())
+                                .setWeight(1)));
+    }
+
+    private static LootTable.Builder buildGazingSanctumChest() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.BIOME_TREAT.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 5)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.CAPTURE_CRYSTAL.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(UniformGenerator.between(2, 3))
+                        .add(LootItem.lootTableItem(Items.ENDER_PEARL)
+                                .setWeight(3)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3))))
+                        .add(LootItem.lootTableItem(ArtilianBlocks.BLINKING_EYE_BLOCK.get())
+                                .setWeight(2)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2))))
+                        .add(LootItem.lootTableItem(Items.GOLDEN_APPLE)
+                                .setWeight(1))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_GRAVITY_TNT_ITEM.get())
+                                .setWeight(2))
+                        .add(LootItem.lootTableItem(ArtilianItems.GAZING_EYE.get())
+                                .setWeight(1)));
     }
 
     private static LootTable.Builder buildBrimstoneBastionChest() {
