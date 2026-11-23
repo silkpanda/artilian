@@ -74,5 +74,10 @@ public class ArtilianItemTagsProvider extends ItemTagsProvider {
                 ArtilianItems.EMBER_BLOOM_ITEM.get(),
                 ArtilianItems.STARLIGHT_BLOSSOM_ITEM.get()
         );
+        tag(ArtilianTags.Items.BOSS_DROPS).add(
+                ArtilianItems.PRISM_CORE.get(),
+                ArtilianItems.BRIMSTONE_DOUBLOON.get(),
+                ArtilianItems.ALL_SEERS_LENS.get()
+        );
     }
 }

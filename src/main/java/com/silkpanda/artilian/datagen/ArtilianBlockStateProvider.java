@@ -2,7 +2,9 @@ package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.dimension.GazingPortalBlock;
+import com.silkpanda.artilian.dimension.PrimalPortalBlock;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -106,21 +108,28 @@ public class ArtilianBlockStateProvider extends BlockStateProvider {
                 blockTexture(ArtilianBlocks.OCULAR_PLANKS.get()));
         simpleBlockItem(ArtilianBlocks.OCULAR_SLAB.get(),
                 models().getExistingFile(modLoc("block/ocular_slab")));
+
+        // Phase 5 Stage 1: Giant Dragon Jungle
+        portalBlock(ArtilianBlocks.PRIMAL_PORTAL.get(), "primal_portal", PrimalPortalBlock.AXIS);
     }
 
     private void gazingPortalBlock() {
-        var nsModel = models().withExistingParent("gazing_portal_ns", mcLoc("block/nether_portal_ns"))
-                .texture("particle", modLoc("block/gazing_portal"))
-                .texture("portal", modLoc("block/gazing_portal"))
+        portalBlock(ArtilianBlocks.GAZING_PORTAL.get(), "gazing_portal", GazingPortalBlock.AXIS);
+    }
+
+    private void portalBlock(Block block, String name, EnumProperty<Direction.Axis> axisProp) {
+        var nsModel = models().withExistingParent(name + "_ns", mcLoc("block/nether_portal_ns"))
+                .texture("particle", modLoc("block/" + name))
+                .texture("portal", modLoc("block/" + name))
                 .renderType("translucent");
-        var ewModel = models().withExistingParent("gazing_portal_ew", mcLoc("block/nether_portal_ew"))
-                .texture("particle", modLoc("block/gazing_portal"))
-                .texture("portal", modLoc("block/gazing_portal"))
+        var ewModel = models().withExistingParent(name + "_ew", mcLoc("block/nether_portal_ew"))
+                .texture("particle", modLoc("block/" + name))
+                .texture("portal", modLoc("block/" + name))
                 .renderType("translucent");
-        getVariantBuilder(ArtilianBlocks.GAZING_PORTAL.get())
-                .partialState().with(GazingPortalBlock.AXIS, Direction.Axis.X)
+        getVariantBuilder(block)
+                .partialState().with(axisProp, Direction.Axis.X)
                 .modelForState().modelFile(nsModel).addModel()
-                .partialState().with(GazingPortalBlock.AXIS, Direction.Axis.Z)
+                .partialState().with(axisProp, Direction.Axis.Z)
                 .modelForState().modelFile(ewModel).addModel();
     }
 

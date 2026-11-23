@@ -277,5 +277,9 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addBlock(ArtilianBlocks.OCULAR_SLAB, "Ocular Slab");
         this.addBlock(ArtilianBlocks.OCULAR_LEAVES, "Ocular Leaves");
         this.addBlock(ArtilianBlocks.OCULAR_SAPLING, "Ocular Sapling");
+
+        // Phase 5 Stage 1: Giant Dragon Jungle
+        this.addBlock(ArtilianBlocks.PRIMAL_PORTAL, "Primal Portal");
+        this.add("biome.artilian.dragon_jungle", "Dragon Jungle");
     }
 }

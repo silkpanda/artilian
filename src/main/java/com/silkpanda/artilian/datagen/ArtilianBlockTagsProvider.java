@@ -188,5 +188,9 @@ public class ArtilianBlockTagsProvider extends BlockTagsProvider {
         tag(ArtilianTags.Blocks.GAZING_PORTAL_FRAME).add(
                 ArtilianBlocks.STARLIGHT_SLATE.get()
         );
+        tag(ArtilianTags.Blocks.PRIMAL_PORTAL_FRAME).add(
+                net.minecraft.world.level.block.Blocks.OBSIDIAN,
+                net.minecraft.world.level.block.Blocks.CRYING_OBSIDIAN
+        );
     }
 }

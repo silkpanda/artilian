@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 4 — Stage 7 (*Phase 4 Art Pass*)** Art audit (`python tools/art/lint_art.py --phase4 --strict` clean across all 5 Eye Realm entities), `Phase4SignOffGameTests`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`189/189` green) complete on `phase-4-stage-7-art-pass`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stage 6 (`qa/evidence/great-all-seer-2026-11-22.png`) and Stage 7 Eye Realm end-to-end playthrough (`qa/evidence/phase4-signoff-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 1 (*Giant Dragon Jungle Dimension & Primal Portal*)**. |
-| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187` green) awaiting live client screenshot & PR into `main` (included in `phase-4-stage-7-art-pass`). |
+| **In progress** | **Phase 5 — Stage 1 (*Giant Dragon Jungle Dimension & Primal Portal*)** `DragonJungleDimension`, `PrimalPortalBlock` / `PrimalPortalShape`, `PrimalPortalEvents` (throw any `artilian:boss_drops` trophy into a Nether Portal to convert it into a Primal Portal), `primal_portal.png` + `.mcmeta`, datagen, `P5-01` safety gate, `./gradlew build`, and `./gradlew runGameTestServer` (`194/194` green) complete on `phase-5-stage-1-dragon-jungle-portal`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stage 6–7 and Phase 5 Stage 1 (`qa/evidence/dragon-jungle-portal-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 2 (*Mega-Jungle Worldgen*)**. |
+| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -628,12 +628,12 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ## Phase 5: Giant Dragon Jungle (Steve's Dimension) & Grand Finale
 
-- **Status:** ⏹ Pending
+- **Status:** 🔄 In Progress (Stage 1)
 - **Done When:** All checks green, dimension and dragon GameTests pass, and both kids can clear the full Eye Realm and Dragon Jungle finale.
 
 | Stage | Name | Scope | Status |
 |---|---|---|---|
-| 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal (Steve's note: throw a boss drop into a Nether Portal to open the Dragon Jungle dimension) | [ ] Pending |
+| 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal (Steve's note: throw a boss drop into a Nether Portal to open the Dragon Jungle dimension) | 🔄 Code & GameTests complete (`194/194`); live client check pending |
 | 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | [ ] Pending |
 | 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | [ ] Pending |
 | 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | [ ] Pending |
@@ -643,6 +643,30 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | [ ] Pending |
 | 9 | Twin-Star Endgame Rewards | Combined endgame rewards uniting Alex's and Steve's realms | [ ] Pending |
 | 10 | Phase 5 Art Pass & Finale | Final art polish & full family co-op finale verification | [ ] Pending |
+
+### Phase 5 — Stage 1: Dimension & Primal Portal
+- [ ] **In Progress (`194/194` GameTests Green; Live Client Check Pending)** — `artilian:dragon_jungle` dimension, `PrimalPortalBlock` / `PrimalPortalShape`, `PrimalPortalEvents` (throw any `artilian:boss_drops` item into a lit Nether Portal to transform it), flat mossy placeholder terrain, safe return portal generation (`P5-01`), and `DragonJunglePortalGameTests`.
+- **Why & Decisions:** Give Steve a dedicated, immediately visitable **Giant Dragon Jungle** (`artilian:dragon_jungle`) triggered by his signature boss-trophy Nether Portal ritual before Stage 2 replaces the flat floor with prehistoric mega-jungle terrain and giant trees:
+  1. **Dimension & Flat Placeholder Terrain (`DragonJungleDimension` + `ArtilianWorldGenProvider`):**
+     - `artilian:dragon_jungle` `DimensionType` (`OptionalLong.empty()` normal day/night cycle, `minY = -64`, `height = 384`, `ambientLight = 0.25F` for kid-friendly cave/night visibility, `hasSkyLight = true`, `natural = true`, `coordinateScale = 1.0`).
+     - `artilian:dragon_jungle` `Biome` with `DESIGN.md` Canopy Emerald (`#22C55E`) & Ember Amber (`#F97316`) foliage/sky/water/fog accents and `SPORE_BLOSSOM_AIR` ambient particles.
+     - `FlatLevelSource` placeholder (`bedrock` at `-64`, `stone` `-63..59`, `dirt` `60..62`, `moss_block` `63`) so players arrive on solid mossy ground at `Y = 64`.
+  2. **Boss-Drop Nether Portal Ritual (`PrimalPortalEvents`, `ArtilianTags.Items.BOSS_DROPS`):**
+     - `artilian:boss_drops` includes `PRISM_CORE` (Crystal Colossus), `BRIMSTONE_DOUBLOON` (Captain Brimstone), and `ALL_SEERS_LENS` (The Great All-Seer).
+     - Throwing any `artilian:boss_drops` item into a lit `Blocks.NETHER_PORTAL` (intercepted on both `EntityTickEvent.Post` and `EntityTravelToDimensionEvent`) flood-fills all connected Nether Portal blocks into `PrimalPortalBlock` (preserving `AXIS`), consumes 1 item from the stack, and plays `ENDER_DRAGON_GROWL` + `PORTAL_TRIGGER` with emerald/flame particles.
+  3. **Primal Portal & Safe Arrival (`PrimalPortalBlock`, `PrimalPortalShape`, `P5-01`):**
+     - `ArtilianTags.Blocks.PRIMAL_PORTAL_FRAME` (`obsidian`, `crying_obsidian`), rectangular `2..21 × 3..21` frames on `X`/`Z` axes, bidirectional warp between `Level.OVERWORLD` and `artilian:dragon_jungle`.
+     - **Safe Arrival (`P5-01`):** Reuses `GazingPortalBlock.findSafeSurfaceY`; builds a `5×5` `Moss Block` landing pad, clears `5×5×5` air headroom, places `4×5` `Obsidian` frame edges first, and fills `2×3` `PRIMAL_PORTAL` interior with flag `18`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Dimension, Biome, Primal Portal, Boss-Drop Ritual & Art | Pending commit | `DragonJungleDimension`, `PrimalPortalBlock`, `PrimalPortalShape`, `PrimalPortalEvents`, `ArtilianTags.Blocks.PRIMAL_PORTAL_FRAME`, `ArtilianTags.Items.BOSS_DROPS`, `tools/art/make_dragon_jungle_art.py` (`primal_portal.png` 4-frame animated + `.mcmeta`), datagen (`runData`), `build`, and 5 `DragonJunglePortalGameTests` (`194/194` green). Red-proof: removed `BOSS_DROPS` tag check in `PrimalPortalEvents` → `nonBossDropItemInNetherPortalDoesNotTransformPortal` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of throwing a boss trophy into a Nether Portal and arriving in `artilian:dragon_jungle` (`qa/evidence/dragon-jungle-portal-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonJunglePortalGameTests`):** `194/194` green (5 new tests including `P5-01`). Red-proof recorded above.
+- **Security / Safety Gate (`P5-01`):** `HELD` in `194/194` suite (`security/FINDINGS.md`).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies throwing a boss drop into a Nether Portal and stepping into `artilian:dragon_jungle`.
 
 ---
 

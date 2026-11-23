@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.dimension.DragonJungleDimension;
 import com.silkpanda.artilian.dimension.EyeRealmDimension;
 import com.silkpanda.artilian.worldgen.ArtilianBiomes;
 import com.silkpanda.artilian.worldgen.ArtilianStructures;
@@ -24,8 +25,14 @@ public class ArtilianWorldGenProvider extends DatapackBuiltinEntriesProvider {
             .add(Registries.STRUCTURE, ArtilianStructures::bootstrapStructures)
             .add(Registries.STRUCTURE_SET, ArtilianStructures::bootstrapStructureSets)
             .add(Registries.NOISE_SETTINGS, EyeRealmDimension::bootstrapNoiseSettings)
-            .add(Registries.DIMENSION_TYPE, EyeRealmDimension::bootstrapDimensionType)
-            .add(Registries.LEVEL_STEM, EyeRealmDimension::bootstrapLevelStem)
+            .add(Registries.DIMENSION_TYPE, context -> {
+                EyeRealmDimension.bootstrapDimensionType(context);
+                DragonJungleDimension.bootstrapDimensionType(context);
+            })
+            .add(Registries.LEVEL_STEM, context -> {
+                EyeRealmDimension.bootstrapLevelStem(context);
+                DragonJungleDimension.bootstrapLevelStem(context);
+            })
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ArtilianWorldGen::bootstrapBiomeModifiers);
 
     public ArtilianWorldGenProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {

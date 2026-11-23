@@ -3,6 +3,7 @@ package com.silkpanda.artilian.registry;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.boss.BossAltarBlock;
 import com.silkpanda.artilian.dimension.GazingPortalBlock;
+import com.silkpanda.artilian.dimension.PrimalPortalBlock;
 import com.silkpanda.artilian.tnt.ArtilianTntBlock;
 import com.silkpanda.artilian.tnt.TntVariant;
 import com.silkpanda.artilian.worldgen.ArtilianTreeGrowers;
@@ -314,6 +315,17 @@ public class ArtilianBlocks {
                     BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)
                             .mapColor(MapColor.COLOR_MAGENTA)
                             .lightLevel(state -> 5)));
+
+    // Phase 5 Stage 1: Giant Dragon Jungle
+    public static final DeferredBlock<PrimalPortalBlock> PRIMAL_PORTAL = BLOCKS.register("primal_portal",
+            () -> new PrimalPortalBlock(BlockBehaviour.Properties.of()
+                    .noCollission()
+                    .randomTicks()
+                    .strength(-1.0F)
+                    .sound(SoundType.GLASS)
+                    .lightLevel(state -> 11)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK)
+                    .noLootTable()));
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);

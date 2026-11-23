@@ -1,6 +1,7 @@
 package com.silkpanda.artilian.worldgen;
 
 import com.silkpanda.artilian.ArtilianMod;
+import com.silkpanda.artilian.dimension.DragonJungleDimension;
 import com.silkpanda.artilian.dimension.EyeRealmDimension;
 import com.silkpanda.artilian.registry.ArtilianEntities;
 import net.minecraft.core.HolderGetter;
@@ -44,6 +45,7 @@ public final class ArtilianBiomes {
         context.register(EMBERBLOOM_MEADOWS, buildEmberbloomMeadows(placedFeatures, worldCarvers));
         context.register(STARLIGHT_HIGHLANDS, buildStarlightHighlands(placedFeatures, worldCarvers));
         EyeRealmDimension.bootstrapBiome(context);
+        DragonJungleDimension.bootstrapBiome(context);
     }
 
     private static Biome buildCrystalCanopyWoods(

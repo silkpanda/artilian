@@ -1,0 +1,29 @@
+{
+  "type": "artilian:dragon_jungle",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "artilian:dragon_jungle",
+      "features": false,
+      "lakes": false,
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        },
+        {
+          "block": "minecraft:stone",
+          "height": 123
+        },
+        {
+          "block": "minecraft:dirt",
+          "height": 3
+        },
+        {
+          "block": "minecraft:moss_block",
+          "height": 1
+        }
+      ]
+    }
+  }
+}

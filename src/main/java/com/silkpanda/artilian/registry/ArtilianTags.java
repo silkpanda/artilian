@@ -17,12 +17,15 @@ public final class ArtilianTags {
     public static final class Blocks {
         public static final TagKey<Block> GAZING_PORTAL_FRAME =
                 BlockTags.create(ArtilianMod.id("gazing_portal_frame"));
+        public static final TagKey<Block> PRIMAL_PORTAL_FRAME =
+                BlockTags.create(ArtilianMod.id("primal_portal_frame"));
 
         private Blocks() {}
     }
 
     public static final class Items {
         public static final TagKey<Item> BIOME_BLOOMS = ItemTags.create(ArtilianMod.id("biome_blooms"));
+        public static final TagKey<Item> BOSS_DROPS = ItemTags.create(ArtilianMod.id("boss_drops"));
 
         private Items() {}
     }

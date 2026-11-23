@@ -217,3 +217,13 @@ Template for an entry:
 - **Impact:** Without clamped safe surface Y, a cleared headspace, a `5x5` landing pad, and placing the frame before the interior with flag `18`, the return portal collapsed mid-build (`updateShape`) or could strand/suffocate players.
 - **Fix:** `findSafeSurfaceY` clamps above `minBuildHeight + 8`, `createReturnPortalWithPlatform` builds a `5x5` `Starlight Slate` landing pad, clears a `5x5x5` air pocket, places the `4x5` frame edges first, and fills the `2x3` `Gazing Portal` interior with flag `18`. Phase 4 Stage 1 (`phase-4-stage-1-eye-realm-portal`).
 - **Proof:** GameTest `EyeRealmPortalGameTests.p4_01_gazingPortalArrivalIsAlwaysSafeAndCreatesLandingPad`. EXPLOITED (`P4-01: Arrival block must be GAZING_PORTAL`) when portal interior was placed with flag `3` before the top frame completed; HELD with frame-first + flag `18` (`169/169` tests passing).
+
+---
+
+### P5-01 — Primal Portal destination spawns players in void, solid rock, or without a return portal — FIXED
+- **Severity:** High
+- **Where:** `dimension/PrimalPortalBlock.java` (`createReturnPortalWithPlatform`, `getPortalDestination`), `dimension/PrimalPortalEvents.java` (`tryTransformIfBossDropInNetherPortal`)
+- **Attack:** A player throws a non-boss-drop item into a Nether Portal, or steps into a Primal Portal targeting `artilian:dragon_jungle` (or `Level.OVERWORLD`) where no return portal exists yet, including void-low Y hints (`Y = -100`).
+- **Impact:** Without the `artilian:boss_drops` tag guard, any junk item would convert Nether Portals; without clamped safe surface Y, cleared headspace, a `5x5` Moss Block landing pad, and frame-first + flag `18` placement, the return portal could collapse or strand players.
+- **Fix:** `PrimalPortalEvents` enforces `ArtilianTags.Items.BOSS_DROPS`, and `PrimalPortalBlock#createReturnPortalWithPlatform` reuses `GazingPortalBlock#findSafeSurfaceY`, builds a `5x5` `Moss Block` landing pad, clears a `5x5x5` air pocket, places the `4x5` `Obsidian` frame edges first, and fills the `2x3` `Primal Portal` interior with flag `18`. Phase 5 Stage 1 (`phase-5-stage-1-dragon-jungle-portal`).
+- **Proof:** GameTests `DragonJunglePortalGameTests.nonBossDropItemInNetherPortalDoesNotTransformPortal` & `p5_01_primalPortalArrivalIsAlwaysSafeAndCreatesLandingPad`. Red-proof: removed `BOSS_DROPS` tag check → `nonbossdropiteminnetherportaldoesnottransformportal` failed; HELD with controls on (`194/194` tests passing).

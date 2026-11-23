@@ -1,5 +1,6 @@
 {
   "biome.artilian.crystal_canopy_woods": "Crystal Canopy Woods",
+  "biome.artilian.dragon_jungle": "Dragon Jungle",
   "biome.artilian.emberbloom_meadows": "Emberbloom Meadows",
   "biome.artilian.eye_realm": "Eye Realm",
   "biome.artilian.starlight_highlands": "Starlight Highlands",
@@ -53,6 +54,7 @@
   "block.artilian.ocular_stairs": "Ocular Stairs",
   "block.artilian.party_tnt": "Party TNT",
   "block.artilian.party_tnt.tooltip": "Safe Blast — Fireworks, speed, and heal!",
+  "block.artilian.primal_portal": "Primal Portal",
   "block.artilian.starlight_blossom": "Starlight Blossom",
   "block.artilian.starlight_crystal_block": "Block of Starlight Crystal",
   "block.artilian.starlight_crystal_ore": "Starlight Crystal Ore",
