@@ -3549,40 +3549,79 @@ def make_prismling():
         k = 1 + amount
         return (int(r * k), int(g * k), int(b * k), a)
 
-    def shade_box(u, v, w, h, d, hi, base, shade, deep, target=img):
+    def shade_box(u, v, w, h, d, hi, base, shade, deep, target=img, seed=0):
         f = faces(u, v, w, h, d)
+        top_hi = tint(hi, 0.25)
+        edge_hi = tint(base, 0.16)
+        recess = tint(shade, -0.14)
         for name, rect in f.items():
             x, y, rw, rh = rect
-            col = hi if name == "top" else deep if name == "bottom" else base if name in ("front", "back") else shade
-            fill(target, rect, col)
-            if name in ("front", "back", "east", "west"):
-                for px in range(x, x + rw):
-                    put(target, px, y, hi)
-                    put(target, px, y + rh - 1, deep)
-                for py in range(y + 1, y + rh - 1):
-                    put(target, x, py, tint(col, 0.15))
-                    put(target, x + rw - 1, py, shade)
-            elif name == "top":
-                for px in range(x, x + rw):
-                    put(target, px, y, tint(hi, 0.25))
+            if rw <= 0 or rh <= 0:
+                continue
+            for dy in range(rh):
+                ty = dy / max(1, rh - 1)
+                for dx in range(rw):
+                    tx = dx / max(1, rw - 1)
+                    border = dx == 0 or dx == rw - 1 or dy == 0 or dy == rh - 1
+                    grain = (dx * 7 + dy * 13 + seed * 5 + (dx ^ dy) * 3) % 11
+                    if name == "top":
+                        if dy == 0:
+                            col = top_hi
+                        elif border:
+                            col = hi
+                        elif (dx == 1 or dx == rw - 2) and (dy == 1 or dy == rh - 2) and rw >= 4 and rh >= 4:
+                            col = shade
+                        elif dy == rh // 2 and rw >= 5 and rh >= 5 and 1 <= dx <= rw - 2:
+                            col = shade if dx % 2 == 0 else edge_hi
+                        else:
+                            col = hi if (ty < 0.45 and grain < 7) else (edge_hi if grain >= 9 else base)
+                    elif name == "bottom":
+                        if border:
+                            col = deep
+                        elif rw >= 4 and rh >= 4 and (dx in (1, rw - 2) or dy in (1, rh - 2)):
+                            col = recess if grain < 4 else shade
+                        else:
+                            col = base if (grain <= 2 or (dx + dy) % 4 == 0) else (shade if grain <= 8 else recess)
+                    else:
+                        if dy == 0:
+                            col = hi
+                        elif dy == rh - 1:
+                            col = deep
+                        elif dx == 0:
+                            col = edge_hi if name in ("front", "back") else base
+                        elif dx == rw - 1:
+                            col = shade if name in ("front", "back") else deep
+                        else:
+                            base_mid = base if name in ("front", "back") else shade
+                            if ty < 0.28:
+                                col = edge_hi if grain < 8 else base_mid
+                            elif ty > 0.72:
+                                col = recess if grain > 7 else shade
+                            else:
+                                col = base_mid if grain < 8 else (edge_hi if grain == 8 else shade)
+                            if rw >= 5 and rh >= 5 and (dx in (1, rw - 2) and dy in (1, rh - 2)):
+                                col = deep
+                    put(target, x + dx, y + dy, col)
 
     def paint_rainbow_band(target, x, y, band_w, h, color, is_top=False, is_bottom=False, add_glow=False):
         for dx in range(band_w):
             for dy in range(h):
                 if is_top:
-                    c = tint(color, 0.35 if dy == 0 else 0.20)
+                    facet = (dx + dy) % 5 == 0
+                    c = tint(color, 0.40 if (dy == 0 or facet) else (0.12 if (dx + dy) % 3 == 0 else 0.22))
                 elif is_bottom:
-                    c = tint(color, -0.32)
+                    facet = (dx == 0 or dx == band_w - 1 or dy == 0 or dy == h - 1)
+                    c = tint(color, -0.40 if facet else (-0.18 if (dx + dy) % 3 == 0 else -0.30))
                 else:
                     if dy == 0:
-                        c = tint(color, 0.32)
+                        c = tint(color, 0.34)
                     elif dy == h - 1:
-                        c = tint(color, -0.25)
+                        c = tint(color, -0.28)
                     elif dx == 0:
-                        c = tint(color, 0.18)
+                        c = tint(color, 0.20)
                     elif dx == band_w - 1:
-                        c = tint(color, -0.14)
-                    elif dy in (2, 3) and dx == 1:
+                        c = tint(color, -0.16)
+                    elif (dy in (2, 3) and dx == 1) or (dx + dy) % 7 == 0:
                         c = tint(color, 0.45)
                     else:
                         c = color
@@ -3605,10 +3644,21 @@ def make_prismling():
         paint_rainbow_band(img, bx + i * 4, by, 4, bh, color, is_bottom=True)
     for side_name, col in (("east", BANDS[0]), ("west", BANDS[-1])):
         sx, sy, sw, sh = bf[side_name]
-        fill(img, (sx, sy, sw, sh), col)
         for py in range(sy, sy + sh):
-            put(img, sx, py, tint(col, 0.2))
-            put(img, sx + sw - 1, py, tint(col, -0.2))
+            for px in range(sx, sx + sw):
+                if py == sy:
+                    c = tint(col, 0.32)
+                elif py == sy + sh - 1:
+                    c = tint(col, -0.28)
+                elif px == sx:
+                    c = tint(col, 0.20)
+                elif px == sx + sw - 1:
+                    c = tint(col, -0.20)
+                elif (px + py) % 4 == 0:
+                    c = tint(col, 0.25)
+                else:
+                    c = col
+                put(img, px, py, c)
 
     cf = faces(0, 106, 12, 8, 1)
     for face, order in (("front", BANDS[2:5]), ("back", list(reversed(BANDS[2:5])))):
@@ -3618,24 +3668,24 @@ def make_prismling():
         for px in range(cx, cx + cw):
             put(img, px, cy, OUTLINE_HI)
             put(img, px, cy + ch - 1, OUTLINE_DARK)
-    fill(img, cf["top"], OUTLINE_HI)
-    fill(img, cf["bottom"], OUTLINE_DARK)
-    fill(img, cf["east"], OUTLINE)
-    fill(img, cf["west"], OUTLINE)
+    for fname, (rx, ry, rw, rh) in ((k, cf[k]) for k in ("top", "bottom", "east", "west")):
+        for py in range(ry, ry + rh):
+            for px in range(rx, rx + rw):
+                put(img, px, py, OUTLINE_HI if (fname == "top" or px == rx) else (OUTLINE_DARK if py == ry + rh - 1 else OUTLINE))
 
     # 2. Shoulder armor [32, 4, 12] at [0, 21], waist [24, 3, 10] at [0, 70], side pillars [2, 10, 11] at [0, 84], pauldrons [6, 3, 10] at [28, 84].
-    shade_box(0, 21, 32, 4, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(0, 21, 32, 4, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=1)
     sf = faces(0, 21, 32, 4, 12)
     for face, order in (("front", BANDS), ("back", list(reversed(BANDS)))):
         sx, sy, _, _ = sf[face]
         for i, color in enumerate(order):
             fill(img, (sx + 2 + i * 4, sy + 3, 4, 1), tint(color, 0.1))
-    shade_box(0, 70, 24, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(0, 84, 2, 10, 11, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(28, 84, 6, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(0, 70, 24, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=2)
+    shade_box(0, 84, 2, 10, 11, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=3)
+    shade_box(28, 84, 6, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=4)
 
     # 3. Stoic Guardian Head [12, 10, 11] at [78, 0] + crown [14, 3, 12] at [76, 38] + cheek rails [2, 9, 12] at [84, 54] + crest & horns.
-    shade_box(78, 0, 12, 10, 11, IVORY_HI, IVORY, IVORY_SHADE, IVORY_DEEP)
+    shade_box(78, 0, 12, 10, 11, IVORY_HI, IVORY, IVORY_SHADE, IVORY_DEEP, seed=5)
     hf = faces(78, 0, 12, 10, 11)
     fx, fy, fw, fh = hf["front"]
     fill(img, (fx, fy, fw, fh), IVORY)
@@ -3660,42 +3710,70 @@ def make_prismling():
     put(img, fx + 1, fy + 6, IVORY_DEEP)
     put(img, fx + 10, fy + 6, IVORY_DEEP)
 
-    shade_box(76, 38, 14, 3, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(84, 54, 2, 9, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(90, 96, 3, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    # Sculpted back & top ivory helm panels + glowing prism rune on back of helm
+    bkx, bky, bkw, bkh = hf["back"]
+    fill(img, (bkx + 2, bky + 2, bkw - 4, bkh - 4), IVORY_SHADE)
+    for px in range(bkx + 2, bkx + bkw - 2):
+        put(img, px, bky + 1, OUTLINE_DARK)
+        put(img, px, bky + bkh - 2, OUTLINE_DARK)
+    for py in range(bky + 2, bky + bkh - 2):
+        put(img, bkx + 2, py, IVORY_DEEP)
+        put(img, bkx + bkw - 3, py, IVORY_DEEP)
+    for target in (img, glow):
+        put(target, bkx + 5, bky + 4, EYE_GLOW)
+        put(target, bkx + 6, bky + 4, EYE_GLOW)
+        put(target, bkx + 5, bky + 5, EYE_CORE)
+        put(target, bkx + 6, bky + 5, EYE_CORE)
+
+    htx, hty, htw, hth = hf["top"]
+    for px in range(htx + 2, htx + htw - 2):
+        put(img, px, hty + 2, IVORY_DEEP)
+        put(img, px, hty + hth - 3, IVORY_DEEP)
+    put(img, htx + 5, hty + 5, EYE_GLOW)
+    put(img, htx + 6, hty + 5, EYE_GLOW)
+    put(glow, htx + 5, hty + 5, EYE_GLOW)
+    put(glow, htx + 6, hty + 5, EYE_GLOW)
+
+    shade_box(76, 38, 14, 3, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=6)
+    shade_box(84, 54, 2, 9, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=7)
+    shade_box(90, 96, 3, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=8)
     # Glowing crystal core on forehead crest
     cf_crest = faces(90, 96, 3, 4, 2)["front"]
     fill(img, (cf_crest[0] + 1, cf_crest[1] + 1, 1, 2), EYE_CORE)
     fill(glow, (cf_crest[0] + 1, cf_crest[1] + 1, 1, 2), EYE_GLOW)
-    shade_box(90, 104, 2, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(90, 104, 2, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=9)
 
     # 4. Pillar Legs [9, 9, 9]: right red [0, 38], left lavender [38, 38], plus armored soles [10, 2, 10].
-    for u, color in ((0, BANDS[0]), (38, BANDS[-1])):
-        shade_box(u, 38, 9, 9, 9, tint(color, 0.3), color, tint(color, -0.18), tint(color, -0.35))
+    for idx, (u, color) in enumerate(((0, BANDS[0]), (38, BANDS[-1]))):
+        shade_box(u, 38, 9, 9, 9, tint(color, 0.3), color, tint(color, -0.18), tint(color, -0.35), seed=10 + idx)
         lf = faces(u, 38, 9, 9, 9)
         lx, ly, lw, _ = lf["front"]
         fill(img, (lx, ly, lw, 2), OUTLINE_DARK)
         fill(img, (lx + 2, ly + 3, 5, 2), tint(color, 0.28))
-    shade_box(0, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(42, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+        put(img, lx + 4, ly + 4, tint(color, 0.55))
+        put(glow, lx + 4, ly + 4, tint(color, 0.55))
+    shade_box(0, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=12)
+    shade_box(42, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=13)
     for u, color in ((0, BANDS[0]), (42, BANDS[-1])):
         bx, by, bw, bh = faces(u, 57, 10, 2, 10)["bottom"]
         fill(img, (bx + 1, by + 1, bw - 2, bh - 2), tint(color, -0.22))
+        for tread_y in (by + 2, by + 5, by + 7):
+            fill(img, (bx + 2, tread_y, bw - 4, 1), tint(color, -0.38))
 
     # 5. Arms, 3-pronged hands & glowing octagonal blue cuffs.
-    for u, v, w, h, d in (
+    for idx, (u, v, w, h, d) in enumerate((
         (62, 91, 4, 4, 4),
         (62, 84, 10, 3, 3),
         (90, 82, 3, 8, 3),
         (104, 82, 5, 2, 2),
         (104, 88, 4, 2, 2),
-    ):
-        shade_box(u, v, w, h, d, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    )):
+        shade_box(u, v, w, h, d, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=14 + idx)
 
-    for u, v, w, h, d in ((28, 100, 4, 6, 6), (50, 100, 3, 7, 5), (68, 100, 3, 5, 7)):
-        shade_box(u, v, w, h, d, CUFF_HI, CUFF, CUFF_SHADE, CUFF_DEEP)
+    for idx, (u, v, w, h, d) in enumerate(((28, 100, 4, 6, 6), (50, 100, 3, 7, 5), (68, 100, 3, 5, 7))):
+        shade_box(u, v, w, h, d, CUFF_HI, CUFF, CUFF_SHADE, CUFF_DEEP, seed=20 + idx)
         cf_cuff = faces(u, v, w, h, d)
-        for face_name in ("front", "back", "east", "west", "top"):
+        for face_name in ("front", "back", "east", "west", "top", "bottom"):
             cx, cy, cw, ch = cf_cuff[face_name]
             mid_x = cx + cw // 2
             for py in range(cy + 1, cy + max(2, ch - 1)):
@@ -4796,7 +4874,7 @@ def main():
         return
     if "--prismling" in sys.argv:
         make_prismling()
-        print("Generated Prismling 128x128 texture and glowmask.")
+        print("Generated Prismling 256x128 texture and glowmask.")
         return
     make_crystal_fox()
     make_shadow_wisp()
