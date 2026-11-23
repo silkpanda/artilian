@@ -479,6 +479,23 @@ public class ArtilianItems {
             ITEMS.register("storm_glidewing_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.STORM_GLIDEWING, 0x1C2644, 0x38D9C0, new Item.Properties()));
 
+    // Phase 5 Stage 6: Hatchable Pet Dragons & Dragon Eggs
+    public static final DeferredItem<BlockItem> CANOPY_WYVERN_EGG_ITEM =
+            ITEMS.registerSimpleBlockItem("canopy_wyvern_egg", ArtilianBlocks.CANOPY_WYVERN_EGG);
+    public static final DeferredItem<BlockItem> AMBER_WYVERN_EGG_ITEM =
+            ITEMS.registerSimpleBlockItem("amber_wyvern_egg", ArtilianBlocks.AMBER_WYVERN_EGG);
+    public static final DeferredItem<BlockItem> STORM_GLIDEWING_EGG_ITEM =
+            ITEMS.registerSimpleBlockItem("storm_glidewing_egg", ArtilianBlocks.STORM_GLIDEWING_EGG);
+    public static final DeferredItem<DeferredSpawnEggItem> CANOPY_DRAGONLING_SPAWN_EGG =
+            ITEMS.register("canopy_dragonling_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CANOPY_DRAGONLING, 0x22C55E, 0xF97316, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> AMBER_DRAGONLING_SPAWN_EGG =
+            ITEMS.register("amber_dragonling_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.AMBER_DRAGONLING, 0x2E1E22, 0xFB923C, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> STORM_DRAGONLING_SPAWN_EGG =
+            ITEMS.register("storm_dragonling_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.STORM_DRAGONLING, 0x1E2848, 0x7DF9FF, new Item.Properties()));
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
     }

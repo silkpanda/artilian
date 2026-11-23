@@ -107,6 +107,11 @@ public class ArtilianBlockLootSubProvider extends BlockLootSubProvider {
         add(ArtilianBlocks.DRAGONWOOD_LEAVES.get(),
                 block -> createLeavesDrops(block, ArtilianBlocks.DRAGONWOOD_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES));
         dropSelf(ArtilianBlocks.DRAGONWOOD_SAPLING.get());
+
+        // Phase 5 Stage 6: Hatchable Dragon Eggs
+        dropSelf(ArtilianBlocks.CANOPY_WYVERN_EGG.get());
+        dropSelf(ArtilianBlocks.AMBER_WYVERN_EGG.get());
+        dropSelf(ArtilianBlocks.STORM_GLIDEWING_EGG.get());
     }
 
     @Override

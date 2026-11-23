@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 5 — Stage 5 (*More Dragon Species*)** Added **Amber Wyvern** (`artilian:amber_wyvern`, `Dragon / Fire`, `AMBER_GROVE_BIOME`, `fireImmune()`, ignites on hit) and **Storm Glidewing** (`artilian:storm_glidewing`, `Dragon / Electric`, `DRAGON_JUNGLE_BIOME` & `AMBER_GROVE_BIOME`, applies Slowness + electric sparks) reusing the shared `256×128` `dragon_rig` + `WildDragonEntity` / `WildDragonModel` / `WildDragonRenderer` (`AutoGlowingGeoLayer`), `lint_art.py --phase5 --strict` clean, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`208/208` green) on `phase-5-stage-5-more-dragon-species`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–5 (`qa/evidence/more-dragon-species-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 6 (*Hatchable Pet Dragons*)**: hatchable dragon companions (`ArtilianPetEntity`). |
+| **In progress** | **Phase 5 — Stage 6 (*Hatchable Pet Dragons*)** Added 3 hatchable dragon companions (`CanopyDragonlingEntity`, `AmberDragonlingEntity`, `StormDragonlingEntity` extending `PetDragonEntity` → `ArtilianPetEntity`), 3 hatchable `DragonEggBlock`s (`canopy_wyvern_egg`, `amber_wyvern_egg`, `storm_glidewing_egg` with `HATCH` stages `0..2`, warm-block boost on `Amber Moss` / `Jungle Turf` / `Moss` / `Hay` / `Magma`, and `Biome Treat` / `Blaze Powder` acceleration), `50%` wild dragon egg loot drops, dedicated `128×128` GeckoLib models & glowmasks (`lint_art.py --phase5 --strict` clean), `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`212/212` green) on `phase-5-stage-6-hatchable-pet-dragons`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–6 (`qa/evidence/hatchable-pet-dragons-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 7 (*Dragonscale Gear & Mega TNT*)**: Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honoring `allowDestructiveCustomTnt`). |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -638,7 +638,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | 🔄 Code & GameTests complete (`201/201`); live client check pending |
 | 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | 🔄 Code & GameTests complete (`205/205`); live client check pending |
 | 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | 🔄 Code & GameTests complete (`208/208`); live client check pending |
-| 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | [ ] Pending |
+| 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | 🔄 Code & GameTests complete (`212/212`); live client check pending |
 | 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | [ ] Pending |
 | 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | [ ] Pending |
 | 9 | Twin-Star Endgame Rewards | Combined endgame rewards uniting Alex's and Steve's realms | [ ] Pending |
@@ -752,6 +752,27 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`DragonSpeciesGameTests`):** `208/208` green (3 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
 - **Security Gate:** `n/a` (wild dragon mobs, loot, and biome spawns; inherits `KidSafeTargets` protection for Chester and pets).
 - **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Amber Wyvern & Storm Glidewing in `artilian:dragon_jungle`.
+
+### Phase 5 — Stage 6: Hatchable Pet Dragons
+- [ ] **In Progress (`212/212` GameTests Green & Strict Art Lint Clean; Live Client Check Pending)** — Add **Canopy Dragonling** (`Dragon / Nature`), **Amber Dragonling** (`Dragon / Fire`), and **Storm Dragonling** (`Dragon / Electric`) extending `PetDragonEntity` → `ArtilianPetEntity`, plus 3 hatchable `DragonEggBlock`s (`canopy_wyvern_egg`, `amber_wyvern_egg`, `storm_glidewing_egg`) dropped by wild dragons (`50%` chance).
+- **Art Briefs (`Canopy Dragonling`, `Amber Dragonling`, `Storm Dragonling` & `Dragon Eggs`):**
+  - **Target height/scale:** ~`0.85–0.90` blocks tall (`0.75F × 0.85–0.90F`, `shadowRadius = 0.45F`) baby counterparts of the 3 wild dragon species.
+  - **Silhouettes:** `canopy_dragonling` (4-legged jungle hatchling with leafy-emerald wings & spiked tail), `amber_dragonling` (bipedal wyvern hatchling with swept ram-horn buds & glowing magma-stinger tail), `storm_dragonling` (legless hovering sky-serpent hatchling with wide cyan-gold glider wings & fanned tail rudder).
+  - **Palettes & `_glowmask.png`:** `128×128` shaded sheets matching their adult species; emissive eyes, chest elemental cores, horn/wing tips, and progressive glowing egg cracks (`_0`, `_1`, `_2` on tapered 3D egg blocks).
+- **Why & Decisions:**
+  1. **Hatchable Egg Incubation (`DragonEggBlock`):** Scheduled ticks advance `HATCH` `0 -> 1 -> 2 -> hatch` (`240` ticks/stage on warm blocks like `Amber Moss`, `Jungle Turf`, `Moss Block`, `Hay Block`, `Magma Block`; `400` ticks/stage otherwise). Right-clicking with `Biome Treat` or `Blaze Powder` advances `HATCH` immediately so kids can speed up hatching.
+  2. **Kid-Safe Pet Integration (`PetDragonEntity extends ArtilianPetEntity`):** Hatched dragonlings spawn befriended at `MAX_AFFINITY` with `persistenceRequired`, guaranteeing 100% capture into any empty `CaptureCrystalItem` (inheriting non-lethal fainting, `PetRosterData`, and `KidSafeTargets`).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Briefs, `128×128` dragonling models/textures/glowmasks & 3-stage egg textures | Pending commit | `tools/art/make_dragon_pets_art.py`, `lint_art.py --phase5 --strict` clean (all 6 Phase 5 entities), `preview_geo.py` (`qa/evidence/previews/*_dragonling-preview.png`). |
+  | 2 `PetDragonEntity`, 3 dragonlings, `DragonEggBlock`, loot, renderer, datagen & GameTests | Pending commit | `PetDragonEntity`, `CanopyDragonlingEntity`, `AmberDragonlingEntity`, `StormDragonlingEntity`, `DragonEggBlock`, `PetDragonModel`, `PetDragonRenderer`, `ArtilianEntities`, `ArtilianBlocks`, `ArtilianItems`, `ArtilianCreativeTabs`, `PetEvents`, `ArtilianClient`, datagen (`runData`), `build`, and 4 `DragonPetsGameTests` (`212/212` green). Red-proof: commented out `dragonling.addAffinity(MAX_AFFINITY)` in `DragonEggBlock.hatchEgg` → `dragoneggincubateshatchesbefriendeddragonlingandcapturesincrystal` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Dragon Eggs hatching & dragonlings in-game (`qa/evidence/hatchable-pet-dragons-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonPetsGameTests`):** `212/212` green (4 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
+- **Security Gate:** `n/a` (inherits `P2-01`–`P2-04` `CaptureCrystalItem` ownership, non-lethal fainting, and `KidSafeTargets`).
+- **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Dragon Egg hatching and dragonling companions.
 
 ---
 

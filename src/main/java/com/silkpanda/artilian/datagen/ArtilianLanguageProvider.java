@@ -305,5 +305,17 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addEntityType(ArtilianEntities.STORM_GLIDEWING, "Storm Glidewing");
         this.addItem(ArtilianItems.STORM_GLIDEWING_SPAWN_EGG, "Storm Glidewing Spawn Egg");
         this.addItem(ArtilianItems.DRAGON_SCALE, "Dragon Scale");
+
+        // Phase 5 Stage 6: Hatchable Pet Dragons
+        this.addBlock(ArtilianBlocks.CANOPY_WYVERN_EGG, "Canopy Wyvern Egg");
+        this.addBlock(ArtilianBlocks.AMBER_WYVERN_EGG, "Amber Wyvern Egg");
+        this.addBlock(ArtilianBlocks.STORM_GLIDEWING_EGG, "Storm Glidewing Egg");
+        this.addEntityType(ArtilianEntities.CANOPY_DRAGONLING, "Canopy Dragonling");
+        this.addEntityType(ArtilianEntities.AMBER_DRAGONLING, "Amber Dragonling");
+        this.addEntityType(ArtilianEntities.STORM_DRAGONLING, "Storm Dragonling");
+        this.addItem(ArtilianItems.CANOPY_DRAGONLING_SPAWN_EGG, "Canopy Dragonling Spawn Egg");
+        this.addItem(ArtilianItems.AMBER_DRAGONLING_SPAWN_EGG, "Amber Dragonling Spawn Egg");
+        this.addItem(ArtilianItems.STORM_DRAGONLING_SPAWN_EGG, "Storm Dragonling Spawn Egg");
+        this.add("message.artilian.dragon_egg.hatched", "Your %s hatched! Use a Capture Crystal to bond with it!");
     }
 }

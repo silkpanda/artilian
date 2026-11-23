@@ -32,6 +32,9 @@ public final class PetEvents {
             event.put(ArtilianEntities.FROGDUCK.get(), FrogduckEntity.createAttributes().build());
             event.put(ArtilianEntities.ZAPKIN.get(), ZapkinEntity.createAttributes().build());
             event.put(ArtilianEntities.BLINKY.get(), BlinkyEntity.createAttributes().build());
+            event.put(ArtilianEntities.CANOPY_DRAGONLING.get(), CanopyDragonlingEntity.createAttributes().build());
+            event.put(ArtilianEntities.AMBER_DRAGONLING.get(), AmberDragonlingEntity.createAttributes().build());
+            event.put(ArtilianEntities.STORM_DRAGONLING.get(), StormDragonlingEntity.createAttributes().build());
         }
 
         @SubscribeEvent

@@ -15,7 +15,9 @@ import com.silkpanda.artilian.enemy.LensGuardianEntity;
 import com.silkpanda.artilian.enemy.OculusSlimeEntity;
 import com.silkpanda.artilian.enemy.PeeperEntity;
 import com.silkpanda.artilian.enemy.PrismSentinelEntity;
+import com.silkpanda.artilian.pet.AmberDragonlingEntity;
 import com.silkpanda.artilian.pet.BlinkyEntity;
+import com.silkpanda.artilian.pet.CanopyDragonlingEntity;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
@@ -25,6 +27,7 @@ import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
+import com.silkpanda.artilian.pet.StormDragonlingEntity;
 import com.silkpanda.artilian.pet.SunbeamEntity;
 import com.silkpanda.artilian.pet.ZapkinEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
@@ -266,6 +269,29 @@ public class ArtilianEntities {
                     .eyeHeight(1.5F)
                     .clientTrackingRange(12)
                     .build("storm_glidewing"));
+
+    // Phase 5 Stage 6: Hatchable Pet Dragons
+    public static final DeferredHolder<EntityType<?>, EntityType<CanopyDragonlingEntity>> CANOPY_DRAGONLING =
+            ENTITY_TYPES.register("canopy_dragonling", () -> EntityType.Builder.of(CanopyDragonlingEntity::new, MobCategory.CREATURE)
+                    .sized(0.75F, 0.85F)
+                    .eyeHeight(0.60F)
+                    .clientTrackingRange(10)
+                    .build("canopy_dragonling"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<AmberDragonlingEntity>> AMBER_DRAGONLING =
+            ENTITY_TYPES.register("amber_dragonling", () -> EntityType.Builder.of(AmberDragonlingEntity::new, MobCategory.CREATURE)
+                    .sized(0.75F, 0.90F)
+                    .eyeHeight(0.65F)
+                    .fireImmune()
+                    .clientTrackingRange(10)
+                    .build("amber_dragonling"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<StormDragonlingEntity>> STORM_DRAGONLING =
+            ENTITY_TYPES.register("storm_dragonling", () -> EntityType.Builder.of(StormDragonlingEntity::new, MobCategory.CREATURE)
+                    .sized(0.75F, 0.85F)
+                    .eyeHeight(0.60F)
+                    .clientTrackingRange(10)
+                    .build("storm_dragonling"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

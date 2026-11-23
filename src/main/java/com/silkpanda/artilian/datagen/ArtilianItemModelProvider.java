@@ -46,6 +46,11 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.basicItem(ArtilianItems.ALL_SEERS_LENS.get());
         this.withExistingParent("great_all_seer_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("canopy_wyvern_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("amber_wyvern_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("storm_glidewing_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("canopy_dragonling_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("amber_dragonling_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("storm_dragonling_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.basicItem(ArtilianItems.DRAGON_SCALE.get());
         captureCrystalModels();
         this.basicItem(ArtilianItems.RAW_SUNSTEEL.get());

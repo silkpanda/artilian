@@ -133,6 +133,33 @@ public class ArtilianBlockStateProvider extends BlockStateProvider {
                 blockTexture(ArtilianBlocks.DRAGONWOOD_PLANKS.get()));
         simpleBlockItem(ArtilianBlocks.DRAGONWOOD_SLAB.get(),
                 models().getExistingFile(modLoc("block/dragonwood_slab")));
+
+        // Phase 5 Stage 6: Hatchable Dragon Eggs
+        dragonEggBlock(ArtilianBlocks.CANOPY_WYVERN_EGG.get(), "canopy_wyvern_egg");
+        dragonEggBlock(ArtilianBlocks.AMBER_WYVERN_EGG.get(), "amber_wyvern_egg");
+        dragonEggBlock(ArtilianBlocks.STORM_GLIDEWING_EGG.get(), "storm_glidewing_egg");
+    }
+
+    private void dragonEggBlock(Block block, String name) {
+        var builder = getVariantBuilder(block);
+        for (int stage = 0; stage <= 2; stage++) {
+            var tex = modLoc("block/" + name + "_" + stage);
+            var model = models().getBuilder(name + "_" + stage)
+                    .parent(models().getExistingFile(mcLoc("block/block")))
+                    .texture("particle", tex)
+                    .texture("egg", tex)
+                    .element().from(3, 0, 3).to(13, 4, 13)
+                    .allFaces((dir, face) -> face.texture("#egg")).end()
+                    .element().from(2, 4, 2).to(14, 10, 14)
+                    .allFaces((dir, face) -> face.texture("#egg")).end()
+                    .element().from(4, 10, 4).to(12, 13, 12)
+                    .allFaces((dir, face) -> face.texture("#egg")).end()
+                    .element().from(6, 13, 6).to(10, 15, 10)
+                    .allFaces((dir, face) -> face.texture("#egg")).end();
+            builder.partialState().with(com.silkpanda.artilian.dragon.DragonEggBlock.HATCH, stage)
+                    .modelForState().modelFile(model).addModel();
+        }
+        simpleBlockItem(block, models().getExistingFile(modLoc("block/" + name + "_0")));
     }
 
     private void gazingPortalBlock() {

@@ -157,6 +157,12 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.CANOPY_WYVERN_SPAWN_EGG.get());
                         output.accept(ArtilianItems.AMBER_WYVERN_SPAWN_EGG.get());
                         output.accept(ArtilianItems.STORM_GLIDEWING_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.CANOPY_WYVERN_EGG_ITEM.get());
+                        output.accept(ArtilianItems.AMBER_WYVERN_EGG_ITEM.get());
+                        output.accept(ArtilianItems.STORM_GLIDEWING_EGG_ITEM.get());
+                        output.accept(ArtilianItems.CANOPY_DRAGONLING_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.AMBER_DRAGONLING_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.STORM_DRAGONLING_SPAWN_EGG.get());
                     })
                     .build());
 

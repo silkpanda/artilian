@@ -4,9 +4,11 @@ import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.boss.BossAltarBlock;
 import com.silkpanda.artilian.dimension.GazingPortalBlock;
 import com.silkpanda.artilian.dimension.PrimalPortalBlock;
+import com.silkpanda.artilian.dragon.DragonEggBlock;
 import com.silkpanda.artilian.tnt.ArtilianTntBlock;
 import com.silkpanda.artilian.tnt.TntVariant;
 import com.silkpanda.artilian.worldgen.ArtilianTreeGrowers;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.Block;
@@ -382,6 +384,34 @@ public class ArtilianBlocks {
                     BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)
                             .mapColor(MapColor.EMERALD)
                             .lightLevel(state -> 5)));
+
+    // Phase 5 Stage 6: Hatchable Dragon Eggs
+    public static final DeferredBlock<DragonEggBlock> CANOPY_WYVERN_EGG = BLOCKS.register("canopy_wyvern_egg",
+            () -> new DragonEggBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TURTLE_EGG)
+                            .mapColor(MapColor.EMERALD)
+                            .strength(0.8F)
+                            .lightLevel(state -> state.getValue(DragonEggBlock.HATCH) * 2 + 2),
+                    ArtilianEntities.CANOPY_DRAGONLING,
+                    ParticleTypes.SPORE_BLOSSOM_AIR));
+
+    public static final DeferredBlock<DragonEggBlock> AMBER_WYVERN_EGG = BLOCKS.register("amber_wyvern_egg",
+            () -> new DragonEggBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TURTLE_EGG)
+                            .mapColor(MapColor.COLOR_ORANGE)
+                            .strength(0.8F)
+                            .lightLevel(state -> state.getValue(DragonEggBlock.HATCH) * 2 + 3),
+                    ArtilianEntities.AMBER_DRAGONLING,
+                    ParticleTypes.FLAME));
+
+    public static final DeferredBlock<DragonEggBlock> STORM_GLIDEWING_EGG = BLOCKS.register("storm_glidewing_egg",
+            () -> new DragonEggBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TURTLE_EGG)
+                            .mapColor(MapColor.COLOR_CYAN)
+                            .strength(0.8F)
+                            .lightLevel(state -> state.getValue(DragonEggBlock.HATCH) * 2 + 3),
+                    ArtilianEntities.STORM_DRAGONLING,
+                    ParticleTypes.ELECTRIC_SPARK));
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);

@@ -69,6 +69,12 @@ public final class ArtilianClient {
                 ctx -> new WildDragonRenderer<>(ctx, "amber_wyvern", 1.1F));
         event.registerEntityRenderer(ArtilianEntities.STORM_GLIDEWING.get(),
                 ctx -> new WildDragonRenderer<>(ctx, "storm_glidewing", 1.0F));
+        event.registerEntityRenderer(ArtilianEntities.CANOPY_DRAGONLING.get(),
+                ctx -> new PetDragonRenderer<>(ctx, "canopy_dragonling"));
+        event.registerEntityRenderer(ArtilianEntities.AMBER_DRAGONLING.get(),
+                ctx -> new PetDragonRenderer<>(ctx, "amber_dragonling"));
+        event.registerEntityRenderer(ArtilianEntities.STORM_DRAGONLING.get(),
+                ctx -> new PetDragonRenderer<>(ctx, "storm_dragonling"));
     }
 
     @SubscribeEvent

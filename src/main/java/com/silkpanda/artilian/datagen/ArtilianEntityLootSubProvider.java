@@ -32,9 +32,9 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
         this.add(ArtilianEntities.PEEPER.get(), guardianTable(Items.AMETHYST_SHARD, 1, 2));
         this.add(ArtilianEntities.OCULUS_SLIME.get(), guardianTable(Items.SLIME_BALL, 1, 2));
         this.add(ArtilianEntities.LENS_GUARDIAN.get(), guardianTable(ArtilianItems.STARLIGHT_CRYSTAL.get(), 1, 2));
-        this.add(ArtilianEntities.CANOPY_WYVERN.get(), guardianTable(ArtilianItems.DRAGON_SCALE.get(), 1, 3));
-        this.add(ArtilianEntities.AMBER_WYVERN.get(), guardianTable(ArtilianItems.DRAGON_SCALE.get(), 1, 3));
-        this.add(ArtilianEntities.STORM_GLIDEWING.get(), guardianTable(ArtilianItems.DRAGON_SCALE.get(), 1, 3));
+        this.add(ArtilianEntities.CANOPY_WYVERN.get(), dragonTable(ArtilianItems.CANOPY_WYVERN_EGG_ITEM.get()));
+        this.add(ArtilianEntities.AMBER_WYVERN.get(), dragonTable(ArtilianItems.AMBER_WYVERN_EGG_ITEM.get()));
+        this.add(ArtilianEntities.STORM_GLIDEWING.get(), dragonTable(ArtilianItems.STORM_GLIDEWING_EGG_ITEM.get()));
         this.add(ArtilianEntities.TRAINING_GOLEM.get(), LootTable.lootTable());
         this.add(ArtilianEntities.CRYSTAL_COLOSSUS.get(), crystalColossusTable());
         this.add(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), captainBrimstoneTable());
@@ -103,6 +103,14 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
                         .setRolls(ConstantValue.exactly(1.0F))
                         .add(LootItem.lootTableItem(ArtilianItems.BIOME_TREAT.get())
                                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))));
+    }
+
+    private static LootTable.Builder dragonTable(ItemLike eggDrop) {
+        return guardianTable(ArtilianItems.DRAGON_SCALE.get(), 1, 3)
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .when(LootItemRandomChanceCondition.randomChance(0.5F))
+                        .add(LootItem.lootTableItem(eggDrop)));
     }
 
     private static LootTable.Builder guardianTable(ItemLike primaryDrop, int min, int max) {
