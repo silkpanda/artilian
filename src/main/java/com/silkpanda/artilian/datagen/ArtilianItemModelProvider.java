@@ -42,6 +42,19 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.withExistingParent("oculus_slime_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("lens_guardian_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("blinky_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.basicItem(ArtilianItems.OCULAR_KEY.get());
+        this.basicItem(ArtilianItems.ALL_SEERS_LENS.get());
+        this.withExistingParent("great_all_seer_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("canopy_wyvern_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("amber_wyvern_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("storm_glidewing_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("canopy_dragonling_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("amber_dragonling_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("storm_dragonling_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.basicItem(ArtilianItems.DRAGON_SCALE.get());
+        this.withExistingParent("embercrown_sovereign_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.basicItem(ArtilianItems.PRIMAL_DRAGON_CREST.get());
+        this.basicItem(ArtilianItems.SOVEREIGNS_EMBER_HEART.get());
         captureCrystalModels();
         this.basicItem(ArtilianItems.RAW_SUNSTEEL.get());
         this.basicItem(ArtilianItems.SUNSTEEL_INGOT.get());
@@ -65,6 +78,12 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.handheldItem(ArtilianItems.PRISMATIC_SHOVEL.get());
         this.handheldItem(ArtilianItems.PRISMATIC_HOE.get());
 
+        this.handheldItem(ArtilianItems.DRAGONSCALE_SWORD.get());
+        this.handheldItem(ArtilianItems.DRAGONSCALE_PICKAXE.get());
+        this.handheldItem(ArtilianItems.DRAGONSCALE_AXE.get());
+        this.handheldItem(ArtilianItems.DRAGONSCALE_SHOVEL.get());
+        this.handheldItem(ArtilianItems.DRAGONSCALE_HOE.get());
+
         this.basicItem(ArtilianItems.SUNSTEEL_HELMET.get());
         this.basicItem(ArtilianItems.SUNSTEEL_CHESTPLATE.get());
         this.basicItem(ArtilianItems.SUNSTEEL_LEGGINGS.get());
@@ -79,6 +98,19 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.basicItem(ArtilianItems.PRISMATIC_CHESTPLATE.get());
         this.basicItem(ArtilianItems.PRISMATIC_LEGGINGS.get());
         this.basicItem(ArtilianItems.PRISMATIC_BOOTS.get());
+
+        this.basicItem(ArtilianItems.DRAGONSCALE_HELMET.get());
+        this.basicItem(ArtilianItems.DRAGONSCALE_CHESTPLATE.get());
+        this.basicItem(ArtilianItems.DRAGONSCALE_LEGGINGS.get());
+        this.basicItem(ArtilianItems.DRAGONSCALE_BOOTS.get());
+
+        this.basicItem(ArtilianItems.TWIN_STAR_CORE.get());
+        this.handheldItem(ArtilianItems.TWIN_STAR_BLADE.get());
+        this.handheldItem(ArtilianItems.TWIN_STAR_STAFF.get());
+        this.basicItem(ArtilianItems.TWIN_STAR_HELMET.get());
+        this.basicItem(ArtilianItems.TWIN_STAR_CHESTPLATE.get());
+        this.basicItem(ArtilianItems.TWIN_STAR_LEGGINGS.get());
+        this.basicItem(ArtilianItems.TWIN_STAR_BOOTS.get());
 
         this.handheldItem(ArtilianItems.SPARK_WAND.get());
         this.handheldItem(ArtilianItems.HEART_BLOOM_STAFF.get());

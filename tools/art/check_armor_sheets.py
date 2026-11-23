@@ -101,7 +101,7 @@ def check(geo_path, tex_path):
 
 def main():
     failed = False
-    for set_name in ("sunsteel", "starlight", "prismatic"):
+    for set_name in ("sunsteel", "starlight", "prismatic", "dragonscale", "twin_star"):
         geo_path = GEO_DIR / f"{set_name}_armor.geo.json"
         tex_path = TEX_DIR / f"{set_name}_armor.png"
         problems, notes = check(geo_path, tex_path)

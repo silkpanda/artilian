@@ -2,6 +2,10 @@
   "values": [
     "artilian:sunsteel_ore",
     "artilian:deepslate_sunsteel_ore",
-    "artilian:sunsteel_block"
+    "artilian:sunsteel_block",
+    "artilian:primal_basalt",
+    "artilian:primal_basalt_stairs",
+    "artilian:primal_basalt_slab",
+    "artilian:primal_basalt_wall"
   ]
 }

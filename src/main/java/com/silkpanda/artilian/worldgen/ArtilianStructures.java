@@ -51,6 +51,10 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/ocular_observatory"));
     public static final ResourceKey<LootTable> GAZING_SANCTUM_CHEST =
             ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/gazing_sanctum"));
+    public static final ResourceKey<LootTable> DRAGON_ROOST_CHEST =
+            ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/dragon_roost"));
+    public static final ResourceKey<LootTable> AMBER_TEMPLE_CHEST =
+            ResourceKey.create(Registries.LOOT_TABLE, ArtilianMod.id("chests/amber_temple"));
 
     public static final ResourceKey<StructureTemplatePool> CRYSTAL_GROVE_SHRINE_POOL =
             ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("crystal_grove_shrine"));
@@ -66,6 +70,10 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("ocular_observatory"));
     public static final ResourceKey<StructureTemplatePool> GAZING_SANCTUM_POOL =
             ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("gazing_sanctum"));
+    public static final ResourceKey<StructureTemplatePool> DRAGON_ROOST_POOL =
+            ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("dragon_roost"));
+    public static final ResourceKey<StructureTemplatePool> AMBER_TEMPLE_POOL =
+            ResourceKey.create(Registries.TEMPLATE_POOL, ArtilianMod.id("amber_temple"));
 
     public static final ResourceKey<Structure> CRYSTAL_GROVE_SHRINE =
             ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("crystal_grove_shrine"));
@@ -81,6 +89,10 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("ocular_observatory"));
     public static final ResourceKey<Structure> GAZING_SANCTUM =
             ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("gazing_sanctum"));
+    public static final ResourceKey<Structure> DRAGON_ROOST =
+            ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("dragon_roost"));
+    public static final ResourceKey<Structure> AMBER_TEMPLE =
+            ResourceKey.create(Registries.STRUCTURE, ArtilianMod.id("amber_temple"));
 
     public static final ResourceKey<StructureSet> CRYSTAL_GROVE_SHRINES =
             ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("crystal_grove_shrines"));
@@ -96,6 +108,10 @@ public final class ArtilianStructures {
             ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("ocular_observatories"));
     public static final ResourceKey<StructureSet> GAZING_SANCTUMS =
             ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("gazing_sanctums"));
+    public static final ResourceKey<StructureSet> DRAGON_ROOSTS =
+            ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("dragon_roosts"));
+    public static final ResourceKey<StructureSet> AMBER_TEMPLES =
+            ResourceKey.create(Registries.STRUCTURE_SET, ArtilianMod.id("amber_temples"));
 
     public static void bootstrapTemplatePools(BootstrapContext<StructureTemplatePool> context) {
         HolderGetter<StructureTemplatePool> pools = context.lookup(Registries.TEMPLATE_POOL);
@@ -108,6 +124,8 @@ public final class ArtilianStructures {
         registerSinglePool(context, BRIMSTONE_BASTION_POOL, emptyFallback, "artilian:brimstone_bastion");
         registerSinglePool(context, OCULAR_OBSERVATORY_POOL, emptyFallback, "artilian:ocular_observatory");
         registerSinglePool(context, GAZING_SANCTUM_POOL, emptyFallback, "artilian:gazing_sanctum");
+        registerSinglePool(context, DRAGON_ROOST_POOL, emptyFallback, "artilian:dragon_roost");
+        registerSinglePool(context, AMBER_TEMPLE_POOL, emptyFallback, "artilian:amber_temple");
     }
 
     public static void bootstrapStructures(BootstrapContext<Structure> context) {
@@ -135,6 +153,12 @@ public final class ArtilianStructures {
         context.register(GAZING_SANCTUM, surfaceStructure(
                 biomes, pools, ArtilianTags.Biomes.HAS_GAZING_SANCTUM,
                 GAZING_SANCTUM_POOL, ArtilianEntities.LENS_GUARDIAN.get()));
+        context.register(DRAGON_ROOST, surfaceStructure(
+                biomes, pools, ArtilianTags.Biomes.HAS_DRAGON_ROOST,
+                DRAGON_ROOST_POOL, Map.of()));
+        context.register(AMBER_TEMPLE, surfaceStructure(
+                biomes, pools, ArtilianTags.Biomes.HAS_AMBER_TEMPLE,
+                AMBER_TEMPLE_POOL, Map.of()));
     }
 
     public static void bootstrapStructureSets(BootstrapContext<StructureSet> context) {
@@ -147,6 +171,8 @@ public final class ArtilianStructures {
         context.register(BRIMSTONE_BASTIONS, spreadSet(structures, BRIMSTONE_BASTION, 26, 12, 95826455));
         context.register(OCULAR_OBSERVATORIES, spreadSet(structures, OCULAR_OBSERVATORY, 16, 7, 41526374));
         context.register(GAZING_SANCTUMS, spreadSet(structures, GAZING_SANCTUM, 20, 9, 52637485));
+        context.register(DRAGON_ROOSTS, spreadSet(structures, DRAGON_ROOST, 16, 7, 63748596));
+        context.register(AMBER_TEMPLES, spreadSet(structures, AMBER_TEMPLE, 18, 8, 74859607));
     }
 
     private static void registerSinglePool(
@@ -172,18 +198,7 @@ public final class ArtilianStructures {
                         StructureSpawnOverride.BoundingBoxType.STRUCTURE,
                         WeightedRandomList.create(new MobSpawnSettings.SpawnerData(guardian, 10, 1, 2)))
         );
-        Structure.StructureSettings settings = new Structure.StructureSettings.Builder(biomes.getOrThrow(biomeTag))
-                .spawnOverrides(overrides)
-                .generationStep(GenerationStep.Decoration.SURFACE_STRUCTURES)
-                .terrainAdapation(TerrainAdjustment.BEARD_THIN)
-                .build();
-        return new JigsawStructure(
-                settings,
-                pools.getOrThrow(startPool),
-                1,
-                ConstantHeight.of(VerticalAnchor.absolute(0)),
-                false,
-                Heightmap.Types.WORLD_SURFACE_WG);
+        return surfaceStructure(biomes, pools, biomeTag, startPool, overrides);
     }
 
     private static Structure bossArenaStructure(
@@ -191,8 +206,17 @@ public final class ArtilianStructures {
             HolderGetter<StructureTemplatePool> pools,
             TagKey<Biome> biomeTag,
             ResourceKey<StructureTemplatePool> startPool) {
+        return surfaceStructure(biomes, pools, biomeTag, startPool, Map.of());
+    }
+
+    private static Structure surfaceStructure(
+            HolderGetter<Biome> biomes,
+            HolderGetter<StructureTemplatePool> pools,
+            TagKey<Biome> biomeTag,
+            ResourceKey<StructureTemplatePool> startPool,
+            Map<MobCategory, StructureSpawnOverride> overrides) {
         Structure.StructureSettings settings = new Structure.StructureSettings.Builder(biomes.getOrThrow(biomeTag))
-                .spawnOverrides(Map.of())
+                .spawnOverrides(overrides)
                 .generationStep(GenerationStep.Decoration.SURFACE_STRUCTURES)
                 .terrainAdapation(TerrainAdjustment.BEARD_THIN)
                 .build();

@@ -45,6 +45,76 @@ public class ArtilianChestLootSubProvider implements LootTableSubProvider {
         output.accept(ArtilianStructures.BRIMSTONE_BASTION_CHEST, buildBrimstoneBastionChest());
         output.accept(ArtilianStructures.OCULAR_OBSERVATORY_CHEST, buildOcularObservatoryChest());
         output.accept(ArtilianStructures.GAZING_SANCTUM_CHEST, buildGazingSanctumChest());
+        output.accept(ArtilianStructures.DRAGON_ROOST_CHEST, buildDragonRoostChest());
+        output.accept(ArtilianStructures.AMBER_TEMPLE_CHEST, buildAmberTempleChest());
+    }
+
+    private static LootTable.Builder buildDragonRoostChest() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.BIOME_TREAT.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 5)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.CAPTURE_CRYSTAL.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(UniformGenerator.between(2, 3))
+                        .add(LootItem.lootTableItem(ArtilianBlocks.DRAGONWOOD_SAPLING.get())
+                                .setWeight(3)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2))))
+                        .add(LootItem.lootTableItem(ArtilianBlocks.AMBER_MOSS.get())
+                                .setWeight(3)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4))))
+                        .add(LootItem.lootTableItem(Items.GOLD_INGOT)
+                                .setWeight(3)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 5))))
+                        .add(LootItem.lootTableItem(ArtilianItems.SUNSTEEL_INGOT.get())
+                                .setWeight(2)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2))))
+                        .add(LootItem.lootTableItem(Items.BLAZE_POWDER)
+                                .setWeight(2)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4))))
+                        .add(LootItem.lootTableItem(Items.GOLDEN_APPLE)
+                                .setWeight(1))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                                .setWeight(1)));
+    }
+
+    private static LootTable.Builder buildAmberTempleChest() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.BIOME_TREAT.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 5)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.CAPTURE_CRYSTAL.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianBlocks.AMBER_MOSS.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(UniformGenerator.between(2, 3))
+                        .add(LootItem.lootTableItem(Items.GOLD_INGOT)
+                                .setWeight(3)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 6))))
+                        .add(LootItem.lootTableItem(ArtilianItems.SUNSTEEL_INGOT.get())
+                                .setWeight(3)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3))))
+                        .add(LootItem.lootTableItem(ArtilianBlocks.DRAGONWOOD_LOG.get())
+                                .setWeight(2)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 8))))
+                        .add(LootItem.lootTableItem(Items.DIAMOND)
+                                .setWeight(2)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2))))
+                        .add(LootItem.lootTableItem(Items.GOLDEN_APPLE)
+                                .setWeight(1))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                                .setWeight(2)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))));
     }
 
     private static LootTable.Builder buildOcularObservatoryChest() {

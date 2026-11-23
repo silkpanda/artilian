@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 63748596,
+    "separation": 7,
+    "spacing": 16
+  },
+  "structures": [
+    {
+      "structure": "artilian:dragon_roost",
+      "weight": 1
+    }
+  ]
+}

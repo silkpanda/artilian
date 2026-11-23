@@ -8,7 +8,9 @@ import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
 import com.silkpanda.artilian.gear.ArtilianSwordItem;
 import com.silkpanda.artilian.gear.ArtilianTiers;
+import com.silkpanda.artilian.gear.DragonscaleSwordItem;
 import com.silkpanda.artilian.gear.PrismaticSwordItem;
+import com.silkpanda.artilian.gear.TwinStarBladeItem;
 import com.silkpanda.artilian.mana.ArtilianWandItem;
 import com.silkpanda.artilian.mana.WandSpell;
 import com.silkpanda.artilian.pet.BiomeTreatItem;
@@ -132,6 +134,8 @@ public class ArtilianItems {
             ITEMS.registerSimpleBlockItem("starlight_gravity_tnt", ArtilianBlocks.STARLIGHT_GRAVITY_TNT);
     public static final DeferredItem<BlockItem> BRIMSTONE_METEOR_TNT_ITEM =
             ITEMS.registerSimpleBlockItem("brimstone_meteor_tnt", ArtilianBlocks.BRIMSTONE_METEOR_TNT);
+    public static final DeferredItem<BlockItem> DRAGONFIRE_MEGA_TNT_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonfire_mega_tnt", ArtilianBlocks.DRAGONFIRE_MEGA_TNT);
 
     // Crystal Canopy Woods blocks
     public static final DeferredItem<BlockItem> CRYSTAL_TURF_ITEM =
@@ -421,6 +425,167 @@ public class ArtilianItems {
             ITEMS.registerSimpleBlockItem("ocular_leaves", ArtilianBlocks.OCULAR_LEAVES);
     public static final DeferredItem<BlockItem> OCULAR_SAPLING_ITEM =
             ITEMS.registerSimpleBlockItem("ocular_sapling", ArtilianBlocks.OCULAR_SAPLING);
+
+    // Phase 4 Stage 6: The Great All-Seer
+    public static final DeferredItem<DeferredSpawnEggItem> GREAT_ALL_SEER_SPAWN_EGG =
+            ITEMS.register("great_all_seer_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.GREAT_ALL_SEER, 0x2B2338, 0xD946EF, new Item.Properties()));
+    public static final DeferredItem<BossSummonItem> OCULAR_KEY =
+            ITEMS.register("ocular_key", () -> new BossSummonItem(
+                    ArtilianEntities.GREAT_ALL_SEER,
+                    new Item.Properties().stacksTo(16).rarity(Rarity.RARE),
+                    "item.artilian.ocular_key.tooltip",
+                    ChatFormatting.LIGHT_PURPLE));
+    public static final DeferredItem<BossTrophyItem> ALL_SEERS_LENS =
+            ITEMS.register("all_seers_lens", () -> new BossTrophyItem(
+                    new Item.Properties().stacksTo(16).rarity(Rarity.EPIC),
+                    "item.artilian.all_seers_lens.tooltip",
+                    ChatFormatting.AQUA));
+
+    // Phase 5 Stage 2: Mega-Jungle Worldgen
+    public static final DeferredItem<BlockItem> JUNGLE_TURF_ITEM =
+            ITEMS.registerSimpleBlockItem("jungle_turf", ArtilianBlocks.JUNGLE_TURF);
+    public static final DeferredItem<BlockItem> PRIMAL_BASALT_ITEM =
+            ITEMS.registerSimpleBlockItem("primal_basalt", ArtilianBlocks.PRIMAL_BASALT);
+    public static final DeferredItem<BlockItem> PRIMAL_BASALT_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("primal_basalt_stairs", ArtilianBlocks.PRIMAL_BASALT_STAIRS);
+    public static final DeferredItem<BlockItem> PRIMAL_BASALT_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("primal_basalt_slab", ArtilianBlocks.PRIMAL_BASALT_SLAB);
+    public static final DeferredItem<BlockItem> PRIMAL_BASALT_WALL_ITEM =
+            ITEMS.registerSimpleBlockItem("primal_basalt_wall", ArtilianBlocks.PRIMAL_BASALT_WALL);
+    public static final DeferredItem<BlockItem> AMBER_MOSS_ITEM =
+            ITEMS.registerSimpleBlockItem("amber_moss", ArtilianBlocks.AMBER_MOSS);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_LOG_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_log", ArtilianBlocks.DRAGONWOOD_LOG);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_PLANKS_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_planks", ArtilianBlocks.DRAGONWOOD_PLANKS);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_STAIRS_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_stairs", ArtilianBlocks.DRAGONWOOD_STAIRS);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_SLAB_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_slab", ArtilianBlocks.DRAGONWOOD_SLAB);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_LEAVES_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_leaves", ArtilianBlocks.DRAGONWOOD_LEAVES);
+    public static final DeferredItem<BlockItem> DRAGONWOOD_SAPLING_ITEM =
+            ITEMS.registerSimpleBlockItem("dragonwood_sapling", ArtilianBlocks.DRAGONWOOD_SAPLING);
+
+    // Phase 5 Stage 4: First Dragon Species (Canopy Wyvern)
+    public static final DeferredItem<Item> DRAGON_SCALE =
+            ITEMS.register("dragon_scale", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<DeferredSpawnEggItem> CANOPY_WYVERN_SPAWN_EGG =
+            ITEMS.register("canopy_wyvern_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CANOPY_WYVERN, 0x1E4634, 0xF97316, new Item.Properties()));
+
+    // Phase 5 Stage 5: More Dragon Species
+    public static final DeferredItem<DeferredSpawnEggItem> AMBER_WYVERN_SPAWN_EGG =
+            ITEMS.register("amber_wyvern_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.AMBER_WYVERN, 0x24181C, 0xFDE047, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> STORM_GLIDEWING_SPAWN_EGG =
+            ITEMS.register("storm_glidewing_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.STORM_GLIDEWING, 0x1C2644, 0x38D9C0, new Item.Properties()));
+
+    // Phase 5 Stage 6: Hatchable Pet Dragons & Dragon Eggs
+    public static final DeferredItem<BlockItem> CANOPY_WYVERN_EGG_ITEM =
+            ITEMS.registerSimpleBlockItem("canopy_wyvern_egg", ArtilianBlocks.CANOPY_WYVERN_EGG);
+    public static final DeferredItem<BlockItem> AMBER_WYVERN_EGG_ITEM =
+            ITEMS.registerSimpleBlockItem("amber_wyvern_egg", ArtilianBlocks.AMBER_WYVERN_EGG);
+    public static final DeferredItem<BlockItem> STORM_GLIDEWING_EGG_ITEM =
+            ITEMS.registerSimpleBlockItem("storm_glidewing_egg", ArtilianBlocks.STORM_GLIDEWING_EGG);
+    public static final DeferredItem<DeferredSpawnEggItem> CANOPY_DRAGONLING_SPAWN_EGG =
+            ITEMS.register("canopy_dragonling_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.CANOPY_DRAGONLING, 0x22C55E, 0xF97316, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> AMBER_DRAGONLING_SPAWN_EGG =
+            ITEMS.register("amber_dragonling_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.AMBER_DRAGONLING, 0x2E1E22, 0xFB923C, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> STORM_DRAGONLING_SPAWN_EGG =
+            ITEMS.register("storm_dragonling_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.STORM_DRAGONLING, 0x1E2848, 0x7DF9FF, new Item.Properties()));
+
+    // Phase 5 Stage 7: Dragonscale Gear
+    public static final DeferredItem<SwordItem> DRAGONSCALE_SWORD = ITEMS.register("dragonscale_sword",
+            () -> new DragonscaleSwordItem(
+                    ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(SwordItem.createAttributes(ArtilianTiers.DRAGONSCALE, 4, -2.1F)),
+                    "item.artilian.dragonscale_sword.tooltip",
+                    ChatFormatting.GREEN));
+    public static final DeferredItem<PickaxeItem> DRAGONSCALE_PICKAXE = ITEMS.register("dragonscale_pickaxe",
+            () -> new PickaxeItem(ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(PickaxeItem.createAttributes(ArtilianTiers.DRAGONSCALE, 1.0F, -2.8F))));
+    public static final DeferredItem<AxeItem> DRAGONSCALE_AXE = ITEMS.register("dragonscale_axe",
+            () -> new AxeItem(ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(AxeItem.createAttributes(ArtilianTiers.DRAGONSCALE, 5.0F, -3.0F))));
+    public static final DeferredItem<ShovelItem> DRAGONSCALE_SHOVEL = ITEMS.register("dragonscale_shovel",
+            () -> new ShovelItem(ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(ShovelItem.createAttributes(ArtilianTiers.DRAGONSCALE, 1.5F, -3.0F))));
+    public static final DeferredItem<HoeItem> DRAGONSCALE_HOE = ITEMS.register("dragonscale_hoe",
+            () -> new HoeItem(ArtilianTiers.DRAGONSCALE,
+                    new Item.Properties().fireResistant().rarity(Rarity.RARE)
+                            .attributes(HoeItem.createAttributes(ArtilianTiers.DRAGONSCALE, -4.0F, 0.0F))));
+    public static final DeferredItem<ArmorItem> DRAGONSCALE_HELMET =
+            armor("dragonscale_helmet", "dragonscale", ArtilianArmorMaterials.DRAGONSCALE, ArmorItem.Type.HELMET, 40, true);
+    public static final DeferredItem<ArmorItem> DRAGONSCALE_CHESTPLATE =
+            armor("dragonscale_chestplate", "dragonscale", ArtilianArmorMaterials.DRAGONSCALE, ArmorItem.Type.CHESTPLATE, 40, true);
+    public static final DeferredItem<ArmorItem> DRAGONSCALE_LEGGINGS =
+            armor("dragonscale_leggings", "dragonscale", ArtilianArmorMaterials.DRAGONSCALE, ArmorItem.Type.LEGGINGS, 40, true);
+    public static final DeferredItem<ArmorItem> DRAGONSCALE_BOOTS =
+            armor("dragonscale_boots", "dragonscale", ArtilianArmorMaterials.DRAGONSCALE, ArmorItem.Type.BOOTS, 40, true);
+
+    // Phase 5 Stage 8: Apex Dragon Boss
+    public static final DeferredItem<DeferredSpawnEggItem> EMBERCROWN_SOVEREIGN_SPAWN_EGG =
+            ITEMS.register("embercrown_sovereign_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.EMBERCROWN_SOVEREIGN, 0x1E1420, 0xF97316, new Item.Properties()));
+    public static final DeferredItem<BossSummonItem> PRIMAL_DRAGON_CREST =
+            ITEMS.register("primal_dragon_crest", () -> new BossSummonItem(
+                    ArtilianEntities.EMBERCROWN_SOVEREIGN,
+                    new Item.Properties().stacksTo(16).rarity(Rarity.RARE),
+                    "item.artilian.primal_dragon_crest.tooltip",
+                    ChatFormatting.GOLD));
+    public static final DeferredItem<BossTrophyItem> SOVEREIGNS_EMBER_HEART =
+            ITEMS.register("sovereigns_ember_heart", () -> new BossTrophyItem(
+                    new Item.Properties().stacksTo(16).rarity(Rarity.EPIC).fireResistant(),
+                    "item.artilian.sovereigns_ember_heart.tooltip",
+                    ChatFormatting.GOLD));
+
+    // Phase 5 Stage 9: Twin-Star Endgame Rewards
+    public static final DeferredItem<BossTrophyItem> TWIN_STAR_CORE =
+            ITEMS.register("twin_star_core", () -> new BossTrophyItem(
+                    new Item.Properties().stacksTo(16).rarity(Rarity.EPIC).fireResistant(),
+                    "item.artilian.twin_star_core.tooltip",
+                    ChatFormatting.AQUA));
+    public static final DeferredItem<SwordItem> TWIN_STAR_BLADE = ITEMS.register("twin_star_blade",
+            () -> new TwinStarBladeItem(
+                    ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(SwordItem.createAttributes(ArtilianTiers.TWIN_STAR, 4, -2.2F)),
+                    "item.artilian.twin_star_blade.tooltip",
+                    ChatFormatting.AQUA));
+    public static final DeferredItem<ArtilianWandItem> TWIN_STAR_STAFF = ITEMS.register("twin_star_staff",
+            () -> new ArtilianWandItem(
+                    WandSpell.TWIN_STAR_HARMONY,
+                    new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+    public static final DeferredItem<ArmorItem> TWIN_STAR_HELMET = ITEMS.register("twin_star_helmet",
+            () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.HELMET,
+                    new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(46))
+                            .fireResistant().rarity(Rarity.EPIC),
+                    "twin_star"));
+    public static final DeferredItem<ArmorItem> TWIN_STAR_CHESTPLATE = ITEMS.register("twin_star_chestplate",
+            () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.CHESTPLATE,
+                    new Item.Properties().durability(ArmorItem.Type.CHESTPLATE.getDurability(46))
+                            .fireResistant().rarity(Rarity.EPIC),
+                    "twin_star"));
+    public static final DeferredItem<ArmorItem> TWIN_STAR_LEGGINGS = ITEMS.register("twin_star_leggings",
+            () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.LEGGINGS,
+                    new Item.Properties().durability(ArmorItem.Type.LEGGINGS.getDurability(46))
+                            .fireResistant().rarity(Rarity.EPIC),
+                    "twin_star"));
+    public static final DeferredItem<ArmorItem> TWIN_STAR_BOOTS = ITEMS.register("twin_star_boots",
+            () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.BOOTS,
+                    new Item.Properties().durability(ArmorItem.Type.BOOTS.getDurability(46))
+                            .fireResistant().rarity(Rarity.EPIC),
+                    "twin_star"));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

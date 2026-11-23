@@ -3,9 +3,12 @@ package com.silkpanda.artilian.registry;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.boss.BossAltarBlock;
 import com.silkpanda.artilian.dimension.GazingPortalBlock;
+import com.silkpanda.artilian.dimension.PrimalPortalBlock;
+import com.silkpanda.artilian.dragon.DragonEggBlock;
 import com.silkpanda.artilian.tnt.ArtilianTntBlock;
 import com.silkpanda.artilian.tnt.TntVariant;
 import com.silkpanda.artilian.worldgen.ArtilianTreeGrowers;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.Block;
@@ -99,6 +102,9 @@ public class ArtilianBlocks {
     public static final DeferredBlock<ArtilianTntBlock> BRIMSTONE_METEOR_TNT = BLOCKS.register("brimstone_meteor_tnt",
             () -> new ArtilianTntBlock(TntVariant.BRIMSTONE_METEOR,
                     BlockBehaviour.Properties.ofFullCopy(Blocks.TNT).mapColor(MapColor.COLOR_RED)));
+    public static final DeferredBlock<ArtilianTntBlock> DRAGONFIRE_MEGA_TNT = BLOCKS.register("dragonfire_mega_tnt",
+            () -> new ArtilianTntBlock(TntVariant.DRAGONFIRE_MEGA,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TNT).mapColor(MapColor.EMERALD)));
 
     // Crystal Canopy Woods (Phase 2 Stage 1)
     public static final DeferredBlock<Block> CRYSTAL_TURF = BLOCKS.register("crystal_turf",
@@ -314,6 +320,101 @@ public class ArtilianBlocks {
                     BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)
                             .mapColor(MapColor.COLOR_MAGENTA)
                             .lightLevel(state -> 5)));
+
+    // Phase 5 Stage 1: Giant Dragon Jungle
+    public static final DeferredBlock<PrimalPortalBlock> PRIMAL_PORTAL = BLOCKS.register("primal_portal",
+            () -> new PrimalPortalBlock(BlockBehaviour.Properties.of()
+                    .noCollission()
+                    .randomTicks()
+                    .strength(-1.0F)
+                    .sound(SoundType.GLASS)
+                    .lightLevel(state -> 11)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK)
+                    .noLootTable()));
+
+    // Phase 5 Stage 2: Mega-Jungle Worldgen
+    public static final DeferredBlock<Block> JUNGLE_TURF = BLOCKS.register("jungle_turf",
+            () -> new Block(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.EMERALD)
+                    .strength(0.65F)
+                    .sound(SoundType.GRASS)));
+
+    public static final DeferredBlock<Block> PRIMAL_BASALT = BLOCKS.register("primal_basalt",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(1.8F, 6.0F)));
+
+    public static final DeferredBlock<StairBlock> PRIMAL_BASALT_STAIRS = BLOCKS.register("primal_basalt_stairs",
+            () -> new StairBlock(PRIMAL_BASALT.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(PRIMAL_BASALT.get())));
+
+    public static final DeferredBlock<SlabBlock> PRIMAL_BASALT_SLAB = BLOCKS.register("primal_basalt_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(PRIMAL_BASALT.get())));
+
+    public static final DeferredBlock<WallBlock> PRIMAL_BASALT_WALL = BLOCKS.register("primal_basalt_wall",
+            () -> new WallBlock(BlockBehaviour.Properties.ofFullCopy(PRIMAL_BASALT.get())));
+
+    public static final DeferredBlock<Block> AMBER_MOSS = BLOCKS.register("amber_moss",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.MOSS_BLOCK)
+                    .mapColor(MapColor.COLOR_ORANGE)
+                    .strength(1.0F, 3.0F)
+                    .lightLevel(state -> 8)));
+
+    public static final DeferredBlock<RotatedPillarBlock> DRAGONWOOD_LOG = BLOCKS.register("dragonwood_log",
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LOG)
+                    .mapColor(MapColor.COLOR_BROWN)));
+
+    public static final DeferredBlock<Block> DRAGONWOOD_PLANKS = BLOCKS.register("dragonwood_planks",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS)
+                    .mapColor(MapColor.COLOR_BROWN)));
+
+    public static final DeferredBlock<StairBlock> DRAGONWOOD_STAIRS = BLOCKS.register("dragonwood_stairs",
+            () -> new StairBlock(DRAGONWOOD_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS)
+                            .mapColor(MapColor.COLOR_BROWN)));
+
+    public static final DeferredBlock<SlabBlock> DRAGONWOOD_SLAB = BLOCKS.register("dragonwood_slab",
+            () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB)
+                    .mapColor(MapColor.COLOR_BROWN)));
+
+    public static final DeferredBlock<LeavesBlock> DRAGONWOOD_LEAVES = BLOCKS.register("dragonwood_leaves",
+            () -> new LeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES)
+                    .mapColor(MapColor.EMERALD)
+                    .lightLevel(state -> 3)));
+
+    public static final DeferredBlock<SaplingBlock> DRAGONWOOD_SAPLING = BLOCKS.register("dragonwood_sapling",
+            () -> new SaplingBlock(ArtilianTreeGrowers.DRAGONWOOD,
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)
+                            .mapColor(MapColor.EMERALD)
+                            .lightLevel(state -> 5)));
+
+    // Phase 5 Stage 6: Hatchable Dragon Eggs
+    public static final DeferredBlock<DragonEggBlock> CANOPY_WYVERN_EGG = BLOCKS.register("canopy_wyvern_egg",
+            () -> new DragonEggBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TURTLE_EGG)
+                            .mapColor(MapColor.EMERALD)
+                            .strength(0.8F)
+                            .lightLevel(state -> state.getValue(DragonEggBlock.HATCH) * 2 + 2),
+                    ArtilianEntities.CANOPY_DRAGONLING,
+                    ParticleTypes.SPORE_BLOSSOM_AIR));
+
+    public static final DeferredBlock<DragonEggBlock> AMBER_WYVERN_EGG = BLOCKS.register("amber_wyvern_egg",
+            () -> new DragonEggBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TURTLE_EGG)
+                            .mapColor(MapColor.COLOR_ORANGE)
+                            .strength(0.8F)
+                            .lightLevel(state -> state.getValue(DragonEggBlock.HATCH) * 2 + 3),
+                    ArtilianEntities.AMBER_DRAGONLING,
+                    ParticleTypes.FLAME));
+
+    public static final DeferredBlock<DragonEggBlock> STORM_GLIDEWING_EGG = BLOCKS.register("storm_glidewing_egg",
+            () -> new DragonEggBlock(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.TURTLE_EGG)
+                            .mapColor(MapColor.COLOR_CYAN)
+                            .strength(0.8F)
+                            .lightLevel(state -> state.getValue(DragonEggBlock.HATCH) * 2 + 3),
+                    ArtilianEntities.STORM_DRAGONLING,
+                    ParticleTypes.ELECTRIC_SPARK));
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);

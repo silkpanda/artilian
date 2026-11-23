@@ -10,7 +10,8 @@ public enum WandSpell {
     HEART_BLOOM(30, 20, "item.artilian.heart_bloom_staff.tooltip", ChatFormatting.GREEN),
     ZEPHYR_DASH(25, 15, "item.artilian.zephyr_dash_wand.tooltip", ChatFormatting.LIGHT_PURPLE),
     PRISM_NOVA(40, 25, "item.artilian.prism_nova_staff.tooltip", ChatFormatting.LIGHT_PURPLE),
-    BRIMSTONE_METEOR(45, 30, "item.artilian.brimstone_meteor_staff.tooltip", ChatFormatting.GOLD);
+    BRIMSTONE_METEOR(45, 30, "item.artilian.brimstone_meteor_staff.tooltip", ChatFormatting.GOLD),
+    TWIN_STAR_HARMONY(50, 35, "item.artilian.twin_star_staff.tooltip", ChatFormatting.AQUA);
 
     private final int manaCost;
     private final int cooldownTicks;

@@ -266,6 +266,28 @@ def make_brimstone_meteor_tnt():
     return side, top, bottom
 
 
+def make_dragonfire_mega_tnt():
+    palettes = [
+        (EMERALD_HI, EMERALD_MID, EMERALD_DARK),
+        (EMBER_HI, EMBER, EMBER_DARK),
+    ]
+    side = make_sticks_side(palettes)
+    emblem_band(side, SLATE_DARK, EMERALD_DARK, [
+        "..Y..Y..",
+        ".YGGGGY.",
+        "YGEWWEYG",
+        ".EWYYWE.",
+        ".EWYYWE.",
+        "YGEWWEYG",
+        ".YGGGGY.",
+        "..Y..Y..",
+    ], {"W": WHITE, "Y": GOLD_HI, "E": EMBER, "G": EMERALD_HI})
+
+    top = make_grid_cap(palettes, GOLD_HI, SLATE_DARK, rim_color=EMBER, corner_accents=EMERALD_HI)
+    bottom = make_grid_cap(palettes, None, SLATE)
+    return side, top, bottom
+
+
 def main():
     BLOCK_TEX_DIR.mkdir(parents=True, exist_ok=True)
     variants = {
@@ -275,6 +297,7 @@ def main():
         "cluster_quarry_tnt": make_cluster_quarry_tnt(),
         "starlight_gravity_tnt": make_starlight_gravity_tnt(),
         "brimstone_meteor_tnt": make_brimstone_meteor_tnt(),
+        "dragonfire_mega_tnt": make_dragonfire_mega_tnt(),
     }
     for name, (side, top, bottom) in variants.items():
         side.save(BLOCK_TEX_DIR / f"{name}_side.png")

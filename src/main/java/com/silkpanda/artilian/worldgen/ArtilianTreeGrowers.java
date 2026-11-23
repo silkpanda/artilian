@@ -26,4 +26,10 @@ public final class ArtilianTreeGrowers {
             Optional.empty(),
             Optional.of(ArtilianWorldGen.OCULAR_TREE),
             Optional.empty());
+
+    public static final TreeGrower DRAGONWOOD = new TreeGrower(
+            ArtilianMod.MODID + ":dragonwood",
+            Optional.of(ArtilianWorldGen.MEGA_DRAGONWOOD_TREE),
+            Optional.of(ArtilianWorldGen.DRAGONWOOD_TREE),
+            Optional.empty());
 }

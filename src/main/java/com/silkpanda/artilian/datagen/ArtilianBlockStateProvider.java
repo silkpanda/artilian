@@ -2,7 +2,9 @@ package com.silkpanda.artilian.datagen;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.dimension.GazingPortalBlock;
+import com.silkpanda.artilian.dimension.PrimalPortalBlock;
 import com.silkpanda.artilian.registry.ArtilianBlocks;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -42,6 +44,7 @@ public class ArtilianBlockStateProvider extends BlockStateProvider {
         tntBlock(ArtilianBlocks.CLUSTER_QUARRY_TNT);
         tntBlock(ArtilianBlocks.STARLIGHT_GRAVITY_TNT);
         tntBlock(ArtilianBlocks.BRIMSTONE_METEOR_TNT);
+        tntBlock(ArtilianBlocks.DRAGONFIRE_MEGA_TNT);
 
         turfBlock(ArtilianBlocks.CRYSTAL_TURF, "crystal_turf", mcLoc("block/dirt"));
         woodSet(
@@ -106,21 +109,77 @@ public class ArtilianBlockStateProvider extends BlockStateProvider {
                 blockTexture(ArtilianBlocks.OCULAR_PLANKS.get()));
         simpleBlockItem(ArtilianBlocks.OCULAR_SLAB.get(),
                 models().getExistingFile(modLoc("block/ocular_slab")));
+
+        // Phase 5 Stage 1: Giant Dragon Jungle
+        portalBlock(ArtilianBlocks.PRIMAL_PORTAL.get(), "primal_portal", PrimalPortalBlock.AXIS);
+
+        // Phase 5 Stage 2: Mega-Jungle Worldgen
+        turfBlock(ArtilianBlocks.JUNGLE_TURF, "jungle_turf", mcLoc("block/dirt"));
+        simpleCube(ArtilianBlocks.PRIMAL_BASALT);
+        slateVariants(
+                ArtilianBlocks.PRIMAL_BASALT_STAIRS,
+                ArtilianBlocks.PRIMAL_BASALT_SLAB,
+                ArtilianBlocks.PRIMAL_BASALT_WALL);
+        simpleCube(ArtilianBlocks.AMBER_MOSS);
+        woodSet(
+                ArtilianBlocks.DRAGONWOOD_LOG,
+                ArtilianBlocks.DRAGONWOOD_PLANKS,
+                ArtilianBlocks.DRAGONWOOD_LEAVES,
+                ArtilianBlocks.DRAGONWOOD_SAPLING);
+        stairsBlock(ArtilianBlocks.DRAGONWOOD_STAIRS.get(), blockTexture(ArtilianBlocks.DRAGONWOOD_PLANKS.get()));
+        simpleBlockItem(ArtilianBlocks.DRAGONWOOD_STAIRS.get(),
+                models().getExistingFile(modLoc("block/dragonwood_stairs")));
+        slabBlock(ArtilianBlocks.DRAGONWOOD_SLAB.get(),
+                blockTexture(ArtilianBlocks.DRAGONWOOD_PLANKS.get()),
+                blockTexture(ArtilianBlocks.DRAGONWOOD_PLANKS.get()));
+        simpleBlockItem(ArtilianBlocks.DRAGONWOOD_SLAB.get(),
+                models().getExistingFile(modLoc("block/dragonwood_slab")));
+
+        // Phase 5 Stage 6: Hatchable Dragon Eggs
+        dragonEggBlock(ArtilianBlocks.CANOPY_WYVERN_EGG.get(), "canopy_wyvern_egg");
+        dragonEggBlock(ArtilianBlocks.AMBER_WYVERN_EGG.get(), "amber_wyvern_egg");
+        dragonEggBlock(ArtilianBlocks.STORM_GLIDEWING_EGG.get(), "storm_glidewing_egg");
+    }
+
+    private void dragonEggBlock(Block block, String name) {
+        var builder = getVariantBuilder(block);
+        for (int stage = 0; stage <= 2; stage++) {
+            var tex = modLoc("block/" + name + "_" + stage);
+            var model = models().getBuilder(name + "_" + stage)
+                    .parent(models().getExistingFile(mcLoc("block/block")))
+                    .texture("particle", tex)
+                    .texture("egg", tex)
+                    .element().from(3, 0, 3).to(13, 4, 13)
+                    .allFaces((dir, face) -> face.texture("#egg")).end()
+                    .element().from(2, 4, 2).to(14, 10, 14)
+                    .allFaces((dir, face) -> face.texture("#egg")).end()
+                    .element().from(4, 10, 4).to(12, 13, 12)
+                    .allFaces((dir, face) -> face.texture("#egg")).end()
+                    .element().from(6, 13, 6).to(10, 15, 10)
+                    .allFaces((dir, face) -> face.texture("#egg")).end();
+            builder.partialState().with(com.silkpanda.artilian.dragon.DragonEggBlock.HATCH, stage)
+                    .modelForState().modelFile(model).addModel();
+        }
+        simpleBlockItem(block, models().getExistingFile(modLoc("block/" + name + "_0")));
     }
 
     private void gazingPortalBlock() {
-        var nsModel = models().withExistingParent("gazing_portal_ns", mcLoc("block/nether_portal_ns"))
-                .texture("particle", modLoc("block/gazing_portal"))
-                .texture("portal", modLoc("block/gazing_portal"))
+        portalBlock(ArtilianBlocks.GAZING_PORTAL.get(), "gazing_portal", GazingPortalBlock.AXIS);
+    }
+
+    private void portalBlock(Block block, String name, EnumProperty<Direction.Axis> axisProp) {
+        var nsModel = models().withExistingParent(name + "_ns", mcLoc("block/nether_portal_ns"))
+                .texture("particle", modLoc("block/" + name))
+                .texture("portal", modLoc("block/" + name))
                 .renderType("translucent");
-        var ewModel = models().withExistingParent("gazing_portal_ew", mcLoc("block/nether_portal_ew"))
-                .texture("particle", modLoc("block/gazing_portal"))
-                .texture("portal", modLoc("block/gazing_portal"))
+        var ewModel = models().withExistingParent(name + "_ew", mcLoc("block/nether_portal_ew"))
+                .texture("particle", modLoc("block/" + name))
+                .texture("portal", modLoc("block/" + name))
                 .renderType("translucent");
-        getVariantBuilder(ArtilianBlocks.GAZING_PORTAL.get())
-                .partialState().with(GazingPortalBlock.AXIS, Direction.Axis.X)
+        getVariantBuilder(block)
+                .partialState().with(axisProp, Direction.Axis.X)
                 .modelForState().modelFile(nsModel).addModel()
-                .partialState().with(GazingPortalBlock.AXIS, Direction.Axis.Z)
+                .partialState().with(axisProp, Direction.Axis.Z)
                 .modelForState().modelFile(ewModel).addModel();
     }
 

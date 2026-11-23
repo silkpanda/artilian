@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 4 — Stage 5 (*Eye Realm Structures*)** Merged with Stage 4 (*Blinky Pet*) and all Phase 3–4 branches on `phase-4-stage-5-eye-realm-structures`; verifying `runData`, `build`, and `runGameTestServer` before PR into `main` and copying the release `.jar` to CurseForge. |
-| **Next** | 1. Live `./gradlew runClient` / CurseForge visual check & screenshot (`qa/evidence/eye-realm-structures-2026-11-22.png`) for Phase 4 Stage 5. 2. Begin **Phase 4 — Stage 6 (*The Great All-Seer*)**. |
-| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, and family LAN co-op playtest across Phases 1–3 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | None (all Phase 3–4 branches consolidated onto `phase-4-stage-5-eye-realm-structures` for PR into `main`). |
+| **In progress** | None — **Phase 5 locked** (`229/229` GameTests green, `lint_art.py --phase5 --strict` exit `0`, bespoke `128×128` Dragonscale & Twin-Star armors + `_glowmask.png` layers, `mod_version=0.2.0`, `build/libs/adventures-in-artilian-0.2.0.jar`, merged to `main` via PR #17). |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4–5 (`qa/evidence/`) and family LAN co-op playtest with Alex and Steve using `adventures-in-artilian-0.2.0.jar`. |
+| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework**, **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, **Embercrown Sovereign**, **Twin-Star Endgame**, and family LAN co-op playtest across Phases 1–5 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | `phase-4-stage-6-great-all-seer` (PR #16, `187/187`) is superseded/included in PR #17 (`main`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -29,7 +29,7 @@ Sizes are ballparks in evenings of work, corrected as stages finish.
 | 2 | Overworld biomes (`TerraBlender`), pet capture & battle, kids' roster, structures & enemies | 9 | 2–3 months | ⏳ Art signed off; LAN co-op & official names pending |
 | 3 | Custom bosses, rematch altars, Tier 3 gear, advanced Staves/TNTs | 5 | 6–8 weeks | ⏳ Stages 1–5 complete; awaiting PR merges & LAN co-op sign-off |
 | 4 | Alex's Dimension: The Eye Realm | 7 | 2–3 months | ⏹ Pending |
-| 5 | Steve's Dimension: Giant Dragon Jungle & Grand Finale | 10 | 3–4 months | ⏹ Pending |
+| 5 | Steve's Dimension: Giant Dragon Jungle & Grand Finale | 10 | 3–4 months | ⏳ Stages 1–10 complete & locked in PR #17 (`0.2.0`); awaiting LAN co-op sign-off |
 
 ---
 
@@ -464,9 +464,9 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 2 | Terrain & Sky | Eye-covered blocks, trees, terrain generation, blinking skybox | ✅ Complete (`173/173` + client verified) |
 | 3 | Eye Realm Enemies | **Peepers**, **Oculus Slimes**, **Lens Guardians** | ✅ Complete (`177/177` + client verified) |
 | 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | ✅ Complete (`180/180` + client verified) |
-| 5 | Eye Realm Structures | Dimension structures & chests | 🔄 Code & GameTests complete; live client check pending |
-| 6 | The Great All-Seer | Phase 4 boss (`ArtilianBossEntity`) with telegraphed attacks & rematch altar | [ ] Pending |
-| 7 | Phase 4 Art Pass | Final art polish against Alex's specs + co-op verification | [ ] Pending |
+| 5 | Eye Realm Structures | Dimension structures & chests | ✅ Merged into `main` (`c346c90`, `183/183`; client screenshot pending) |
+| 6 | The Great All-Seer | Phase 4 boss (`ArtilianBossEntity`) with telegraphed attacks & rematch altar | 🔄 Code & GameTests complete (`187/187`); live client check pending |
+| 7 | Phase 4 Art Pass | Final art polish against Alex's specs + co-op verification | 🔄 Art audit & GameTests complete (`189/189`); live client & co-op check pending |
 
 ### Phase 4 — Stage 1: Dimension & Gazing Portal
 - [ ] **In Progress** — `artilian:eye_realm` dimension, `GazingPortalBlock`, `GazingEyeItem`, flat placeholder terrain, safe return portal generation, and GameTests.
@@ -581,25 +581,273 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Security Gate:** `n/a` (worldgen structures & chest loot only; zero banned blocks, `Starlight Gravity TNT` is non-destructive, guardians are `EyeRealmEnemyEntity` with `KidSafeTargets`).
 - **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies both Eye Realm structures in-game.
 
+### Phase 4 — Stage 6: The Great All-Seer
+- [ ] **In Progress** — Phase 4 Eye Realm boss **The Great All-Seer** (`artilian:great_all_seer`, `GreatAllSeerEntity extends ArtilianBossEntity`), `256×128` GeckoLib model & `_glowmask.png`, `Ocular Key` summon item + `BossAltarBlock` rematch support, `All-Seer's Lens` trophy, datagen, and `GreatAllSeerGameTests`.
+- **Art Brief (`qa/reference/`):**
+  - **Target Scale:** `1.8 × 2.8` hovering eldritch-cartoony ocular sovereign (`~3.0` blocks tall).
+  - **Silhouette Inspiration:** Towering floating cyclopean sovereign with a domed armored eyelid-crown, central recessed Great Eye, 4 angled Twilight Magenta eye-wings (`wing_upper_*`, `wing_lower_*`), 4 orbiting Sentinel Mini-Eyes (`orbiter_1..4`), and a segmented cosmic robe/tail (`tail_1..3` + `tail_gem`).
+  - **Palette & Structural Anchor:** Deep Artilian Slate & Void Indigo plates (`#140F1D`–`#584672`), forged Sunsteel Gold (`#EE962E`–`#FFEEB4`) ocular bezel & crown horns, creamy sclera (`#E2E0F2`), Pupil Glow (`#7DF9FF`) iris, and Twilight Magenta (`#D946EF`) eye-wings.
+  - **Key 3D Recessed/Angled Features:** Deeply recessed 3D central eye socket with stepped bezel, articulated upper/lower eyelids (`lid_top`, `lid_bottom`), swept 4-wing geometry, and rotating 4-orbiter ring.
+  - **Glowmask Zones (`great_all_seer_glowmask.png`):** Central cyan iris, 4 mini-eye irises, wing eye-sigils & tips, crown Starlight crystal, and tail rune gem.
+- **Why & Decisions:**
+  1. **`GreatAllSeerEntity` (`SHADOW / STARLIGHT`):** `240` HP, `0.23` speed, `7.5` attack damage, `9.0` armor, `150` XP; immune to fall damage (`causeFallDamage = false`) with gentle hover fall-damping; never breaks blocks and spares `ChesterEntity`.
+  2. **Three Telegraphed Attacks (`>= 30` ticks windup) + Phase 2 (`<= 50%` HP *All-Seeing Overdrive*):**
+     - `GAZING_BEAM` (`45`t, `3.2`r, `7.5F`, `STARLIGHT`) — locks onto target position, vertical End Rod/Glow beam, applies `Glowing` (`80`t).
+     - `TWILIGHT_PULSE` (`40`t, `5.0`r, `7.0F`, `SHADOW`) — boss-centered AoE with outward knockback + `Slowness` & `Weakness` (`40`t).
+     - `ALL_SEEING_NOVA` (`50`t, `7.5`r, `9.5F`, `SHADOW`) — unlocked at `<= 50%` HP (`isAllSeeing()`, `PURPLE` boss bar, `42`t cooldown), wide twilight-cyan ring burst + `Glowing` (`100`t).
+  3. **Summon & Trophy (`Ocular Key` & `All-Seer's Lens`):** `OCULAR_KEY` (`BossSummonItem`) crafted from `Gazing Eye` + `Starlight Crystal` + `Amethyst Shard` + `Ender Pearl` summons The Great All-Seer on `BossAltarBlock`; drops `ALL_SEERS_LENS` (`BossTrophyItem`), `Starlight Crystal`, `Amethyst Shard`, `Ender Pearl`, and `Biome Treat`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `256×128` GeckoLib model, texture, glowmask & sprites | Pending commit | `tools/art/make_great_all_seer_art.py`, `lint_art.py --strict` clean (`entity/great_all_seer`), `preview_geo.py` (`qa/evidence/previews/great_all_seer-preview.png`). |
+  | 2 `GreatAllSeerEntity`, renderer, items, datagen & GameTests | Pending commit | `GreatAllSeerEntity`, `GreatAllSeerRenderer` (`AutoGlowingGeoLayer`), `OCULAR_KEY`, `ALL_SEERS_LENS`, `GREAT_ALL_SEER_SPAWN_EGG`, datagen (`runData`), `build`, and 4 `GreatAllSeerGameTests` (`187/187` green). Red-proof: `GreatAllSeerEntity.causeFallDamage` delegating to `super` → `greatAllSeerAttributesElementsTagEggHoverAndLootTable` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of The Great All-Seer & Boss Altar in the Eye Realm (`qa/evidence/great-all-seer-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`GreatAllSeerGameTests`):** `187/187` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (inherits `P3-01`–`P3-03` `BossAltarBlockEntity` single-boss lock, zero block-breaking, and `ChesterEntity` immunity).
+- **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green, and live `./gradlew runClient` verifies The Great All-Seer in-game.
+
+### Phase 4 — Stage 7: Phase 4 Art Pass
+- [ ] **In Progress (`189/189` GameTests & Strict Art Lint Clean; Live Client Check Pending)** — Phase 4 art & preview audit (`--phase4` in `lint_art.py`), end-to-end Eye Realm sign-off tests (`Phase4SignOffGameTests`), and progression readiness verification.
+- **Why & Decisions:** Ensure every Phase 4 entity, block, item, structure, and boss meets `DESIGN.md`'s 3D Art Standard and plays smoothly end-to-end before moving to Phase 5 (*Giant Dragon Jungle*):
+  1. **Phase 4 Art Linter (`tools/art/lint_art.py --phase4 --strict`):** Added `PHASE4_ENTITIES` (`peeper`, `oculus_slime`, `lens_guardian`, `blinky`, `great_all_seer`), included `great_all_seer` in `BOSS_ENTITIES` (`256×128` minimum sheet), and verified all 5 models + `_glowmask.png` sheets + 4-angle `qa/evidence/previews/*-preview.png` contact sheets pass with zero UV overlaps, zero transparent holes, and zero flat single-color faces.
+  2. **Phase 4 Sign-Off GameTests (`Phase4SignOffGameTests`):** Verifies all 5 Phase 4 GeckoLib models, required bones, animation clips, sheet dimensions, glowmasks, animated block `.mcmeta` files (`gazing_portal`, `blinking_eye_block`), block/item textures, `GreatAllSeerEntity` telegraph windup floor (`>= 30` ticks), Phase 4 crafting recipes, `EyeRealmDimension` registration, and structure/boss loot tables.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Phase 4 art audit, `lint_art.py --phase4` & `Phase4SignOffGameTests` | Pending commit | Updated `tools/art/lint_art.py` (`--phase4`, `great_all_seer` `256×128` boss budget), visually audited all 5 `qa/evidence/previews/*-preview.png` contact sheets, added `Phase4SignOffGameTests` (`189/189` green, `runData`, `build`, `lint_art.py --phase4 --strict` exit `0`). |
+  | 2 Live client & co-op sign-off | Pending | `./gradlew runClient` walkthrough of Gazing Portal → Eye Realm terrain/sky → enemies & Blinky → Observatory/Sanctum → Great All-Seer (`qa/evidence/phase4-signoff-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`Phase4SignOffGameTests`):** `189/189` green (2 new tests) + `python tools/art/lint_art.py --phase4 --strict` (exit `0`).
+- **Security Gate:** `n/a` (art pass, linter, and progression sign-off; `P4-01` already `HELD`).
+- **Done When:** `lint_art.py --phase4 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies the full Eye Realm loop.
+
 ---
 
 ## Phase 5: Giant Dragon Jungle (Steve's Dimension) & Grand Finale
 
-- **Status:** ⏹ Pending
+- **Status:** ✅ Code & GameTests Complete (Locked in PR #17, `v0.2.0`; awaiting live client & LAN co-op sign-off)
 - **Done When:** All checks green, dimension and dragon GameTests pass, and both kids can clear the full Eye Realm and Dragon Jungle finale.
 
 | Stage | Name | Scope | Status |
 |---|---|---|---|
-| 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal (Steve's note: throw a boss drop into a Nether Portal to open the Dragon Jungle dimension) | [ ] Pending |
-| 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | [ ] Pending |
-| 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | [ ] Pending |
-| 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | [ ] Pending |
-| 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | [ ] Pending |
-| 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | [ ] Pending |
-| 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | [ ] Pending |
-| 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | [ ] Pending |
-| 9 | Twin-Star Endgame Rewards | Combined endgame rewards uniting Alex's and Steve's realms | [ ] Pending |
-| 10 | Phase 5 Art Pass & Finale | Final art polish & full family co-op finale verification | [ ] Pending |
+| 1 | Dimension & Portal | `artilian:dragon_jungle` dimension and Primal Portal (Steve's note: throw a boss drop into a Nether Portal to open the Dragon Jungle dimension) | 🔄 Code & GameTests complete (`194/194`); live client check pending |
+| 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | 🔄 Code & GameTests complete (`198/198`); live client check pending |
+| 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | 🔄 Code & GameTests complete (`201/201`); live client check pending |
+| 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | 🔄 Code & GameTests complete (`205/205`); live client check pending |
+| 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | 🔄 Code & GameTests complete (`208/208`); live client check pending |
+| 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | 🔄 Code & GameTests complete (`212/212`); live client check pending |
+| 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | 🔄 Code & GameTests complete (`218/218`); live client check pending |
+| 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | 🔄 Code & GameTests complete (`222/222`); live client check pending |
+| 9 | Twin-Star Endgame Rewards | Combined endgame rewards uniting Alex's and Steve's realms | 🔄 Code & GameTests complete (`226/226`); live client check pending |
+| 10 | Phase 5 Art Pass & Finale | Final art polish & full family co-op finale verification | ✅ Complete & locked in PR #17 (`229/229`, `v0.2.0`) |
+
+### Phase 5 — Stage 1: Dimension & Primal Portal
+- [ ] **In Progress (`194/194` GameTests Green; Live Client Check Pending)** — `artilian:dragon_jungle` dimension, `PrimalPortalBlock` / `PrimalPortalShape`, `PrimalPortalEvents` (throw any `artilian:boss_drops` item into a lit Nether Portal to transform it), flat mossy placeholder terrain, safe return portal generation (`P5-01`), and `DragonJunglePortalGameTests`.
+- **Why & Decisions:** Give Steve a dedicated, immediately visitable **Giant Dragon Jungle** (`artilian:dragon_jungle`) triggered by his signature boss-trophy Nether Portal ritual before Stage 2 replaces the flat floor with prehistoric mega-jungle terrain and giant trees:
+  1. **Dimension & Flat Placeholder Terrain (`DragonJungleDimension` + `ArtilianWorldGenProvider`):**
+     - `artilian:dragon_jungle` `DimensionType` (`OptionalLong.empty()` normal day/night cycle, `minY = -64`, `height = 384`, `ambientLight = 0.25F` for kid-friendly cave/night visibility, `hasSkyLight = true`, `natural = true`, `coordinateScale = 1.0`).
+     - `artilian:dragon_jungle` `Biome` with `DESIGN.md` Canopy Emerald (`#22C55E`) & Ember Amber (`#F97316`) foliage/sky/water/fog accents and `SPORE_BLOSSOM_AIR` ambient particles.
+     - `FlatLevelSource` placeholder (`bedrock` at `-64`, `stone` `-63..59`, `dirt` `60..62`, `moss_block` `63`) so players arrive on solid mossy ground at `Y = 64`.
+  2. **Boss-Drop Nether Portal Ritual (`PrimalPortalEvents`, `ArtilianTags.Items.BOSS_DROPS`):**
+     - `artilian:boss_drops` includes `PRISM_CORE` (Crystal Colossus), `BRIMSTONE_DOUBLOON` (Captain Brimstone), and `ALL_SEERS_LENS` (The Great All-Seer).
+     - Throwing any `artilian:boss_drops` item into a lit `Blocks.NETHER_PORTAL` (intercepted on both `EntityTickEvent.Post` and `EntityTravelToDimensionEvent`) flood-fills all connected Nether Portal blocks into `PrimalPortalBlock` (preserving `AXIS`), consumes 1 item from the stack, and plays `ENDER_DRAGON_GROWL` + `PORTAL_TRIGGER` with emerald/flame particles.
+  3. **Primal Portal & Safe Arrival (`PrimalPortalBlock`, `PrimalPortalShape`, `P5-01`):**
+     - `ArtilianTags.Blocks.PRIMAL_PORTAL_FRAME` (`obsidian`, `crying_obsidian`), rectangular `2..21 × 3..21` frames on `X`/`Z` axes, bidirectional warp between `Level.OVERWORLD` and `artilian:dragon_jungle`.
+     - **Safe Arrival (`P5-01`):** Reuses `GazingPortalBlock.findSafeSurfaceY`; builds a `5×5` `Moss Block` landing pad, clears `5×5×5` air headroom, places `4×5` `Obsidian` frame edges first, and fills `2×3` `PRIMAL_PORTAL` interior with flag `18`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Dimension, Biome, Primal Portal, Boss-Drop Ritual & Art | Pending commit | `DragonJungleDimension`, `PrimalPortalBlock`, `PrimalPortalShape`, `PrimalPortalEvents`, `ArtilianTags.Blocks.PRIMAL_PORTAL_FRAME`, `ArtilianTags.Items.BOSS_DROPS`, `tools/art/make_dragon_jungle_art.py` (`primal_portal.png` 4-frame animated + `.mcmeta`), datagen (`runData`), `build`, and 5 `DragonJunglePortalGameTests` (`194/194` green). Red-proof: removed `BOSS_DROPS` tag check in `PrimalPortalEvents` → `nonBossDropItemInNetherPortalDoesNotTransformPortal` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of throwing a boss trophy into a Nether Portal and arriving in `artilian:dragon_jungle` (`qa/evidence/dragon-jungle-portal-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonJunglePortalGameTests`):** `194/194` green (5 new tests including `P5-01`). Red-proof recorded above.
+- **Security / Safety Gate (`P5-01`):** `HELD` in `194/194` suite (`security/FINDINGS.md`).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies throwing a boss drop into a Nether Portal and stepping into `artilian:dragon_jungle`.
+
+### Phase 5 — Stage 2: Mega-Jungle Worldgen
+- [ ] **In Progress (`198/198` GameTests Green; Live Client Check Pending)** — Prehistoric mega-jungle noise terrain (`DRAGON_JUNGLE_NOISE`), `MultiNoiseBiomeSource` (`artilian:dragon_jungle` + `artilian:amber_volcanic_grove`), 12 new blocks (`jungle_turf`, `primal_basalt` + variants, `amber_moss`, `dragonwood_*` wood set), 1×1 & 2×2 `MEGA_DRAGONWOOD_TREE`, and `DragonJungleTerrainGameTests`.
+- **Why & Decisions:** Replace Stage 1's flat placeholder with Steve's towering prehistoric Dragon Jungle:
+  1. **Mega-Jungle Blocks & Dragonwood Set (`ArtilianBlocks`, `ArtilianItems`, `ArtilianTreeGrowers.DRAGONWOOD`):**
+     - `jungle_turf` (`Jungle Turf`), `primal_basalt` (`Primal Basalt` + stairs/slab/wall), and glowing `amber_moss` (`Amber Moss`, light level `8`) for kid-friendly under-canopy visibility.
+     - `dragonwood_log`, `dragonwood_planks`, `dragonwood_stairs`, `dragonwood_slab`, `dragonwood_leaves` (light level `3`), `dragonwood_sapling` (light level `5`).
+     - `ArtilianTreeGrowers.DRAGONWOOD` supports both 1×1 `DRAGONWOOD_TREE` and 2×2 `MEGA_DRAGONWOOD_TREE` (`MegaJungleTrunkPlacer(14, 4, 14)` + `MegaJungleFoliagePlacer`).
+  2. **Multi-Biome Noise Terrain (`DragonJungleDimension`, `ArtilianWorldGen`):**
+     - `DRAGON_JUNGLE_NOISE` (`NoiseGeneratorSettings`, `Primal Basalt` base, `Jungle Turf` / `Moss Block` floor, `Dirt` under-floor, `seaLevel = 63`).
+     - `MultiNoiseBiomeSource` splitting `artilian:dragon_jungle` (Canopy Emerald `#22C55E`, mega Dragonwood trees, Amber Moss) and `artilian:amber_volcanic_grove` (Ember Amber `#F97316`, volcanic fern grove, Amber Moss).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Mega-Jungle blocks, Dragonwood set, multi-biome noise terrain & GameTests | Pending commit | 12 blocks/items, `tools/art/make_dragon_jungle_art.py` textures, `DRAGON_JUNGLE_NOISE`, `AMBER_GROVE_BIOME`, `MEGA_DRAGONWOOD_TREE`, datagen (`runData`), `build`, and 4 `DragonJungleTerrainGameTests` (`198/198` green). Red-proof: removed `JUNGLE_TURF` from `BlockTags.DIRT` → `dragonJungleBlocksHaveExpectedTagsAndLightLevels` and `dragonwoodSaplingGrowsSingleAndMegaTreesOnJungleTurf` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Dragon Jungle terrain, giant 2×2 Dragonwood trees, and Amber Volcanic Grove (`qa/evidence/dragon-jungle-worldgen-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonJungleTerrainGameTests`):** `198/198` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (worldgen, blocks, and biomes only).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies mega-jungle terrain, giant Dragonwood trees, and both biomes.
+
+### Phase 5 — Stage 3: Dragon Jungle Structures
+- [ ] **In Progress (`201/201` GameTests Green; Live Client Check Pending)** — Two Dragon Jungle surface structures (**Dragon Roost** and **Amber Temple**) with recessed 3D depth, overhanging roofs, glowing `Amber Moss` focal accents, chest loot tables, and `DragonJungleStructuresGameTests`.
+- **Why & Decisions:** Give Steve's Dragon Jungle rewarding landmarks across both biomes before Stage 4 introduces the first wild dragon species:
+  1. **Dragon Roost (`artilian:dragon_roost`, `15×15×15`):** Bound to `DragonJungleDimension.DRAGON_JUNGLE_BIOME` (`ArtilianTags.Biomes.HAS_DRAGON_ROOST`). `Primal Basalt` & `Jungle Turf` foundation with `Amber Moss` accents, `Dragonwood Log` corner pillars, recessed `Dragonwood Planks` walls & `Orange Stained Glass Pane` windows, overhanging `Dragonwood Stairs` / `Primal Basalt Stairs` eaves, and an open-air sky-roost nest crown (`Hay Block` + `Gold Block` + `Amber Moss` perch). Reward chest (`artilian:chests/dragon_roost`) guarantees `Biome Treat` + `Capture Crystal` plus `Dragonwood Sapling`, `Amber Moss`, `Gold Ingot`, `Sunsteel Ingot`, `Blaze Powder`, `Golden Apple`, and rare `Starlight Crystal` (`spacing = 16, separation = 7, salt = 63748596`).
+  2. **Amber Temple (`artilian:amber_temple`, `15×16×15`):** Bound to `DragonJungleDimension.AMBER_GROVE_BIOME` (`ArtilianTags.Biomes.HAS_AMBER_TEMPLE`). Stepped `Primal Basalt` & `Gilded Blackstone` pyramid-plinth, double-height `Dragonwood Log` colonnade, recessed `Yellow Stained Glass Pane` windows & glowing `Amber Moss` altar, double-tiered overhanging volcanic roof & spire. Reward chest (`artilian:chests/amber_temple`) guarantees `Biome Treat`, `Capture Crystal`, and `Amber Moss` plus `Gold Ingot`, `Sunsteel Ingot`, `Dragonwood Log`, `Diamond`, `Golden Apple`, and `Starlight Crystal` (`spacing = 18, separation = 8, salt = 74859607`).
+  3. **Zero Guardians Until Stage 4:** `spawnOverrides(Map.of())` via shared `surfaceStructure(..., Map.of())` helper so no out-of-dimension mobs spawn prior to Dragon Jungle dragon species in Stage 4.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Templates, loot, worldgen & GameTests | Pending commit | `ArtilianTags.Biomes` (`HAS_DRAGON_ROOST`, `HAS_AMBER_TEMPLE`), `ArtilianBiomeTagsProvider`, `ArtilianStructures`, `ArtilianChestLootSubProvider`, `ArtilianStructureTemplateProvider`, `DragonJungleStructuresGameTests` (`201/201` green, `runData`, `build`). Red-proof: removed `AMBER_MOSS` pool from `buildAmberTempleChest` → `amberTemplePlacesTemplateWithoutBannedBlocksAndUnpacksChestLoot` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Dragon Roost & Amber Temple in `artilian:dragon_jungle` (`qa/evidence/dragon-jungle-structures-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonJungleStructuresGameTests`):** `201/201` green (3 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (worldgen structures & chest loot only; zero banned blocks).
+- **Done When:** `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies both Dragon Jungle structures in-game.
+
+### Phase 5 — Stage 4: First Dragon Species
+- [ ] **In Progress (`205/205` GameTests Green & Strict Art Lint Clean; Live Client Check Pending)** — Establish the shared GeckoLib dragon rig (`dragon_rig.geo.json`, `dragon_rig.animation.json`, `WildDragonModel`, `WildDragonRenderer`, `WildDragonEntity`) and ship the first wild dragon species end-to-end: **Canopy Wyvern** (`artilian:canopy_wyvern`, `Dragon / Nature`) spawning in `artilian:dragon_jungle` and dropping `artilian:dragon_scale`.
+- **Art Brief (`Canopy Wyvern` / `dragon_rig`):**
+  - **Target height/scale:** ~`2.4` blocks tall at horn crest, ~`3.2` blocks nose-to-tail, ~`4.2` blocks wingspan (`EntityType` `1.55F × 1.95F`, `eyeHeight = 1.55F`, `shadowRadius = 1.05F`).
+  - **Silhouette inspiration:** Classic storybook jungle wyvern/dragon with broad muscular chest & shoulders, tapered waist & hip, arched S-curved neck, horned dragon head with separate articulated lower jaw (`jaw`) and swept-back horns, 4 clawed legs, two-segment articulated dihedral wings (`left_wing_inner`/`outer`, `right_wing_inner`/`outer`) with leading wing-claws, and a 3-segment whip tail (`tail_1`, `tail_2`, `tail_3`) with dorsal ridge spines.
+  - **Dark structural anchor + accent palette:** Deep jungle obsidian-slate (`#132A20` → `#1E4634`) armored scales anchored against `DESIGN.md` Canopy Emerald (`#22C55E` → `#4ADE80`) wing membranes/belly/crests and Ember Amber (`#F97316` → `#FDE047`) eyes, horn tips, and wing-vein runes.
+  - **Key 3D recessed/angled features:** Inset eye sockets with glowing amber pupils, articulated lower `jaw`, angled brow horns (`[-25°, ±15°, 0°]`), angled dorsal spine fins along torso & tail, dihedral wing segments, and 3D taloned feet.
+  - **`_glowmask.png` zones:** Emissive amber eyes, chest scale core, dorsal spine tips, and wing-vein runes (`AutoGlowingGeoLayer`).
+- **Why & Decisions:**
+  1. **Shared Dragon Rig (`dragon_rig.geo.json` + `dragon_rig.animation.json`):** Both Stage 4 (`canopy_wyvern`) and Stage 5's additional dragon species reuse one `256×128` UV-mapped GeckoLib skeleton (`idle`, `walk`, `fly`, `attack`), parameterized in `WildDragonModel` / `WildDragonRenderer` by species texture ID.
+  2. **Wild Dragon Base (`WildDragonEntity extends Monster implements GeoEntity, ElementalMob`):** Enforces `KidSafeTargets.isValidOffensiveTarget` (Chester & player pets are never harmed), airborne wing-flutter fall immunity (`causeFallDamage` returns `false`), and `checkWildDragonSpawnRules` allowing natural daytime/nighttime spawns in `DragonJungleDimension.DRAGON_JUNGLE_BIOME` on `JUNGLE_TURF`, `MOSS_BLOCK`, `PRIMAL_BASALT`, or `DRAGONWOOD_LEAVES`.
+  3. **Canopy Wyvern (`CanopyWyvernEntity`):** `PetElement.DRAGON` / `PetElement.NATURE`, `44.0` HP, `6.0` ATK, `4.0` Armor, applies brief `MobEffects.POISON` (`40` ticks) + `DRAGON_BREATH` / `SPORE_BLOSSOM_AIR` particles on hit, and drops `1–3` `Dragon Scale` (`artilian:dragon_scale`) for future Stage 7 Dragonscale gear.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `256×128` shared `dragon_rig`, `canopy_wyvern` textures, glowmask & `dragon_scale` sprite | Pending commit | `tools/art/make_dragons_art.py`, `lint_art.py --phase5 --strict` clean (`entity/canopy_wyvern`), `preview_geo.py` (`qa/evidence/previews/canopy_wyvern-preview.png`). |
+  | 2 `WildDragonEntity`, `CanopyWyvernEntity`, renderer, `dragon_scale`, biome spawn, datagen & GameTests | Pending commit | `WildDragonEntity`, `CanopyWyvernEntity`, `WildDragonModel`, `WildDragonRenderer`, `DragonEvents`, `ArtilianEntities.CANOPY_WYVERN`, `ArtilianItems.DRAGON_SCALE` & `CANOPY_WYVERN_SPAWN_EGG`, `ArtilianTags.EntityTypes.WILD_DRAGONS`, `DragonSpeciesGameTests` (`205/205` green, `runData`, `build`). Red-proof: `WildDragonEntity.causeFallDamage` delegating to `super` → `canopywyvernregisteredtaggedhasegglootandelements` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Canopy Wyvern in `artilian:dragon_jungle` (`qa/evidence/canopy-wyvern-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonSpeciesGameTests`):** `205/205` green (4 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
+- **Security Gate:** `n/a` (wild dragon mob, loot, and biome spawns; enforces `KidSafeTargets` protection for Chester and pets).
+- **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Canopy Wyvern in `artilian:dragon_jungle`.
+
+### Phase 5 — Stage 5: More Dragon Species
+- [ ] **In Progress (`208/208` GameTests Green & Strict Art Lint Clean; Live Client Check Pending)** — Add **Amber Wyvern** (`artilian:amber_wyvern`, `Dragon / Fire`) and **Storm Glidewing** (`artilian:storm_glidewing`, `Dragon / Electric`) with **dedicated 3D GeckoLib silhouettes & animations** (no palette swaps!), grounded in the 12-type reference catalog (`qa/reference/dragon-species-references.md`).
+- **Art Briefs (`Amber Wyvern` & `Storm Glidewing`):**
+  - **12-Type Reference Catalog (`qa/reference/dragon-species-references.md`):** Classic Western Dragon, True Wyvern, Drake, Amphithere, Lindworm, Wyrm/Guivre, Eastern Dragon (Lung), Hydra, Feathered Serpent (Quetzalcoatl), Sea Serpent/Leviathan, Kirin/Qilin, and Knucker.
+  - **Amber Wyvern (`amber_wyvern.geo.json` — Archetype #2 True Wyvern):** Bipedal 2-legged digitigrade stance (`0` separate forelegs), forward-pitched raptor torso, `2` massive clawed bat wing-arms, swept ram horns, and a barbed magma-stinger tail (`1.6F × 2.0F`, `shadowRadius = 1.1F`); obsidian-charcoal scales (`#161014` → `#4A2E30`) + molten Ember Amber (`#7C220C` → `#F97316` → `#FDE047`).
+  - **Storm Glidewing (`storm_glidewing.geo.json` — Archetype #4 Amphithere):** Legless (`0` legs) hovering `4`-segment undulating sky-serpent body, `2` swept `3`-segment albatross glider wings, lightning-antler horns, cheek frills, and a wide fanned tail rudder (`1.45F × 1.85F`, `shadowRadius = 1.0F`); storm-indigo scales (`#12182C` → `#384C7C`) + sky-cyan/Starlight-teal (`#0E5676` → `#38D9C0` → `#BAF6FC`) + electric-gold (`#FACC15`).
+  - **`_glowmask.png` zones:** Emissive eyes, chest elemental core, dorsal/stinger tips, and wing-tips/tail rudder (`AutoGlowingGeoLayer`).
+- **Why & Decisions:**
+  1. **Dedicated Rigs (`WildDragonModel(speciesId, rigId)`):** Replaced shared-rig reuse for Stage 5 so all three Phase 5 dragons have unmistakable silhouettes (`dragon_rig` Classic Western Dragon vs. `amber_wyvern` Bipedal Wyvern vs. `storm_glidewing` Legless Amphithere).
+  2. **Amber Wyvern (`AmberWyvernEntity`):** `PetElement.DRAGON` / `PetElement.FIRE`, `48.0` HP, `7.0` ATK, `5.0` Armor, `fireImmune() = true`, ignites targets (`2.5s`) + `FLAME` particles, spawns in `AMBER_GROVE_BIOME` (weight `16`).
+  3. **Storm Glidewing (`StormGlidewingEntity`):** `PetElement.DRAGON` / `PetElement.ELECTRIC`, `40.0` HP, `0.32` speed, `6.5` ATK, `3.0` Armor, applies `MobEffects.MOVEMENT_SLOWDOWN` (`35` ticks) + `ELECTRIC_SPARK` particles, spawns in both `DRAGON_JUNGLE_BIOME` (weight `10`) and `AMBER_GROVE_BIOME` (weight `6`).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Briefs, `amber_wyvern` & `storm_glidewing` textures/glowmasks & previews | Pending commit | `tools/art/make_dragons_art.py`, `lint_art.py --phase5 --strict` clean (`canopy_wyvern`, `amber_wyvern`, `storm_glidewing`), `preview_geo.py` (`qa/evidence/previews/amber_wyvern-preview.png`, `qa/evidence/previews/storm_glidewing-preview.png`). |
+  | 2 `AmberWyvernEntity`, `StormGlidewingEntity`, biome spawns, datagen & GameTests | Pending commit | `AmberWyvernEntity`, `StormGlidewingEntity`, `ArtilianEntities`, `ArtilianItems` spawn eggs, `ArtilianCreativeTabs`, `ArtilianClient`, `DragonEvents`, `DragonJungleDimension`, `ArtilianEntityTags`, `ArtilianEntityLoot`, `DragonSpeciesGameTests` (`208/208` green, `runData`, `build`). Red-proof: `AmberWyvernEntity.fireImmune()` returning `false` → `amberwyvernandstormglidewingregisteredtaggedeggslootandelements` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Amber Wyvern & Storm Glidewing in `artilian:dragon_jungle` (`qa/evidence/more-dragon-species-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonSpeciesGameTests`):** `208/208` green (3 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
+- **Security Gate:** `n/a` (wild dragon mobs, loot, and biome spawns; inherits `KidSafeTargets` protection for Chester and pets).
+- **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Amber Wyvern & Storm Glidewing in `artilian:dragon_jungle`.
+
+### Phase 5 — Stage 6: Hatchable Pet Dragons
+- [ ] **In Progress (`212/212` GameTests Green & Strict Art Lint Clean; Live Client Check Pending)** — Add **Canopy Dragonling** (`Dragon / Nature`), **Amber Dragonling** (`Dragon / Fire`), and **Storm Dragonling** (`Dragon / Electric`) extending `PetDragonEntity` → `ArtilianPetEntity`, plus 3 hatchable `DragonEggBlock`s (`canopy_wyvern_egg`, `amber_wyvern_egg`, `storm_glidewing_egg`) dropped by wild dragons (`50%` chance).
+- **Art Briefs (`Canopy Dragonling`, `Amber Dragonling`, `Storm Dragonling` & `Dragon Eggs`):**
+  - **Target height/scale:** ~`0.85–0.90` blocks tall (`0.75F × 0.85–0.90F`, `shadowRadius = 0.45F`) baby counterparts of the 3 wild dragon species.
+  - **Silhouettes:** `canopy_dragonling` (4-legged jungle hatchling with leafy-emerald wings & spiked tail), `amber_dragonling` (bipedal wyvern hatchling with swept ram-horn buds & glowing magma-stinger tail), `storm_dragonling` (legless hovering sky-serpent hatchling with wide cyan-gold glider wings & fanned tail rudder).
+  - **Palettes & `_glowmask.png`:** `128×128` shaded sheets matching their adult species; emissive eyes, chest elemental cores, horn/wing tips, and progressive glowing egg cracks (`_0`, `_1`, `_2` on tapered 3D egg blocks).
+- **Why & Decisions:**
+  1. **Hatchable Egg Incubation (`DragonEggBlock`):** Scheduled ticks advance `HATCH` `0 -> 1 -> 2 -> hatch` (`240` ticks/stage on warm blocks like `Amber Moss`, `Jungle Turf`, `Moss Block`, `Hay Block`, `Magma Block`; `400` ticks/stage otherwise). Right-clicking with `Biome Treat` or `Blaze Powder` advances `HATCH` immediately so kids can speed up hatching.
+  2. **Kid-Safe Pet Integration (`PetDragonEntity extends ArtilianPetEntity`):** Hatched dragonlings spawn befriended at `MAX_AFFINITY` with `persistenceRequired`, guaranteeing 100% capture into any empty `CaptureCrystalItem` (inheriting non-lethal fainting, `PetRosterData`, and `KidSafeTargets`).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Briefs, `128×128` dragonling models/textures/glowmasks & 3-stage egg textures | Pending commit | `tools/art/make_dragon_pets_art.py`, `lint_art.py --phase5 --strict` clean (all 6 Phase 5 entities), `preview_geo.py` (`qa/evidence/previews/*_dragonling-preview.png`). |
+  | 2 `PetDragonEntity`, 3 dragonlings, `DragonEggBlock`, loot, renderer, datagen & GameTests | Pending commit | `PetDragonEntity`, `CanopyDragonlingEntity`, `AmberDragonlingEntity`, `StormDragonlingEntity`, `DragonEggBlock`, `PetDragonModel`, `PetDragonRenderer`, `ArtilianEntities`, `ArtilianBlocks`, `ArtilianItems`, `ArtilianCreativeTabs`, `PetEvents`, `ArtilianClient`, datagen (`runData`), `build`, and 4 `DragonPetsGameTests` (`212/212` green). Red-proof: commented out `dragonling.addAffinity(MAX_AFFINITY)` in `DragonEggBlock.hatchEgg` → `dragoneggincubateshatchesbefriendeddragonlingandcapturesincrystal` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Dragon Eggs hatching & dragonlings in-game (`qa/evidence/hatchable-pet-dragons-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonPetsGameTests`):** `212/212` green (4 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
+- **Security Gate:** `n/a` (inherits `P2-01`–`P2-04` `CaptureCrystalItem` ownership, non-lethal fainting, and `KidSafeTargets`).
+- **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Dragon Egg hatching and dragonling companions.
+
+### Phase 5 — Stage 7: Dragonscale Gear & Mega TNT
+- [ ] **In Progress (`218/218` GameTests Green; Live Client Check Pending)** — Full 9-piece **Dragonscale** gear set (`ArtilianTiers.DRAGONSCALE`, `ArtilianArmorMaterials.DRAGONSCALE`, `DragonscaleSwordItem`, `DragonscaleArmorRenderer`) crafted from `Dragon Scale`, plus **Dragonfire Mega TNT** (`TntVariant.DRAGONFIRE_MEGA`) honoring `allowDestructiveCustomTnt` (`P5-02`).
+- **Why & Decisions:**
+  1. **Dragonscale Gear (`ArtilianTiers.DRAGONSCALE`, `ArtilianArmorMaterials.DRAGONSCALE`):** Fire-resistant Netherite-plus tier (`2350` durability, `10.0F` mining speed, `5.0F` attack bonus, `26` enchantability) and armor (`26` total defense, `3.5F` toughness, `0.20F` knockback resistance). `DragonscaleSwordItem` ignites targets (`3s`) and applies `MobEffects.WEAKNESS` (`60` ticks) with `DRAGON_BREATH` + `FLAME` particles. Full 4-piece Dragonscale armor grants passive `Fire Resistance` + `Strength`.
+  2. **Dragonfire Mega TNT (`TntVariant.DRAGONFIRE_MEGA`):** Crafted from `Dragon Scale` + `Blaze Powder` + `TNT`. Detonates with a `7.5F` blast radius, `DRAGON_BREATH` + `FLAME` + `LAVA` particles, `ENDER_DRAGON_GROWL` sound, and `16.0F` hostile-only blast damage (`KidSafeTargets.isValidOffensiveTarget`), while strictly enforcing `ArtilianConfig.isDestructiveTntAllowed()` and `SAFE_QUARRY_DAMAGE_CALCULATOR`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Gear, Mega TNT, art (`make_ores_and_gear_art.py`, `make_tnt_art.py`), datagen & GameTests | Pending commit | `DragonscaleSwordItem`, `DragonscaleArmorRenderer`, `dragonscale_armor.geo.json`, `ArtilianTiers.DRAGONSCALE`, `ArtilianArmorMaterials.DRAGONSCALE`, `TntVariant.DRAGONFIRE_MEGA`, `ArtilianPrimedTnt#explodeDragonfireMega`, `check_armor_sheets.py` clean, datagen (`runData`), `build`, `DragonscaleGearAndMegaTntGameTests` + `TntSecurityProbes.p5_02` (`218/218` green). Red-proof: replaced `SAFE_QUARRY_DAMAGE_CALCULATOR` with `null` and forced `Level.ExplosionInteraction.TNT` in `explodeDragonfireMega` → `p5_02_dragonfiremegatnthonorsdestructiveconfigandkidsafetargets` & `p1_07` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Dragonscale armor/weapons & Dragonfire Mega TNT (`qa/evidence/dragonscale-gear-mega-tnt-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonscaleGearAndMegaTntGameTests` + `TntSecurityProbes`):** `218/218` green (6 new tests including `P5-02`). Red-proof recorded above.
+- **Security Gate (`P5-02`):** `HELD` in `218/218` suite (`security/FINDINGS.md`).
+- **Done When:** `check_armor_sheets.py`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Dragonscale gear & Dragonfire Mega TNT in-game.
+
+### Phase 5 — Stage 8: Apex Dragon Boss
+- [ ] **In Progress (`222/222` GameTests Green & Strict Art Lint Clean; Live Client Check Pending)** — Phase 5 apex dragon boss **Embercrown Sovereign** (`artilian:embercrown_sovereign`, `Dragon / Fire`), **Primal Dragon Crest** (`BossSummonItem`), **Sovereign's Ember Heart** (`BossTrophyItem`), dedicated `256×128` GeckoLib boss model/glowmask, and `EmbercrownSovereignGameTests`.
+- **Art Brief (`Embercrown Sovereign`):**
+  - **Target height/scale:** ~`4.2` blocks tall at crown tips, ~`5.0` blocks nose-to-tail, ~`7.2` blocks wingspan (`EntityType` `2.6F × 3.4F`, `eyeHeight = 2.6F`, `shadowRadius = 1.8F`).
+  - **Silhouette inspiration:** Towering armored 4-legged apex dragon sovereign with broad shoulder pauldrons, an inset **Primal Heart** chest core, arched S-curved neck, articulated lower `jaw`, a **5-horn Embercrown** crest, 2 colossal 3-segment dihedral wings, and a 3-segment war-tail ending in a glowing mace-blade.
+  - **Dark structural anchor + accent palette:** Deep volcanic obsidian-charcoal scales (`#120C14` → `#5A3E4E`) anchored against forged Ember-Gold armor (`#601E0A` → `#F97316` → `#FDE047`) and Canopy Emerald Primal Heart core (`#166034` → `#22C55E` → `#4ADE80`).
+  - **Key 3D recessed/angled features:** Inset eye sockets, articulated `jaw`, 5-horn angled Embercrown, broad shoulder pauldrons, inset Primal Heart chest core, 3-segment dihedral wings, and angled war-tail mace.
+  - **`_glowmask.png` zones:** Emissive amber eyes, 5 Embercrown horn tips, Primal Heart chest core, wing-vein runes, and tail mace-blade (`AutoGlowingGeoLayer`).
+- **Why & Decisions:**
+  1. **Embercrown Sovereign (`EmbercrownSovereignEntity extends ArtilianBossEntity`):** `300.0` HP, `0.26` speed, `9.0` ATK, `11.0` Armor, `fireImmune() = true`, fall-immune with airborne glide damping, `PetElement.DRAGON` / `PetElement.FIRE`.
+  2. **Three Kid-Readable Telegraphed Attacks & Primal Fury:** `EMBER_BREATH` (`40` ticks windup, `4.2` radius, `8.0F` dmg, ignites `3s`), `SOVEREIGN_ROAR` (`35` ticks windup, `5.5` radius, `7.5F` dmg, knockback + `Weakness`), and `METEOR_SLAM` (`50` ticks windup, `7.5` radius, `10.5F` dmg, ignites `4s`, zero block breaking). At `<= 50%` HP, enters **Primal Fury** (`PRIMAL_FURY` synched + NBT, boss bar turns `YELLOW` → `RED`, cooldown `60` → `40` ticks).
+  3. **Altar Summon & Trophy (`Primal Dragon Crest` & `Sovereign's Ember Heart`):** `PRIMAL_DRAGON_CREST` (`BossSummonItem`, crafted from `Dragon Scale` + `Amber Moss` + `Blaze Powder` + `Gold Ingot`) summons `Embercrown Sovereign` on any `Boss Altar`. Defeating him drops `1` `Sovereign's Ember Heart` (in `artilian:boss_drops`), `3–6` `Dragon Scale`, `2–4` `Amber Moss`, and `1–2` `Starlight Crystal`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `256×128` GeckoLib model, texture, glowmask, sprites & preview | Pending commit | `tools/art/make_embercrown_sovereign_art.py`, `lint_art.py --phase5 --strict` clean (`entity/embercrown_sovereign`), `preview_geo.py` (`qa/evidence/previews/embercrown_sovereign-preview.png`). |
+  | 2 `EmbercrownSovereignEntity`, renderer, items, datagen & GameTests | Pending commit | `EmbercrownSovereignEntity`, `EmbercrownSovereignRenderer` (`AutoGlowingGeoLayer`), `PRIMAL_DRAGON_CREST`, `SOVEREIGNS_EMBER_HEART`, `EMBERCROWN_SOVEREIGN_SPAWN_EGG`, datagen (`runData`), `build`, and 4 `EmbercrownSovereignGameTests` (`222/222` green). Red-proof: flipped `EmbercrownSovereignEntity.fireImmune()` to `false` → `embercrownsovereignattributeselementstageggfireimmunityandloottable` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Embercrown Sovereign & Boss Altar in `artilian:dragon_jungle` (`qa/evidence/embercrown-sovereign-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`EmbercrownSovereignGameTests`):** `222/222` green (4 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
+- **Security Gate:** `n/a` (inherits `P3-01`–`P3-03` `BossAltarBlockEntity` single-boss lock, zero block-breaking, and `ChesterEntity` immunity).
+- **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Embercrown Sovereign in-game.
+
+### Phase 5 — Stage 9: Twin-Star Endgame Rewards
+- [ ] **In Progress (`226/226` GameTests Green; Live Client Check Pending)** — Combined endgame rewards uniting Alex's Eye Realm (`All-Seer's Lens`) and Steve's Dragon Jungle (`Sovereign's Ember Heart`): **Twin-Star Core**, **Twin-Star Blade**, **Twin-Star Harmony Staff**, and 4-piece **Twin-Star Armor**.
+- **Why & Decisions:**
+  1. **Twin-Star Core (`artilian:twin_star_core`):** Crafted from `All-Seer's Lens` + `Sovereign's Ember Heart` + `Starlight Crystal` + `Sunsteel Ingot` + `Dragon Scale`, yielding `2` cores per boss pair so Alex and Steve can both craft endgame rewards from one co-op victory.
+  2. **Twin-Star Blade (`TwinStarBladeItem`, `ArtilianTiers.TWIN_STAR`):** Fire-resistant `Rarity.EPIC` sword (`2800` durability, `11.0F` speed, `6.0F` bonus damage, `30` enchantability). Ignites foes (`3s`), applies `Weakness` (`60` ticks) + `Glowing` (`80` ticks), and bursts `END_ROD`, `PORTAL`, and `DRAGON_BREATH` particles.
+  3. **Twin-Star Harmony Staff (`WandSpell.TWIN_STAR_HARMONY`):** `50` Mana, `35` ticks cooldown. Heals & buffs nearby allies/Chester/pets (`4.0F` HP + `Regeneration II` + `Speed I`) while damaging (`10.0F` magic), illuminating (`Glowing`), and knocking back nearby hostiles (`KidSafeTargets`).
+  4. **Twin-Star Armor (`ArtilianArmorMaterials.TWIN_STAR`, `TwinStarArmorRenderer`):** `30` total defense (`5/9/11/5`), `4.0F` toughness, `0.25F` knockback resistance, `30` enchantability, `twin_star_armor.geo.json` + `128×64` shaded sheet. Full 4-piece set grants passive `Fire Resistance`, `Strength`, `Night Vision`, and `Regeneration`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Core, Blade, Harmony Staff, 4-piece Armor, art (`make_ores_and_gear_art.py`, `make_wand_art.py`), datagen & GameTests | Pending commit | `TwinStarBladeItem`, `TwinStarArmorRenderer`, `twin_star_armor.geo.json`, `ArtilianTiers.TWIN_STAR`, `ArtilianArmorMaterials.TWIN_STAR`, `WandSpell.TWIN_STAR_HARMONY`, `ManaService#castTwinStarHarmonyStaff`, `check_armor_sheets.py` clean, datagen (`runData`), `build`, and 4 `TwinStarEndgameGameTests` (`226/226` green). Red-proof: commented out `MobEffects.NIGHT_VISION` in `ArtilianArmorItem.applySetBonus` → `twinstarfullarmorsetgrantsallfourendgamebuffs` failed → restored green. |
+  | 2 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Twin-Star Blade, Harmony Staff, and Armor (`qa/evidence/twin-star-endgame-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`TwinStarEndgameGameTests`):** `226/226` green (4 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (endgame crafting, armor buffs, and `KidSafeTargets`-filtered staff).
+- **Done When:** `check_armor_sheets.py`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Twin-Star endgame rewards in-game.
+
+### Phase 5 — Stage 10: Phase 5 Art Pass & Finale
+- [x] **Complete — Locked in PR #17 (`v0.2.0`, `229/229` GameTests & Strict Art Lint Clean; Live Client Check Pending)** — Phase 5 art & preview audit (`--phase5` in `lint_art.py` including `PHASE5_ARMORS`), bespoke `128×128` 3D `dragonscale_armor` & `twin_star_armor` + `_glowmask.png` layers (`make_phase5_armors_art.py`), end-to-end Dragon Jungle & 5-phase finale sign-off tests (`Phase5SignOffGameTests`), and `mod_version=0.2.0` release JAR (`build/libs/adventures-in-artilian-0.2.0.jar`).
+- **Why & Decisions:** Ensure every Phase 5 dragon, pet dragonling, boss, armor set, block, item, and dimension meets `DESIGN.md`'s 3D Art Standard and plays cleanly end-to-end with kid-safe defaults intact:
+  1. **Phase 5 Art Linter (`tools/art/lint_art.py --phase5 --strict`):** Added `PHASE5_ARMORS` (`dragonscale_armor`, `twin_star_armor`) alongside all 7 Phase 5 entities (`canopy_wyvern`, `amber_wyvern`, `storm_glidewing`, `canopy_dragonling`, `amber_dragonling`, `storm_dragonling`, `embercrown_sovereign`) and verified zero UV overlaps, zero transparent holes, and zero flat single-color faces, plus 4-angle `qa/evidence/previews/*-preview.png` contact sheets for both Phase 5 armors.
+  2. **Phase 5 Sign-Off & Finale GameTests (`Phase5SignOffGameTests`):** Verifies all 7 Phase 5 GeckoLib entity models, required bones, animation clips, minimum sheet sizes (`256×128` wild dragons/boss, `128×128` dragonlings), `_glowmask.png` sheets, both Phase 5 armor models/sheets, animated `primal_portal.png` + `.mcmeta`, all 9 dragon egg stage textures, Phase 5 block/item textures, `EmbercrownSovereignEntity` telegraph windup floor (`>= 30` ticks), Phase 5 crafting recipes, `DragonJungleDimension` registration, Phase 5 loot tables, and cross-phase finale integration (`allowDestructiveCustomTnt = false`, `Chester` attachment, both `EyeRealmDimension` and `DragonJungleDimension` registered, `twin_star_core` recipe).
+  3. **Release Version Bump (`0.2.0`):** Updated `mod_version=0.2.0` in `gradle.properties` and built `build/libs/adventures-in-artilian-0.2.0.jar`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Phase 5 art audit, armor previews, `Phase5SignOffGameTests` & `0.2.0` JAR | Pending commit | Updated `tools/art/lint_art.py` (`PHASE5_ARMORS`), generated `dragonscale_armor-preview.png` & `twin_star_armor-preview.png`, added `Phase5SignOffGameTests` (`229/229` green), bumped `mod_version=0.2.0`, `lint_art.py --phase5 --strict` (exit `0`), `check_armor_sheets.py` clean, `runData`, and `build` (`adventures-in-artilian-0.2.0.jar`). |
+  | 2 Live client & family co-op finale sign-off | Pending | `./gradlew runClient` & LAN co-op walkthrough of Eye Realm + Dragon Jungle + Twin-Star Endgame (`qa/evidence/phase5-finale-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`Phase5SignOffGameTests`):** `229/229` green (3 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`).
+- **Security Gate:** `n/a` (art pass, linter, version bump, and finale sign-off; `P1-01`–`P5-01` already `HELD`).
+- **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` / LAN co-op verifies the full 5-phase finale.
 
 ---
 

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_powder"
+    },
+    "D": {
+      "item": "artilian:dragon_scale"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "M": {
+      "item": "artilian:amber_moss"
+    }
+  },
+  "pattern": [
+    " G ",
+    "DMD",
+    " B "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:primal_dragon_crest"
+  }
+}

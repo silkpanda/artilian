@@ -3,15 +3,22 @@ package com.silkpanda.artilian.registry;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.boss.CaptainBrimstoneEntity;
 import com.silkpanda.artilian.boss.CrystalColossusEntity;
+import com.silkpanda.artilian.boss.EmbercrownSovereignEntity;
+import com.silkpanda.artilian.boss.GreatAllSeerEntity;
 import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
+import com.silkpanda.artilian.dragon.AmberWyvernEntity;
+import com.silkpanda.artilian.dragon.CanopyWyvernEntity;
+import com.silkpanda.artilian.dragon.StormGlidewingEntity;
 import com.silkpanda.artilian.enemy.AstralStalkerEntity;
 import com.silkpanda.artilian.enemy.CinderRaiderEntity;
 import com.silkpanda.artilian.enemy.LensGuardianEntity;
 import com.silkpanda.artilian.enemy.OculusSlimeEntity;
 import com.silkpanda.artilian.enemy.PeeperEntity;
 import com.silkpanda.artilian.enemy.PrismSentinelEntity;
+import com.silkpanda.artilian.pet.AmberDragonlingEntity;
 import com.silkpanda.artilian.pet.BlinkyEntity;
+import com.silkpanda.artilian.pet.CanopyDragonlingEntity;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
@@ -21,6 +28,7 @@ import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
+import com.silkpanda.artilian.pet.StormDragonlingEntity;
 import com.silkpanda.artilian.pet.SunbeamEntity;
 import com.silkpanda.artilian.pet.ZapkinEntity;
 import com.silkpanda.artilian.pet.ZaphoxEntity;
@@ -229,6 +237,71 @@ public class ArtilianEntities {
                     .eyeHeight(3.2F)
                     .clientTrackingRange(12)
                     .build("captain_brimstone"));
+
+    /** The Great All-Seer: hovering Shadow/Starlight ocular sovereign boss of the Eye Realm. */
+    public static final DeferredHolder<EntityType<?>, EntityType<GreatAllSeerEntity>> GREAT_ALL_SEER =
+            ENTITY_TYPES.register("great_all_seer", () -> EntityType.Builder.of(GreatAllSeerEntity::new, MobCategory.MONSTER)
+                    .sized(1.8F, 2.8F)
+                    .eyeHeight(2.0F)
+                    .clientTrackingRange(12)
+                    .build("great_all_seer"));
+
+    /** Canopy Wyvern: first wild Dragon Jungle dragon species, establishing the shared dragon_rig. */
+    public static final DeferredHolder<EntityType<?>, EntityType<CanopyWyvernEntity>> CANOPY_WYVERN =
+            ENTITY_TYPES.register("canopy_wyvern", () -> EntityType.Builder.of(CanopyWyvernEntity::new, MobCategory.MONSTER)
+                    .sized(1.55F, 1.95F)
+                    .eyeHeight(1.55F)
+                    .clientTrackingRange(12)
+                    .build("canopy_wyvern"));
+
+    /** Amber Wyvern: volcanic dragon species inhabiting the Amber Volcanic Grove. */
+    public static final DeferredHolder<EntityType<?>, EntityType<AmberWyvernEntity>> AMBER_WYVERN =
+            ENTITY_TYPES.register("amber_wyvern", () -> EntityType.Builder.of(AmberWyvernEntity::new, MobCategory.MONSTER)
+                    .sized(1.6F, 2.0F)
+                    .eyeHeight(1.6F)
+                    .fireImmune()
+                    .clientTrackingRange(12)
+                    .build("amber_wyvern"));
+
+    /** Storm Glidewing: swift electric sky-strider across both Dragon Jungle biomes. */
+    public static final DeferredHolder<EntityType<?>, EntityType<StormGlidewingEntity>> STORM_GLIDEWING =
+            ENTITY_TYPES.register("storm_glidewing", () -> EntityType.Builder.of(StormGlidewingEntity::new, MobCategory.MONSTER)
+                    .sized(1.45F, 1.85F)
+                    .eyeHeight(1.5F)
+                    .clientTrackingRange(12)
+                    .build("storm_glidewing"));
+
+    // Phase 5 Stage 6: Hatchable Pet Dragons
+    public static final DeferredHolder<EntityType<?>, EntityType<CanopyDragonlingEntity>> CANOPY_DRAGONLING =
+            ENTITY_TYPES.register("canopy_dragonling", () -> EntityType.Builder.of(CanopyDragonlingEntity::new, MobCategory.CREATURE)
+                    .sized(0.75F, 0.85F)
+                    .eyeHeight(0.60F)
+                    .clientTrackingRange(10)
+                    .build("canopy_dragonling"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<AmberDragonlingEntity>> AMBER_DRAGONLING =
+            ENTITY_TYPES.register("amber_dragonling", () -> EntityType.Builder.of(AmberDragonlingEntity::new, MobCategory.CREATURE)
+                    .sized(0.75F, 0.90F)
+                    .eyeHeight(0.65F)
+                    .fireImmune()
+                    .clientTrackingRange(10)
+                    .build("amber_dragonling"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<StormDragonlingEntity>> STORM_DRAGONLING =
+            ENTITY_TYPES.register("storm_dragonling", () -> EntityType.Builder.of(StormDragonlingEntity::new, MobCategory.CREATURE)
+                    .sized(0.75F, 0.85F)
+                    .eyeHeight(0.60F)
+                    .clientTrackingRange(10)
+                    .build("storm_dragonling"));
+
+    // Phase 5 Stage 8: Apex Dragon Boss
+    public static final DeferredHolder<EntityType<?>, EntityType<EmbercrownSovereignEntity>> EMBERCROWN_SOVEREIGN =
+            ENTITY_TYPES.register("embercrown_sovereign", () -> EntityType.Builder.of(EmbercrownSovereignEntity::new, MobCategory.MONSTER)
+                    .sized(2.6F, 3.4F)
+                    .eyeHeight(2.6F)
+                    .fireImmune()
+                    .clientTrackingRange(14)
+                    .build("embercrown_sovereign"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

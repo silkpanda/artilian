@@ -15,6 +15,10 @@
     "artilian:gaze_stone_stairs",
     "artilian:gaze_stone_slab",
     "artilian:gaze_stone_wall",
-    "artilian:blinking_eye_block"
+    "artilian:blinking_eye_block",
+    "artilian:primal_basalt",
+    "artilian:primal_basalt_stairs",
+    "artilian:primal_basalt_slab",
+    "artilian:primal_basalt_wall"
   ]
 }

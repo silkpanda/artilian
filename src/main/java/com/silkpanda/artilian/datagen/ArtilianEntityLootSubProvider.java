@@ -32,9 +32,57 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
         this.add(ArtilianEntities.PEEPER.get(), guardianTable(Items.AMETHYST_SHARD, 1, 2));
         this.add(ArtilianEntities.OCULUS_SLIME.get(), guardianTable(Items.SLIME_BALL, 1, 2));
         this.add(ArtilianEntities.LENS_GUARDIAN.get(), guardianTable(ArtilianItems.STARLIGHT_CRYSTAL.get(), 1, 2));
+        this.add(ArtilianEntities.CANOPY_WYVERN.get(), dragonTable(ArtilianItems.CANOPY_WYVERN_EGG_ITEM.get()));
+        this.add(ArtilianEntities.AMBER_WYVERN.get(), dragonTable(ArtilianItems.AMBER_WYVERN_EGG_ITEM.get()));
+        this.add(ArtilianEntities.STORM_GLIDEWING.get(), dragonTable(ArtilianItems.STORM_GLIDEWING_EGG_ITEM.get()));
         this.add(ArtilianEntities.TRAINING_GOLEM.get(), LootTable.lootTable());
         this.add(ArtilianEntities.CRYSTAL_COLOSSUS.get(), crystalColossusTable());
         this.add(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), captainBrimstoneTable());
+        this.add(ArtilianEntities.GREAT_ALL_SEER.get(), greatAllSeerTable());
+        this.add(ArtilianEntities.EMBERCROWN_SOVEREIGN.get(), embercrownSovereignTable());
+    }
+
+    private static LootTable.Builder embercrownSovereignTable() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.SOVEREIGNS_EMBER_HEART.get())))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.DRAGON_SCALE.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 6)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.AMBER_MOSS_ITEM.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))));
+    }
+
+    private static LootTable.Builder greatAllSeerTable() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.ALL_SEERS_LENS.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 3)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 6)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(Items.AMETHYST_SHARD)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 6)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(Items.ENDER_PEARL)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.BIOME_TREAT.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))));
     }
 
     private static LootTable.Builder captainBrimstoneTable() {
@@ -77,6 +125,14 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
                                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))));
     }
 
+    private static LootTable.Builder dragonTable(ItemLike eggDrop) {
+        return guardianTable(ArtilianItems.DRAGON_SCALE.get(), 1, 3)
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .when(LootItemRandomChanceCondition.randomChance(0.5F))
+                        .add(LootItem.lootTableItem(eggDrop)));
+    }
+
     private static LootTable.Builder guardianTable(ItemLike primaryDrop, int min, int max) {
         return LootTable.lootTable()
                 .withPool(LootPool.lootPool()
@@ -98,9 +154,14 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
                 ArtilianEntities.PEEPER.get(),
                 ArtilianEntities.OCULUS_SLIME.get(),
                 ArtilianEntities.LENS_GUARDIAN.get(),
+                ArtilianEntities.CANOPY_WYVERN.get(),
+                ArtilianEntities.AMBER_WYVERN.get(),
+                ArtilianEntities.STORM_GLIDEWING.get(),
                 ArtilianEntities.TRAINING_GOLEM.get(),
                 ArtilianEntities.CRYSTAL_COLOSSUS.get(),
-                ArtilianEntities.CAPTAIN_BRIMSTONE.get()
+                ArtilianEntities.CAPTAIN_BRIMSTONE.get(),
+                ArtilianEntities.GREAT_ALL_SEER.get(),
+                ArtilianEntities.EMBERCROWN_SOVEREIGN.get()
         );
     }
 }

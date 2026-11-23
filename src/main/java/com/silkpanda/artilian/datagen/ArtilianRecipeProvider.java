@@ -77,18 +77,52 @@ public class ArtilianRecipeProvider extends RecipeProvider {
 
         prismaticGearSet(output);
 
+        gearSet(
+                output,
+                ArtilianItems.DRAGON_SCALE.get(),
+                ArtilianItems.DRAGONSCALE_SWORD.get(),
+                ArtilianItems.DRAGONSCALE_PICKAXE.get(),
+                ArtilianItems.DRAGONSCALE_AXE.get(),
+                ArtilianItems.DRAGONSCALE_SHOVEL.get(),
+                ArtilianItems.DRAGONSCALE_HOE.get(),
+                ArtilianItems.DRAGONSCALE_HELMET.get(),
+                ArtilianItems.DRAGONSCALE_CHESTPLATE.get(),
+                ArtilianItems.DRAGONSCALE_LEGGINGS.get(),
+                ArtilianItems.DRAGONSCALE_BOOTS.get());
+
         customTntRecipe(output, ArtilianBlocks.PARTY_TNT.get(), Items.SUGAR, ArtilianItems.SUNSTEEL_INGOT.get());
         customTntRecipe(output, ArtilianBlocks.BOUNCE_TNT.get(), Items.SLIME_BALL, ArtilianItems.SUNSTEEL_INGOT.get());
         customTntRecipe(output, ArtilianBlocks.FROST_NOVA_TNT.get(), Items.SNOWBALL, ArtilianItems.STARLIGHT_CRYSTAL.get());
         customTntRecipe(output, ArtilianBlocks.CLUSTER_QUARRY_TNT.get(), ArtilianItems.STARLIGHT_CRYSTAL.get(), ArtilianItems.SUNSTEEL_INGOT.get());
         customTntRecipe(output, ArtilianBlocks.STARLIGHT_GRAVITY_TNT.get(), ArtilianItems.PRISM_CORE.get(), ArtilianItems.STARLIGHT_CRYSTAL.get());
         customTntRecipe(output, ArtilianBlocks.BRIMSTONE_METEOR_TNT.get(), ArtilianItems.BRIMSTONE_DOUBLOON.get(), Items.BLAZE_POWDER);
+        customTntRecipe(output, ArtilianBlocks.DRAGONFIRE_MEGA_TNT.get(), ArtilianItems.DRAGON_SCALE.get(), Items.BLAZE_POWDER);
 
         wandRecipes(output);
 
         logToPlanks(output, ArtilianBlocks.CRYSTAL_CANOPY_LOG.get(), ArtilianBlocks.CRYSTAL_CANOPY_PLANKS.get());
         logToPlanks(output, ArtilianBlocks.EMBERWOOD_LOG.get(), ArtilianBlocks.EMBERWOOD_PLANKS.get());
         logToPlanks(output, ArtilianBlocks.OCULAR_LOG.get(), ArtilianBlocks.OCULAR_PLANKS.get());
+        logToPlanks(output, ArtilianBlocks.DRAGONWOOD_LOG.get(), ArtilianBlocks.DRAGONWOOD_PLANKS.get());
+
+        ItemLike dragonwoodPlanks = ArtilianBlocks.DRAGONWOOD_PLANKS.get();
+        stairBuilder(ArtilianBlocks.DRAGONWOOD_STAIRS.get(), Ingredient.of(dragonwoodPlanks))
+                .unlockedBy(getHasName(dragonwoodPlanks), has(dragonwoodPlanks))
+                .save(output);
+        slab(output, RecipeCategory.BUILDING_BLOCKS, ArtilianBlocks.DRAGONWOOD_SLAB.get(), dragonwoodPlanks);
+
+        ItemLike primalBasalt = ArtilianBlocks.PRIMAL_BASALT.get();
+        ItemLike primalBasaltStairs = ArtilianBlocks.PRIMAL_BASALT_STAIRS.get();
+        ItemLike primalBasaltSlab = ArtilianBlocks.PRIMAL_BASALT_SLAB.get();
+        ItemLike primalBasaltWall = ArtilianBlocks.PRIMAL_BASALT_WALL.get();
+        stairBuilder(primalBasaltStairs, Ingredient.of(primalBasalt))
+                .unlockedBy(getHasName(primalBasalt), has(primalBasalt))
+                .save(output);
+        slab(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltSlab, primalBasalt);
+        wall(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltWall, primalBasalt);
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltStairs, primalBasalt);
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltSlab, primalBasalt, 2);
+        stonecutterResultFromBase(output, RecipeCategory.BUILDING_BLOCKS, primalBasaltWall, primalBasalt);
 
         ItemLike ocularPlanks = ArtilianBlocks.OCULAR_PLANKS.get();
         stairBuilder(ArtilianBlocks.OCULAR_STAIRS.get(), Ingredient.of(ocularPlanks))
@@ -189,6 +223,30 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .define('B', Items.BLAZE_POWDER)
                 .define('E', ArtilianBlocks.EMBER_BLOOM.get())
                 .unlockedBy("has_sunsteel_ingot", has(ArtilianItems.SUNSTEEL_INGOT.get()))
+                .save(output);
+
+        // Phase 4 Stage 6: The Great All-Seer summon item
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ArtilianItems.OCULAR_KEY.get())
+                .pattern(" A ")
+                .pattern("CGC")
+                .pattern(" P ")
+                .define('A', Items.AMETHYST_SHARD)
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('G', ArtilianItems.GAZING_EYE.get())
+                .define('P', Items.ENDER_PEARL)
+                .unlockedBy("has_gazing_eye", has(ArtilianItems.GAZING_EYE.get()))
+                .save(output);
+
+        // Phase 5 Stage 8: Embercrown Sovereign summon item
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ArtilianItems.PRIMAL_DRAGON_CREST.get())
+                .pattern(" G ")
+                .pattern("DMD")
+                .pattern(" B ")
+                .define('G', Items.GOLD_INGOT)
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('M', ArtilianItems.AMBER_MOSS_ITEM.get())
+                .define('B', Items.BLAZE_POWDER)
+                .unlockedBy("has_dragon_scale", has(ArtilianItems.DRAGON_SCALE.get()))
                 .save(output);
     }
 
@@ -380,6 +438,77 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .requires(ArtilianItems.STARLIGHT_CRYSTAL.get())
                 .requires(Items.AMETHYST_SHARD)
                 .unlockedBy("has_starlight_crystal", has(ArtilianItems.STARLIGHT_CRYSTAL.get()))
+                .save(output);
+
+        // Phase 5 Stage 9: Twin-Star Endgame Rewards (uniting Alex's Eye Realm & Steve's Dragon Jungle)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ArtilianItems.TWIN_STAR_CORE.get(), 2)
+                .pattern("DSD")
+                .pattern("LGH")
+                .pattern("DSD")
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('L', ArtilianItems.ALL_SEERS_LENS.get())
+                .define('G', ArtilianItems.SUNSTEEL_INGOT.get())
+                .define('H', ArtilianItems.SOVEREIGNS_EMBER_HEART.get())
+                .unlockedBy("has_all_seers_lens", has(ArtilianItems.ALL_SEERS_LENS.get()))
+                .unlockedBy("has_sovereigns_ember_heart", has(ArtilianItems.SOVEREIGNS_EMBER_HEART.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_BLADE.get())
+                .pattern("T")
+                .pattern("T")
+                .pattern("R")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('R', Items.BLAZE_ROD)
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_STAFF.get())
+                .pattern(" TC")
+                .pattern(" CT")
+                .pattern("R  ")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('C', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('R', Items.BLAZE_ROD)
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_HELMET.get())
+                .pattern("DTD")
+                .pattern("S S")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_CHESTPLATE.get())
+                .pattern("D D")
+                .pattern("STS")
+                .pattern("DSD")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_LEGGINGS.get())
+                .pattern("DTD")
+                .pattern("S S")
+                .pattern("D D")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_BOOTS.get())
+                .pattern("S S")
+                .pattern("DTD")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
                 .save(output);
     }
 

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "A": {
+      "item": "artilian:dragon_scale"
+    },
+    "M": {
+      "item": "minecraft:blaze_powder"
+    },
+    "T": {
+      "item": "minecraft:tnt"
+    }
+  },
+  "pattern": [
+    " A ",
+    "MTM",
+    " A "
+  ],
+  "result": {
+    "count": 2,
+    "id": "artilian:dragonfire_mega_tnt"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "carvers": {},
+  "downfall": 0.3,
+  "effects": {
+    "fog_color": 16701354,
+    "foliage_color": 16347926,
+    "grass_color": 8702998,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000
+    },
+    "music": {
+      "max_delay": 24000,
+      "min_delay": 12000,
+      "replace_current_music": false,
+      "sound": "minecraft:music.overworld.sparse_jungle"
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:flame"
+      },
+      "probability": 0.002
+    },
+    "sky_color": 16628340,
+    "water_color": 16096779,
+    "water_fog_color": 7877903
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "artilian:dragonwood_tree_placed",
+      "artilian:amber_moss_patch_placed",
+      "minecraft:patch_large_fern",
+      "minecraft:patch_grass_forest"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [
+      {
+        "type": "artilian:amber_wyvern",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 16
+      },
+      {
+        "type": "artilian:storm_glidewing",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 6
+      }
+    ],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 1.2
+}

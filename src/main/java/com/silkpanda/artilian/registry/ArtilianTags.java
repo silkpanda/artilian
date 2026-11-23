@@ -17,12 +17,15 @@ public final class ArtilianTags {
     public static final class Blocks {
         public static final TagKey<Block> GAZING_PORTAL_FRAME =
                 BlockTags.create(ArtilianMod.id("gazing_portal_frame"));
+        public static final TagKey<Block> PRIMAL_PORTAL_FRAME =
+                BlockTags.create(ArtilianMod.id("primal_portal_frame"));
 
         private Blocks() {}
     }
 
     public static final class Items {
         public static final TagKey<Item> BIOME_BLOOMS = ItemTags.create(ArtilianMod.id("biome_blooms"));
+        public static final TagKey<Item> BOSS_DROPS = ItemTags.create(ArtilianMod.id("boss_drops"));
 
         private Items() {}
     }
@@ -32,6 +35,8 @@ public final class ArtilianTags {
                 TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("structure_enemies"));
         public static final TagKey<EntityType<?>> EYE_REALM_ENEMIES =
                 TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("eye_realm_enemies"));
+        public static final TagKey<EntityType<?>> WILD_DRAGONS =
+                TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("wild_dragons"));
         public static final TagKey<EntityType<?>> BOSSES =
                 TagKey.create(Registries.ENTITY_TYPE, ArtilianMod.id("bosses"));
 
@@ -53,6 +58,10 @@ public final class ArtilianTags {
                 TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/ocular_observatory"));
         public static final TagKey<Biome> HAS_GAZING_SANCTUM =
                 TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/gazing_sanctum"));
+        public static final TagKey<Biome> HAS_DRAGON_ROOST =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/dragon_roost"));
+        public static final TagKey<Biome> HAS_AMBER_TEMPLE =
+                TagKey.create(Registries.BIOME, ArtilianMod.id("has_structure/amber_temple"));
 
         private Biomes() {}
     }

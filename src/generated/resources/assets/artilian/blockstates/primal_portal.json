@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "artilian:block/primal_portal_ns"
+    },
+    "axis=z": {
+      "model": "artilian:block/primal_portal_ew"
+    }
+  }
+}

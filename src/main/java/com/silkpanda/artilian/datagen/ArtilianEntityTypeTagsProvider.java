@@ -39,10 +39,17 @@ public class ArtilianEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 ArtilianEntities.OCULUS_SLIME.get(),
                 ArtilianEntities.LENS_GUARDIAN.get()
         );
+        tag(ArtilianTags.EntityTypes.WILD_DRAGONS).add(
+                ArtilianEntities.CANOPY_WYVERN.get(),
+                ArtilianEntities.AMBER_WYVERN.get(),
+                ArtilianEntities.STORM_GLIDEWING.get()
+        );
         tag(ArtilianTags.EntityTypes.BOSSES).add(
                 ArtilianEntities.TRAINING_GOLEM.get(),
                 ArtilianEntities.CRYSTAL_COLOSSUS.get(),
-                ArtilianEntities.CAPTAIN_BRIMSTONE.get()
+                ArtilianEntities.CAPTAIN_BRIMSTONE.get(),
+                ArtilianEntities.GREAT_ALL_SEER.get(),
+                ArtilianEntities.EMBERCROWN_SOVEREIGN.get()
         );
     }
 }

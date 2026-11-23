@@ -76,6 +76,18 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.PRISMATIC_BOOTS, "Prismatic Boots");
         this.add("item.artilian.prismatic_armor.tooltip", "Full Set — Grants Fire Resistance!");
 
+        this.addItem(ArtilianItems.DRAGONSCALE_SWORD, "Dragonscale Sword");
+        this.add("item.artilian.dragonscale_sword.tooltip", "Dragon-forged blade — Scorches and weakens foes!");
+        this.addItem(ArtilianItems.DRAGONSCALE_PICKAXE, "Dragonscale Pickaxe");
+        this.addItem(ArtilianItems.DRAGONSCALE_AXE, "Dragonscale Axe");
+        this.addItem(ArtilianItems.DRAGONSCALE_SHOVEL, "Dragonscale Shovel");
+        this.addItem(ArtilianItems.DRAGONSCALE_HOE, "Dragonscale Hoe");
+        this.addItem(ArtilianItems.DRAGONSCALE_HELMET, "Dragonscale Helmet");
+        this.addItem(ArtilianItems.DRAGONSCALE_CHESTPLATE, "Dragonscale Chestplate");
+        this.addItem(ArtilianItems.DRAGONSCALE_LEGGINGS, "Dragonscale Leggings");
+        this.addItem(ArtilianItems.DRAGONSCALE_BOOTS, "Dragonscale Boots");
+        this.add("item.artilian.dragonscale_armor.tooltip", "Full Set — Grants Fire Resistance & Strength!");
+
         this.addEntityType(ArtilianEntities.PRIMED_TNT, "Primed Artilian TNT");
         this.addBlock(ArtilianBlocks.PARTY_TNT, "Party TNT");
         this.add("block.artilian.party_tnt.tooltip", "Safe Blast — Fireworks, speed, and heal!");
@@ -89,6 +101,8 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("block.artilian.starlight_gravity_tnt.tooltip", "Safe Blast — Pulls foes inward and floats them!");
         this.addBlock(ArtilianBlocks.BRIMSTONE_METEOR_TNT, "Brimstone Meteor TNT");
         this.add("block.artilian.brimstone_meteor_tnt.tooltip", "Meteor Blast — Safe unless enabled in config!");
+        this.addBlock(ArtilianBlocks.DRAGONFIRE_MEGA_TNT, "Dragonfire Mega TNT");
+        this.add("block.artilian.dragonfire_mega_tnt.tooltip", "Dragonfire Blast — Safe unless enabled in config!");
         this.add("message.artilian.tnt.safe_mode", "Safe Blast Mode is ON — no blocks broken!");
 
         this.addItem(ArtilianItems.SPARK_WAND, "Spark Wand");
@@ -207,6 +221,14 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         // Phase 4 Stage 4: Blinky Pet
         this.addEntityType(ArtilianEntities.BLINKY, "Blinky");
         this.addItem(ArtilianItems.BLINKY_SPAWN_EGG, "Blinky Spawn Egg");
+        // Phase 4 Stage 6: The Great All-Seer
+        this.addEntityType(ArtilianEntities.GREAT_ALL_SEER, "The Great All-Seer");
+        this.addItem(ArtilianItems.GREAT_ALL_SEER_SPAWN_EGG, "Great All-Seer Spawn Egg");
+        this.addItem(ArtilianItems.OCULAR_KEY, "Ocular Key");
+        this.add("item.artilian.ocular_key.tooltip", "Use on a Boss Altar to summon The Great All-Seer!");
+        this.addItem(ArtilianItems.ALL_SEERS_LENS, "All-Seer's Lens");
+        this.add("item.artilian.all_seers_lens.tooltip", "Boss Trophy — Relic of The Great All-Seer!");
+        this.add("message.artilian.great_all_seer.all_seeing", "The Great All-Seer opens its All-Seeing Gaze!");
         this.addItem(ArtilianItems.CAPTURE_CRYSTAL, "Capture Crystal");
         this.add("item.artilian.capture_crystal.filled", "Capture Crystal (%s)");
         this.add("item.artilian.capture_crystal.tooltip", "Captures Biome Pets — Right-click a wild pet!");
@@ -269,5 +291,67 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addBlock(ArtilianBlocks.OCULAR_SLAB, "Ocular Slab");
         this.addBlock(ArtilianBlocks.OCULAR_LEAVES, "Ocular Leaves");
         this.addBlock(ArtilianBlocks.OCULAR_SAPLING, "Ocular Sapling");
+
+        // Phase 5 Stage 1: Giant Dragon Jungle
+        this.addBlock(ArtilianBlocks.PRIMAL_PORTAL, "Primal Portal");
+        this.add("biome.artilian.dragon_jungle", "Dragon Jungle");
+
+        // Phase 5 Stage 2: Mega-Jungle Worldgen
+        this.add("biome.artilian.amber_volcanic_grove", "Amber Volcanic Grove");
+        this.addBlock(ArtilianBlocks.JUNGLE_TURF, "Jungle Turf");
+        this.addBlock(ArtilianBlocks.PRIMAL_BASALT, "Primal Basalt");
+        this.addBlock(ArtilianBlocks.PRIMAL_BASALT_STAIRS, "Primal Basalt Stairs");
+        this.addBlock(ArtilianBlocks.PRIMAL_BASALT_SLAB, "Primal Basalt Slab");
+        this.addBlock(ArtilianBlocks.PRIMAL_BASALT_WALL, "Primal Basalt Wall");
+        this.addBlock(ArtilianBlocks.AMBER_MOSS, "Amber Moss");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_LOG, "Dragonwood Log");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_PLANKS, "Dragonwood Planks");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_STAIRS, "Dragonwood Stairs");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_SLAB, "Dragonwood Slab");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_LEAVES, "Dragonwood Leaves");
+        this.addBlock(ArtilianBlocks.DRAGONWOOD_SAPLING, "Dragonwood Sapling");
+
+        // Phase 5 Stage 4–5: Dragon Species
+        this.addEntityType(ArtilianEntities.CANOPY_WYVERN, "Canopy Wyvern");
+        this.addItem(ArtilianItems.CANOPY_WYVERN_SPAWN_EGG, "Canopy Wyvern Spawn Egg");
+        this.addEntityType(ArtilianEntities.AMBER_WYVERN, "Amber Wyvern");
+        this.addItem(ArtilianItems.AMBER_WYVERN_SPAWN_EGG, "Amber Wyvern Spawn Egg");
+        this.addEntityType(ArtilianEntities.STORM_GLIDEWING, "Storm Glidewing");
+        this.addItem(ArtilianItems.STORM_GLIDEWING_SPAWN_EGG, "Storm Glidewing Spawn Egg");
+        this.addItem(ArtilianItems.DRAGON_SCALE, "Dragon Scale");
+
+        // Phase 5 Stage 6: Hatchable Pet Dragons
+        this.addBlock(ArtilianBlocks.CANOPY_WYVERN_EGG, "Canopy Wyvern Egg");
+        this.addBlock(ArtilianBlocks.AMBER_WYVERN_EGG, "Amber Wyvern Egg");
+        this.addBlock(ArtilianBlocks.STORM_GLIDEWING_EGG, "Storm Glidewing Egg");
+        this.addEntityType(ArtilianEntities.CANOPY_DRAGONLING, "Canopy Dragonling");
+        this.addEntityType(ArtilianEntities.AMBER_DRAGONLING, "Amber Dragonling");
+        this.addEntityType(ArtilianEntities.STORM_DRAGONLING, "Storm Dragonling");
+        this.addItem(ArtilianItems.CANOPY_DRAGONLING_SPAWN_EGG, "Canopy Dragonling Spawn Egg");
+        this.addItem(ArtilianItems.AMBER_DRAGONLING_SPAWN_EGG, "Amber Dragonling Spawn Egg");
+        this.addItem(ArtilianItems.STORM_DRAGONLING_SPAWN_EGG, "Storm Dragonling Spawn Egg");
+        this.add("message.artilian.dragon_egg.hatched", "Your %s hatched! Use a Capture Crystal to bond with it!");
+
+        // Phase 5 Stage 8: Embercrown Sovereign
+        this.addEntityType(ArtilianEntities.EMBERCROWN_SOVEREIGN, "Embercrown Sovereign");
+        this.addItem(ArtilianItems.EMBERCROWN_SOVEREIGN_SPAWN_EGG, "Embercrown Sovereign Spawn Egg");
+        this.addItem(ArtilianItems.PRIMAL_DRAGON_CREST, "Primal Dragon Crest");
+        this.add("item.artilian.primal_dragon_crest.tooltip", "Use on a Boss Altar to summon Embercrown Sovereign!");
+        this.addItem(ArtilianItems.SOVEREIGNS_EMBER_HEART, "Sovereign's Ember Heart");
+        this.add("item.artilian.sovereigns_ember_heart.tooltip", "Boss Trophy — Heart of the Embercrown Sovereign!");
+        this.add("message.artilian.embercrown_sovereign.primal_fury", "Embercrown Sovereign unleashes Primal Fury!");
+
+        // Phase 5 Stage 9: Twin-Star Endgame Rewards
+        this.addItem(ArtilianItems.TWIN_STAR_CORE, "Twin-Star Core");
+        this.add("item.artilian.twin_star_core.tooltip", "Unites the Eye Realm and Dragon Jungle in twin-star harmony!");
+        this.addItem(ArtilianItems.TWIN_STAR_BLADE, "Twin-Star Blade");
+        this.add("item.artilian.twin_star_blade.tooltip", "Twin-Realm Blade — Ignites, weakens, and reveals foes!");
+        this.addItem(ArtilianItems.TWIN_STAR_STAFF, "Twin-Star Harmony Staff");
+        this.add("item.artilian.twin_star_staff.tooltip", "50 Mana — Heals allies & pets while blasting nearby foes!");
+        this.addItem(ArtilianItems.TWIN_STAR_HELMET, "Twin-Star Helmet");
+        this.addItem(ArtilianItems.TWIN_STAR_CHESTPLATE, "Twin-Star Chestplate");
+        this.addItem(ArtilianItems.TWIN_STAR_LEGGINGS, "Twin-Star Leggings");
+        this.addItem(ArtilianItems.TWIN_STAR_BOOTS, "Twin-Star Boots");
+        this.add("item.artilian.twin_star_armor.tooltip", "Full Set — Grants Fire Resistance, Strength, Night Vision & Regeneration!");
     }
 }

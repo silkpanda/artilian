@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "artilian:block/dragonfire_mega_tnt_bottom",
+    "side": "artilian:block/dragonfire_mega_tnt_side",
+    "top": "artilian:block/dragonfire_mega_tnt_top"
+  }
+}

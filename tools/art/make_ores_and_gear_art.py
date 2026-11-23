@@ -62,6 +62,28 @@ PRISM_TRIM_HI = (255, 224, 138, 255) # Brimstone gold glint
 PRISM_TRIM = (232, 93, 42, 255)      # Brimstone ember trim
 PRISM_TRIM_DARK = (118, 30, 24, 255) # Deep crimson trim
 
+# Dragonscale palette (Phase 5 Dragon Jungle: Obsidian-Jungle + Canopy Emerald + Ember Amber)
+DRAGON_HI = (176, 255, 198, 255)      # Bright emerald scale glint
+DRAGON_BRIGHT = (74, 222, 128, 255)   # #4ADE80 luminous canopy emerald
+DRAGON_MAIN = (34, 197, 94, 255)      # #22C55E Canopy Emerald
+DRAGON_SHADE = (20, 128, 68, 255)     # Deep jungle scale
+DRAGON_DARK = (18, 66, 44, 255)       # Dark forest plate
+DRAGON_OUTLINE = (12, 34, 26, 255)    # Obsidian-jungle outline
+DRAGON_TRIM_HI = (253, 224, 71, 255)  # #FDE047 solar-amber glint
+DRAGON_TRIM = (249, 115, 22, 255)     # #F97316 Ember Amber trim
+DRAGON_TRIM_DARK = (146, 52, 14, 255) # Deep burnt-ember trim
+
+# Twin-Star palette (Phase 5 Stage 9 Endgame: Deep Artilian Slate + Starlight Teal + Eye Twilight Magenta & Ember Gold)
+TWIN_HI = (232, 252, 255, 255)        # Radiant starlight glint
+TWIN_BRIGHT = (125, 249, 255, 255)    # #7DF9FF Pupil/Starlight glow
+TWIN_MAIN = (56, 217, 192, 255)       # #38D9C0 Starlight Teal
+TWIN_SHADE = (126, 58, 178, 255)      # Twilight violet transition
+TWIN_DARK = (43, 35, 56, 255)         # #2B2338 Deep Artilian Slate anchor
+TWIN_OUTLINE = (22, 16, 32, 255)      # Deepest cosmic-slate outline
+TWIN_TRIM_HI = (255, 246, 214, 255)   # #FFF6D6 Twin-Star highlight
+TWIN_TRIM = (255, 159, 56, 255)       # #FF9F38 Sunsteel/Ember Gold trim
+TWIN_TRIM_DARK = (217, 70, 239, 255)  # #D946EF Twilight Magenta inner trim
+
 # Handle wood / dark slate accents for tools
 HANDLE_LIGHT = (148, 102, 46, 255)
 HANDLE_MAIN = (112, 74, 28, 255)
@@ -1818,6 +1840,44 @@ def main():
         "g": PRISM_TRIM_HI,
     }
 
+    dragon_p = {
+        "h": DRAGON_HI, "hi": DRAGON_HI,
+        "b": DRAGON_BRIGHT, "bright": DRAGON_BRIGHT,
+        "m": DRAGON_MAIN, "main": DRAGON_MAIN,
+        "s": DRAGON_SHADE, "shade": DRAGON_SHADE,
+        "d": DRAGON_DARK, "dark": DRAGON_DARK,
+        "o": DRAGON_OUTLINE,
+    }
+    dragon_tool_p = {
+        "O": DRAGON_OUTLINE,
+        "o": DRAGON_TRIM_DARK,
+        "d": DRAGON_TRIM,
+        "s": DRAGON_SHADE,
+        "m": DRAGON_MAIN,
+        "b": DRAGON_BRIGHT,
+        "h": DRAGON_HI,
+        "g": DRAGON_TRIM_HI,
+    }
+
+    twin_p = {
+        "h": TWIN_HI, "hi": TWIN_HI,
+        "b": TWIN_BRIGHT, "bright": TWIN_BRIGHT,
+        "m": TWIN_MAIN, "main": TWIN_MAIN,
+        "s": TWIN_SHADE, "shade": TWIN_SHADE,
+        "d": TWIN_DARK, "dark": TWIN_DARK,
+        "o": TWIN_OUTLINE,
+    }
+    twin_tool_p = {
+        "O": TWIN_OUTLINE,
+        "o": TWIN_TRIM_DARK,
+        "d": TWIN_TRIM,
+        "s": TWIN_SHADE,
+        "m": TWIN_MAIN,
+        "b": TWIN_BRIGHT,
+        "h": TWIN_HI,
+        "g": TWIN_TRIM_HI,
+    }
+
     make_sunsteel_ore("sunsteel_ore.png", False, sun_p)
     make_sunsteel_ore("deepslate_sunsteel_ore.png", True, sun_p)
     make_sunsteel_storage_block("sunsteel_block.png")
@@ -1830,18 +1890,99 @@ def main():
     make_tool_set("sunsteel", sun_tool_p)
     make_tool_set("starlight", star_tool_p)
     make_tool_set("prismatic", prism_tool_p)
+    make_tool_set("dragonscale", dragon_tool_p)
     make_sunsteel_armor_icons(sun_p)
     make_starlight_armor_icons(star_p)
     make_starlight_armor_icons(prism_p, prefix="prismatic", trim=PRISM_TRIM, trim_dark=PRISM_TRIM_DARK, trim_hi=PRISM_TRIM_HI)
+    make_starlight_armor_icons(dragon_p, prefix="dragonscale", trim=DRAGON_TRIM, trim_dark=DRAGON_TRIM_DARK, trim_hi=DRAGON_TRIM_HI)
     sun_l1, sun_l2, sun_ap = make_sunsteel_armor_layers(sun_p)
     star_l1, star_l2, star_ap = make_starlight_armor_layers(star_p)
     prism_l1, prism_l2, prism_ap = make_starlight_armor_layers(
         prism_p, prefix="prismatic", trim=PRISM_TRIM, trim_dark=PRISM_TRIM_DARK, trim_hi=PRISM_TRIM_HI)
+    dragon_l1, dragon_l2, dragon_ap = make_starlight_armor_layers(
+        dragon_p, prefix="dragonscale", trim=DRAGON_TRIM, trim_dark=DRAGON_TRIM_DARK, trim_hi=DRAGON_TRIM_HI)
     make_sunsteel_armor_geo_sheet(sun_l1, sun_l2, sun_ap)
     make_starlight_armor_geo_sheet(star_l1, star_l2, star_ap)
     make_starlight_armor_geo_sheet(
         prism_l1, prism_l2, prism_ap, prefix="prismatic", trim_dark=PRISM_TRIM_DARK, trim=PRISM_TRIM, shade=PRISM_SHADE)
-    print("Generated all Sunsteel, Starlight Crystal, and Prismatic textures.")
+    make_starlight_armor_geo_sheet(
+        dragon_l1, dragon_l2, dragon_ap, prefix="dragonscale", trim_dark=DRAGON_TRIM_DARK, trim=DRAGON_TRIM, shade=DRAGON_SHADE)
+
+    # Twin-Star Endgame Rewards (Phase 5 Stage 9)
+    twin_core_grid = [
+        "......OOOO......",
+        "....OOggggOO....",
+        "...OggbbbbggO...",
+        "..OgbbhhhhbbgO..",
+        ".OgbhhmmmmhhbgO.",
+        ".OghmssssssmhgO.",
+        "OgbssooooossbgO.",
+        "OgbsoTTTTTTosbgO",
+        "OgbsoTTTTTTosbgO",
+        "OgbssooooossbgO.",
+        ".OghmddddddmhgO.",
+        ".OgbhhddddhhbgO.",
+        "..OgbbhhhhbbgO..",
+        "...OggbbbbggO...",
+        "....OOggggOO....",
+        "......OOOO......",
+    ]
+    twin_core_p = {
+        "O": TWIN_OUTLINE,
+        "g": TWIN_TRIM,
+        "b": TWIN_BRIGHT,
+        "h": TWIN_HI,
+        "m": TWIN_MAIN,
+        "s": TWIN_SHADE,
+        "o": TWIN_TRIM_DARK,
+        "T": TWIN_TRIM_HI,
+        "d": DRAGON_MAIN,
+    }
+    twin_core_img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y, row in enumerate(twin_core_grid):
+        for x, ch in enumerate(row):
+            if ch != ".":
+                put(twin_core_img, x, y, twin_core_p[ch])
+    twin_core_img.save(TEX_ROOT / "item" / "twin_star_core.png")
+
+    twin_tp = {
+        **twin_tool_p,
+        "u": (40, 30, 11, 255),
+        "v": (73, 54, 21, 255),
+        "w": (104, 78, 30, 255),
+        "x": (137, 103, 39, 255),
+    }
+    twin_sword = [
+        ".............ooo",
+        "............ohhO",
+        "...........ohmhO",
+        "..........ohmhO.",
+        ".........ohmbO..",
+        "........ohmbO...",
+        "..oo...obmbO....",
+        "..odo.obgbO.....",
+        "...osObmbO......",
+        "...ossdbO.......",
+        "....odoO........",
+        "...vwOooO.......",
+        "..vxu.OOoO......",
+        "oowu....OO......",
+        "odO.............",
+        "OOO.............",
+    ]
+    twin_sword_img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    for y, row in enumerate(twin_sword):
+        for x, ch in enumerate(row):
+            if ch != ".":
+                put(twin_sword_img, x, y, twin_tp[ch])
+    twin_sword_img.save(TEX_ROOT / "item" / "twin_star_blade.png")
+
+    make_starlight_armor_icons(twin_p, prefix="twin_star", trim=TWIN_TRIM, trim_dark=TWIN_TRIM_DARK, trim_hi=TWIN_TRIM_HI)
+    twin_l1, twin_l2, twin_ap = make_starlight_armor_layers(
+        twin_p, prefix="twin_star", trim=TWIN_TRIM, trim_dark=TWIN_TRIM_DARK, trim_hi=TWIN_TRIM_HI)
+    make_starlight_armor_geo_sheet(
+        twin_l1, twin_l2, twin_ap, prefix="twin_star", trim_dark=TWIN_TRIM_DARK, trim=TWIN_TRIM, shade=TWIN_SHADE)
+    print("Generated all Sunsteel, Starlight Crystal, Prismatic, Dragonscale, and Twin-Star textures.")
 
 
 if __name__ == "__main__":

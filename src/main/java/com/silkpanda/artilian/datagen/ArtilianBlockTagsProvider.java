@@ -188,5 +188,47 @@ public class ArtilianBlockTagsProvider extends BlockTagsProvider {
         tag(ArtilianTags.Blocks.GAZING_PORTAL_FRAME).add(
                 ArtilianBlocks.STARLIGHT_SLATE.get()
         );
+        tag(ArtilianTags.Blocks.PRIMAL_PORTAL_FRAME).add(
+                net.minecraft.world.level.block.Blocks.OBSIDIAN,
+                net.minecraft.world.level.block.Blocks.CRYING_OBSIDIAN
+        );
+
+        // Phase 5 Stage 2: Mega-Jungle Worldgen
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
+                ArtilianBlocks.PRIMAL_BASALT.get(),
+                ArtilianBlocks.PRIMAL_BASALT_STAIRS.get(),
+                ArtilianBlocks.PRIMAL_BASALT_SLAB.get(),
+                ArtilianBlocks.PRIMAL_BASALT_WALL.get()
+        );
+        tag(BlockTags.NEEDS_STONE_TOOL).add(
+                ArtilianBlocks.PRIMAL_BASALT.get(),
+                ArtilianBlocks.PRIMAL_BASALT_STAIRS.get(),
+                ArtilianBlocks.PRIMAL_BASALT_SLAB.get(),
+                ArtilianBlocks.PRIMAL_BASALT_WALL.get()
+        );
+        tag(BlockTags.STAIRS).add(ArtilianBlocks.PRIMAL_BASALT_STAIRS.get());
+        tag(BlockTags.SLABS).add(ArtilianBlocks.PRIMAL_BASALT_SLAB.get());
+        tag(BlockTags.WALLS).add(ArtilianBlocks.PRIMAL_BASALT_WALL.get());
+
+        tag(BlockTags.DIRT).add(ArtilianBlocks.JUNGLE_TURF.get());
+        tag(BlockTags.ANIMALS_SPAWNABLE_ON).add(ArtilianBlocks.JUNGLE_TURF.get());
+        tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ArtilianBlocks.JUNGLE_TURF.get());
+
+        tag(BlockTags.MINEABLE_WITH_HOE).add(
+                ArtilianBlocks.AMBER_MOSS.get(),
+                ArtilianBlocks.DRAGONWOOD_LEAVES.get()
+        );
+        tag(BlockTags.MINEABLE_WITH_AXE).add(
+                ArtilianBlocks.DRAGONWOOD_LOG.get(),
+                ArtilianBlocks.DRAGONWOOD_PLANKS.get(),
+                ArtilianBlocks.DRAGONWOOD_STAIRS.get(),
+                ArtilianBlocks.DRAGONWOOD_SLAB.get()
+        );
+        tag(BlockTags.WOODEN_STAIRS).add(ArtilianBlocks.DRAGONWOOD_STAIRS.get());
+        tag(BlockTags.WOODEN_SLABS).add(ArtilianBlocks.DRAGONWOOD_SLAB.get());
+        tag(BlockTags.LOGS_THAT_BURN).add(ArtilianBlocks.DRAGONWOOD_LOG.get());
+        tag(BlockTags.PLANKS).add(ArtilianBlocks.DRAGONWOOD_PLANKS.get());
+        tag(BlockTags.LEAVES).add(ArtilianBlocks.DRAGONWOOD_LEAVES.get());
+        tag(BlockTags.SAPLINGS).add(ArtilianBlocks.DRAGONWOOD_SAPLING.get());
     }
 }

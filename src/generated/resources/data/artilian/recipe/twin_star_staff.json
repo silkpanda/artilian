@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "artilian:starlight_crystal"
+    },
+    "R": {
+      "item": "minecraft:blaze_rod"
+    },
+    "T": {
+      "item": "artilian:twin_star_core"
+    }
+  },
+  "pattern": [
+    " TC",
+    " CT",
+    "R  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:twin_star_staff"
+  }
+}

@@ -19,6 +19,10 @@
     "artilian:ocular_log",
     "artilian:ocular_planks",
     "artilian:ocular_stairs",
-    "artilian:ocular_slab"
+    "artilian:ocular_slab",
+    "artilian:dragonwood_log",
+    "artilian:dragonwood_planks",
+    "artilian:dragonwood_stairs",
+    "artilian:dragonwood_slab"
   ]
 }

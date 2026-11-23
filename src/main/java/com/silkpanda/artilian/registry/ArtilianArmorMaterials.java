@@ -48,6 +48,24 @@ public class ArtilianArmorMaterials {
             3.0F,
             0.15F);
 
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> DRAGONSCALE = register(
+            "dragonscale",
+            4, 8, 10, 4, 12,
+            26,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            () -> ArtilianItems.DRAGON_SCALE.get(),
+            3.5F,
+            0.20F);
+
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TWIN_STAR = register(
+            "twin_star",
+            5, 9, 11, 5, 14,
+            30,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            () -> ArtilianItems.TWIN_STAR_CORE.get(),
+            4.0F,
+            0.25F);
+
     private static DeferredHolder<ArmorMaterial, ArmorMaterial> register(
             String name,
             int boots,

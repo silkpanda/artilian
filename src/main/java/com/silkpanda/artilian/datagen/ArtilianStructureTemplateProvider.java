@@ -79,6 +79,8 @@ public class ArtilianStructureTemplateProvider implements DataProvider {
             writeTemplate(cachedOutput, "brimstone_bastion", buildBrimstoneBastion());
             writeTemplate(cachedOutput, "ocular_observatory", buildOcularObservatory());
             writeTemplate(cachedOutput, "gazing_sanctum", buildGazingSanctum());
+            writeTemplate(cachedOutput, "dragon_roost", buildDragonRoost());
+            writeTemplate(cachedOutput, "amber_temple", buildAmberTemple());
         });
     }
 
@@ -1351,6 +1353,243 @@ public class ArtilianStructureTemplateProvider implements DataProvider {
         b.addGuardian(ArtilianEntities.LENS_GUARDIAN.get(), 4.5, 3.0, 9.5);
         b.addGuardian(ArtilianEntities.LENS_GUARDIAN.get(), 10.5, 3.0, 9.5);
         b.addGuardian(ArtilianEntities.PEEPER.get(), 7.5, 4.5, 9.5);
+
+        b.connectFencesAndWalls();
+        return b.build();
+    }
+
+    private static CompoundTag buildDragonRoost() {
+        TemplateBuilder b = new TemplateBuilder(15, 15, 15);
+        BlockState primalBasalt = ArtilianBlocks.PRIMAL_BASALT.get().defaultBlockState();
+        BlockState jungleTurf = ArtilianBlocks.JUNGLE_TURF.get().defaultBlockState();
+        BlockState amberMoss = ArtilianBlocks.AMBER_MOSS.get().defaultBlockState();
+        BlockState dragonwoodLog = ArtilianBlocks.DRAGONWOOD_LOG.get().defaultBlockState()
+                .setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
+        BlockState dragonwoodPlanks = ArtilianBlocks.DRAGONWOOD_PLANKS.get().defaultBlockState();
+        BlockState basaltWall = ArtilianBlocks.PRIMAL_BASALT_WALL.get().defaultBlockState();
+        BlockState orangePane = Blocks.ORANGE_STAINED_GLASS_PANE.defaultBlockState();
+        BlockState goldBlock = Blocks.GOLD_BLOCK.defaultBlockState();
+        BlockState hayBlock = Blocks.HAY_BLOCK.defaultBlockState();
+        BlockState lantern = Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, false);
+        BlockState hangingLantern = Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true);
+        Block basaltStairs = ArtilianBlocks.PRIMAL_BASALT_STAIRS.get();
+        Block dragonwoodStairs = ArtilianBlocks.DRAGONWOOD_STAIRS.get();
+        Block dragonwoodSlab = ArtilianBlocks.DRAGONWOOD_SLAB.get();
+
+        b.fillBox(0, 1, 0, 14, 14, 14, Blocks.AIR.defaultBlockState());
+
+        // y = 0: Primal Basalt & Jungle Turf foundation with glowing Amber Moss corners
+        for (int x = 0; x <= 14; x++) {
+            for (int z = 0; z <= 14; z++) {
+                b.set(x, 0, z, ((x + z) % 3 == 0) ? jungleTurf : primalBasalt);
+            }
+        }
+        for (int[] c : new int[][]{{0, 0}, {1, 0}, {0, 1}, {14, 0}, {13, 0}, {14, 1},
+                {0, 14}, {1, 14}, {0, 13}, {14, 14}, {13, 14}, {14, 13}}) {
+            b.set(c[0], 0, c[1], amberMoss);
+        }
+
+        // y = 1: Stepped Primal Basalt plinth, Dragonwood Planks floor & South entry stairs
+        b.fillBox(2, 1, 2, 12, 1, 12, primalBasalt);
+        for (int x = 4; x <= 10; x++) {
+            for (int z = 4; z <= 10; z++) {
+                b.set(x, 1, z, ((x + z) % 2 == 0) ? dragonwoodPlanks : primalBasalt);
+            }
+        }
+        for (int x = 6; x <= 8; x++) {
+            b.set(x, 1, 13, stair(basaltStairs, Direction.NORTH, Half.BOTTOM));
+        }
+        for (int[] p : new int[][]{{1, 1}, {13, 1}, {1, 13}, {13, 13}}) {
+            b.set(p[0], 1, p[1], basaltWall);
+            b.set(p[0], 2, p[1], lantern);
+        }
+
+        // y = 2..6: Recessed Primal Basalt & Dragonwood walls + Dragonwood Log corner pillars
+        for (int y = 2; y <= 6; y++) {
+            for (int i = 3; i <= 11; i++) {
+                BlockState wallMat = (y == 2 || y == 6) ? primalBasalt : dragonwoodPlanks;
+                b.set(i, y, 3, wallMat);
+                b.set(i, y, 11, wallMat);
+                b.set(3, y, i, wallMat);
+                b.set(11, y, i, wallMat);
+            }
+            for (int[] c : new int[][]{{2, 2}, {12, 2}, {2, 12}, {12, 12}}) {
+                b.set(c[0], y, c[1], dragonwoodLog);
+            }
+            for (int[] m : new int[][]{{7, 2}, {2, 7}, {12, 7}}) {
+                b.set(m[0], y, m[1], basaltWall);
+            }
+        }
+        // Arched South doorway
+        b.fillBox(6, 2, 11, 8, 4, 11, Blocks.AIR.defaultBlockState());
+        b.set(6, 4, 11, stair(basaltStairs, Direction.EAST, Half.TOP));
+        b.set(8, 4, 11, stair(basaltStairs, Direction.WEST, Half.TOP));
+        // Recessed amber lookout windows & central glowing Amber Moss hearth
+        for (int y = 3; y <= 4; y++) {
+            b.set(5, y, 3, orangePane);
+            b.set(9, y, 3, orangePane);
+            b.set(3, y, 5, orangePane);
+            b.set(3, y, 9, orangePane);
+            b.set(11, y, 5, orangePane);
+            b.set(11, y, 9, orangePane);
+        }
+        b.set(7, 4, 3, amberMoss);
+
+        // Interior perch, chest & hanging lanterns
+        b.set(7, 2, 7, primalBasalt);
+        b.set(7, 3, 7, amberMoss);
+        b.set(7, 4, 7, lantern);
+        b.setChest(7, 2, 5, Direction.SOUTH, ArtilianStructures.DRAGON_ROOST_CHEST);
+        b.set(4, 5, 4, hangingLantern);
+        b.set(10, 5, 4, hangingLantern);
+        b.set(4, 5, 10, hangingLantern);
+        b.set(10, 5, 10, hangingLantern);
+
+        // y = 7..10: Overhanging Dragonwood & Basalt roost eaves
+        for (int step = 0; step < 4; step++) {
+            int y = 7 + step;
+            int min = 1 + step;
+            int max = 13 - step;
+            Block roofStair = (step % 2 == 0) ? dragonwoodStairs : basaltStairs;
+            for (int i = min; i <= max; i++) {
+                b.set(i, y, min, stair(roofStair, Direction.SOUTH, Half.BOTTOM));
+                b.set(i, y, max, stair(roofStair, Direction.NORTH, Half.BOTTOM));
+                b.set(min, y, i, stair(roofStair, Direction.EAST, Half.BOTTOM));
+                b.set(max, y, i, stair(roofStair, Direction.WEST, Half.BOTTOM));
+            }
+            if (step == 0) {
+                for (int[] c : new int[][]{{1, 1}, {13, 1}, {1, 13}, {13, 13}}) {
+                    b.set(c[0], y, c[1], slab(dragonwoodSlab, SlabType.BOTTOM));
+                    b.set(c[0], y + 1, c[1], lantern);
+                }
+            }
+        }
+
+        // y = 11..14: Crown Dragon Sky-Roost Nest
+        b.fillBox(5, 11, 5, 9, 11, 9, primalBasalt);
+        for (int x = 6; x <= 8; x++) {
+            for (int z = 6; z <= 8; z++) {
+                b.set(x, 12, z, hayBlock);
+            }
+        }
+        b.set(7, 12, 7, amberMoss);
+        b.set(7, 13, 7, goldBlock);
+        b.set(7, 14, 7, lantern);
+        for (int[] r : new int[][]{{5, 5}, {9, 5}, {5, 9}, {9, 9}}) {
+            b.set(r[0], 12, r[1], basaltWall);
+            b.set(r[0], 13, r[1], lantern);
+        }
+
+        b.connectFencesAndWalls();
+        return b.build();
+    }
+
+    private static CompoundTag buildAmberTemple() {
+        TemplateBuilder b = new TemplateBuilder(15, 16, 15);
+        BlockState primalBasalt = ArtilianBlocks.PRIMAL_BASALT.get().defaultBlockState();
+        BlockState amberMoss = ArtilianBlocks.AMBER_MOSS.get().defaultBlockState();
+        BlockState gildedBlackstone = Blocks.GILDED_BLACKSTONE.defaultBlockState();
+        BlockState goldBlock = Blocks.GOLD_BLOCK.defaultBlockState();
+        BlockState dragonwoodLog = ArtilianBlocks.DRAGONWOOD_LOG.get().defaultBlockState()
+                .setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
+        BlockState dragonwoodPlanks = ArtilianBlocks.DRAGONWOOD_PLANKS.get().defaultBlockState();
+        BlockState basaltWall = ArtilianBlocks.PRIMAL_BASALT_WALL.get().defaultBlockState();
+        BlockState yellowPane = Blocks.YELLOW_STAINED_GLASS_PANE.defaultBlockState();
+        BlockState lantern = Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, false);
+        BlockState hangingLantern = Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true);
+        Block basaltStairs = ArtilianBlocks.PRIMAL_BASALT_STAIRS.get();
+        Block basaltSlab = ArtilianBlocks.PRIMAL_BASALT_SLAB.get();
+        Block dragonwoodStairs = ArtilianBlocks.DRAGONWOOD_STAIRS.get();
+
+        b.fillBox(0, 1, 0, 14, 15, 14, Blocks.AIR.defaultBlockState());
+
+        // y = 0..2: Stepped Primal Basalt & Gilded Blackstone temple plinth
+        b.fillBox(0, 0, 0, 14, 0, 14, primalBasalt);
+        for (int i = 1; i <= 13; i += 3) {
+            b.set(i, 0, 0, amberMoss);
+            b.set(i, 0, 14, amberMoss);
+            b.set(0, 0, i, amberMoss);
+            b.set(14, 0, i, amberMoss);
+        }
+        b.fillBox(1, 1, 1, 13, 1, 13, gildedBlackstone);
+        b.fillBox(2, 2, 2, 12, 2, 12, primalBasalt);
+        for (int x = 5; x <= 9; x++) {
+            b.set(x, 1, 14, stair(basaltStairs, Direction.NORTH, Half.BOTTOM));
+            b.set(x, 2, 13, stair(basaltStairs, Direction.NORTH, Half.BOTTOM));
+        }
+        for (int x = 4; x <= 10; x++) {
+            for (int z = 4; z <= 10; z++) {
+                b.set(x, 2, z, ((x + z) % 2 == 0) ? dragonwoodPlanks : gildedBlackstone);
+            }
+        }
+
+        // y = 3..8: Double-height Dragonwood Log colonnade + recessed Amber Temple walls
+        for (int y = 3; y <= 8; y++) {
+            for (int i = 3; i <= 11; i++) {
+                BlockState wallMat = (y == 3 || y == 8) ? gildedBlackstone : primalBasalt;
+                b.set(i, y, 3, wallMat);
+                b.set(i, y, 11, wallMat);
+                b.set(3, y, i, wallMat);
+                b.set(11, y, i, wallMat);
+            }
+            for (int[] c : new int[][]{{2, 2}, {12, 2}, {2, 12}, {12, 12}, {7, 2}, {2, 7}, {12, 7}}) {
+                b.set(c[0], y, c[1], dragonwoodLog);
+            }
+        }
+        // South ceremonial portal
+        b.fillBox(6, 3, 11, 8, 6, 11, Blocks.AIR.defaultBlockState());
+        b.set(6, 6, 11, stair(basaltStairs, Direction.EAST, Half.TOP));
+        b.set(8, 6, 11, stair(basaltStairs, Direction.WEST, Half.TOP));
+        // Tall amber stained-glass windows + glowing Amber Moss inlays
+        for (int y = 4; y <= 6; y++) {
+            b.set(5, y, 3, yellowPane);
+            b.set(9, y, 3, yellowPane);
+            b.set(3, y, 5, yellowPane);
+            b.set(3, y, 9, yellowPane);
+            b.set(11, y, 5, yellowPane);
+            b.set(11, y, 9, yellowPane);
+        }
+        b.set(7, 5, 3, amberMoss);
+        b.set(3, 5, 7, amberMoss);
+        b.set(11, 5, 7, amberMoss);
+
+        // Interior Amber Altar, Chest & Braziers
+        b.set(7, 3, 7, gildedBlackstone);
+        b.set(7, 4, 7, goldBlock);
+        b.set(7, 5, 7, amberMoss);
+        b.set(7, 6, 7, lantern);
+        b.setChest(7, 3, 5, Direction.SOUTH, ArtilianStructures.AMBER_TEMPLE_CHEST);
+        for (int[] br : new int[][]{{3, 11}, {11, 11}, {4, 4}, {10, 4}}) {
+            b.set(br[0], 3, br[1], basaltWall);
+            b.set(br[0], 4, br[1], lantern);
+        }
+        b.set(4, 7, 10, hangingLantern);
+        b.set(10, 7, 10, hangingLantern);
+
+        // y = 9..15: Double-tiered overhanging volcanic temple roof & Amber Spire
+        for (int step = 0; step < 3; step++) {
+            int y = 9 + step;
+            int min = 1 + step;
+            int max = 13 - step;
+            Block roofStair = (step % 2 == 0) ? basaltStairs : dragonwoodStairs;
+            for (int i = min; i <= max; i++) {
+                b.set(i, y, min, stair(roofStair, Direction.SOUTH, Half.BOTTOM));
+                b.set(i, y, max, stair(roofStair, Direction.NORTH, Half.BOTTOM));
+                b.set(min, y, i, stair(roofStair, Direction.EAST, Half.BOTTOM));
+                b.set(max, y, i, stair(roofStair, Direction.WEST, Half.BOTTOM));
+            }
+        }
+        b.fillBox(4, 12, 4, 10, 12, 10, primalBasalt);
+        for (int i = 4; i <= 10; i++) {
+            b.set(i, 12, 4, slab(basaltSlab, SlabType.BOTTOM));
+            b.set(i, 12, 10, slab(basaltSlab, SlabType.BOTTOM));
+            b.set(4, 12, i, slab(basaltSlab, SlabType.BOTTOM));
+            b.set(10, 12, i, slab(basaltSlab, SlabType.BOTTOM));
+        }
+        b.fillBox(5, 13, 5, 9, 13, 9, gildedBlackstone);
+        b.set(7, 13, 7, goldBlock);
+        b.set(7, 14, 7, amberMoss);
+        b.set(7, 15, 7, lantern);
 
         b.connectFencesAndWalls();
         return b.build();

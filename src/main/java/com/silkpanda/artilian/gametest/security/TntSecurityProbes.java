@@ -345,4 +345,59 @@ public class TntSecurityProbes {
         }
         helper.succeed();
     }
+
+    /**
+     * P5-02: Dragonfire Mega TNT breaks zero blocks under default kid-safe config,
+     * spares chests, players, Chester, villagers, and tamed pets, while damaging hostile mobs.
+     */
+    @GameTest(template = "tnt_arena", timeoutTicks = 80)
+    public static void p5_02_dragonfireMegaTntHonorsDestructiveConfigAndKidSafeTargets(GameTestHelper helper) {
+        helper.assertFalse(ArtilianConfig.isDestructiveTntAllowed(),
+                "Default config must disable destructive custom TNTs");
+        ServerLevel level = helper.getLevel();
+        List<BlockPos> shell = buildVulnerableShell(helper);
+        BlockPos chestPos = new BlockPos(7, 2, 4);
+        helper.setBlock(chestPos, Blocks.CHEST);
+
+        ServerPlayer steve = CustomTntGameTests.spawnSurvivalPlayer(helper, "SteveDragonTnt", new Vec3(7.5, 2.0, 7.5));
+        ChesterEntity chester = new ChesterEntity(ArtilianEntities.CHESTER.get(), level);
+        Vec3 allyPos = helper.absoluteVec(new Vec3(6.5, 2.0, 7.5));
+        chester.setPos(allyPos.x, allyPos.y, allyPos.z);
+        chester.setOwner(steve);
+        level.addFreshEntity(chester);
+
+        Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new BlockPos(8, 2, 7));
+        CrystalFoxEntity pet = helper.spawnWithNoFreeWill(ArtilianEntities.CRYSTAL_FOX.get(), new BlockPos(7, 2, 8));
+        pet.setOwner(steve);
+        Zombie foe = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(7, 2, 6));
+
+        AABB arenaBox = new AABB(helper.absolutePos(new BlockPos(0, 0, 0))).minmax(
+                new AABB(helper.absolutePos(new BlockPos(14, 14, 14))));
+        try {
+            Vec3 center = helper.absoluteVec(new Vec3(7.5, 2.0, 7.5));
+            ArtilianPrimedTnt megaTnt = new ArtilianPrimedTnt(
+                    level, center.x, center.y, center.z, steve, TntVariant.DRAGONFIRE_MEGA);
+            megaTnt.setFuse(1);
+            level.addFreshEntity(megaTnt);
+            megaTnt.tick();
+
+            assertShellIntact(helper, shell, "P5-02");
+            helper.assertBlockPresent(Blocks.CHEST, chestPos);
+            helper.assertTrue(foe.getHealth() < foe.getMaxHealth(),
+                    "Dragonfire Mega TNT should damage hostile Zombie");
+            helper.assertTrue(steve.getHealth() == steve.getMaxHealth(),
+                    "EXPLOITED P5-02: Dragonfire Mega TNT harmed player");
+            helper.assertTrue(chester.isAlive() && chester.getHealth() == chester.getMaxHealth(),
+                    "EXPLOITED P5-02: Dragonfire Mega TNT harmed Chester");
+            helper.assertTrue(villager.isAlive() && villager.getHealth() == villager.getMaxHealth(),
+                    "EXPLOITED P5-02: Dragonfire Mega TNT harmed Villager");
+            helper.assertTrue(pet.isAlive() && pet.getHealth() == pet.getMaxHealth(),
+                    "EXPLOITED P5-02: Dragonfire Mega TNT harmed tamed pet");
+        } finally {
+            level.getEntitiesOfClass(ArtilianPrimedTnt.class, arenaBox).forEach(ArtilianPrimedTnt::discard);
+            chester.discard();
+            CustomTntGameTests.removeTestPlayer(level, steve);
+        }
+        helper.succeed();
+    }
 }

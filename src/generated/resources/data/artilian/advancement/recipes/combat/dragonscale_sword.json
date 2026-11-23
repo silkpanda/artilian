@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_dragon_scale": {
+      "conditions": {
+        "items": [
+          {
+            "items": "artilian:dragon_scale"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "artilian:dragonscale_sword"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_dragon_scale"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "artilian:dragonscale_sword"
+    ]
+  }
+}
