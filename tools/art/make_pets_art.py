@@ -2520,88 +2520,489 @@ def make_galecorn():
 
 
 def make_ember_drake():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Ember Drake: Canopy Emerald & Ember Amber dragon hatchling + glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # DESIGN.md Dragon Jungle Accent: Canopy Emerald (#22C55E) + Ember Amber (#F97316)
-    ED_HI = (110, 238, 152, 255)
-    ED_BASE = (34, 197, 94, 255)
-    ED_SHADE = (22, 148, 70, 255)
-    ED_DEEP = (14, 98, 48, 255)
+    # 8-stop Canopy Emerald Dragon Scale ramp (#0B3B24 -> #22C55E -> #DCFEF0)
+    SCALE_RAMP = [
+        (11, 59, 36, 255),     # 0: Deep jungle crevice shadow
+        (15, 86, 50, 255),     # 1: Dark forest scale shadow
+        (20, 118, 66, 255),    # 2: Shaded emerald
+        (26, 152, 80, 255),    # 3: Mid emerald scale
+        (34, 197, 94, 255),    # 4: DESIGN.md Canopy Emerald (#22C55E)
+        (82, 224, 134, 255),   # 5: Sunlit emerald highlight
+        (152, 244, 186, 255),  # 6: Pale mint scale sheen
+        (220, 254, 240, 255),  # 7: Specular dew-mint glint
+    ]
+    # 8-stop Ember Amber Flame & Wing Membrane ramp (#5E1908 -> #F97316 -> #FEF9C3)
+    EMBER_RAMP = [
+        (94, 25, 8, 255),      # 0: Charred crimson-umber shadow
+        (142, 42, 10, 255),    # 1: Deep burnt sienna
+        (196, 68, 14, 255),    # 2: Rich volcanic orange
+        (249, 115, 22, 255),   # 3: DESIGN.md Ember Amber (#F97316)
+        (252, 158, 42, 255),   # 4: Bright molten amber
+        (254, 198, 78, 255),   # 5: Golden belly scute
+        (254, 232, 132, 255),  # 6: Radiant solar flame
+        (254, 249, 195, 255),  # 7: White-hot ember core
+    ]
+    # 8-stop Ivory-Gold Horn, Fang & Claw ramp (#4A321E -> #FFFDF0)
+    HORN_RAMP = [
+        (74, 50, 30, 255),     # 0: Dark horn root shadow
+        (114, 82, 48, 255),    # 1: Aged bronze-ivory
+        (154, 118, 76, 255),   # 2: Warm tan horn shadow
+        (192, 156, 108, 255),  # 3: Mid bone-ivory
+        (224, 194, 146, 255),  # 4: Warm ivory base
+        (244, 224, 184, 255),  # 5: Sunlit horn highlight
+        (252, 242, 214, 255),  # 6: Cream-white horn ridge
+        (255, 253, 240, 255),  # 7: Pearlescent tip glint
+    ]
 
-    AMB_HI = (255, 222, 120, 255)
-    AMB_BASE = (249, 115, 22, 255)
-    AMB_SHADE = (194, 72, 14, 255)
-    AMB_DEEP = (138, 44, 10, 255)
+    PAL = {
+        "0": SCALE_RAMP[0],
+        "1": SCALE_RAMP[1],
+        "2": SCALE_RAMP[2],
+        "3": SCALE_RAMP[3],
+        "4": SCALE_RAMP[4],
+        "5": SCALE_RAMP[5],
+        "6": SCALE_RAMP[6],
+        "7": SCALE_RAMP[7],
+        "a": EMBER_RAMP[0],
+        "r": EMBER_RAMP[1],
+        "R": EMBER_RAMP[2],
+        "O": EMBER_RAMP[3],
+        "A": EMBER_RAMP[4],
+        "G": EMBER_RAMP[5],
+        "Y": EMBER_RAMP[6],
+        "W": EMBER_RAMP[7],
+        "k": HORN_RAMP[0],
+        "b": HORN_RAMP[1],
+        "n": HORN_RAMP[2],
+        "h": HORN_RAMP[3],
+        "H": HORN_RAMP[4],
+        "i": HORN_RAMP[5],
+        "I": HORN_RAMP[6],
+        "P": HORN_RAMP[7],
+        "D": (16, 28, 24, 255),    # Deep obsidian-forest pupil & nostril anchor
+        "C": (255, 255, 255, 255), # Specular eye sparkle
+    }
 
-    HORN_HI = (255, 246, 214, 255)
-    HORN_BASE = (224, 204, 164, 255)
-    HORN_SHADE = (176, 152, 118, 255)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # 1. Body [6, 5, 9] at [0, 0] + Belly [5, 1, 8] at [32, 0] + Dorsal Spikes [1, 2, 2] at [60, 0] & [68, 0]
-    smooth_coat(img, 0, 0, 6, 5, 9, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    bf = faces(0, 0, 6, 5, 9)
-    # Subtle dragon scale checker along top/sides
-    for side in ("top", "east", "west"):
+    def shade_ramp_box(u, v, w, h, d, ramp, *, diamond_scales=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.3,
+            "front": 4.6,
+            "east": 4.1,
+            "west": 3.7,
+            "back": 3.2,
+            "bottom": 2.1,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.4 - edge_dist * 1.1
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.5 if edge == 0 else 0.0) + (0.4 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                    if diamond_scales:
+                        cell = ((lx + (ly // 2) * 2) % 4, ly % 4)
+                        if cell in ((0, 0), (2, 2)):
+                            idx += 0.85
+                        elif cell in ((1, 1), (3, 3)):
+                            idx -= 0.75
+                        elif (lx * 5 + ly * 11 + seed * 3) % 9 == 0:
+                            idx += 0.35
+                    else:
+                        tuft = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 11
+                        if tuft <= 1:
+                            idx += 0.45
+                        elif tuft >= 9:
+                            idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.6
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    def paint_cutout_z(u, v, w, h, front_grid, *, back_grid=None, glow_keys=()):
+        if back_grid is None:
+            back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
+
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
+
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
+
+    # 1. Body [6, 5, 9] @ [0, 0] -> 12x10x18 px
+    shade_ramp_box(0, 0, 6, 5, 9, SCALE_RAMP, diamond_scales=True, seed=1)
+    bf = f2x(0, 0, 6, 5, 9)
+    # Golden-amber dorsal ridge accents & flank ember spots
+    tx, ty, tw, th = bf["top"]
+    for ly in range(1, th - 1):
+        put(img, tx + 5, ty + ly, PAL["G"] if ly % 3 == 0 else PAL["6"])
+        put(img, tx + 6, ty + ly, PAL["Y"] if ly % 3 == 0 else PAL["7"])
+    for side in ("east", "west"):
         sx, sy, sw, sh = bf[side]
-        for py in range(sy, sy + sh):
-            for px in range(sx, sx + sw):
-                if (px + py) % 3 == 0:
-                    put(img, px, py, ED_HI if side == "top" else ED_SHADE)
-    smooth_coat(img, 32, 0, 5, 1, 8, AMB_HI, (255, 190, 96, 255), AMB_BASE, AMB_SHADE)
-    smooth_coat(img, 60, 0, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
-    smooth_coat(img, 68, 0, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+        for ox, oy, ch in ((4, 3, "6"), (5, 4, "O"), (9, 4, "G"), (10, 5, "O"), (13, 3, "6")):
+            put(img, sx + ox, sy + oy, PAL[ch])
+            if ch in ("O", "G"):
+                put(glow, sx + ox, sy + oy, PAL[ch])
+    # Warm ember chest plate center on body front
+    fx, fy, fw, fh = bf["front"]
+    for py in range(4, fh - 1):
+        for px in range(3, fw - 3):
+            put(img, fx + px, fy + py, PAL["G"] if py in (5, 6) and px in (5, 6) else PAL["A"])
+            if py in (5, 6) and px in (5, 6):
+                put(glow, fx + px, fy + py, PAL["Y"])
 
-    # 2. Neck [4, 4, 3] at [76, 0]
-    smooth_coat(img, 76, 0, 4, 4, 3, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    nf = faces(76, 0, 4, 4, 3)
-    fill(img, (nf["front"][0] + 1, nf["front"][1] + 1, 2, 3), AMB_HI)
+    # 2. Ribbed Golden-Amber Belly Scutes [5, 2, 8] @ [30, 0] -> 10x4x16 px
+    shade_ramp_box(30, 0, 5, 2, 8, EMBER_RAMP, seed=2)
+    blf = f2x(30, 0, 5, 2, 8)
+    # Crisp chest hearth core on front
+    paint_box_2x(img, 30, 0, 5, 2, 8, {
+        "front": [
+            "rOGYWWYGOr",
+            "ROYWWWWYOR",
+            "aOGYYYYGOa",
+            "arROAAORra",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 30, 0, 5, 2, 8, {
+        "front": [
+            "...YWWY...",
+            "..YWWWWY..",
+            "...YYYY...",
+            "..........",
+        ],
+    }, PAL)
+    # Ribbed horizontal scute plates on bottom, east, west
+    bx, by, bw, bh = blf["bottom"]
+    for ly in range(bh):
+        scute_seam = ly % 3 == 0
+        for lx in range(bw):
+            edge = lx in (0, bw - 1)
+            ch = "r" if (scute_seam or edge) else ("G" if ly % 3 == 1 else "A")
+            put(img, bx + lx, by + ly, PAL[ch])
+    for side in ("east", "west"):
+        sx, sy, sw, sh = blf[side]
+        for lx in range(sw):
+            if lx % 3 == 0:
+                for ly in range(sh):
+                    put(img, sx + lx, sy + ly, PAL["r"])
 
-    # 3. Head [6, 5, 5] at [0, 16], Snout [4, 3, 3] at [24, 16], Jaw [3, 1, 3] at [40, 16], Crest [1, 2, 2] at [54, 16]
-    smooth_coat(img, 0, 16, 6, 5, 5, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    smooth_coat(img, 24, 16, 4, 3, 3, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    snf = faces(24, 16, 4, 3, 3)
-    put(img, snf["front"][0], snf["front"][1] + 1, ED_DEEP)
-    put(img, snf["front"][0] + 3, snf["front"][1] + 1, ED_DEEP)
-    smooth_coat(img, 40, 16, 3, 1, 3, AMB_HI, (255, 190, 96, 255), AMB_BASE, AMB_SHADE)
-    smooth_coat(img, 54, 16, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+    # 3. Dorsal Flame-Spine Crest Cutout [0, 3, 8] @ [56, 0] -> 16x6 px
+    #    west col 0 = front (-Z), col 15 = back (+Z)
+    paint_cutout_x(56, 0, 3, 8, [
+        "..W.....W.....Y.",
+        ".YOY...YOY...YO.",
+        "rOAOr.rOAOr.rOAr",
+        "2343212343212342",
+        "1243211243211231",
+        "0122100122100120",
+    ], glow_keys={"W", "Y", "O"})
 
-    # 4. Horns [1, 3, 1] at [62, 16] & [68, 16]
-    for hu in (62, 68):
-        smooth_coat(img, hu, 16, 1, 3, 1, HORN_HI, HORN_BASE, HORN_SHADE, HORN_SHADE)
+    # 4. Arched Neck [4, 4, 3] @ [72, 0] -> 8x8x6 px & Neck Spine [0, 2, 3] @ [86, 0] -> 6x4 px
+    shade_ramp_box(72, 0, 4, 4, 3, SCALE_RAMP, diamond_scales=True, seed=3)
+    nf = f2x(72, 0, 4, 4, 3)
+    nfx, nfy, nfw, nfh = nf["front"]
+    for ly in range(nfh):
+        scute = "r" if ly % 2 == 1 else ("Y" if ly in (2, 4) else "G")
+        for lx in range(2, 6):
+            put(img, nfx + lx, nfy + ly, PAL[scute] if lx in (3, 4) else PAL["A" if ly % 2 == 0 else "R"])
+            if ly in (2, 4) and lx in (3, 4):
+                put(glow, nfx + lx, nfy + ly, PAL["Y"])
+    paint_cutout_x(86, 0, 2, 3, [
+        ".W..Y.",
+        "YOYrOr",
+        "243232",
+        "121121",
+    ], glow_keys={"W", "Y"})
 
-    # 5. Golden-Amber Eyes [2, 2, 1] at [74, 16] & [82, 16]
-    for idx, eu in enumerate((74, 82)):
-        ef = faces(eu, 16, 2, 2, 1)
-        for rect in ef.values():
-            fill(img, rect, AMB_DEEP)
-        ex, ey, _, _ = ef["front"]
-        fill(img, (ex, ey, 2, 2), AMB_HI)
-        put(img, ex + (1 if idx == 0 else 0), ey + 1, (38, 18, 10, 255))
-        put(img, ex + (0 if idx == 0 else 1), ey, (255, 255, 255, 255))
+    # 5. Dragon Cranium [6, 5, 5] @ [0, 15] -> 12x10x10 px
+    shade_ramp_box(0, 15, 6, 5, 5, SCALE_RAMP, diamond_scales=True, seed=4)
+    paint_box_2x(img, 0, 15, 6, 5, 5, {
+        "front": [
+            "123567765321",
+            "124565565421",
+            "015443344510",
+            "D0134554310D",
+            "DD02466420DD",
+            "DD02455420DD",
+            "D0123443210D",
+            "012233332210",
+            "011234432110",
+            "001122221100",
+        ],
+    }, PAL)
+    # Subtle glowing brow rune center on forehead
+    hfx, hfy, _, _ = f2x(0, 15, 6, 5, 5)["front"]
+    put(img, hfx + 5, hfy + 3, PAL["Y"])
+    put(img, hfx + 6, hfy + 3, PAL["Y"])
+    put(glow, hfx + 5, hfy + 3, PAL["Y"])
+    put(glow, hfx + 6, hfy + 3, PAL["Y"])
 
-    # 6. Fluttering Baby Wings: Arm [6, 1, 2] at [0, 28] & [40, 28], Membrane [6, 1, 4] at [18, 28] & [58, 28]
-    for wu in (0, 40):
-        smooth_coat(img, wu, 28, 6, 1, 2, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    for mu in (18, 58):
-        smooth_coat(img, mu, 28, 6, 1, 4, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+    # 6. Tapered Upper Snout [4, 2, 3] @ [22, 15] -> 8x4x6 px & Lower Jaw [3, 1, 3] @ [36, 15] -> 6x2x6 px
+    shade_ramp_box(22, 15, 4, 2, 3, SCALE_RAMP, diamond_scales=True, seed=5)
+    paint_box_2x(img, 22, 15, 4, 2, 3, {
+        "front": [
+            "34566543",
+            "2DO44OD2",
+            "12344321",
+            "0P1221P0",
+        ],
+    }, PAL)
+    snfx, snfy, _, _ = f2x(22, 15, 4, 2, 3)["front"]
+    put(glow, snfx + 2, snfy + 1, PAL["O"])
+    put(glow, snfx + 5, snfy + 1, PAL["O"])
 
-    # 7. Tail Base [4, 4, 4] at [0, 36], Spike [1, 2, 2] at [18, 36], Tail Tip [3, 3, 4] at [26, 36], Spade [4, 2, 3] at [42, 36]
-    smooth_coat(img, 0, 36, 4, 4, 4, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    smooth_coat(img, 18, 36, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
-    smooth_coat(img, 26, 36, 3, 3, 4, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    smooth_coat(img, 42, 36, 4, 2, 3, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+    shade_ramp_box(36, 15, 3, 1, 3, EMBER_RAMP, seed=6)
+    paint_box_2x(img, 36, 15, 3, 1, 3, {
+        "front": [
+            "rAGGAr",
+            "aROORa",
+        ],
+    }, PAL)
 
-    # 8. Stubby Clawed Legs [2, 4, 2] at [0, 48], [10, 48], [20, 48], [30, 48]
-    for lu in (0, 10, 20, 30):
-        smooth_coat(img, lu, 48, 2, 4, 2, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-        lf = faces(lu, 48, 2, 4, 2)
-        fill(img, lf["bottom"], HORN_BASE)
-        put(img, lf["front"][0], lf["front"][1] + 3, HORN_HI)
-        put(img, lf["front"][0] + 1, lf["front"][1] + 3, HORN_HI)
+    # 7. Head Crest Fin [0, 3, 5] @ [48, 12] -> 10x6 px
+    paint_cutout_x(48, 12, 3, 5, [
+        ".....W..Y.",
+        "...WYOYrO.",
+        "..YOAOr23r",
+        ".rO3432121",
+        "1234321010",
+        "01221000..",
+    ], glow_keys={"W", "Y", "O"})
 
-    dest = OUT / "entity/ember_drake.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    # 8. Flared Dragon Cheek Frills [3, 4, 0] @ [58, 15] (left) & [64, 15] (right) -> 6x8 px
+    frill_left = [
+        "..OYW.",
+        ".25OY.",
+        "1345O.",
+        "0234O.",
+        "0123G.",
+        "0134O.",
+        ".012R.",
+        "..01..",
+    ]
+    frill_right = [row[::-1] for row in frill_left]
+    paint_cutout_z(58, 15, 3, 4, frill_left, glow_keys={"W", "Y", "O"})
+    paint_cutout_z(64, 15, 3, 4, frill_right, glow_keys={"W", "Y", "O"})
+
+    # 9. Swept Curved Ivory-Gold Horns: Base [2, 2, 2] @ [70, 15] & [82, 15], Tip [1, 3, 1] @ [78, 15] & [90, 15]
+    for idx, (bu, tu) in enumerate(((70, 78), (82, 90))):
+        shade_ramp_box(bu, 15, 2, 2, 2, HORN_RAMP, seed=7 + idx)
+        hb = f2x(bu, 15, 2, 2, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = hb[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + rh - 1, PAL["k"])
+                put(img, rx + lx, ry, PAL["i"])
+        shade_ramp_box(tu, 15, 1, 3, 1, HORN_RAMP, seed=9 + idx)
+        ht = f2x(tu, 15, 1, 3, 1)
+        for fname in ("front", "back", "east", "west", "top"):
+            rx, ry, rw, rh = ht[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry, PAL["P"])
+                put(glow, rx + lx, ry, PAL["Y"])
+                if rh >= 2:
+                    put(img, rx + lx, ry + 1, PAL["I"])
+
+    # 10. Expressive Flush Slit-Pupil Dragon Eyes [2, 3, 0] @ [94, 15] & [98, 15] -> 4x6 px
+    eye_left_grid = [
+        "Daa.",
+        "aOYD",
+        "OWDO",
+        "OYDY",
+        "RODY",
+        "aROa",
+    ]
+    eye_right_grid = [row[::-1] for row in eye_left_grid]
+    paint_cutout_z(94, 15, 2, 3, eye_left_grid, glow_keys={"W", "Y", "O"})
+    paint_cutout_z(98, 15, 2, 3, eye_right_grid, glow_keys={"W", "Y", "O"})
+
+    # 11. Articulated Dragon Wings:
+    #     Inner spar [5, 1, 2] @ [0, 26] & [60, 26], Outer spar [4, 1, 1] @ [14, 26] & [74, 26]
+    #     Scalloped Wing Membrane Cutout [9, 0, 7] @ [24, 26] (left) & [84, 26] (right) -> 18x14 px
+    for idx, (su, ou) in enumerate(((0, 14), (60, 74))):
+        shade_ramp_box(su, 26, 5, 1, 2, SCALE_RAMP, diamond_scales=True, seed=11 + idx)
+        sf = f2x(su, 26, 5, 1, 2)
+        for fname in ("front", "top"):
+            rx, ry, rw, rh = sf[fname]
+            put(img, rx + (0 if idx == 0 else rw - 1), ry, PAL["I"])
+        shade_ramp_box(ou, 26, 4, 1, 1, SCALE_RAMP, seed=13 + idx)
+        of = f2x(ou, 26, 4, 1, 1)
+        for fname in ("front", "top"):
+            rx, ry, rw, rh = of[fname]
+            put(img, rx + (rw - 1 if idx == 0 else 0), ry, PAL["P"])
+            put(glow, rx + (rw - 1 if idx == 0 else 0), ry, PAL["Y"])
+
+    # Left wing membrane top (18 cols: lx=0 inner shoulder -> lx=17 outer wingtip;
+    # ly=0 trailing scalloped rear -> ly=13 leading front spar)
+    wing_left_top = [
+        "..............W...",
+        "............WYY...",
+        ".a......O..YOa....",
+        "rOa....rYrROr.....",
+        "rRO....ROaOR......",
+        "aROr..rOGYOr......",
+        ".aOOr.ROAYO.......",
+        ".rOARrOGYOa....Y..",
+        "..rOAOAGOr....YOr.",
+        "..aOAOGYOr...ROr..",
+        "...rOGYYOOr.ROr...",
+        "...aOAYGYOOrOOr...",
+        "123345434454322P..",
+        "0123344334432110..",
+    ]
+    wing_right_top = [row[::-1] for row in wing_left_top]
+    paint_cutout_y(24, 26, 9, 7, wing_left_top, glow_keys={"W", "Y", "O"})
+    paint_cutout_y(84, 26, 9, 7, wing_right_top, glow_keys={"W", "Y", "O"})
+
+    # 12. Tapered Tail & Crossed-Plane Blazing Tail Spade:
+    #     tail_base [4, 3, 5] @ [0, 35] -> 8x6x10 px, spine [0, 3, 5] @ [18, 35] -> 10x6 px
+    shade_ramp_box(0, 35, 4, 3, 5, SCALE_RAMP, diamond_scales=True, seed=15)
+    tbf = f2x(0, 35, 4, 3, 5)
+    bx, by, bw, bh = tbf["bottom"]
+    for ly in range(bh):
+        for lx in range(2, bw - 2):
+            put(img, bx + lx, by + ly, PAL["r"] if ly % 2 == 0 else PAL["A"])
+    paint_cutout_x(18, 35, 3, 5, [
+        "..W....Y..",
+        ".YOY..rOr.",
+        "rOAOr.ROAr",
+        "2343212342",
+        "1232101231",
+        "0110000110",
+    ], glow_keys={"W", "Y", "O"})
+
+    #     tail_tip shaft [3, 2, 5] @ [28, 35] -> 6x4x10 px
+    shade_ramp_box(28, 35, 3, 2, 5, SCALE_RAMP, diamond_scales=True, seed=16)
+    ttf = f2x(28, 35, 3, 2, 5)
+    bx, by, bw, bh = ttf["bottom"]
+    for ly in range(bh):
+        for lx in range(1, bw - 1):
+            put(img, bx + lx, by + ly, PAL["r"] if ly % 2 == 0 else PAL["G"])
+
+    #     Horizontal leaf-flame tail spade [5, 0, 5] @ [44, 35] -> 10x10 px
+    #     row 0 = tip (+Z), row 9 = shaft (-Z)
+    paint_cutout_y(44, 35, 5, 5, [
+        "....WW....",
+        "...WYYW...",
+        "..YWWWWY..",
+        ".YOYYYYOY.",
+        "rOAYWWYAOr",
+        "rROAGGGORr",
+        ".aROAAORa.",
+        "..aROORa..",
+        "...2332...",
+        "...1221...",
+    ], glow_keys={"W", "Y", "O", "A"})
+
+    #     Vertical blazing tail-flame plume [0, 4, 5] @ [64, 35] -> 10x8 px
+    #     col 0 = shaft (-Z), col 9 = flame tip (+Z)
+    paint_cutout_x(64, 35, 4, 5, [
+        ".......YW.",
+        ".....YWWY.",
+        "...rOYWWO.",
+        ".23ROAYWY.",
+        "123ROAYWY.",
+        ".12rOYYWO.",
+        "...aROYW..",
+        ".....rO...",
+    ], glow_keys={"W", "Y", "O", "A"})
+
+    # 13. Four Tapered Dragon Legs, 3-Clawed Feet & Trailing Ember Ankle Spurs:
+    #     leg_fl (0), leg_fr (26), leg_bl (52), leg_br (78) at v=45
+    spur_west = [
+        "..YW",
+        ".rOY",
+        "234O",
+        "123r",
+        "012.",
+        ".01.",
+    ]
+    for idx, base_u in enumerate((0, 26, 52, 78)):
+        # Upper thigh [2, 2, 2] @ [base_u, 45] -> 4x4x4 px
+        shade_ramp_box(base_u, 45, 2, 2, 2, SCALE_RAMP, diamond_scales=True, seed=20 + idx)
+        # Lower shin [2, 2, 2] @ [base_u + 8, 45] -> 4x4x4 px
+        shade_ramp_box(base_u + 8, 45, 2, 2, 2, SCALE_RAMP, seed=24 + idx)
+        lf = f2x(base_u + 8, 45, 2, 2, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = lf[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + rh - 1, PAL["O" if lx in (1, 2) else "r"])
+                if fname == "front" and lx in (1, 2):
+                    put(glow, rx + lx, ry + rh - 1, PAL["O"])
+
+        # Taloned 3-clawed foot [2, 1, 3] @ [base_u, 50] -> 4x2x6 px
+        shade_ramp_box(base_u, 50, 2, 1, 3, SCALE_RAMP, seed=28 + idx)
+        paint_box_2x(img, base_u, 50, 2, 1, 3, {
+            "front": [
+                "P2P2",
+                "k0k0",
+            ],
+            "top": [
+                "1221",
+                "2332",
+                "2442",
+                "3443",
+                "P3P3",
+                "k1k1",
+            ],
+            "bottom": [
+                "k1k1",
+                "b2b2",
+                "1221",
+                "0110",
+                "0110",
+                "0000",
+            ],
+        }, PAL)
+
+        # Trailing ember ankle spur [0, 3, 2] @ [base_u + 12, 50] -> 4x6 px
+        paint_cutout_x(base_u + 12, 50, 3, 2, spur_west, glow_keys={"W", "Y", "O"})
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "ember_drake.png")
+    glow.save(entity_dir / "ember_drake_glowmask.png")
 
 
 def make_peepkin():
@@ -3951,6 +4352,10 @@ def main():
     if "--galecorn" in sys.argv:
         make_galecorn()
         print("Generated Galecorn 256x128 texture and glowmask.")
+        return
+    if "--ember-drake" in sys.argv:
+        make_ember_drake()
+        print("Generated Ember Drake 256x128 texture and glowmask.")
         return
     if "--zapkin" in sys.argv:
         make_zapkin()
