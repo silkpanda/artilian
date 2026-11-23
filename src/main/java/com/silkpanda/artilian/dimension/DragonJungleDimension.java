@@ -110,6 +110,7 @@ public final class DragonJungleDimension {
 
         MobSpawnSettings.Builder jungleSpawns = new MobSpawnSettings.Builder();
         jungleSpawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.CANOPY_WYVERN.get(), 18, 1, 2));
+        jungleSpawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.STORM_GLIDEWING.get(), 10, 1, 1));
 
         context.register(
                 DRAGON_JUNGLE_BIOME,
@@ -143,6 +144,10 @@ public final class DragonJungleDimension {
                 .backgroundMusic(Musics.createGameMusic(SoundEvents.MUSIC_BIOME_SPARSE_JUNGLE))
                 .build();
 
+        MobSpawnSettings.Builder amberSpawns = new MobSpawnSettings.Builder();
+        amberSpawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.AMBER_WYVERN.get(), 16, 1, 2));
+        amberSpawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.STORM_GLIDEWING.get(), 6, 1, 1));
+
         context.register(
                 AMBER_GROVE_BIOME,
                 new Biome.BiomeBuilder()
@@ -150,7 +155,7 @@ public final class DragonJungleDimension {
                         .temperature(1.2F)
                         .downfall(0.3F)
                         .specialEffects(amberEffects)
-                        .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                        .mobSpawnSettings(amberSpawns.build())
                         .generationSettings(amberGen.build())
                         .build());
     }

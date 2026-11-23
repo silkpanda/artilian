@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 5 — Stage 4 (*First Dragon Species*)** Shared `256×128` GeckoLib `dragon_rig.geo.json` + `dragon_rig.animation.json` (`idle`, `walk`, `fly`, `attack`), `WildDragonEntity`, `WildDragonModel` / `WildDragonRenderer` (`AutoGlowingGeoLayer`), **Canopy Wyvern** (`artilian:canopy_wyvern`, `Dragon / Nature`, `DRAGON_JUNGLE_BIOME` spawn, `artilian:dragon_scale` loot), `lint_art.py --phase5 --strict` clean, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`205/205` green) on `phase-5-stage-4-first-dragon-species`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–4 (`qa/evidence/canopy-wyvern-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 5 (*More Dragon Species*)**: additional wild dragon species reusing the shared `dragon_rig`. |
+| **In progress** | **Phase 5 — Stage 5 (*More Dragon Species*)** Added **Amber Wyvern** (`artilian:amber_wyvern`, `Dragon / Fire`, `AMBER_GROVE_BIOME`, `fireImmune()`, ignites on hit) and **Storm Glidewing** (`artilian:storm_glidewing`, `Dragon / Electric`, `DRAGON_JUNGLE_BIOME` & `AMBER_GROVE_BIOME`, applies Slowness + electric sparks) reusing the shared `256×128` `dragon_rig` + `WildDragonEntity` / `WildDragonModel` / `WildDragonRenderer` (`AutoGlowingGeoLayer`), `lint_art.py --phase5 --strict` clean, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`208/208` green) on `phase-5-stage-5-more-dragon-species`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–5 (`qa/evidence/more-dragon-species-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 6 (*Hatchable Pet Dragons*)**: hatchable dragon companions (`ArtilianPetEntity`). |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -637,7 +637,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 2 | Mega-Jungle Worldgen | Prehistoric mega-jungle biomes, trees, and terrain | 🔄 Code & GameTests complete (`198/198`); live client check pending |
 | 3 | Dragon Jungle Structures | **Dragon Roost** and **Amber Temple** | 🔄 Code & GameTests complete (`201/201`); live client check pending |
 | 4 | First Dragon Species | One wild dragon end to end (establishes shared GeckoLib dragon rig) | 🔄 Code & GameTests complete (`205/205`); live client check pending |
-| 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | [ ] Pending |
+| 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | 🔄 Code & GameTests complete (`208/208`); live client check pending |
 | 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | [ ] Pending |
 | 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | [ ] Pending |
 | 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | [ ] Pending |
@@ -729,6 +729,29 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`DragonSpeciesGameTests`):** `205/205` green (4 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
 - **Security Gate:** `n/a` (wild dragon mob, loot, and biome spawns; enforces `KidSafeTargets` protection for Chester and pets).
 - **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Canopy Wyvern in `artilian:dragon_jungle`.
+
+### Phase 5 — Stage 5: More Dragon Species
+- [ ] **In Progress (`208/208` GameTests Green & Strict Art Lint Clean; Live Client Check Pending)** — Add **Amber Wyvern** (`artilian:amber_wyvern`, `Dragon / Fire`) and **Storm Glidewing** (`artilian:storm_glidewing`, `Dragon / Electric`) with **dedicated 3D GeckoLib silhouettes & animations** (no palette swaps!), grounded in the 12-type reference catalog (`qa/reference/dragon-species-references.md`).
+- **Art Briefs (`Amber Wyvern` & `Storm Glidewing`):**
+  - **12-Type Reference Catalog (`qa/reference/dragon-species-references.md`):** Classic Western Dragon, True Wyvern, Drake, Amphithere, Lindworm, Wyrm/Guivre, Eastern Dragon (Lung), Hydra, Feathered Serpent (Quetzalcoatl), Sea Serpent/Leviathan, Kirin/Qilin, and Knucker.
+  - **Amber Wyvern (`amber_wyvern.geo.json` — Archetype #2 True Wyvern):** Bipedal 2-legged digitigrade stance (`0` separate forelegs), forward-pitched raptor torso, `2` massive clawed bat wing-arms, swept ram horns, and a barbed magma-stinger tail (`1.6F × 2.0F`, `shadowRadius = 1.1F`); obsidian-charcoal scales (`#161014` → `#4A2E30`) + molten Ember Amber (`#7C220C` → `#F97316` → `#FDE047`).
+  - **Storm Glidewing (`storm_glidewing.geo.json` — Archetype #4 Amphithere):** Legless (`0` legs) hovering `4`-segment undulating sky-serpent body, `2` swept `3`-segment albatross glider wings, lightning-antler horns, cheek frills, and a wide fanned tail rudder (`1.45F × 1.85F`, `shadowRadius = 1.0F`); storm-indigo scales (`#12182C` → `#384C7C`) + sky-cyan/Starlight-teal (`#0E5676` → `#38D9C0` → `#BAF6FC`) + electric-gold (`#FACC15`).
+  - **`_glowmask.png` zones:** Emissive eyes, chest elemental core, dorsal/stinger tips, and wing-tips/tail rudder (`AutoGlowingGeoLayer`).
+- **Why & Decisions:**
+  1. **Dedicated Rigs (`WildDragonModel(speciesId, rigId)`):** Replaced shared-rig reuse for Stage 5 so all three Phase 5 dragons have unmistakable silhouettes (`dragon_rig` Classic Western Dragon vs. `amber_wyvern` Bipedal Wyvern vs. `storm_glidewing` Legless Amphithere).
+  2. **Amber Wyvern (`AmberWyvernEntity`):** `PetElement.DRAGON` / `PetElement.FIRE`, `48.0` HP, `7.0` ATK, `5.0` Armor, `fireImmune() = true`, ignites targets (`2.5s`) + `FLAME` particles, spawns in `AMBER_GROVE_BIOME` (weight `16`).
+  3. **Storm Glidewing (`StormGlidewingEntity`):** `PetElement.DRAGON` / `PetElement.ELECTRIC`, `40.0` HP, `0.32` speed, `6.5` ATK, `3.0` Armor, applies `MobEffects.MOVEMENT_SLOWDOWN` (`35` ticks) + `ELECTRIC_SPARK` particles, spawns in both `DRAGON_JUNGLE_BIOME` (weight `10`) and `AMBER_GROVE_BIOME` (weight `6`).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Briefs, `amber_wyvern` & `storm_glidewing` textures/glowmasks & previews | Pending commit | `tools/art/make_dragons_art.py`, `lint_art.py --phase5 --strict` clean (`canopy_wyvern`, `amber_wyvern`, `storm_glidewing`), `preview_geo.py` (`qa/evidence/previews/amber_wyvern-preview.png`, `qa/evidence/previews/storm_glidewing-preview.png`). |
+  | 2 `AmberWyvernEntity`, `StormGlidewingEntity`, biome spawns, datagen & GameTests | Pending commit | `AmberWyvernEntity`, `StormGlidewingEntity`, `ArtilianEntities`, `ArtilianItems` spawn eggs, `ArtilianCreativeTabs`, `ArtilianClient`, `DragonEvents`, `DragonJungleDimension`, `ArtilianEntityTags`, `ArtilianEntityLoot`, `DragonSpeciesGameTests` (`208/208` green, `runData`, `build`). Red-proof: `AmberWyvernEntity.fireImmune()` returning `false` → `amberwyvernandstormglidewingregisteredtaggedeggslootandelements` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Amber Wyvern & Storm Glidewing in `artilian:dragon_jungle` (`qa/evidence/more-dragon-species-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`DragonSpeciesGameTests`):** `208/208` green (3 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
+- **Security Gate:** `n/a` (wild dragon mobs, loot, and biome spawns; inherits `KidSafeTargets` protection for Chester and pets).
+- **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Amber Wyvern & Storm Glidewing in `artilian:dragon_jungle`.
 
 ---
 

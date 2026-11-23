@@ -51,7 +51,20 @@
     "axolotls": [],
     "creature": [],
     "misc": [],
-    "monster": [],
+    "monster": [
+      {
+        "type": "artilian:amber_wyvern",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 16
+      },
+      {
+        "type": "artilian:storm_glidewing",
+        "maxCount": 1,
+        "minCount": 1,
+        "weight": 6
+      }
+    ],
     "underground_water_creature": [],
     "water_ambient": [],
     "water_creature": []

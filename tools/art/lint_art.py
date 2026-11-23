@@ -28,6 +28,7 @@ ARMOR_TEX_DIR = ASSETS / "textures" / "item" / "armor"
 PHASE3_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone")
 PHASE3_ARMORS = ("prismatic_armor",)
 PHASE4_ENTITIES = ("peeper", "oculus_slime", "lens_guardian", "blinky", "great_all_seer")
+PHASE5_ENTITIES = ("amber_wyvern", "storm_glidewing")
 BOSS_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone", "great_all_seer")
 SHARED_RIGS = {
     "dragon_rig": ("canopy_wyvern",),
@@ -148,6 +149,8 @@ def collect_pairs(phase3_only: bool, phase4_only: bool, phase5_only: bool) -> li
         for rig, species_list in SHARED_RIGS.items():
             for species_id in species_list:
                 pairs.append((f"entity/{species_id}", ENTITY_GEO_DIR / f"{rig}.geo.json", ENTITY_TEX_DIR / f"{species_id}.png", 256, 128))
+        for eid in PHASE5_ENTITIES:
+            pairs.append((f"entity/{eid}", ENTITY_GEO_DIR / f"{eid}.geo.json", ENTITY_TEX_DIR / f"{eid}.png", 256, 128))
         return pairs
 
     for geo_path in sorted(ENTITY_GEO_DIR.glob("*.geo.json")):

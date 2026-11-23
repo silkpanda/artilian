@@ -471,6 +471,14 @@ public class ArtilianItems {
             ITEMS.register("canopy_wyvern_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.CANOPY_WYVERN, 0x1E4634, 0xF97316, new Item.Properties()));
 
+    // Phase 5 Stage 5: More Dragon Species
+    public static final DeferredItem<DeferredSpawnEggItem> AMBER_WYVERN_SPAWN_EGG =
+            ITEMS.register("amber_wyvern_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.AMBER_WYVERN, 0x24181C, 0xFDE047, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> STORM_GLIDEWING_SPAWN_EGG =
+            ITEMS.register("storm_glidewing_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.STORM_GLIDEWING, 0x1C2644, 0x38D9C0, new Item.Properties()));
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
     }

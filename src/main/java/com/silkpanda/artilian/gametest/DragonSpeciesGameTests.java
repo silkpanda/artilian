@@ -3,7 +3,10 @@ package com.silkpanda.artilian.gametest;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.chester.ChesterEntity;
 import com.silkpanda.artilian.dimension.DragonJungleDimension;
+import com.silkpanda.artilian.dragon.AmberWyvernEntity;
 import com.silkpanda.artilian.dragon.CanopyWyvernEntity;
+import com.silkpanda.artilian.dragon.StormGlidewingEntity;
+import com.silkpanda.artilian.dragon.WildDragonEntity;
 import com.silkpanda.artilian.pet.PetElement;
 import com.silkpanda.artilian.registry.ArtilianEntities;
 import com.silkpanda.artilian.registry.ArtilianItems;
@@ -125,11 +128,127 @@ public class DragonSpeciesGameTests {
         for (String path : List.of(
                 "assets/artilian/geo/entity/dragon_rig.geo.json",
                 "assets/artilian/animations/entity/dragon_rig.animation.json",
+                "assets/artilian/geo/entity/amber_wyvern.geo.json",
+                "assets/artilian/animations/entity/amber_wyvern.animation.json",
+                "assets/artilian/geo/entity/storm_glidewing.geo.json",
+                "assets/artilian/animations/entity/storm_glidewing.animation.json",
                 "assets/artilian/textures/entity/canopy_wyvern.png",
                 "assets/artilian/textures/entity/canopy_wyvern_glowmask.png",
+                "assets/artilian/textures/entity/amber_wyvern.png",
+                "assets/artilian/textures/entity/amber_wyvern_glowmask.png",
+                "assets/artilian/textures/entity/storm_glidewing.png",
+                "assets/artilian/textures/entity/storm_glidewing_glowmask.png",
                 "assets/artilian/textures/item/dragon_scale.png")) {
             helper.assertTrue(cl.getResource(path) != null, "Missing dragon asset: " + path);
         }
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void amberWyvernAndStormGlidewingRegisteredTaggedEggsLootAndElements(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        assertDragonSpecies(
+                helper, level,
+                ArtilianEntities.AMBER_WYVERN.get(),
+                ArtilianItems.AMBER_WYVERN_SPAWN_EGG.get(),
+                48.0F, PetElement.DRAGON, PetElement.FIRE);
+        assertDragonSpecies(
+                helper, level,
+                ArtilianEntities.STORM_GLIDEWING.get(),
+                ArtilianItems.STORM_GLIDEWING_SPAWN_EGG.get(),
+                40.0F, PetElement.DRAGON, PetElement.ELECTRIC);
+
+        AmberWyvernEntity amber = ArtilianEntities.AMBER_WYVERN.get().create(level);
+        helper.assertTrue(amber != null && amber.fireImmune(), "Amber Wyvern must be fire-immune");
+        helper.succeed();
+    }
+
+    private static <T extends WildDragonEntity> void assertDragonSpecies(
+            GameTestHelper helper,
+            ServerLevel level,
+            EntityType<T> type,
+            SpawnEggItem expectedEgg,
+            float expectedHp,
+            PetElement primary,
+            PetElement secondary) {
+        helper.assertTrue(type.is(ArtilianTags.EntityTypes.WILD_DRAGONS),
+                type + " must be tagged artilian:wild_dragons");
+        helper.assertTrue(SpawnEggItem.byId(type) == expectedEgg,
+                type + " must have its registered spawn egg");
+
+        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(type.getDefaultLootTable());
+        helper.assertTrue(lootTable != LootTable.EMPTY, type + " must have a non-empty loot table");
+
+        T dragon = type.create(level);
+        helper.assertTrue(dragon != null, type + " must instantiate cleanly");
+        helper.assertTrue(dragon.getMaxHealth() == expectedHp,
+                type + " max health must be " + expectedHp + ", got " + dragon.getMaxHealth());
+        helper.assertTrue(dragon.getPrimaryElement() == primary
+                        && dragon.getSecondaryElement().equals(Optional.of(secondary)),
+                type + " must have elements " + primary + " / " + secondary);
+        helper.assertFalse(dragon.causeFallDamage(12.0F, 1.0F, level.damageSources().fall()),
+                type + " must not take fall damage");
+
+        dragon.setPos(helper.absoluteVec(new Vec3(3.5, 2.0, 3.5)));
+        LootParams params = new LootParams.Builder(level)
+                .withParameter(LootContextParams.THIS_ENTITY, dragon)
+                .withParameter(LootContextParams.ORIGIN, dragon.position())
+                .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic())
+                .create(LootContextParamSets.ENTITY);
+        boolean droppedDragonScale = lootTable.getRandomItems(params).stream()
+                .anyMatch(stack -> stack.is(ArtilianItems.DRAGON_SCALE.get()));
+        helper.assertTrue(droppedDragonScale, type + " loot table must drop Dragon Scale");
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void dragonJungleBiomesRegisterStage5DragonSpawns(GameTestHelper helper) {
+        var biomeRegistry = helper.getLevel().registryAccess().registryOrThrow(Registries.BIOME);
+        Biome dragonJungle = biomeRegistry.get(DragonJungleDimension.DRAGON_JUNGLE_BIOME);
+        Biome amberGrove = biomeRegistry.get(DragonJungleDimension.AMBER_GROVE_BIOME);
+        helper.assertTrue(dragonJungle != null && amberGrove != null, "Both Dragon Jungle biomes must be registered");
+
+        Set<EntityType<?>> jungleMobs = dragonJungle.getMobSettings().getMobs(MobCategory.MONSTER).unwrap().stream()
+                .map(data -> data.type).collect(Collectors.toSet());
+        Set<EntityType<?>> amberMobs = amberGrove.getMobSettings().getMobs(MobCategory.MONSTER).unwrap().stream()
+                .map(data -> data.type).collect(Collectors.toSet());
+
+        helper.assertTrue(jungleMobs.contains(ArtilianEntities.CANOPY_WYVERN.get())
+                        && jungleMobs.contains(ArtilianEntities.STORM_GLIDEWING.get()),
+                "DRAGON_JUNGLE_BIOME must spawn Canopy Wyvern and Storm Glidewing");
+        helper.assertTrue(amberMobs.contains(ArtilianEntities.AMBER_WYVERN.get())
+                        && amberMobs.contains(ArtilianEntities.STORM_GLIDEWING.get()),
+                "AMBER_GROVE_BIOME must spawn Amber Wyvern and Storm Glidewing");
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void amberWyvernIgnitesAndStormGlidewingSlowsWithoutHurtingChester(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        AmberWyvernEntity amber = ArtilianEntities.AMBER_WYVERN.get().create(level);
+        StormGlidewingEntity storm = ArtilianEntities.STORM_GLIDEWING.get().create(level);
+        ChesterEntity chester = ArtilianEntities.CHESTER.get().create(level);
+        Creeper dummy1 = EntityType.CREEPER.create(level);
+        Creeper dummy2 = EntityType.CREEPER.create(level);
+        helper.assertTrue(amber != null && storm != null && chester != null && dummy1 != null && dummy2 != null,
+                "Entities must instantiate");
+
+        for (var e : List.of(amber, storm, chester, dummy1, dummy2)) {
+            e.setPos(helper.absoluteVec(new Vec3(4.5, 2.0, 4.5)));
+            level.addFreshEntity(e);
+        }
+
+        helper.assertTrue(amber.doHurtTarget(dummy1) && dummy1.isOnFire(),
+                "Amber Wyvern hit must ignite target");
+        helper.assertTrue(storm.doHurtTarget(dummy2) && dummy2.hasEffect(MobEffects.MOVEMENT_SLOWDOWN),
+                "Storm Glidewing hit must apply Slowness");
+        helper.assertFalse(amber.doHurtTarget(chester) || storm.doHurtTarget(chester),
+                "Stage 5 dragons must never hurt Chester");
+
+        amber.discard();
+        storm.discard();
+        chester.discard();
+        dummy1.discard();
+        dummy2.discard();
         helper.succeed();
     }
 }

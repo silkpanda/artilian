@@ -64,7 +64,11 @@ public final class ArtilianClient {
         event.registerEntityRenderer(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), CaptainBrimstoneRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.GREAT_ALL_SEER.get(), GreatAllSeerRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.CANOPY_WYVERN.get(),
-                ctx -> new WildDragonRenderer<>(ctx, "canopy_wyvern", 1.05F));
+                ctx -> new WildDragonRenderer<>(ctx, "canopy_wyvern", "dragon_rig", 1.05F));
+        event.registerEntityRenderer(ArtilianEntities.AMBER_WYVERN.get(),
+                ctx -> new WildDragonRenderer<>(ctx, "amber_wyvern", 1.1F));
+        event.registerEntityRenderer(ArtilianEntities.STORM_GLIDEWING.get(),
+                ctx -> new WildDragonRenderer<>(ctx, "storm_glidewing", 1.0F));
     }
 
     @SubscribeEvent

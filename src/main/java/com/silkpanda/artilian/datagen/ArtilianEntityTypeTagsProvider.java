@@ -40,7 +40,9 @@ public class ArtilianEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 ArtilianEntities.LENS_GUARDIAN.get()
         );
         tag(ArtilianTags.EntityTypes.WILD_DRAGONS).add(
-                ArtilianEntities.CANOPY_WYVERN.get()
+                ArtilianEntities.CANOPY_WYVERN.get(),
+                ArtilianEntities.AMBER_WYVERN.get(),
+                ArtilianEntities.STORM_GLIDEWING.get()
         );
         tag(ArtilianTags.EntityTypes.BOSSES).add(
                 ArtilianEntities.TRAINING_GOLEM.get(),

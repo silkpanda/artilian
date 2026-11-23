@@ -21,14 +21,23 @@ public final class DragonEvents {
         @SubscribeEvent
         public static void onAttributes(EntityAttributeCreationEvent event) {
             event.put(ArtilianEntities.CANOPY_WYVERN.get(), CanopyWyvernEntity.createAttributes().build());
+            event.put(ArtilianEntities.AMBER_WYVERN.get(), AmberWyvernEntity.createAttributes().build());
+            event.put(ArtilianEntities.STORM_GLIDEWING.get(), StormGlidewingEntity.createAttributes().build());
         }
 
         @SubscribeEvent
         public static void onSpawnPlacements(RegisterSpawnPlacementsEvent event) {
-            @SuppressWarnings("unchecked")
-            var wyvernType = (net.minecraft.world.entity.EntityType<Monster>) (net.minecraft.world.entity.EntityType<?>) ArtilianEntities.CANOPY_WYVERN.get();
+            registerDragonSpawn(event, ArtilianEntities.CANOPY_WYVERN.get());
+            registerDragonSpawn(event, ArtilianEntities.AMBER_WYVERN.get());
+            registerDragonSpawn(event, ArtilianEntities.STORM_GLIDEWING.get());
+        }
+
+        @SuppressWarnings("unchecked")
+        private static void registerDragonSpawn(
+                RegisterSpawnPlacementsEvent event,
+                net.minecraft.world.entity.EntityType<? extends WildDragonEntity> type) {
             event.register(
-                    wyvernType,
+                    (net.minecraft.world.entity.EntityType<Monster>) (net.minecraft.world.entity.EntityType<?>) type,
                     SpawnPlacementTypes.ON_GROUND,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     WildDragonEntity::checkWildDragonSpawnRules,

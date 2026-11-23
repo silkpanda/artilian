@@ -6,23 +6,24 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 
 /**
- * Shared GeckoLib model for Phase 5 Stage 4–5 wild dragons.
- * All species reuse {@code geo/entity/dragon_rig.geo.json} and {@code animations/entity/dragon_rig.animation.json}
- * while swapping {@code textures/entity/<speciesId>.png} (and {@code _glowmask.png}).
+ * GeckoLib model for Phase 5 Stage 4–5 wild dragons.
+ * Each species loads its own {@code geo/entity/<rigId>.geo.json},
+ * {@code animations/entity/<rigId>.animation.json}, and {@code textures/entity/<speciesId>.png}.
  */
 public class WildDragonModel<T extends WildDragonEntity> extends GeoModel<T> {
-    private static final ResourceLocation SHARED_MODEL = ArtilianMod.id("geo/entity/dragon_rig.geo.json");
-    private static final ResourceLocation SHARED_ANIMATIONS = ArtilianMod.id("animations/entity/dragon_rig.animation.json");
-
+    private final ResourceLocation model;
+    private final ResourceLocation animations;
     private final ResourceLocation texture;
 
-    public WildDragonModel(String speciesId) {
+    public WildDragonModel(String speciesId, String rigId) {
+        this.model = ArtilianMod.id("geo/entity/" + rigId + ".geo.json");
+        this.animations = ArtilianMod.id("animations/entity/" + rigId + ".animation.json");
         this.texture = ArtilianMod.id("textures/entity/" + speciesId + ".png");
     }
 
     @Override
     public ResourceLocation getModelResource(T entity) {
-        return SHARED_MODEL;
+        return this.model;
     }
 
     @Override
@@ -32,6 +33,6 @@ public class WildDragonModel<T extends WildDragonEntity> extends GeoModel<T> {
 
     @Override
     public ResourceLocation getAnimationResource(T entity) {
-        return SHARED_ANIMATIONS;
+        return this.animations;
     }
 }

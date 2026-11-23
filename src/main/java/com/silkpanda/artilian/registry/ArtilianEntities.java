@@ -6,7 +6,9 @@ import com.silkpanda.artilian.boss.CrystalColossusEntity;
 import com.silkpanda.artilian.boss.GreatAllSeerEntity;
 import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
+import com.silkpanda.artilian.dragon.AmberWyvernEntity;
 import com.silkpanda.artilian.dragon.CanopyWyvernEntity;
+import com.silkpanda.artilian.dragon.StormGlidewingEntity;
 import com.silkpanda.artilian.enemy.AstralStalkerEntity;
 import com.silkpanda.artilian.enemy.CinderRaiderEntity;
 import com.silkpanda.artilian.enemy.LensGuardianEntity;
@@ -247,6 +249,23 @@ public class ArtilianEntities {
                     .eyeHeight(1.55F)
                     .clientTrackingRange(12)
                     .build("canopy_wyvern"));
+
+    /** Amber Wyvern: volcanic dragon species inhabiting the Amber Volcanic Grove. */
+    public static final DeferredHolder<EntityType<?>, EntityType<AmberWyvernEntity>> AMBER_WYVERN =
+            ENTITY_TYPES.register("amber_wyvern", () -> EntityType.Builder.of(AmberWyvernEntity::new, MobCategory.MONSTER)
+                    .sized(1.6F, 2.0F)
+                    .eyeHeight(1.6F)
+                    .fireImmune()
+                    .clientTrackingRange(12)
+                    .build("amber_wyvern"));
+
+    /** Storm Glidewing: swift electric sky-strider across both Dragon Jungle biomes. */
+    public static final DeferredHolder<EntityType<?>, EntityType<StormGlidewingEntity>> STORM_GLIDEWING =
+            ENTITY_TYPES.register("storm_glidewing", () -> EntityType.Builder.of(StormGlidewingEntity::new, MobCategory.MONSTER)
+                    .sized(1.45F, 1.85F)
+                    .eyeHeight(1.5F)
+                    .clientTrackingRange(12)
+                    .build("storm_glidewing"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);
