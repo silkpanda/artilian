@@ -3006,80 +3006,501 @@ def make_ember_drake():
 
 
 def make_peepkin():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Peepkin: cosmic floating Eye-companion + glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # DESIGN.md Eye Realm Accent: Twilight Magenta (#D946EF) & Pupil Glow (#7DF9FF)
-    PK_HI = (128, 96, 192, 255)
-    PK_BASE = (86, 56, 146, 255)
-    PK_SHADE = (58, 36, 106, 255)
-    PK_DEEP = (36, 22, 72, 255)
+    # 8-stop Astral Plum Plush Coat ramp (#150D2A -> #D8C4FA)
+    COAT_RAMP = [
+        (21, 13, 42, 255),     # 0: Deep cosmic void plum shadow
+        (36, 22, 72, 255),     # 1: Dark velvet plum
+        (58, 36, 106, 255),    # 2: Twilight shadow violet
+        (86, 56, 146, 255),    # 3: Rich astral indigo
+        (114, 80, 178, 255),   # 4: Plush violet base
+        (146, 112, 208, 255),  # 5: Soft lavender highlight
+        (182, 152, 234, 255),  # 6: Pastel nebula sheen
+        (216, 196, 250, 255),  # 7: Specular moonlight fluff
+    ]
+    # 8-stop Twilight Magenta Accent ramp (#4C0E5E -> #D946EF -> #FDF2FF)
+    MAG_RAMP = [
+        (76, 14, 94, 255),     # 0: Deep magenta shadow
+        (116, 24, 140, 255),   # 1: Rich plum-magenta
+        (158, 42, 184, 255),   # 2: Shaded twilight orchid
+        (194, 54, 214, 255),   # 3: Mid orchid
+        (217, 70, 239, 255),   # 4: DESIGN.md Twilight Magenta (#D946EF)
+        (240, 124, 252, 255),  # 5: Bright neon orchid
+        (248, 184, 255, 255),  # 6: Soft petal glow
+        (253, 242, 255, 255),  # 7: White-orchid highlight
+    ]
+    # 8-stop Starlight Cyan Pupil-Glow ramp (#0B3B4C -> #38D9C0 -> #7DF9FF -> #FFFFFF)
+    STAR_RAMP = [
+        (11, 59, 76, 255),     # 0: Deep abyssal teal
+        (18, 96, 114, 255),    # 1: Dark starlight teal
+        (32, 156, 154, 255),   # 2: Ocean cyan shade
+        (56, 217, 192, 255),   # 3: DESIGN.md Starlight Teal (#38D9C0)
+        (92, 236, 242, 255),   # 4: Bright sky aqua
+        (125, 249, 255, 255),  # 5: DESIGN.md Pupil Glow (#7DF9FF)
+        (206, 254, 255, 255),  # 6: Ice-white cyan core
+        (255, 255, 255, 255),  # 7: Pure starlight sparkle
+    ]
+    # 8-stop Pearl Sclera Lens ramp (#8A7EB0 -> #FFFFFF)
+    SCLERA_RAMP = [
+        (138, 126, 176, 255),  # 0: Deep lid-shadow sclera
+        (164, 154, 200, 255),  # 1: Cool lavender sclera shade
+        (192, 186, 222, 255),  # 2: Soft pearl rim
+        (218, 214, 238, 255),  # 3: Pale mist sclera
+        (234, 232, 248, 255),  # 4: Bright pearl white
+        (244, 244, 253, 255),  # 5: Soft ivory-white lens
+        (250, 250, 255, 255),  # 6: Crisp sclera white
+        (255, 255, 255, 255),  # 7: Pure catchlight white
+    ]
 
-    MAG_HI = (244, 142, 255, 255)
-    MAG_BASE = (217, 70, 239, 255)   # #D946EF
-    MAG_SHADE = (158, 42, 184, 255)
-    PUPIL_GLOW = (125, 249, 255, 255)  # #7DF9FF
-    SCLERA = (250, 250, 255, 255)
-    SCLERA_SHADE = (214, 212, 236, 255)
+    PAL = {
+        "0": COAT_RAMP[0],
+        "1": COAT_RAMP[1],
+        "2": COAT_RAMP[2],
+        "3": COAT_RAMP[3],
+        "4": COAT_RAMP[4],
+        "5": COAT_RAMP[5],
+        "6": COAT_RAMP[6],
+        "7": COAT_RAMP[7],
+        "d": MAG_RAMP[0],
+        "r": MAG_RAMP[1],
+        "m": MAG_RAMP[2],
+        "n": MAG_RAMP[3],
+        "M": MAG_RAMP[4],
+        "p": MAG_RAMP[5],
+        "P": MAG_RAMP[6],
+        "o": MAG_RAMP[7],
+        "a": STAR_RAMP[0],
+        "s": STAR_RAMP[1],
+        "t": STAR_RAMP[2],
+        "T": STAR_RAMP[3],
+        "c": STAR_RAMP[4],
+        "C": STAR_RAMP[5],
+        "i": STAR_RAMP[6],
+        "W": STAR_RAMP[7],
+        "l": SCLERA_RAMP[0],
+        "L": SCLERA_RAMP[2],
+        "S": SCLERA_RAMP[5],
+        "Q": SCLERA_RAMP[6],
+        "V": (14, 8, 30, 255),  # Deep cosmic pupil void
+    }
 
-    # 1. Plush Orb Core [8, 8, 8] at [0, 0] + Belly Rim [7, 2, 7] at [34, 0] + Crown Tuft [4, 2, 4] at [64, 0]
-    smooth_coat(img, 0, 0, 8, 8, 8, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-    smooth_coat(img, 34, 0, 7, 2, 7, MAG_HI, MAG_BASE, MAG_SHADE, PK_DEEP)
-    smooth_coat(img, 64, 0, 4, 2, 4, MAG_HI, MAG_BASE, MAG_SHADE, PK_SHADE)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # 2. Giant Main Eye: Sclera [6, 5, 1] at [0, 18] & Iris/Pupil [3, 3, 1] at [16, 18]
-    smooth_coat(img, 0, 18, 6, 5, 1, SCLERA, SCLERA, SCLERA, SCLERA_SHADE)
-    ir = faces(16, 18, 3, 3, 1)
-    for rect in ir.values():
-        fill(img, rect, MAG_SHADE)
-    ix, iy, _, _ = ir["front"]
-    fill(img, (ix, iy, 3, 3), MAG_BASE)
-    put(img, ix + 1, iy + 1, (24, 18, 52, 255))
-    put(img, ix + 1, iy, PUPIL_GLOW)
-    put(img, ix + 1, iy + 2, PUPIL_GLOW)
-    put(img, ix + 2, iy, (255, 255, 255, 255))
+    def shade_ramp_box(u, v, w, h, d, ramp, *, starry=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.3,
+            "front": 4.6,
+            "east": 4.1,
+            "west": 3.7,
+            "back": 3.2,
+            "bottom": 2.2,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.4 - edge_dist * 1.0
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.45 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.2)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                    tuft = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 11
+                    if tuft <= 1:
+                        idx += 0.45
+                    elif tuft >= 9:
+                        idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.55
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+                    if starry and (lx * 11 + ly * 17 + seed * 7) % 23 == 0 and 1 <= lx <= rw - 2 and 1 <= ly <= rh - 2:
+                        star_col = PAL["C"] if (lx + ly) % 2 == 0 else PAL["p"]
+                        put(img, rx + lx, ry + ly, star_col)
+                        put(glow, rx + lx, ry + ly, star_col)
 
-    # 3. Blinking Eyelids [6, 1, 1] at [28, 18] & [44, 18]
-    for lu in (28, 44):
-        smooth_coat(img, lu, 18, 6, 1, 1, MAG_HI, PK_BASE, PK_SHADE, PK_DEEP)
-        lf = faces(lu, 18, 6, 1, 1)
-        fill(img, lf["front"], MAG_BASE)
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
 
-    # 4. Two Crown Eye-Buds: Stalks [1, 3, 1] at [60, 18] & [80, 18], Mini Orbs [3, 3, 3] at [66, 18] & [86, 18]
-    for su in (60, 80):
-        smooth_coat(img, su, 18, 1, 3, 1, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-    for ou in (66, 86):
-        smooth_coat(img, ou, 18, 3, 3, 3, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-        mof = faces(ou, 18, 3, 3, 3)
-        fx, fy, _, _ = mof["front"]
-        fill(img, (fx, fy, 3, 3), SCLERA)
-        put(img, fx + 1, fy + 1, PUPIL_GLOW)
-        put(img, fx + 1, fy, MAG_BASE)
+    def paint_cutout_z(u, v, w, h, front_grid, *, back_grid=None, glow_keys=()):
+        if back_grid is None:
+            back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
 
-    # 5. Ear-Winglets [4, 3, 2] at [0, 28] & [14, 28]
-    for eu in (0, 14):
-        smooth_coat(img, eu, 28, 4, 3, 2, MAG_HI, MAG_BASE, MAG_SHADE, PK_SHADE)
-        ef = faces(eu, 28, 4, 3, 2)
-        fill(img, (ef["front"][0] + (3 if eu == 0 else 0), ef["front"][1], 1, 3), PUPIL_GLOW)
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
 
-    # 6. Tail Stem [3, 2, 4] at [28, 28] & Peeking Tail Eye [4, 3, 3] at [44, 28]
-    smooth_coat(img, 28, 28, 3, 2, 4, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-    smooth_coat(img, 44, 28, 4, 3, 3, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-    tef = faces(44, 28, 4, 3, 3)
-    bx, by, _, _ = tef["back"]
-    fill(img, (bx + 1, by, 2, 3), SCLERA)
-    put(img, bx + 1, by + 1, PUPIL_GLOW)
-    put(img, bx + 2, by + 1, MAG_BASE)
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
 
-    # 7. Four Floating Tassel Feet [2, 3, 2] at [0, 38], [10, 38], [20, 38], [30, 38]
-    for fu in (0, 10, 20, 30):
-        smooth_coat(img, fu, 38, 2, 3, 2, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-        ff = faces(fu, 38, 2, 3, 2)
-        fill(img, (ff["front"][0], ff["front"][1] + 2, 2, 1), MAG_BASE)
-        fill(img, ff["bottom"], PUPIL_GLOW)
+    # 1. Plush Astral Orb Core [8, 8, 8] @ [0, 0] -> 16x16x16 px
+    shade_ramp_box(0, 0, 8, 8, 8, COAT_RAMP, starry=True, seed=1)
+    bf = f2x(0, 0, 8, 8, 8)
+    # Deep twilight ocular socket frame on front + crescent nebula cheek marks
+    fx, fy, fw, fh = bf["front"]
+    for ly in range(2, 14):
+        for lx in range(1, 15):
+            if 3 <= ly <= 12 and 2 <= lx <= 13:
+                put(img, fx + lx, fy + ly, PAL["0"])
+            elif (lx in (1, 14) and ly in (6, 8)) or (ly == 2 and lx in (6, 9)):
+                put(img, fx + lx, fy + ly, PAL["M"])
+                put(glow, fx + lx, fy + ly, PAL["M"])
+    # Glowing twilight eye rune on body back
+    bkx, bky, bkw, bkh = bf["back"]
+    for dx, dy, ch in ((7, 5, "M"), (8, 5, "M"), (6, 6, "M"), (9, 6, "M"), (7, 6, "C"), (8, 6, "C"), (7, 7, "C"), (8, 7, "C"), (7, 8, "M"), (8, 8, "M")):
+        put(img, bkx + dx, bky + dy, PAL[ch])
+        put(glow, bkx + dx, bky + dy, PAL[ch])
 
-    dest = OUT / "entity/peepkin.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    # 2. Lower Scalloped Twilight Ruff [7, 2, 7] @ [32, 0] -> 14x4x14 px
+    shade_ramp_box(32, 0, 7, 2, 7, MAG_RAMP, starry=True, seed=2)
+    rf = f2x(32, 0, 7, 2, 7)
+    for fname in ("front", "back", "east", "west"):
+        rx, ry, rw, rh = rf[fname]
+        for lx in range(rw):
+            ch = "C" if lx % 4 == 1 else ("P" if lx % 2 == 0 else "r")
+            put(img, rx + lx, ry + rh - 1, PAL[ch])
+            if ch == "C":
+                put(glow, rx + lx, ry + rh - 1, PAL[ch])
+
+    # 3. Upper Plush Crown Cap [5, 2, 5] @ [60, 0] -> 10x4x10 px
+    shade_ramp_box(60, 0, 5, 2, 5, COAT_RAMP, starry=True, seed=3)
+    cf = f2x(60, 0, 5, 2, 5)
+    cfx, cfy, cfw, cfh = cf["front"]
+    put(img, cfx + 4, cfy + 1, PAL["C"])
+    put(img, cfx + 5, cfy + 1, PAL["C"])
+    put(glow, cfx + 4, cfy + 1, PAL["C"])
+    put(glow, cfx + 5, cfy + 1, PAL["C"])
+
+    # 4. Vertical Astral Halo Crest [0, 3, 5] @ [80, 0] -> 10x6 px
+    #    west col 0 = front (-Z), col 9 = back (+Z)
+    paint_cutout_x(80, 0, 3, 5, [
+        "....WC....",
+        "...PCcP...",
+        "..mMcpMm..",
+        ".rMMnMMMr.",
+        "123443211.",
+        "01233210..",
+    ], glow_keys={"W", "C", "c", "P", "p"})
+
+    # 5. Front Star-Tuft [4, 3, 0] @ [90, 0] -> 8x6 px
+    paint_cutout_z(90, 0, 4, 3, [
+        "...WC...",
+        "..PCcP..",
+        ".rMcpMr.",
+        "12MMpM21",
+        "01233210",
+        ".012210.",
+    ], glow_keys={"W", "C", "c", "P", "p"})
+
+    # 6. Cheek Tufts [3, 4, 0] @ [98, 0] (left) & [104, 0] (right) -> 6x8 px
+    cheek_left = [
+        "..pP..",
+        ".mMpC.",
+        "234Mp.",
+        "1234C.",
+        "123Mp.",
+        "012Mp.",
+        ".01r..",
+        "..0...",
+    ]
+    cheek_right = [row[::-1] for row in cheek_left]
+    paint_cutout_z(98, 0, 3, 4, cheek_left, glow_keys={"C", "P", "p"})
+    paint_cutout_z(104, 0, 3, 4, cheek_right, glow_keys={"C", "P", "p"})
+
+    # 7. Giant Main Eye:
+    #    Convex Sclera Lens [6, 5, 1] @ [0, 17] -> 12x10x2 px
+    shade_ramp_box(0, 17, 6, 5, 1, SCLERA_RAMP, seed=4)
+    paint_box_2x(img, 0, 17, 6, 5, 1, {
+        "front": [
+            "llLLSSSSLLll",
+            "lLSSQQQQQSSl",
+            "LSQQQQQQQQSL",
+            "LSQQQQQQQQSL",
+            "SQQQQQQQQQQS",
+            "SQQQQQQQQQQS",
+            "LSQQQQQQQQSL",
+            "LSQQQQQQQQSL",
+            "lLSSQQQQQSSl",
+            "llLLSSSSLLll",
+        ],
+    }, PAL)
+
+    #    Layered Glowing Iris & Pupil Lens [4, 4, 1] @ [14, 17] -> 8x8x2 px
+    shade_ramp_box(14, 17, 4, 4, 1, MAG_RAMP, starry=True, seed=5)
+    paint_box_2x(img, 14, 17, 4, 4, 1, {
+        "front": [
+            "dmmMMmmd",
+            "mMpcCpMm",
+            "MpCVVWcp",
+            "McVVWWCM",
+            "McVVVVCM",
+            "MpCVVCpM",
+            "mMpcCpmm",
+            "dmmMMmmd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 14, 17, 4, 4, 1, {
+        "front": [
+            "...MM...",
+            ".MpcCp..",
+            "MpC..Wcp",
+            "Mc..WWCM",
+            "Mc....CM",
+            "MpC..CpM",
+            ".MpcCp..",
+            "...MM...",
+        ],
+    }, PAL)
+
+    # 8. Blinking Eyelids & Sweeping Eyelashes:
+    #    Upper Hood [6, 1, 1] @ [24, 17] -> 12x2x2 px, Lower Rim [6, 1, 1] @ [24, 20] -> 12x2x2 px
+    shade_ramp_box(24, 17, 6, 1, 1, COAT_RAMP, seed=6)
+    paint_box_2x(img, 24, 17, 6, 1, 1, {
+        "front": [
+            "1234MCcM4321",
+            "drrMMppMMrrd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 24, 17, 6, 1, 1, {
+        "front": [
+            "....MCcM....",
+            "...MMppMM...",
+        ],
+    }, PAL)
+    shade_ramp_box(24, 20, 6, 1, 1, COAT_RAMP, seed=7)
+    paint_box_2x(img, 24, 20, 6, 1, 1, {
+        "front": [
+            "dmmMMppMMmmd",
+            "011234432110",
+        ],
+    }, PAL)
+
+    #    Sweeping Eyelash Cutout [7, 2, 0] @ [38, 17] -> 14x4 px
+    paint_cutout_z(38, 17, 7, 2, [
+        "C............C",
+        "pP..........Pp",
+        "mMp........pMm",
+        ".drrMMppMMrrd.",
+    ], glow_keys={"C", "P", "p"})
+
+    # 9. Two Crown Eye-Buds:
+    #    eyebud_left: stalk [1, 3, 1] @ [52, 17], orb [3, 3, 3] @ [56, 17], fin [3, 2, 0] @ [68, 17]
+    #    eyebud_right: stalk [1, 3, 1] @ [74, 17], orb [3, 3, 3] @ [78, 17], fin [3, 2, 0] @ [90, 17]
+    for idx, (su, ou, fu) in enumerate(((52, 56, 68), (74, 78, 90))):
+        shade_ramp_box(su, 17, 1, 3, 1, COAT_RAMP, seed=8 + idx)
+        sf = f2x(su, 17, 1, 3, 1)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = sf[fname]
+            put(img, rx, ry + 2, PAL["M"])
+            put(img, rx + 1, ry + 2, PAL["M"])
+            put(glow, rx, ry + 2, PAL["M"])
+            put(glow, rx + 1, ry + 2, PAL["M"])
+
+        shade_ramp_box(ou, 17, 3, 3, 3, COAT_RAMP, starry=True, seed=10 + idx)
+        paint_box_2x(img, ou, 17, 3, 3, 3, {
+            "front": [
+                "12MM21",
+                "1LQWQL",
+                "LMCCML",
+                "LMCVML",
+                "0LmML0",
+                "01mm10",
+            ],
+        }, PAL)
+        paint_box_2x(glow, ou, 17, 3, 3, 3, {
+            "front": [
+                "..MM..",
+                "...W..",
+                ".MCCM.",
+                ".MC.M.",
+                "..mM..",
+                "......",
+            ],
+        }, PAL)
+
+        fin_left = [
+            "..CW..",
+            ".PCcP.",
+            "mMcpMm",
+            ".1221.",
+        ]
+        fin_grid = fin_left if idx == 0 else [row[::-1] for row in fin_left]
+        paint_cutout_z(fu, 17, 3, 2, fin_grid, glow_keys={"W", "C", "c", "P"})
+
+    # 10. Feathered Eye-Spot Ear-Winglets:
+    #     ear_wing_left: joint [2, 2, 2] @ [0, 25], winglet [6, 5, 0] @ [8, 25], plume [5, 0, 3] @ [0, 30]
+    #     ear_wing_right: joint [2, 2, 2] @ [26, 25], winglet [6, 5, 0] @ [34, 25], plume [5, 0, 3] @ [26, 30]
+    for idx, ju in enumerate((0, 26)):
+        shade_ramp_box(ju, 25, 2, 2, 2, COAT_RAMP, starry=True, seed=12 + idx)
+
+    # Left winglet front (12x10: lx=0 inner shoulder, lx=11 outer wingtip)
+    winglet_left = [
+        "......rMMpCW",
+        "....rmMMpCCW",
+        "..1mMMMpCcP.",
+        ".12mMTCcMp..",
+        "123MCWVMp...",
+        "123MCVVMr...",
+        ".12rMCCr....",
+        "..12rMmCW...",
+        "...012rMp...",
+        "....01......",
+    ]
+    winglet_right = [row[::-1] for row in winglet_left]
+    paint_cutout_z(8, 25, 6, 5, winglet_left, glow_keys={"W", "C", "c", "T", "P", "p"})
+    paint_cutout_z(34, 25, 6, 5, winglet_right, glow_keys={"W", "C", "c", "T", "P", "p"})
+
+    # Left horizontal flutter-plume top (10x6: lx=0 inner, lx=9 outer tip)
+    plume_left_top = [
+        "....mMpCCW",
+        "..1mMMpCcP",
+        "123MMTCcP.",
+        "123MMpMm..",
+        ".12rmMr...",
+        "...01.....",
+    ]
+    plume_right_top = [row[::-1] for row in plume_left_top]
+    paint_cutout_y(0, 30, 5, 3, plume_left_top, glow_keys={"W", "C", "c", "T", "P", "p"})
+    paint_cutout_y(26, 30, 5, 3, plume_right_top, glow_keys={"W", "C", "c", "T", "P", "p"})
+
+    # 11. Peeking Tail Eye & Starry Tail-Eye Fan:
+    #     stem [3, 2, 4] @ [52, 25] -> 6x4x8 px
+    shade_ramp_box(52, 25, 3, 2, 4, COAT_RAMP, starry=True, seed=14)
+    tsf = f2x(52, 25, 3, 2, 4)
+    tx, ty, tw, th = tsf["top"]
+    for ly in (2, 5):
+        put(img, tx + 2, ty + ly, PAL["M"])
+        put(img, tx + 3, ty + ly, PAL["M"])
+        put(glow, tx + 2, ty + ly, PAL["M"])
+        put(glow, tx + 3, ty + ly, PAL["M"])
+
+    #     peeking tail-eye bulb [4, 3, 3] @ [66, 25] -> 8x6x6 px
+    shade_ramp_box(66, 25, 4, 3, 3, COAT_RAMP, starry=True, seed=15)
+    paint_box_2x(img, 66, 25, 4, 3, 3, {
+        "back": [
+            "1dmMMmd1",
+            "lLSQQSLl",
+            "SQcWWcQS",
+            "SQCVVCQS",
+            "LSmCCmSL",
+            "0dmmMMd0",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 66, 25, 4, 3, 3, {
+        "back": [
+            "...MM...",
+            "........",
+            "..cWWc..",
+            "..C..C..",
+            "...CC...",
+            "........",
+        ],
+    }, PAL)
+
+    #     vertical tail-crest plume [0, 5, 5] @ [80, 25] -> 10x10 px (col 0 = front -Z, col 9 = back +Z)
+    paint_cutout_x(80, 25, 5, 5, [
+        "......CW..",
+        "....PCcP..",
+        "...mMcpM..",
+        "..rMMpMm..",
+        ".123MMr...",
+        "1234Mr....",
+        ".123MpC...",
+        "..12rMC...",
+        "...012r...",
+        "..........",
+    ], glow_keys={"W", "C", "c", "P", "p"})
+
+    #     horizontal tail-lash fan [6, 0, 4] @ [90, 25] -> 12x8 px (ly=0 = back +Z tip, ly=7 = front -Z)
+    paint_cutout_y(90, 25, 6, 4, [
+        "W..........W",
+        "CCp......pCC",
+        ".cPM....MPc.",
+        "..mMrrrrMm..",
+        "..12mMMm21..",
+        "...123321...",
+        "....0110....",
+        "............",
+    ], glow_keys={"W", "C", "c", "P", "p"})
+
+    # 12. Four Floating Tassel Feet & Starlight Ribbons:
+    #     foot_fl (0), foot_fr (24), foot_bl (48), foot_br (72) at v=36
+    ribbon_west = [
+        "23M.",
+        "12Mp",
+        "01cC",
+        ".0C.",
+        "..W.",
+        "....",
+    ]
+    for idx, base_u in enumerate((0, 24, 48, 72)):
+        # Upper plush foot [2, 2, 2] @ [base_u, 36] -> 4x4x4 px
+        shade_ramp_box(base_u, 36, 2, 2, 2, COAT_RAMP, starry=True, seed=20 + idx)
+        # Tapered tassel tip [2, 1, 2] @ [base_u + 8, 36] -> 4x2x4 px
+        shade_ramp_box(base_u + 8, 36, 2, 1, 2, MAG_RAMP, seed=24 + idx)
+        paint_box_2x(img, base_u + 8, 36, 2, 1, 2, {
+            "front": [
+                "mMMm",
+                "cCCc",
+            ],
+            "bottom": [
+                "mCCm",
+                "CWWC",
+                "CWWC",
+                "mCCm",
+            ],
+        }, PAL)
+        paint_box_2x(glow, base_u + 8, 36, 2, 1, 2, {
+            "front": [
+                ".MM.",
+                "cCCc",
+            ],
+            "bottom": [
+                ".CC.",
+                "CWWC",
+                "CWWC",
+                ".CC.",
+            ],
+        }, PAL)
+        # Floating star-ribbon [0, 3, 2] @ [base_u + 16, 36] -> 4x6 px
+        paint_cutout_x(base_u + 16, 36, 3, 2, ribbon_west, glow_keys={"W", "C", "c", "p"})
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "peepkin.png")
+    glow.save(entity_dir / "peepkin_glowmask.png")
 
 
 def make_prismling():
@@ -4356,6 +4777,10 @@ def main():
     if "--ember-drake" in sys.argv:
         make_ember_drake()
         print("Generated Ember Drake 256x128 texture and glowmask.")
+        return
+    if "--peepkin" in sys.argv:
+        make_peepkin()
+        print("Generated Peepkin 256x128 texture and glowmask.")
         return
     if "--zapkin" in sys.argv:
         make_zapkin()
