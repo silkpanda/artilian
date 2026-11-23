@@ -1062,76 +1062,105 @@ def make_cinder_crag():
     paint_box_2x(img, 88, 0, 5, 2, 1, {"front": mouth_front}, MAGMA)
     paint_box_2x(glow, 88, 0, 5, 2, 1, {"front": mouth_glow}, MAGMA)
 
-    # 5. Three Pointy Flame Spires on Top (crimson-red outer ribs framing golden-orange flame cores)
-    # Outer flames: base [3,3,3]@[0,16] & [30,16] -> 6x6x6 px
-    for idx, fu in enumerate((0, 30)):
-        shade_ramp_box(fu, 16, 3, 3, 3, FLAME_RAMP, seed=5 + idx, texture_scale=2)
-        base_side = [
-            "rroorr",
-            "roggor",
-            "roggor",
-            "rgyygr",
-            "ogwwgo",
-            "ddggdd",
-        ]
-        base_glow = [
-            "..oo..",
-            ".oggo.",
-            ".oggo.",
-            ".gyyg.",
-            ".gwwg.",
-            "..gg..",
-        ]
-        paint_box_2x(img, fu, 16, 3, 3, 3, {
-            "front": base_side, "back": base_side, "east": base_side, "west": base_side,
-            "top": [
-                "rroorr",
-                "roggor",
-                "ogwwgo",
-                "ogwwgo",
-                "roggor",
-                "rroorr",
-            ],
-        }, MAGMA)
-        paint_box_2x(glow, fu, 16, 3, 3, 3, {
-            "front": base_glow, "back": base_glow, "east": base_glow, "west": base_glow,
-        }, MAGMA)
+    # 5. Three Actual Crossed-Plane Fire Tongues on Top (0-depth cutout fire billboards + full glowmask)
+    def paint_cutout_flame(u, v, w, h, front_grid):
+        back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, MAGMA)
+        paint_box_2x(glow, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, MAGMA)
 
-    # Mid tiers [2,2,2]@[14,16], [44,16], and center spire base [60,16] -> 4x4x4 px
-    for idx, mu in enumerate((14, 44, 60)):
-        shade_ramp_box(mu, 16, 2, 2, 2, FLAME_RAMP[2:], seed=8 + idx, texture_scale=2)
-        mid_side = [
-            "roor",
-            "rgyr",
-            "ogwo",
-            "dgwd",
-        ]
-        mid_glow = [
-            ".oo.",
-            ".gy.",
-            ".gw.",
-            ".gw.",
-        ]
-        paint_box_2x(img, mu, 16, 2, 2, 2, {
-            "front": mid_side, "back": mid_side, "east": mid_side, "west": mid_side,
-        }, MAGMA)
-        paint_box_2x(glow, mu, 16, 2, 2, 2, {
-            "front": mid_glow, "back": mid_glow, "east": mid_glow, "west": mid_glow,
-        }, MAGMA)
+    flame_outer_a = [
+        "....o...",
+        "...ry...",
+        "...o..r.",
+        "..ro..o.",
+        "..oyr.o.",
+        ".rogorg.",
+        ".roygyo.",
+        ".ogwygo.",
+        ".ogywgo.",
+        "rogywgor",
+        "roywwyor",
+        "ogwwwwgo",
+        "ogywwwgo",
+        ".dggggd.",
+    ]
+    flame_outer_b = [
+        "..o.....",
+        "..yr....",
+        ".r..o...",
+        ".o..or..",
+        ".o.ryo..",
+        ".grogr..",
+        ".oygyor.",
+        ".ogywgo.",
+        ".ogwygo.",
+        "rogywgor",
+        "roywwyor",
+        "ogwwwwgo",
+        "ogwwwwgo",
+        ".dggggd.",
+    ]
+    flame_outer_core = [
+        "...o..",
+        "..yg..",
+        ".ro.r.",
+        ".og.o.",
+        "rogyor",
+        "ogywgo",
+        "ogywgo",
+        "ogwwgo",
+        "gywwyg",
+        "gwwwwg",
+        "ywwwwy",
+        ".gggg.",
+    ]
+    # Left & Right outer fire crowns (mirror horizontally on right for balanced flame dancing)
+    paint_cutout_flame(0, 16, 4, 7, flame_outer_a)
+    paint_cutout_flame(10, 16, 4, 7, flame_outer_b)
+    paint_cutout_flame(20, 16, 3, 6, flame_outer_core)
+    paint_cutout_flame(30, 16, 4, 7, [row[::-1] for row in flame_outer_a])
+    paint_cutout_flame(40, 16, 4, 7, [row[::-1] for row in flame_outer_b])
+    paint_cutout_flame(50, 16, 3, 6, [row[::-1] for row in flame_outer_core])
 
-    # Spire tips [1,2,1]@[24,16], [54,16], [70,16] -> 2x4x2 px
-    for idx, tu in enumerate((24, 54, 70)):
-        shade_ramp_box(tu, 16, 1, 2, 1, FLAME_RAMP[3:], seed=12 + idx, texture_scale=2)
-        tip_side = ["yy", "gw", "yg", "og"]
-        tip_glow = ["yy", "gw", "yg", "og"]
-        paint_box_2x(img, tu, 16, 1, 2, 1, {
-            "front": tip_side, "back": tip_side, "east": tip_side, "west": tip_side,
-            "top": ["ww", "yy"],
-        }, MAGMA)
-        paint_box_2x(glow, tu, 16, 1, 2, 1, {
-            "front": tip_glow, "back": tip_glow, "east": tip_glow, "west": tip_glow,
-            "top": ["ww", "yy"],
-        }, MAGMA)
+    flame_center_a = [
+        "..o...",
+        "..yr..",
+        ".o..r.",
+        ".og.o.",
+        "rogyor",
+        "ogywgo",
+        "ogwwgo",
+        "gywwyg",
+        "gwwwwg",
+        ".dggd.",
+    ]
+    flame_center_b = [
+        "...o..",
+        "..ry..",
+        ".r..o.",
+        ".o.go.",
+        "roygor",
+        "ogwygo",
+        "ogwwgo",
+        "gywwyg",
+        "gwwwwg",
+        ".dggd.",
+    ]
+    flame_center_core = [
+        "..y...",
+        "..go..",
+        ".og.r.",
+        "rogyo.",
+        "ogywgr",
+        "ogwwgo",
+        "gywwyg",
+        "gwwwwg",
+        "ywwwwy",
+        ".dggd.",
+    ]
+    paint_cutout_flame(60, 16, 3, 5, flame_center_a)
+    paint_cutout_flame(68, 16, 3, 5, flame_center_b)
+    paint_cutout_flame(76, 16, 3, 5, flame_center_core)
 
     # 6. Two Blocky Crimson-Stone Pillar Legs + Flared Feet
     # Legs [3, 4, 3] at [0, 26] & [32, 26] -> 6x8x6 px (with Steve's subtle X ember fissure on front!)
