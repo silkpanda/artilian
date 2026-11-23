@@ -86,7 +86,8 @@ public class ArtilianItemTagsProvider extends ItemTagsProvider {
         tag(ArtilianTags.Items.BOSS_DROPS).add(
                 ArtilianItems.PRISM_CORE.get(),
                 ArtilianItems.BRIMSTONE_DOUBLOON.get(),
-                ArtilianItems.ALL_SEERS_LENS.get()
+                ArtilianItems.ALL_SEERS_LENS.get(),
+                ArtilianItems.SOVEREIGNS_EMBER_HEART.get()
         );
     }
 }

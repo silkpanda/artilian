@@ -75,6 +75,7 @@ public final class ArtilianClient {
                 ctx -> new PetDragonRenderer<>(ctx, "amber_dragonling"));
         event.registerEntityRenderer(ArtilianEntities.STORM_DRAGONLING.get(),
                 ctx -> new PetDragonRenderer<>(ctx, "storm_dragonling"));
+        event.registerEntityRenderer(ArtilianEntities.EMBERCROWN_SOVEREIGN.get(), EmbercrownSovereignRenderer::new);
     }
 
     @SubscribeEvent

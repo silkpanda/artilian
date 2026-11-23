@@ -34,8 +34,9 @@ PHASE5_ENTITIES = (
     "canopy_dragonling",
     "amber_dragonling",
     "storm_dragonling",
+    "embercrown_sovereign",
 )
-BOSS_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone", "great_all_seer")
+BOSS_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone", "great_all_seer", "embercrown_sovereign")
 SHARED_RIGS = {
     "dragon_rig": ("canopy_wyvern",),
 }

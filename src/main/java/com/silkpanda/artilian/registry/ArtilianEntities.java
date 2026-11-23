@@ -3,6 +3,7 @@ package com.silkpanda.artilian.registry;
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.boss.CaptainBrimstoneEntity;
 import com.silkpanda.artilian.boss.CrystalColossusEntity;
+import com.silkpanda.artilian.boss.EmbercrownSovereignEntity;
 import com.silkpanda.artilian.boss.GreatAllSeerEntity;
 import com.silkpanda.artilian.boss.TrainingGolemEntity;
 import com.silkpanda.artilian.chester.ChesterEntity;
@@ -292,6 +293,15 @@ public class ArtilianEntities {
                     .eyeHeight(0.60F)
                     .clientTrackingRange(10)
                     .build("storm_dragonling"));
+
+    // Phase 5 Stage 8: Apex Dragon Boss
+    public static final DeferredHolder<EntityType<?>, EntityType<EmbercrownSovereignEntity>> EMBERCROWN_SOVEREIGN =
+            ENTITY_TYPES.register("embercrown_sovereign", () -> EntityType.Builder.of(EmbercrownSovereignEntity::new, MobCategory.MONSTER)
+                    .sized(2.6F, 3.4F)
+                    .eyeHeight(2.6F)
+                    .fireImmune()
+                    .clientTrackingRange(14)
+                    .build("embercrown_sovereign"));
 
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);

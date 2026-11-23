@@ -532,6 +532,22 @@ public class ArtilianItems {
     public static final DeferredItem<ArmorItem> DRAGONSCALE_BOOTS =
             armor("dragonscale_boots", "dragonscale", ArtilianArmorMaterials.DRAGONSCALE, ArmorItem.Type.BOOTS, 40, true);
 
+    // Phase 5 Stage 8: Apex Dragon Boss
+    public static final DeferredItem<DeferredSpawnEggItem> EMBERCROWN_SOVEREIGN_SPAWN_EGG =
+            ITEMS.register("embercrown_sovereign_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.EMBERCROWN_SOVEREIGN, 0x1E1420, 0xF97316, new Item.Properties()));
+    public static final DeferredItem<BossSummonItem> PRIMAL_DRAGON_CREST =
+            ITEMS.register("primal_dragon_crest", () -> new BossSummonItem(
+                    ArtilianEntities.EMBERCROWN_SOVEREIGN,
+                    new Item.Properties().stacksTo(16).rarity(Rarity.RARE),
+                    "item.artilian.primal_dragon_crest.tooltip",
+                    ChatFormatting.GOLD));
+    public static final DeferredItem<BossTrophyItem> SOVEREIGNS_EMBER_HEART =
+            ITEMS.register("sovereigns_ember_heart", () -> new BossTrophyItem(
+                    new Item.Properties().stacksTo(16).rarity(Rarity.EPIC).fireResistant(),
+                    "item.artilian.sovereigns_ember_heart.tooltip",
+                    ChatFormatting.GOLD));
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
     }

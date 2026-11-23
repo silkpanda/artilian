@@ -20,6 +20,7 @@ public final class BossEvents {
             event.put(ArtilianEntities.CRYSTAL_COLOSSUS.get(), CrystalColossusEntity.createAttributes().build());
             event.put(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), CaptainBrimstoneEntity.createAttributes().build());
             event.put(ArtilianEntities.GREAT_ALL_SEER.get(), GreatAllSeerEntity.createAttributes().build());
+            event.put(ArtilianEntities.EMBERCROWN_SOVEREIGN.get(), EmbercrownSovereignEntity.createAttributes().build());
         }
     }
 }

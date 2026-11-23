@@ -173,6 +173,9 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.DRAGONSCALE_LEGGINGS.get());
                         output.accept(ArtilianItems.DRAGONSCALE_BOOTS.get());
                         output.accept(ArtilianItems.DRAGONFIRE_MEGA_TNT_ITEM.get());
+                        output.accept(ArtilianItems.EMBERCROWN_SOVEREIGN_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.PRIMAL_DRAGON_CREST.get());
+                        output.accept(ArtilianItems.SOVEREIGNS_EMBER_HEART.get());
                     })
                     .build());
 

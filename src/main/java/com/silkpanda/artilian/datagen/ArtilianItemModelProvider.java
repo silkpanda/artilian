@@ -52,6 +52,9 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.withExistingParent("amber_dragonling_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("storm_dragonling_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.basicItem(ArtilianItems.DRAGON_SCALE.get());
+        this.withExistingParent("embercrown_sovereign_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.basicItem(ArtilianItems.PRIMAL_DRAGON_CREST.get());
+        this.basicItem(ArtilianItems.SOVEREIGNS_EMBER_HEART.get());
         captureCrystalModels();
         this.basicItem(ArtilianItems.RAW_SUNSTEEL.get());
         this.basicItem(ArtilianItems.SUNSTEEL_INGOT.get());

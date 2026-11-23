@@ -331,5 +331,14 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.AMBER_DRAGONLING_SPAWN_EGG, "Amber Dragonling Spawn Egg");
         this.addItem(ArtilianItems.STORM_DRAGONLING_SPAWN_EGG, "Storm Dragonling Spawn Egg");
         this.add("message.artilian.dragon_egg.hatched", "Your %s hatched! Use a Capture Crystal to bond with it!");
+
+        // Phase 5 Stage 8: Embercrown Sovereign
+        this.addEntityType(ArtilianEntities.EMBERCROWN_SOVEREIGN, "Embercrown Sovereign");
+        this.addItem(ArtilianItems.EMBERCROWN_SOVEREIGN_SPAWN_EGG, "Embercrown Sovereign Spawn Egg");
+        this.addItem(ArtilianItems.PRIMAL_DRAGON_CREST, "Primal Dragon Crest");
+        this.add("item.artilian.primal_dragon_crest.tooltip", "Use on a Boss Altar to summon Embercrown Sovereign!");
+        this.addItem(ArtilianItems.SOVEREIGNS_EMBER_HEART, "Sovereign's Ember Heart");
+        this.add("item.artilian.sovereigns_ember_heart.tooltip", "Boss Trophy — Heart of the Embercrown Sovereign!");
+        this.add("message.artilian.embercrown_sovereign.primal_fury", "Embercrown Sovereign unleashes Primal Fury!");
     }
 }

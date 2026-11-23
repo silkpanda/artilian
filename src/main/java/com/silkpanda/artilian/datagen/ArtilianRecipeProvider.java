@@ -236,6 +236,18 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .define('P', Items.ENDER_PEARL)
                 .unlockedBy("has_gazing_eye", has(ArtilianItems.GAZING_EYE.get()))
                 .save(output);
+
+        // Phase 5 Stage 8: Embercrown Sovereign summon item
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ArtilianItems.PRIMAL_DRAGON_CREST.get())
+                .pattern(" G ")
+                .pattern("DMD")
+                .pattern(" B ")
+                .define('G', Items.GOLD_INGOT)
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('M', ArtilianItems.AMBER_MOSS_ITEM.get())
+                .define('B', Items.BLAZE_POWDER)
+                .unlockedBy("has_dragon_scale", has(ArtilianItems.DRAGON_SCALE.get()))
+                .save(output);
     }
 
     private static void slateStonecutting(RecipeOutput output, ItemLike result, ItemLike base, int count) {

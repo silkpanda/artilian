@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 5 — Stage 7 (*Dragonscale Gear & Mega TNT*)** Added `ArtilianTiers.DRAGONSCALE` (`2350` durability, Netherite-tier), `ArtilianArmorMaterials.DRAGONSCALE` (`26` total defense, `3.5F` toughness, `0.20F` knockback resistance), `DragonscaleSwordItem` (ignites targets + `Weakness`), full 9-piece Dragonscale gear set (`dragonscale_sword/pickaxe/axe/shovel/hoe` + `dragonscale_helmet/chestplate/leggings/boots` with `DragonscaleArmorRenderer` & full-set Fire Resistance + Strength bonus), **Dragonfire Mega TNT** (`TntVariant.DRAGONFIRE_MEGA`, `7.5F` blast honoring `allowDestructiveCustomTnt` + `SAFE_QUARRY_DAMAGE_CALCULATOR`), `make_ores_and_gear_art.py` + `make_tnt_art.py` textures, `check_armor_sheets.py` clean, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` (`218/218` green, including `P5-02` red-proof) on `phase-5-stage-7-dragonscale-gear-mega-tnt`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–7 (`qa/evidence/dragonscale-gear-mega-tnt-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 8 (*Apex Dragon Boss*)**: Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar. |
+| **In progress** | **Phase 5 — Stage 8 (*Apex Dragon Boss*)** Added **Embercrown Sovereign** (`artilian:embercrown_sovereign`, `Dragon / Fire`, `300.0` HP, fire-immune, fall-immune, `256×128` GeckoLib boss rig + `AutoGlowingGeoLayer`), 3 telegraphed attacks (`EMBER_BREATH`, `SOVEREIGN_ROAR`, `METEOR_SLAM`, all `>= 35` ticks windup, zero block breaking) + half-health **Primal Fury** phase, **Primal Dragon Crest** (`BossSummonItem` for `Boss Altar`), **Sovereign's Ember Heart** (`BossTrophyItem` in `artilian:boss_drops`), `make_embercrown_sovereign_art.py`, `lint_art.py --phase5 --strict` clean, `preview_geo.py` (`qa/evidence/previews/embercrown_sovereign-preview.png`), datagen (`runData`), `build`, and 4 `EmbercrownSovereignGameTests` (`222/222` green, including red-proof) on `phase-5-stage-8-apex-dragon-boss`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–8 (`qa/evidence/embercrown-sovereign-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 9 (*Twin-Star Endgame Rewards*)**: Combined endgame rewards uniting Alex's and Steve's realms. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -640,7 +640,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 5 | More Dragon Species | Additional wild dragon species reusing the shared dragon rig | 🔄 Code & GameTests complete (`208/208`); live client check pending |
 | 6 | Hatchable Pet Dragons | Hatchable dragon companions (`ArtilianPetEntity`) | 🔄 Code & GameTests complete (`212/212`); live client check pending |
 | 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | 🔄 Code & GameTests complete (`218/218`); live client check pending |
-| 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | [ ] Pending |
+| 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | 🔄 Code & GameTests complete (`222/222`); live client check pending |
 | 9 | Twin-Star Endgame Rewards | Combined endgame rewards uniting Alex's and Steve's realms | [ ] Pending |
 | 10 | Phase 5 Art Pass & Finale | Final art polish & full family co-op finale verification | [ ] Pending |
 
@@ -789,6 +789,30 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`DragonscaleGearAndMegaTntGameTests` + `TntSecurityProbes`):** `218/218` green (6 new tests including `P5-02`). Red-proof recorded above.
 - **Security Gate (`P5-02`):** `HELD` in `218/218` suite (`security/FINDINGS.md`).
 - **Done When:** `check_armor_sheets.py`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Dragonscale gear & Dragonfire Mega TNT in-game.
+
+### Phase 5 — Stage 8: Apex Dragon Boss
+- [ ] **In Progress (`222/222` GameTests Green & Strict Art Lint Clean; Live Client Check Pending)** — Phase 5 apex dragon boss **Embercrown Sovereign** (`artilian:embercrown_sovereign`, `Dragon / Fire`), **Primal Dragon Crest** (`BossSummonItem`), **Sovereign's Ember Heart** (`BossTrophyItem`), dedicated `256×128` GeckoLib boss model/glowmask, and `EmbercrownSovereignGameTests`.
+- **Art Brief (`Embercrown Sovereign`):**
+  - **Target height/scale:** ~`4.2` blocks tall at crown tips, ~`5.0` blocks nose-to-tail, ~`7.2` blocks wingspan (`EntityType` `2.6F × 3.4F`, `eyeHeight = 2.6F`, `shadowRadius = 1.8F`).
+  - **Silhouette inspiration:** Towering armored 4-legged apex dragon sovereign with broad shoulder pauldrons, an inset **Primal Heart** chest core, arched S-curved neck, articulated lower `jaw`, a **5-horn Embercrown** crest, 2 colossal 3-segment dihedral wings, and a 3-segment war-tail ending in a glowing mace-blade.
+  - **Dark structural anchor + accent palette:** Deep volcanic obsidian-charcoal scales (`#120C14` → `#5A3E4E`) anchored against forged Ember-Gold armor (`#601E0A` → `#F97316` → `#FDE047`) and Canopy Emerald Primal Heart core (`#166034` → `#22C55E` → `#4ADE80`).
+  - **Key 3D recessed/angled features:** Inset eye sockets, articulated `jaw`, 5-horn angled Embercrown, broad shoulder pauldrons, inset Primal Heart chest core, 3-segment dihedral wings, and angled war-tail mace.
+  - **`_glowmask.png` zones:** Emissive amber eyes, 5 Embercrown horn tips, Primal Heart chest core, wing-vein runes, and tail mace-blade (`AutoGlowingGeoLayer`).
+- **Why & Decisions:**
+  1. **Embercrown Sovereign (`EmbercrownSovereignEntity extends ArtilianBossEntity`):** `300.0` HP, `0.26` speed, `9.0` ATK, `11.0` Armor, `fireImmune() = true`, fall-immune with airborne glide damping, `PetElement.DRAGON` / `PetElement.FIRE`.
+  2. **Three Kid-Readable Telegraphed Attacks & Primal Fury:** `EMBER_BREATH` (`40` ticks windup, `4.2` radius, `8.0F` dmg, ignites `3s`), `SOVEREIGN_ROAR` (`35` ticks windup, `5.5` radius, `7.5F` dmg, knockback + `Weakness`), and `METEOR_SLAM` (`50` ticks windup, `7.5` radius, `10.5F` dmg, ignites `4s`, zero block breaking). At `<= 50%` HP, enters **Primal Fury** (`PRIMAL_FURY` synched + NBT, boss bar turns `YELLOW` → `RED`, cooldown `60` → `40` ticks).
+  3. **Altar Summon & Trophy (`Primal Dragon Crest` & `Sovereign's Ember Heart`):** `PRIMAL_DRAGON_CREST` (`BossSummonItem`, crafted from `Dragon Scale` + `Amber Moss` + `Blaze Powder` + `Gold Ingot`) summons `Embercrown Sovereign` on any `Boss Altar`. Defeating him drops `1` `Sovereign's Ember Heart` (in `artilian:boss_drops`), `3–6` `Dragon Scale`, `2–4` `Amber Moss`, and `1–2` `Starlight Crystal`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `256×128` GeckoLib model, texture, glowmask, sprites & preview | Pending commit | `tools/art/make_embercrown_sovereign_art.py`, `lint_art.py --phase5 --strict` clean (`entity/embercrown_sovereign`), `preview_geo.py` (`qa/evidence/previews/embercrown_sovereign-preview.png`). |
+  | 2 `EmbercrownSovereignEntity`, renderer, items, datagen & GameTests | Pending commit | `EmbercrownSovereignEntity`, `EmbercrownSovereignRenderer` (`AutoGlowingGeoLayer`), `PRIMAL_DRAGON_CREST`, `SOVEREIGNS_EMBER_HEART`, `EMBERCROWN_SOVEREIGN_SPAWN_EGG`, datagen (`runData`), `build`, and 4 `EmbercrownSovereignGameTests` (`222/222` green). Red-proof: flipped `EmbercrownSovereignEntity.fireImmune()` to `false` → `embercrownsovereignattributeselementstageggfireimmunityandloottable` failed → restored green. |
+  | 3 Live client verification & evidence | Pending | `./gradlew runClient` screenshot of Embercrown Sovereign & Boss Altar in `artilian:dragon_jungle` (`qa/evidence/embercrown-sovereign-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`EmbercrownSovereignGameTests`):** `222/222` green (4 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`). Red-proof recorded above.
+- **Security Gate:** `n/a` (inherits `P3-01`–`P3-03` `BossAltarBlockEntity` single-boss lock, zero block-breaking, and `ChesterEntity` immunity).
+- **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Embercrown Sovereign in-game.
 
 ---
 

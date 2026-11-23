@@ -39,6 +39,26 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
         this.add(ArtilianEntities.CRYSTAL_COLOSSUS.get(), crystalColossusTable());
         this.add(ArtilianEntities.CAPTAIN_BRIMSTONE.get(), captainBrimstoneTable());
         this.add(ArtilianEntities.GREAT_ALL_SEER.get(), greatAllSeerTable());
+        this.add(ArtilianEntities.EMBERCROWN_SOVEREIGN.get(), embercrownSovereignTable());
+    }
+
+    private static LootTable.Builder embercrownSovereignTable() {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.SOVEREIGNS_EMBER_HEART.get())))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.DRAGON_SCALE.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 6)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.AMBER_MOSS_ITEM.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(ArtilianItems.STARLIGHT_CRYSTAL.get())
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))));
     }
 
     private static LootTable.Builder greatAllSeerTable() {
@@ -140,7 +160,8 @@ public class ArtilianEntityLootSubProvider extends EntityLootSubProvider {
                 ArtilianEntities.TRAINING_GOLEM.get(),
                 ArtilianEntities.CRYSTAL_COLOSSUS.get(),
                 ArtilianEntities.CAPTAIN_BRIMSTONE.get(),
-                ArtilianEntities.GREAT_ALL_SEER.get()
+                ArtilianEntities.GREAT_ALL_SEER.get(),
+                ArtilianEntities.EMBERCROWN_SOVEREIGN.get()
         );
     }
 }
