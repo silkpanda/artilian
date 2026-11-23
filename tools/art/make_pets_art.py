@@ -819,89 +819,363 @@ def make_shadow_wisp():
 
 
 def make_cinder_crag():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Cinder Crag faithful to Steve's fire/rock creature."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # Crimson-basalt stone & molten orange-gold magma core (Steve's fire/rock creature)
-    RK_HI = (225, 56, 84, 255)
-    RK_BASE = (182, 32, 62, 255)
-    RK_SHADE = (132, 22, 48, 255)
-    RK_DEEP = (82, 16, 36, 255)
+    # 8-stop crimson-basalt stone ramp anchored in deep volcanic crimson-charcoal
+    ROCK_RAMP = [
+        (52, 12, 28, 255),   # 0: Deep basalt crevice / anchor shadow
+        (78, 16, 36, 255),   # 1: Dark volcanic crimson-basalt
+        (108, 22, 46, 255),  # 2: Shaded crimson stone
+        (140, 28, 56, 255),  # 3: Mid-low stone
+        (174, 34, 64, 255),  # 4: Crimson stone base
+        (198, 46, 76, 255),  # 5: Upper warm crimson stone
+        (222, 62, 90, 255),  # 6: Sunlit crimson edge highlight
+        (240, 84, 108, 255), # 7: Bevel rim catchlight
+    ]
+    # 8-stop molten flame & magma ramp (crimson rim -> orange -> solar gold -> white-hot core)
+    FLAME_RAMP = [
+        (140, 24, 52, 255),  # 0: Deep crimson stone/flame anchor
+        (200, 32, 62, 255),  # 1: Crimson flame edge
+        (225, 42, 48, 255),  # 2: Hot red-crimson
+        (245, 92, 24, 255),  # 3: Molten red-orange
+        (249, 128, 28, 255), # 4: Ember orange
+        (255, 178, 44, 255), # 5: Solar gold
+        (255, 224, 96, 255), # 6: Bright flame yellow
+        (255, 246, 176, 255),# 7: White-hot magma core
+    ]
+    MAGMA = {
+        "0": ROCK_RAMP[0],
+        "1": ROCK_RAMP[1],
+        "2": ROCK_RAMP[2],
+        "3": ROCK_RAMP[3],
+        "4": ROCK_RAMP[4],
+        "5": ROCK_RAMP[5],
+        "6": ROCK_RAMP[6],
+        "7": ROCK_RAMP[7],
+        "k": (52, 12, 28, 255),    # Deep volcanic socket
+        "R": (140, 24, 52, 255),   # Dark crimson bevel
+        "r": (225, 29, 72, 255),   # Crimson flame rim (#E11D48)
+        "d": (194, 65, 12, 255),   # Deep ember orange
+        "o": (249, 115, 22, 255),  # Molten orange (#F97316)
+        "g": (255, 184, 48, 255),  # Solar gold (#FFB830)
+        "y": (255, 226, 104, 255), # Bright flame yellow
+        "w": (255, 246, 176, 255), # White-hot magma core
+    }
 
-    FL_CORE = (255, 242, 148, 255)
-    FL_GOLD = (255, 184, 48, 255)
-    FL_ORANGE = (249, 115, 22, 255)   # #F97316
-    FL_CRIMSON = (225, 29, 72, 255)   # #E11D48
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # Main middle body [9, 7, 7] at [0, 0] with molten magma cracks & glowing inner face
-    smooth_coat(img, 0, 0, 9, 7, 7, RK_HI, RK_BASE, RK_SHADE, RK_DEEP)
-    bf = faces(0, 0, 9, 7, 7)
-    fx, fy, fw, fh = bf["front"]
-    # Molten magma arch framing the eyes & mouth on the middle body
-    for dy in range(1, fh - 1):
-        for dx in range(1, fw - 1):
-            if dx in (1, fw - 2) or dy in (1, fh - 1):
-                put(img, fx + dx, fy + dy, FL_ORANGE if (dx + dy) % 2 == 0 else FL_GOLD)
-    # Molten cracks on sides & back
-    for side in ("east", "west", "back"):
+    def shade_ramp_box(u, v, w, h, d, ramp, *, seed=0, texture_scale=2):
+        f = f2x(u, v, w, h, d)
+        face_bias = {"top": 5.4, "front": 4.7, "east": 4.1, "west": 3.7, "back": 3.3, "bottom": 2.1}
+        for name, (rx, ry, rw, rh) in f.items():
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        cx = abs(tx - 0.5) * 2.0
+                        cy = abs(ty - 0.5) * 2.0
+                        edge_dist = max(cx, cy)
+                        idx = bias + (1.0 - edge_dist) * 2.2 - edge_dist * 1.2
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias + (0.7 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 2.0 + (0.2 - tx) * 0.4
+                    sx = lx // texture_scale
+                    sy = ly // texture_scale
+                    mottle = ((sx * 7 + sy * 13 + seed * 5 + (sx ^ sy) * 3) % 11)
+                    if mottle <= 1:
+                        idx += 0.65
+                    elif mottle >= 9:
+                        idx -= 0.65
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.75
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    # 1. Squat Crimson-Basalt Main Body [9, 7, 7] at [0, 0] -> 18x14x14 px
+    shade_ramp_box(0, 0, 9, 7, 7, ROCK_RAMP, seed=1, texture_scale=2)
+    paint_box_2x(img, 0, 0, 9, 7, 7, {
+        "front": [
+            "345544444444445543",
+            "34dooooooooooood43",
+            "2dgo11R1do1R11ogd2",
+            "2do100R1og1R001od2",
+            "2do10011og11001od2",
+            "2do11R12oo21R11od2",
+            "2dgo22RdggdR22ogd2",
+            "2dgo2RdooooodR2og2",
+            "2do2Rgo2222ogR2od2",
+            "2do1go211112og1od2",
+            "1do1oo111111oo1od1",
+            "1ddgoo111111oogdd1",
+            "12RddddddddddddR21",
+            "011222222222222110",
+        ],
+    }, MAGMA)
+    paint_box_2x(glow, 0, 0, 9, 7, 7, {
+        "front": [
+            "..................",
+            "..dooooooooooood..",
+            "..go....do....og..",
+            "..o.....og.....o..",
+            "..o.....og.....o..",
+            "..o.....oo.....o..",
+            "..go....gg....og..",
+            "..go..doooood.og..",
+            "..o..go....og..o..",
+            "..o.go......og.o..",
+            "..o.oo......oo.o..",
+            "...goo......oog...",
+            "..................",
+            "..................",
+        ],
+    }, MAGMA)
+
+    # Molten fissures on sides & back of body
+    bf = f2x(0, 0, 9, 7, 7)
+    for side_idx, side in enumerate(("east", "west", "back")):
         sx, sy, sw, sh = bf[side]
-        put(img, sx + sw // 2, sy + 2, FL_ORANGE)
-        put(img, sx + sw // 2, sy + 3, FL_GOLD)
-        put(img, sx + max(0, sw // 2 - 1), sy + 4, FL_ORANGE)
+        mid = sw // 2
+        fissure = [
+            (mid - 1, 3, "r"), (mid, 3, "d"),
+            (mid, 4, "o"), (mid + 1, 4, "r"),
+            (mid, 5, "g"), (mid - 1, 5, "o"),
+            (mid - 1, 6, "y"), (mid, 6, "g"),
+            (mid - 2, 7, "o"), (mid - 1, 7, "g"),
+            (mid - 2, 8, "d"), (mid - 1, 8, "o"),
+            (mid, 9, "d"), (mid - 1, 9, "r"),
+        ]
+        if side == "back":
+            fissure += [(mid - 4, 4, "d"), (mid - 4, 5, "o"), (mid + 3, 7, "o"), (mid + 3, 8, "d")]
+        for fx_off, fy_off, key in fissure:
+            if 0 <= fx_off < sw and 0 <= fy_off < sh:
+                put(img, sx + fx_off, sy + fy_off, MAGMA[key])
+                if key in ("o", "g", "y"):
+                    put(glow, sx + fx_off, sy + fy_off, MAGMA[key])
+    # Warm center ember core on bottom of body (ensures rich bottom contrast)
+    bx, by, bw, bh = bf["bottom"]
+    for dy in range(4, bh - 4):
+        for dx in range(5, bw - 5):
+            col = MAGMA["o"] if (dx in (6, 11) or dy in (4, 9)) else MAGMA["g"]
+            put(img, bx + dx, by + dy, col)
+            if col == MAGMA["g"]:
+                put(glow, bx + dx, by + dy, MAGMA["d"])
 
-    # Flat rocky brow [10, 2, 8] at [34, 0]
-    smooth_coat(img, 34, 0, 10, 2, 8, RK_HI, RK_BASE, RK_SHADE, RK_DEEP)
-    brf = faces(34, 0, 10, 2, 8)
-    for px in range(brf["front"][0] + 1, brf["front"][0] + 9, 2):
-        put(img, px, brf["front"][1] + 1, FL_ORANGE)
+    # 2. Flat Overhanging Stone Brow [10, 2, 8] at [34, 0] -> 20x4x16 px
+    shade_ramp_box(34, 0, 10, 2, 8, ROCK_RAMP, seed=2, texture_scale=2)
+    paint_box_2x(img, 34, 0, 10, 2, 8, {
+        "front": [
+            "66655555555555555666",
+            "45544444444444444554",
+            "34433333333333333443",
+            "1do11do11go11od11od1",
+        ],
+        "back": [
+            "45544444444444444554",
+            "34433333333333333443",
+            "23322222222222222332",
+            "1do112211do112211od1",
+        ],
+    }, MAGMA)
+    paint_box_2x(glow, 34, 0, 10, 2, 8, {
+        "front": [
+            "....................",
+            "....................",
+            "....................",
+            ".do..do..go..od..od.",
+        ],
+    }, MAGMA)
+    # Glowing lava vents on top of brow under the 3 flame spires
+    brf = f2x(34, 0, 10, 2, 8)
+    btx, bty, _, _ = brf["top"]
+    for vx, vy, vw, vh in ((2, 6, 4, 4), (14, 6, 4, 4), (8, 7, 4, 2)):
+        for dy in range(vh):
+            for dx in range(vw):
+                is_core = 0 < dx < vw - 1 and 0 < dy < vh - 1
+                col = MAGMA["g"] if is_core else MAGMA["o"]
+                put(img, btx + vx + dx, bty + vy + dy, col)
+                put(glow, btx + vx + dx, bty + vy + dy, col if is_core else MAGMA["d"])
 
-    # Eyes [2, 2, 1] at [72, 0] & [80, 0] — glowing fiery amber eyes
-    for idx, eu in enumerate((72, 80)):
-        ef = faces(eu, 0, 2, 2, 1)
-        for rect in ef.values():
-            fill(img, rect, FL_CRIMSON)
-        ex, ey, _, _ = ef["front"]
-        fill(img, (ex, ey, 2, 2), FL_GOLD)
-        put(img, ex + (1 if idx == 0 else 0), ey, FL_CORE)
-        put(img, ex + (0 if idx == 0 else 1), ey + 1, FL_ORANGE)
+    # 3. Fierce Angled Fiery Eyes: eye_left [2,2,1]@[72,0] & eye_right [2,2,1]@[80,0] -> 4x4x2 px
+    # eye_left is viewer's left (outer=left, inner=right); eye_right is viewer's right (inner=left, outer=right)
+    for is_left, eu in ((True, 72), (False, 80)):
+        shade_ramp_box(eu, 0, 2, 2, 1, [MAGMA["k"], MAGMA["R"], MAGMA["r"], MAGMA["d"], MAGMA["o"]], seed=3)
+        if is_left:
+            eye_front = [
+                "RroR",
+                "rogy",
+                "ogww",
+                "Rdog",
+            ]
+            eye_glow = [
+                ".ro.",
+                ".ogy",
+                "ogww",
+                ".dog",
+            ]
+        else:
+            eye_front = [
+                "RorR",
+                "ygor",
+                "wwgo",
+                "godR",
+            ]
+            eye_glow = [
+                ".or.",
+                "ygo.",
+                "wwgo",
+                "god.",
+            ]
+        paint_box_2x(img, eu, 0, 2, 2, 1, {"front": eye_front}, MAGMA)
+        paint_box_2x(glow, eu, 0, 2, 2, 1, {"front": eye_glow}, MAGMA)
 
-    # Wide arched magma mouth [5, 2, 1] at [88, 0]
-    mf = faces(88, 0, 5, 2, 1)
-    for rect in mf.values():
-        fill(img, rect, RK_DEEP)
-    mx, my, mw, mh = mf["front"]
-    fill(img, (mx, my, mw, mh), FL_ORANGE)
-    fill(img, (mx + 1, my, mw - 2, 1), FL_CORE)
-    put(img, mx + 2, my + 1, FL_GOLD)
-    put(img, mx, my, FL_CRIMSON)
-    put(img, mx + mw - 1, my, FL_CRIMSON)
+    # 4. Wide Arched Magma Furnace Mouth [5, 2, 1] at [88, 0] -> 10x4x2 px
+    shade_ramp_box(88, 0, 5, 2, 1, [MAGMA["k"], MAGMA["R"], MAGMA["r"], MAGMA["d"], MAGMA["o"]], seed=4)
+    mouth_front = [
+        "RrggwwggrR",
+        "rogwwwwgor",
+        "doogwwgood",
+        "kRddoooodk",
+    ]
+    mouth_glow = [
+        ".rggwwggr.",
+        ".ogwwwwgo.",
+        ".oogwwgoo.",
+        "..ddoood..",
+    ]
+    paint_box_2x(img, 88, 0, 5, 2, 1, {"front": mouth_front}, MAGMA)
+    paint_box_2x(glow, 88, 0, 5, 2, 1, {"front": mouth_glow}, MAGMA)
 
-    # 3 Pointy Flame Spires on top
-    # Base [3, 3, 3] at [0, 16] and [30, 16]
-    for fu in (0, 30):
-        smooth_coat(img, fu, 16, 3, 3, 3, FL_GOLD, FL_ORANGE, FL_CRIMSON, RK_SHADE)
-        ff = faces(fu, 16, 3, 3, 3)
-        for face_name in ("front", "back", "east", "west"):
-            x0, y0, _, _ = ff[face_name]
-            put(img, x0 + 1, y0 + 1, FL_CORE)
-            put(img, x0 + 1, y0 + 2, FL_GOLD)
-    # Mid [2, 2, 2] at [14, 16], [44, 16], and center base [60, 16]
-    for mu in (14, 44, 60):
-        smooth_coat(img, mu, 16, 2, 2, 2, FL_CORE, FL_GOLD, FL_ORANGE, FL_CRIMSON)
-    # Tips [1, 2, 1] at [24, 16], [54, 16], [70, 16]
-    for tu in (24, 54, 70):
-        smooth_coat(img, tu, 16, 1, 2, 1, FL_CORE, FL_CORE, FL_GOLD, FL_ORANGE)
+    # 5. Three Pointy Flame Spires on Top (crimson-red outer ribs framing golden-orange flame cores)
+    # Outer flames: base [3,3,3]@[0,16] & [30,16] -> 6x6x6 px
+    for idx, fu in enumerate((0, 30)):
+        shade_ramp_box(fu, 16, 3, 3, 3, FLAME_RAMP, seed=5 + idx, texture_scale=2)
+        base_side = [
+            "rroorr",
+            "roggor",
+            "roggor",
+            "rgyygr",
+            "ogwwgo",
+            "ddggdd",
+        ]
+        base_glow = [
+            "..oo..",
+            ".oggo.",
+            ".oggo.",
+            ".gyyg.",
+            ".gwwg.",
+            "..gg..",
+        ]
+        paint_box_2x(img, fu, 16, 3, 3, 3, {
+            "front": base_side, "back": base_side, "east": base_side, "west": base_side,
+            "top": [
+                "rroorr",
+                "roggor",
+                "ogwwgo",
+                "ogwwgo",
+                "roggor",
+                "rroorr",
+            ],
+        }, MAGMA)
+        paint_box_2x(glow, fu, 16, 3, 3, 3, {
+            "front": base_glow, "back": base_glow, "east": base_glow, "west": base_glow,
+        }, MAGMA)
 
-    # 2 Sturdy Crimson-Stone Pillar Legs + Flared Feet
-    for lu in (0, 32):
-        smooth_coat(img, lu, 26, 3, 4, 3, RK_HI, RK_BASE, RK_SHADE, RK_DEEP)
-        lf = faces(lu, 26, 3, 4, 3)
-        put(img, lf["front"][0] + 1, lf["front"][1] + 1, FL_ORANGE)
-    for fu in (14, 46):
-        smooth_coat(img, fu, 26, 4, 1, 4, RK_BASE, RK_SHADE, RK_DEEP, RK_DEEP)
+    # Mid tiers [2,2,2]@[14,16], [44,16], and center spire base [60,16] -> 4x4x4 px
+    for idx, mu in enumerate((14, 44, 60)):
+        shade_ramp_box(mu, 16, 2, 2, 2, FLAME_RAMP[2:], seed=8 + idx, texture_scale=2)
+        mid_side = [
+            "roor",
+            "rgyr",
+            "ogwo",
+            "dgwd",
+        ]
+        mid_glow = [
+            ".oo.",
+            ".gy.",
+            ".gw.",
+            ".gw.",
+        ]
+        paint_box_2x(img, mu, 16, 2, 2, 2, {
+            "front": mid_side, "back": mid_side, "east": mid_side, "west": mid_side,
+        }, MAGMA)
+        paint_box_2x(glow, mu, 16, 2, 2, 2, {
+            "front": mid_glow, "back": mid_glow, "east": mid_glow, "west": mid_glow,
+        }, MAGMA)
 
-    dest = OUT / "entity/cinder_crag.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    # Spire tips [1,2,1]@[24,16], [54,16], [70,16] -> 2x4x2 px
+    for idx, tu in enumerate((24, 54, 70)):
+        shade_ramp_box(tu, 16, 1, 2, 1, FLAME_RAMP[3:], seed=12 + idx, texture_scale=2)
+        tip_side = ["yy", "gw", "yg", "og"]
+        tip_glow = ["yy", "gw", "yg", "og"]
+        paint_box_2x(img, tu, 16, 1, 2, 1, {
+            "front": tip_side, "back": tip_side, "east": tip_side, "west": tip_side,
+            "top": ["ww", "yy"],
+        }, MAGMA)
+        paint_box_2x(glow, tu, 16, 1, 2, 1, {
+            "front": tip_glow, "back": tip_glow, "east": tip_glow, "west": tip_glow,
+            "top": ["ww", "yy"],
+        }, MAGMA)
+
+    # 6. Two Blocky Crimson-Stone Pillar Legs + Flared Feet
+    # Legs [3, 4, 3] at [0, 26] & [32, 26] -> 6x8x6 px (with Steve's subtle X ember fissure on front!)
+    for idx, lu in enumerate((0, 26 + 6)):
+        shade_ramp_box(lu, 26, 3, 4, 3, ROCK_RAMP, seed=15 + idx, texture_scale=2)
+        paint_box_2x(img, lu, 26, 3, 4, 3, {
+            "front": [
+                "455554",
+                "3o44o3",
+                "3do2d3",
+                "23og32",
+                "23go32",
+                "2d22d2",
+                "1o22o1",
+                "011110",
+            ],
+        }, MAGMA)
+        paint_box_2x(glow, lu, 26, 3, 4, 3, {
+            "front": [
+                "......",
+                ".o..o.",
+                ".d..d.",
+                "..og..",
+                "..go..",
+                ".d..d.",
+                ".o..o.",
+                "......",
+            ],
+        }, MAGMA)
+
+    # Flared Feet [4, 1, 4] at [14, 26] & [46, 26] -> 8x2x8 px
+    for idx, fu in enumerate((14, 46)):
+        shade_ramp_box(fu, 26, 4, 1, 4, ROCK_RAMP[:7], seed=18 + idx, texture_scale=2)
+        paint_box_2x(img, fu, 26, 4, 1, 4, {
+            "front": [
+                "34244243",
+                "01011010",
+            ],
+        }, MAGMA)
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "cinder_crag.png")
+    glow.save(entity_dir / "cinder_crag_glowmask.png")
 
 
 def make_zaphox():
@@ -2598,6 +2872,10 @@ def main():
     if "--shadow-wisp" in sys.argv:
         make_shadow_wisp()
         print("Generated Shadow Wisp 256x128 texture and glowmask.")
+        return
+    if "--cinder-crag" in sys.argv:
+        make_cinder_crag()
+        print("Generated Cinder Crag 256x128 texture and glowmask.")
         return
     if "--zapkin" in sys.argv:
         make_zapkin()
