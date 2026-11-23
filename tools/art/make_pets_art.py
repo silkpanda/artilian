@@ -3965,29 +3965,69 @@ def make_prismling():
 
 
 def make_flurrywing():
-    """Flurrywing: the kids' four-winged snow-fairy snowman (qa/reference/pets/flurrywing-drawing-2026-11-17.jpg).
+    """256x128 (2x scale over 128x64 UV grid) Flurrywing: snow-fairy snowman + glowmask.
 
-    Layout matches src/main/resources/assets/artilian/geo/entity/flurrywing.geo.json (box UV, 128x64),
-    exported from tools/art/models/flurrywing.bbmodel. Each entry is (u, v, w, h, d).
+    Faithful to qa/reference/pets/flurrywing-drawing-2026-11-17.jpg and flurrywing.geo.json:
+    three stacked snowballs with vertical coal dash buttons, ribbed turquoise beanie,
+    asymmetric stick & ice-blue mitten arms, and four veined crystalline frost butterfly wings.
     """
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    SNOW = (248, 252, 255, 255)
-    SNOW_HI = (255, 255, 255, 255)
-    SNOW_SHADE = (214, 236, 248, 255)   # pale ice-blue shade side
-    SNOW_DEEP = (184, 216, 238, 255)
-    OUTLINE = (45, 212, 191, 255)       # #2DD4BF, the drawing's turquoise marker
-    OUTLINE_DARK = (17, 158, 142, 255)
-    OUTLINE_HI = (110, 231, 214, 255)
-    COAL = (36, 36, 44, 255)
-    WING = (125, 249, 255, 255)         # #7DF9FF, Ice
-    WING_PALE = (178, 252, 255, 255)
-    VEIN = (255, 255, 255, 255)
-    STICK = (122, 80, 42, 255)
-    STICK_DARK = (86, 54, 26, 255)
-    MITTEN = (125, 188, 240, 255)
-    MITTEN_HI = (168, 214, 250, 255)
-    MITTEN_DARK = (86, 150, 214, 255)
+    # 8-stop Spherical Snow & Ice-Shadow ramp (#8EC5E8 -> #FFFFFF)
+    SNOW_RAMP = [
+        (142, 197, 232, 255),  # 0: Deep arctic-blue under-ball shadow
+        (168, 214, 242, 255),  # 1: Cool sky-ice shade
+        (194, 228, 248, 255),  # 2: Pale frost-blue shadow
+        (216, 238, 252, 255),  # 3: Soft glacier tint
+        (232, 246, 254, 255),  # 4: Bright snow mist
+        (244, 251, 255, 255),  # 5: Crisp snow base
+        (251, 254, 255, 255),  # 6: Sunlit powder snow
+        (255, 255, 255, 255),  # 7: Pure specular snow white
+    ]
+    # 8-stop Turquoise Marker & Knit Beanie ramp (#126E64 -> #BFF8F0)
+    TURQ_RAMP = [
+        (18, 110, 100, 255),   # 0: Deep evergreen-teal crevice shadow
+        (23, 146, 134, 255),   # 1: Rich sea-teal shade
+        (32, 182, 166, 255),   # 2: Shaded turquoise
+        (45, 212, 191, 255),   # 3: Kid drawing turquoise marker (#2DD4BF)
+        (86, 228, 212, 255),   # 4: Bright frost-mint knit
+        (134, 238, 228, 255),  # 5: Pastel seafoam knit highlight
+        (184, 248, 242, 255),  # 6: Frosted mint sheen
+        (224, 253, 250, 255),  # 7: Snow-dusted knit highlight
+    ]
+    # 8-stop Glacial Cyan Butterfly Wing ramp (#1998A0 -> #FFFFFF)
+    WING_RAMP = [
+        (25, 152, 160, 255),   # 0: Deep frost-teal wing rim
+        (44, 198, 202, 255),   # 1: Shaded glacier cyan
+        (76, 228, 238, 255),   # 2: Mid ice-fairy cyan
+        (125, 249, 255, 255),  # 3: DESIGN.md Ice Glow (#7DF9FF)
+        (166, 252, 255, 255),  # 4: Luminous frost aqua
+        (206, 254, 255, 255),  # 5: Translucent crystal highlight
+        (236, 255, 255, 255),  # 6: Bright frost vein shimmer
+        (255, 255, 255, 255),  # 7: Specular ice-crystal glint
+    ]
+    # 6-stop Bark Stick & Ice-Blue Mitten ramps
+    STICK_RAMP = [
+        (66, 40, 20, 255),
+        (92, 58, 30, 255),
+        (122, 80, 42, 255),
+        (146, 98, 54, 255),
+        (170, 118, 68, 255),
+        (194, 142, 88, 255),
+    ]
+    MITTEN_RAMP = [
+        (64, 118, 184, 255),
+        (86, 150, 214, 255),
+        (114, 178, 236, 255),
+        (142, 200, 246, 255),
+        (178, 220, 252, 255),
+        (216, 240, 255, 255),
+    ]
+    COAL_DARK = (24, 26, 36, 255)
+    COAL_MID = (44, 48, 64, 255)
+    COAL_HI = (78, 86, 112, 255)
 
     BALLS = {
         "bottom_core": (0, 0, 10, 6, 10),
@@ -4000,7 +4040,6 @@ def make_flurrywing():
     HAT = {"hat_brim": (32, 16, 6, 1, 6), "hat_crown": (74, 16, 4, 1, 4)}
     STICKS = {"stick_upper": (100, 29, 5, 1, 1), "stick_lower": (40, 25, 1, 3, 1), "mitten_arm": (12, 32, 4, 1, 1)}
     MITTENS = {"mitten_palm": (12, 25, 3, 2, 2), "mitten_tip": (32, 25, 2, 2, 2)}
-    # Wing slabs, hinge to tip. Pointed upper-left, rounded upper-right, then the two lower fans.
     UPPER_WINGS = [
         [(22, 25, 4, 3, 1), (90, 16, 6, 4, 1), (0, 25, 5, 3, 1), (88, 29, 3, 2, 1), (96, 29, 1, 2, 1)],
         [(78, 29, 4, 2, 1), (104, 16, 7, 3, 1), (56, 16, 8, 4, 1), (36, 29, 6, 2, 1), (22, 32, 4, 1, 1)],
@@ -4010,82 +4049,216 @@ def make_flurrywing():
         [(64, 29, 6, 2, 1), (0, 29, 8, 2, 1), (64, 25, 9, 2, 1), (18, 29, 8, 2, 1), (0, 32, 5, 1, 1)],
     ]
 
-    # 1. Snowballs: white fronts, pale ice-blue sides, turquoise marker rim down each silhouette edge.
-    for name, (u, v, w, h, d) in BALLS.items():
-        f = faces(u, v, w, h, d)
-        for face, (x, y, fw, fh) in f.items():
-            base = {"top": SNOW_HI, "bottom": SNOW_DEEP, "east": SNOW_SHADE, "west": SNOW_SHADE}.get(face, SNOW)
-            fill(img, (x, y, fw, fh), base)
-            if face in ("front", "back", "east", "west"):
-                for py in range(y, y + fh):
-                    put(img, x, py, OUTLINE)
-                    put(img, x + fw - 1, py, OUTLINE)
-                if name.endswith("_cap"):
-                    for px in range(x, x + fw):
-                        put(img, px, y, OUTLINE)
-                        put(img, px, y + fh - 1, OUTLINE_DARK)
-                for py in range(y + 1, y + fh - 1):  # frosty sparkle
-                    for px in range(x + 1, x + fw - 1):
-                        if (px * 7 + py * 3) % 11 == 0:
-                            put(img, px, py, SNOW_SHADE if base == SNOW else SNOW)
-            elif face == "top" and name.endswith("_core"):
-                for px in range(x, x + fw):
-                    put(img, px, y, OUTLINE)
-                    put(img, px, y + fh - 1, OUTLINE)
-                for py in range(y, y + fh):
-                    put(img, x, py, OUTLINE)
-                    put(img, x + fw - 1, py, OUTLINE)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # Coal buttons: the drawing's dashed line, 3 dashes on the bottom ball and 2 on the middle.
-    x, y, _, _ = faces(*BALLS["bottom_core"])["front"]
-    for row in (0, 2, 4):
-        fill(img, (x + 4, y + row, 2, 1), COAL)
-    x, y, _, _ = faces(*BALLS["middle_core"])["front"]
-    for row in (0, 2):
-        fill(img, (x + 2, y + row, 2, 1), COAL)
+    def shade_snowball(u, v, w, h, d, is_cap=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 6.2,
+            "front": 5.5,
+            "east": 4.6,
+            "west": 4.2,
+            "back": 4.0,
+            "bottom": 1.6,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    dx = (tx - 0.5) * 2.0
+                    dy = (ty - 0.5) * 2.0
+                    radial = (dx * dx + dy * dy) ** 0.5
+                    sparkle = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 13
+                    if name == "bottom":
+                        idx = bias + (1.0 - min(1.2, radial)) * 2.2 - radial * 0.6
+                        if sparkle == 0:
+                            idx += 0.8
+                        c_idx = max(0, min(len(SNOW_RAMP) - 1, int(round(idx))))
+                        col = TURQ_RAMP[1] if radial > 1.15 and is_cap else SNOW_RAMP[c_idx]
+                    else:
+                        idx = bias + (0.45 - ty) * 1.4 + (0.45 - radial) * 1.1
+                        if sparkle <= 1:
+                            idx += 0.55
+                        elif sparkle >= 11:
+                            idx -= 0.55
+                        edge_x = lx in (0, rw - 1)
+                        edge_y = (ly in (0, rh - 1)) and (is_cap or name == "top")
+                        if edge_x or edge_y:
+                            # Soft turquoise frost marker contour rim along outer silhouette edges
+                            t_idx = 3 if (name in ("front", "top") and ly < rh - 1) else 2
+                            if lx in (0, rw - 1) and ly in (0, rh - 1):
+                                t_idx = 1
+                            col = TURQ_RAMP[t_idx]
+                        elif lx in (1, rw - 2) or (is_cap and ly in (1, rh - 2)):
+                            # Soft ice-mint inner frost transition halo
+                            col = TURQ_RAMP[5] if name in ("front", "top") else TURQ_RAMP[4]
+                        else:
+                            c_idx = max(0, min(len(SNOW_RAMP) - 1, int(round(idx))))
+                            col = SNOW_RAMP[c_idx]
+                            if sparkle == 0 and radial < 0.7 and name == "front":
+                                put(glow, rx + lx, ry + ly, WING_RAMP[5])
+                    put(img, rx + lx, ry + ly, col)
 
-    # Coal face: two dot eyes and a small mouth.
-    x, y, _, _ = faces(*BALLS["head_core"])["front"]
-    fill(img, (x + 1, y, 3, 4), SNOW)
-    put(img, x + 1, y + 1, COAL)
-    put(img, x + 3, y + 1, COAL)
-    put(img, x + 2, y + 3, COAL)
+    def shade_ramp_box(u, v, w, h, d, ramp, *, knit=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.3,
+            "front": 4.4,
+            "east": 3.8,
+            "west": 3.4,
+            "back": 3.1,
+            "bottom": 1.8,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.5 - edge_dist * 0.9
+                    elif name == "top":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.2 - edge_dist * 0.6
+                    else:
+                        idx = bias + (0.45 - ty) * 1.6 + (0.2 - tx) * 0.35
+                    if knit:
+                        rib = (lx % 2 == 0)
+                        if name == "top" and (lx + ly) % 3 == 0:
+                            idx += 0.9
+                        elif name != "bottom":
+                            idx += 0.7 if rib else -0.7
+                    else:
+                        grain = (lx * 7 + ly * 11 + seed * 5) % 9
+                        if grain <= 1:
+                            idx += 0.55
+                        elif grain >= 7:
+                            idx -= 0.55
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
 
-    # 2. Turquoise beanie.
-    smooth_coat(img, *HAT["hat_brim"], OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DARK)
-    smooth_coat(img, *HAT["hat_crown"], OUTLINE_HI, OUTLINE_HI, OUTLINE, OUTLINE_DARK)
+    # 1. Three Stacked Snowballs at 2x resolution
+    for i, (name, box) in enumerate(BALLS.items()):
+        shade_snowball(*box, is_cap=name.endswith("_cap"), seed=i + 1)
 
-    # 3. Brown stick arm and ice-blue mitten.
-    for box in STICKS.values():
-        smooth_coat(img, *box, STICK, STICK, STICK_DARK, STICK_DARK)
-    for box in MITTENS.values():
-        smooth_coat(img, *box, MITTEN_HI, MITTEN, MITTEN_DARK, MITTEN_DARK)
+    # Coal buttons: faithful to the drawing's dashed vertical line (3 dashes bottom, 2 dashes middle)
+    def draw_coal_dash(cx, cy, h_px):
+        for dy in range(h_px):
+            for dx in range(2):
+                col = COAL_HI if (dy == 0 and dx == 0) else (COAL_DARK if dy == h_px - 1 else COAL_MID)
+                put(img, cx + dx, cy + dy, col)
+        # Soft frost rim below/beside coal button
+        put(img, cx - 1, cy + h_px - 1, SNOW_RAMP[2])
+        put(img, cx + 2, cy + h_px - 1, SNOW_RAMP[2])
 
-    # 4. Frost wings: pale cyan panes with white veins, turquoise marker on every thin edge.
-    for slabs in UPPER_WINGS + LOWER_WINGS:
-        upper = slabs in UPPER_WINGS
+    bx, by, _, _ = f2x(*BALLS["bottom_core"])["front"]
+    for row in (1, 5, 9):
+        draw_coal_dash(bx + 9, by + row, 2)
+
+    mx, my, _, _ = f2x(*BALLS["middle_core"])["front"]
+    for row in (1, 5):
+        draw_coal_dash(mx + 5, my + row, 2)
+
+    # Expressive coal face on head_core front (10x8 px)
+    hx, hy, _, _ = f2x(*BALLS["head_core"])["front"]
+    for ly in range(1, 7):
+        for lx in range(2, 8):
+            put(img, hx + lx, hy + ly, SNOW_RAMP[7] if ly < 4 else SNOW_RAMP[5])
+    # Rounded coal eyes (2x3) with a single crisp frost catchlight sparkle
+    for ex in (hx + 2, hx + 6):
+        fill(img, (ex, hy + 1, 2, 3), COAL_DARK)
+        put(img, ex, hy + 1, WING_RAMP[6])
+        put(glow, ex, hy + 1, WING_RAMP[5])
+    # Rosy arctic-cyan frost cheeks & friendly coal mouth
+    put(img, hx + 2, hy + 4, TURQ_RAMP[5])
+    put(img, hx + 7, hy + 4, TURQ_RAMP[5])
+    fill(img, (hx + 4, hy + 5, 2, 2), COAL_DARK)
+    put(img, hx + 4, hy + 5, COAL_MID)
+
+    # 2. Ribbed Knit Turquoise Beanie (hat_brim & hat_crown)
+    shade_ramp_box(*HAT["hat_brim"], TURQ_RAMP, knit=True, seed=10)
+    shade_ramp_box(*HAT["hat_crown"], TURQ_RAMP, knit=True, seed=11)
+    # Snow dusting across the crown pom-pom top
+    htx, hty, htw, hth = f2x(*HAT["hat_crown"])["top"]
+    for ly in range(2, hth - 2):
+        for lx in range(2, htw - 2):
+            if (lx + ly) % 2 == 0 or (2 <= lx <= htw - 3 and 2 <= ly <= hth - 3):
+                put(img, htx + lx, hty + ly, SNOW_RAMP[7 if (lx + ly) % 3 == 0 else 5])
+
+    # 3. Wood-Bark Stick Arm & Quilted Ice-Blue Mitten
+    for i, box in enumerate(STICKS.values()):
+        shade_ramp_box(*box, STICK_RAMP, seed=20 + i)
+    for i, (mname, box) in enumerate(MITTENS.items()):
+        shade_ramp_box(*box, MITTEN_RAMP, seed=30 + i)
+        if mname == "mitten_palm":
+            mf = f2x(*box)
+            for fname in ("front", "back", "top", "bottom"):
+                rx, ry, rw, rh = mf[fname]
+                for ly in range(rh):
+                    put(img, rx, ry + ly, SNOW_RAMP[6 if ly % 2 == 0 else 4])
+
+    # 4. Four Veined Crystalline Frost Butterfly Wings + Glowmask
+    for wing_idx, slabs in enumerate(UPPER_WINGS + LOWER_WINGS):
+        upper = wing_idx < 2
+        is_left = (wing_idx % 2 == 0)
         for i, (u, v, w, h, d) in enumerate(slabs):
-            f = faces(u, v, w, h, d)
+            f = f2x(u, v, w, h, d)
+            # Shaded turquoise crystalline wing frame along thin edges
             for face in ("top", "bottom", "east", "west"):
-                fill(img, f[face], OUTLINE)
+                rx, ry, rw, rh = f[face]
+                for ly in range(rh):
+                    for lx in range(rw):
+                        edge = lx == 0 or ly == 0
+                        col = TURQ_RAMP[4 if (lx + ly) % 3 == 0 else (3 if edge else 2)]
+                        put(img, rx + lx, ry + ly, col)
+                        if (lx + ly) % 4 == 0:
+                            put(glow, rx + lx, ry + ly, WING_RAMP[4])
+            # Shimmering crystalline membrane on front & back with diagonal rib + frost veins
             for face in ("front", "back"):
-                x, y, fw, fh = f[face]
-                fill(img, (x, y, fw, fh), WING)
-                for py in range(y, y + fh):
-                    for px in range(x, x + fw):
-                        if (px + py) % 4 == 0:
-                            put(img, px, py, VEIN)
-                        elif (px - py) % 6 == 0:
-                            put(img, px, py, WING_PALE)
-                    put(img, x, py, OUTLINE)
-                    put(img, x + fw - 1, py, OUTLINE)
-                if i == len(slabs) - 1:  # the tip slab closes the wing: top edge up high, bottom edge down low
-                    for px in range(x, x + fw):
-                        put(img, px, y if upper else y + fh - 1, OUTLINE)
+                rx, ry, rw, rh = f[face]
+                for ly in range(rh):
+                    ty = ly / max(1, rh - 1)
+                    for lx in range(rw):
+                        tx = lx / max(1, rw - 1)
+                        is_border = (
+                            lx in (0, rw - 1)
+                            or (i == len(slabs) - 1 and ly in (0, 1) if upper else i == len(slabs) - 1 and ly in (rh - 2, rh - 1))
+                            or (i == 0 and ((ly == rh - 1) if upper else (ly == 0)))
+                        )
+                        if is_border:
+                            col = TURQ_RAMP[2 if (lx == 0 or lx == rw - 1) else 3]
+                        else:
+                            # Diagonal central wing rib (echoes the kid's drawing!) + branching frost crystal veins
+                            diag = abs((tx if is_left else (1.0 - tx)) - (1.0 - ty if upper else ty))
+                            rib = diag < 0.18
+                            vein = (lx + ly * 2 + i) % 5 == 0
+                            center_dist = abs(tx - 0.5) * 0.8 + abs(ty - 0.5) * 0.6
+                            if rib:
+                                col = WING_RAMP[7 if (lx + ly) % 2 == 0 else 6]
+                                put(glow, rx + lx, ry + ly, WING_RAMP[5])
+                            elif vein:
+                                col = WING_RAMP[6]
+                                put(glow, rx + lx, ry + ly, WING_RAMP[4])
+                            else:
+                                idx = 4.8 - center_dist * 2.6 + (0.6 if upper else 0.3)
+                                c_idx = max(1, min(5, int(round(idx))))
+                                col = WING_RAMP[c_idx]
+                                if c_idx >= 4 and (lx * 3 + ly * 7) % 9 == 0:
+                                    put(glow, rx + lx, ry + ly, WING_RAMP[4])
+                        put(img, rx + lx, ry + ly, col)
 
-    dest = OUT / "entity/flurrywing.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "flurrywing.png")
+    glow.save(entity_dir / "flurrywing_glowmask.png")
 
 
 def make_sunbeam():
@@ -4875,6 +5048,10 @@ def main():
     if "--prismling" in sys.argv:
         make_prismling()
         print("Generated Prismling 256x128 texture and glowmask.")
+        return
+    if "--flurrywing" in sys.argv:
+        make_flurrywing()
+        print("Generated Flurrywing 256x128 texture and glowmask.")
         return
     make_crystal_fox()
     make_shadow_wisp()
