@@ -1208,155 +1208,668 @@ def make_cinder_crag():
 
 
 def make_zaphox():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Zaphox cheetah-fox-elephant coat, lightning wings & glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    ZX_GOLD_HI = (254, 240, 178, 255)
-    ZX_GOLD_BASE = (251, 191, 36, 255)
-    ZX_GOLD_SHADE = (217, 138, 16, 255)
-    ZX_GOLD_DEEP = (176, 92, 12, 255)
-    ZX_SPOT = (92, 42, 14, 255)
+    # 8-stop Golden Cheetah Coat (rich amber shadows -> bright gold -> warm cream highlights)
+    COAT_RAMP = [
+        (132, 66, 12, 255),   # 0: Deep amber crevice shadow
+        (166, 92, 16, 255),   # 1: Rich ochre shade
+        (198, 122, 18, 255),  # 2: Warm saffron shade
+        (226, 152, 24, 255),  # 3: Golden midtone
+        (248, 184, 34, 255),  # 4: Cheetah gold base
+        (253, 210, 74, 255),  # 5: Sunlit gold highlight
+        (254, 232, 134, 255), # 6: Warm honey-cream
+        (255, 246, 194, 255), # 7: Cream-ivory ruff & belly highlight
+    ]
+    # 7-stop Fox-Russet Fur ramp for shoulder ruff, ears & cheek tufts
+    FOX_RAMP = [
+        (96, 32, 10, 255),    # 0: Deep burnt umber
+        (138, 46, 12, 255),   # 1: Dark fox-russet
+        (178, 66, 14, 255),   # 2: Shaded copper-orange
+        (214, 88, 18, 255),   # 3: Fox-russet base
+        (238, 118, 34, 255),  # 4: Warm fox-orange
+        (251, 154, 64, 255),  # 5: Sunlit fox-apricot
+        (254, 198, 116, 255), # 6: Soft cream-peach fur edge
+    ]
+    # 4-stop Ivory Tusk ramp
+    TUSK_RAMP = [
+        (178, 154, 116, 255), # 0: Warm bone root
+        (212, 194, 156, 255), # 1: Ivory midtone
+        (238, 226, 196, 255), # 2: Bright ivory
+        (255, 252, 238, 255), # 3: Porcelain tip
+    ]
 
-    ZX_FOX_HI = (251, 146, 60, 255)
-    ZX_FOX_RUFF = (234, 88, 12, 255)
+    PAL = {
+        # Coat & fox tones
+        "0": COAT_RAMP[0],
+        "1": COAT_RAMP[1],
+        "2": COAT_RAMP[2],
+        "3": COAT_RAMP[3],
+        "4": COAT_RAMP[4],
+        "5": COAT_RAMP[5],
+        "6": COAT_RAMP[6],
+        "7": COAT_RAMP[7],
+        "f": FOX_RAMP[1],
+        "F": FOX_RAMP[3],
+        "a": FOX_RAMP[4],
+        "A": FOX_RAMP[5],
+        "P": FOX_RAMP[6],
+        # Spots & dark structural anchors
+        "S": (56, 24, 12, 255),    # Espresso spot core / dark ear tip
+        "U": (108, 48, 14, 255),   # Umber spot halo
+        "N": (24, 20, 56, 255),    # Deep storm-indigo tear-mark / lash / nose / paw
+        "n": (38, 34, 84, 255),    # Mid storm-indigo
+        "i": (58, 54, 118, 255),   # Light storm-indigo highlight
+        # Eye iris & catchlights (warm coral-orange iris nod to Alex's red-orange eyes)
+        "R": (176, 44, 14, 255),   # Deep coral-amber iris rim
+        "O": (240, 92, 22, 255),   # Warm coral-orange iris
+        "Y": (253, 188, 36, 255),  # Golden-amber lower iris
+        "W": (255, 255, 255, 255), # Crisp white catchlight
+        "E": (236, 242, 255, 255), # Sclera highlight
+        # Lightning wing & bolt palette
+        "K": (134, 36, 10, 255),   # Deep burnt-crimson rim
+        "B": (196, 58, 12, 255),   # Ember orange
+        "V": (245, 112, 20, 255),  # Vivid lightning orange
+        "M": (252, 168, 34, 255),  # Molten amber
+        "G": (254, 224, 76, 255),  # Solar yellow
+        "H": (255, 250, 206, 255), # White-hot lightning core
+        # Electric cyan-teal sparks & anklets
+        "t": (22, 128, 134, 255),  # Deep teal bevel
+        "T": (56, 217, 192, 255),  # Starlight teal (#38D9C0)
+        "C": (125, 249, 255, 255), # Electric cyan spark (#7DF9FF)
+        "c": (226, 254, 255, 255), # White-cyan spark core
+    }
 
-    ZX_WING_CORE = (254, 249, 195, 255)
-    ZX_WING_HI = (253, 224, 71, 255)
-    ZX_WING_BASE = (249, 115, 22, 255)
-    ZX_WING_SHADE = (194, 65, 12, 255)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    ZX_TEAR = (30, 27, 75, 255)
-    ZX_SPARK = (125, 249, 255, 255)
-    ZX_EYE = (250, 204, 21, 255)
-    ZX_PUPIL = (24, 24, 27, 255)
-    ZX_WHITE = (255, 255, 255, 255)
-    ZX_TUSK = (254, 249, 195, 255)
-    ZX_NOSE = (49, 46, 129, 255)
+    def shade_ramp_box(u, v, w, h, d, ramp, *, cream_bottom=False, seed=0, texture_scale=1):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.5 if len(ramp) >= 7 else 2.6,
+            "front": 4.7 if len(ramp) >= 7 else 2.2,
+            "east": 4.1 if len(ramp) >= 7 else 1.8,
+            "west": 3.7 if len(ramp) >= 7 else 1.6,
+            "back": 3.2 if len(ramp) >= 7 else 1.3,
+            "bottom": (5.0 if cream_bottom else 2.2) if len(ramp) >= 7 else 1.0,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        cx = abs(tx - 0.5) * 2.0
+                        cy = abs(ty - 0.5) * 2.0
+                        edge_dist = max(cx, cy)
+                        idx = bias + (1.0 - edge_dist) * (2.3 if cream_bottom else 1.8) - edge_dist * 1.4
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.55 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                    sx = lx // texture_scale
+                    sy = ly // texture_scale
+                    tuft = ((sx * 7 + sy * 13 + seed * 5 + (sx ^ sy) * 3) % 11)
+                    if tuft <= 1:
+                        idx += 0.45
+                    elif tuft >= 9:
+                        idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.65
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
 
-    # 1. Sleek Cheetah Torso [5, 4, 11] at [0, 0]
-    smooth_coat(img, 0, 0, 5, 4, 11, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    bf = faces(0, 0, 5, 4, 11)
-    fill(img, bf["bottom"], ZX_GOLD_HI)
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    def stamp_spot(target, rx, ry, rw, rh, cx, cy, *, kind="med"):
+        """Paint an organic multi-pixel cheetah spot with espresso core and warm umber halo."""
+        if kind == "big":
+            offsets = [
+                (0, 0, "S"), (1, 0, "S"), (0, 1, "S"), (1, 1, "S"),
+                (-1, 0, "U"), (2, 1, "U"), (0, -1, "U"), (1, 2, "U"),
+            ]
+        elif kind == "med":
+            offsets = [
+                (0, 0, "S"), (1, 0, "S"), (0, 1, "S"),
+                (1, 1, "U"), (-1, 0, "U"), (0, -1, "U"),
+            ]
+        else:
+            offsets = [(0, 0, "S"), (1, 0, "U"), (0, 1, "U")]
+        for ox, oy, ch in offsets:
+            px, py = cx + ox, cy + oy
+            if 0 <= px < rw and 0 <= py < rh:
+                put(target, rx + px, ry + py, PAL[ch])
+
+    # 1. Sleek Cheetah Torso [5, 4, 11] at [0, 0] -> 10x8x22 px
+    shade_ramp_box(0, 0, 5, 4, 11, COAT_RAMP, cream_bottom=True, seed=1)
+    bf = f2x(0, 0, 5, 4, 11)
+    # Subtle russet dorsal spine stripe + cheetah spots on top
+    tx, ty, tw, th = bf["top"]
+    for dy in range(1, th - 1):
+        put(img, tx + 4, ty + dy, PAL["F"] if dy % 3 != 0 else PAL["a"])
+        put(img, tx + 5, ty + dy, PAL["a"] if dy % 2 == 0 else PAL["F"])
+    for cx, cy, kind in [(2, 3, "med"), (7, 5, "med"), (2, 8, "big"), (7, 11, "med"), (2, 14, "med"), (7, 17, "big"), (3, 19, "sm")]:
+        stamp_spot(img, tx, ty, tw, th, cx, cy, kind=kind)
+    # Organic cheetah spots + mid-flank electric cyan static spark on east & west
     for side in ("east", "west"):
         sx, sy, sw, sh = bf[side]
-        for px, py in [(2, 1), (5, 2), (8, 1), (3, 3), (7, 3), (9, 2)]:
-            put(img, sx + px, sy + py, ZX_SPOT)
-        put(img, sx + 4, sy + 1, ZX_SPARK)
-    tx, ty, tw, th = bf["top"]
-    for px, py in [(1, 2), (3, 3), (1, 6), (3, 7), (2, 9)]:
-        put(img, tx + px, ty + py, ZX_SPOT)
+        # East has front at right (lx near sw), west has front at left (lx near 0)
+        spots = (
+            [(4, 2, "big"), (9, 4, "med"), (14, 2, "big"), (18, 4, "med"), (6, 5, "sm"), (12, 5, "sm"), (19, 2, "sm")]
+            if side == "west"
+            else [(2, 2, "sm"), (5, 4, "med"), (9, 2, "big"), (14, 4, "med"), (18, 2, "big"), (7, 5, "sm"), (15, 5, "sm")]
+        )
+        for cx, cy, kind in spots:
+            stamp_spot(img, sx, sy, sw, sh, cx, cy, kind=kind)
+        spark_x = 10 if side == "west" else 11
+        for ox, oy, key in [(0, 1, "T"), (1, 1, "C"), (1, 2, "c"), (2, 2, "T")]:
+            put(img, sx + spark_x + ox, sy + oy, PAL[key])
+            if key in ("C", "c"):
+                put(glow, sx + spark_x + ox, sy + oy, PAL[key])
+    # Subtle rump spots on back face
+    bx, by, bw, bh = bf["back"]
+    stamp_spot(img, bx, by, bw, bh, 2, 2, kind="sm")
+    stamp_spot(img, bx, by, bw, bh, 7, 2, kind="sm")
 
-    # 2. Chest / Shoulder Arch [6, 5, 3] at [32, 0] — warm fox orange with cream bib
-    smooth_coat(img, 32, 0, 6, 5, 3, ZX_FOX_HI, ZX_FOX_RUFF, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    rf = faces(32, 0, 6, 5, 3)
-    fill(img, (rf["front"][0] + 1, rf["front"][1] + 1, 4, 3), ZX_GOLD_HI)
+    # 2. Chest / Shoulder Arch [6, 5, 3] at [32, 0] -> 12x10x6 px
+    shade_ramp_box(32, 0, 6, 5, 3, FOX_RAMP, cream_bottom=True, seed=2)
+    cf = f2x(32, 0, 6, 5, 3)
+    # Keep top shoulder arch rich russet-gold so it blends cleanly into the back in Back/Side views
+    ctx, cty, ctw, cth = cf["top"]
+    for ly in range(cth):
+        for lx in range(ctw):
+            col = FOX_RAMP[3] if 3 <= lx <= 8 else FOX_RAMP[2]
+            if ly == 0 or ly == cth - 1:
+                col = FOX_RAMP[2]
+            put(img, ctx + lx, cty + ly, col)
+    # Radial cream-gold cushion on bottom of chest arch
+    cbx, cby, cbw, cbh = cf["bottom"]
+    for ly in range(cbh):
+        for lx in range(cbw):
+            edge = min(lx, cbw - 1 - lx, ly, cbh - 1 - ly)
+            col = COAT_RAMP[7] if edge >= 2 else (COAT_RAMP[5] if edge == 1 else FOX_RAMP[3])
+            put(img, cbx + lx, cby + ly, col)
+    paint_box_2x(img, 32, 0, 6, 5, 3, {
+        "front": [
+            "fFFaaaaFFFfF"[:12],
+            "FFa677776aFF",
+            "Fa677GH776aF",
+            "Fa67GHC776aF",
+            "Fa577HG775aF",
+            "fF567G7765Ff",
+            "fF45677654Ff",
+            "fF34566543Ff",
+            "ff23455432ff",
+            "ff11233211ff",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 32, 0, 6, 5, 3, {
+        "front": [
+            "............",
+            "............",
+            ".....GH.....",
+            "....GHC.....",
+            ".....HG.....",
+            ".....G......",
+            "............",
+            "............",
+            "............",
+            "............",
+        ],
+    }, PAL)
+    for side in ("east", "west"):
+        sx, sy, sw, sh = cf[side]
+        stamp_spot(img, sx, sy, sw, sh, 2, 3, kind="med")
+        stamp_spot(img, sx, sy, sw, sh, 4, 6, kind="sm")
 
-    # 3. Head [7, 5, 5] at [50, 0] — cheetah-fox face with tear-marks & cream muzzle frame
-    smooth_coat(img, 50, 0, 7, 5, 5, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    hf = faces(50, 0, 7, 5, 5)
-    fx, fy, fw, fh = hf["front"]
-    fill(img, (fx + 1, fy + 3, fw - 2, 2), ZX_GOLD_HI)
-    # Cheetah tear-marks + electric cheek accent
-    for dy in (2, 3, 4):
-        put(img, fx + 1, fy + dy, ZX_TEAR)
-        put(img, fx + fw - 2, fy + dy, ZX_TEAR)
-    put(img, fx, fy + 2, ZX_SPARK)
-    put(img, fx + fw - 1, fy + 2, ZX_SPARK)
-    # Cheek ruffs [1, 3, 2] at [74, 0] & [80, 0]
+    # 3. Head [7, 5, 5] at [50, 0] -> 14x10x10 px
+    shade_ramp_box(50, 0, 7, 5, 5, COAT_RAMP, cream_bottom=True, seed=3)
+    paint_box_2x(img, 50, 0, 7, 5, 5, {
+        "front": [
+            "345S45544S5432"[:14],
+            "45565566556543",
+            "34556666665543",
+            "23456666665432",
+            "123n667766n321",
+            "122N677776N221",
+            "23Nn777777nN32",
+            "23N67N66N76N32",
+            "12n667NN766n21",
+            "12234555543221",
+        ],
+    }, PAL)
+    hf = f2x(50, 0, 7, 5, 5)
+    htx, hty, htw, hth = hf["top"]
+    put(img, htx + 6, hty + 2, PAL["F"])
+    put(img, htx + 7, hty + 2, PAL["F"])
+    stamp_spot(img, htx, hty, htw, hth, 2, 2, kind="med")
+    stamp_spot(img, htx, hty, htw, hth, 10, 2, kind="med")
+    stamp_spot(img, htx, hty, htw, hth, 3, 6, kind="sm")
+    stamp_spot(img, htx, hty, htw, hth, 9, 6, kind="sm")
+    for side in ("east", "west"):
+        sx, sy, sw, sh = hf[side]
+        stamp_spot(img, sx, sy, sw, sh, 4, 2, kind="med")
+        stamp_spot(img, sx, sy, sw, sh, 2, 6, kind="sm")
+        stamp_spot(img, sx, sy, sw, sh, 7, 5, kind="sm")
+        # Subtle electric cyan spark accent on side temple (nod to Alex's blue face ring without cluttering front)
+        spark_x = 8 if side == "east" else 1
+        put(img, sx + spark_x, sy + 4, PAL["T"])
+        put(img, sx + spark_x, sy + 5, PAL["C"])
+        put(glow, sx + spark_x, sy + 5, PAL["C"])
+
+    # 4. Cheek Ruffs [1, 3, 2] at [74, 0] & [80, 0] -> 2x6x4 px
     for cu in (74, 80):
-        smooth_coat(img, cu, 0, 1, 3, 2, ZX_GOLD_HI, ZX_FOX_HI, ZX_FOX_RUFF, ZX_GOLD_DEEP)
+        shade_ramp_box(cu, 0, 1, 3, 2, FOX_RAMP, seed=4)
+        paint_box_2x(img, cu, 0, 1, 3, 2, {
+            "front": ["aA", "67", "67", "56", "T5", "f3"],
+        }, PAL)
+        paint_box_2x(glow, cu, 0, 1, 3, 2, {
+            "front": ["..", "..", "..", "..", "T.", ".."],
+        }, PAL)
 
-    # 4. Snout [3, 2, 2] at [86, 0]
-    smooth_coat(img, 86, 0, 3, 2, 2, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    sf = faces(86, 0, 3, 2, 2)
-    put(img, sf["front"][0] + 1, sf["front"][1], ZX_NOSE)
+    # 5. Snout [3, 2, 2] at [86, 0] -> 6x4x4 px
+    shade_ramp_box(86, 0, 3, 2, 2, COAT_RAMP, cream_bottom=True, seed=5)
+    paint_box_2x(img, 86, 0, 3, 2, 2, {
+        "front": [
+            "45NN54",
+            "5nNNn5",
+            "666666",
+            "567765",
+        ],
+        "top": [
+            "455554",
+            "455554",
+            "45NN54",
+            "3nNNn3",
+        ],
+    }, PAL)
 
-    # 5. Upward-Curling Elephant Mini-Trunk: Base [2,2,2]@[96,0], Mid [2,2,2]@[104,0], Tip [2,2,2]@[112,0]
-    smooth_coat(img, 96, 0, 2, 2, 2, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    smooth_coat(img, 104, 0, 2, 2, 2, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP, ZX_SPOT)
-    smooth_coat(img, 112, 0, 2, 2, 2, ZX_WING_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    ttf = faces(112, 0, 2, 2, 2)
-    fill(img, ttf["front"], ZX_SPARK)
-    fill(img, ttf["top"], ZX_WING_CORE)
+    # 6. Upward-Curling Elephant Mini-Trunk: Base [2,2,2]@[96,0], Mid [2,2,2]@[104,0], Tip [2,2,2]@[112,0] -> 4x4x4 px
+    for idx, tu in enumerate((96, 104)):
+        shade_ramp_box(tu, 0, 2, 2, 2, COAT_RAMP, cream_bottom=True, seed=6 + idx)
+        tf = f2x(tu, 0, 2, 2, 2)
+        for fname in ("top", "east", "west", "front"):
+            rx, ry, rw, rh = tf[fname]
+            for wy in (1, 3):
+                for lx in range(rw):
+                    put(img, rx + lx, ry + wy, PAL["1"] if lx in (0, 3) else PAL["2"])
+    shade_ramp_box(112, 0, 2, 2, 2, COAT_RAMP, cream_bottom=True, seed=8)
+    paint_box_2x(img, 112, 0, 2, 2, 2, {
+        "front": [
+            "4GG4",
+            "5Cc5",
+            "4TC4",
+            "2332",
+        ],
+        "top": [
+            "4554",
+            "4554",
+            "3GG3",
+            "3Cc3",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 112, 0, 2, 2, 2, {
+        "front": [
+            ".GG.",
+            ".Cc.",
+            ".TC.",
+            "....",
+        ],
+        "top": [
+            "....",
+            "....",
+            ".GG.",
+            ".Cc.",
+        ],
+    }, PAL)
 
-    # 6. Small Ivory Tusks [1, 1, 2] at [120, 0] & [120, 4]
+    # 7. Tiny Ivory Tusks [1, 1, 2] at [120, 0] & [120, 4] -> 2x2x4 px
     for tv in (0, 4):
-        smooth_coat(img, 120, tv, 1, 1, 2, ZX_WHITE, ZX_TUSK, ZX_GOLD_HI, ZX_GOLD_BASE)
+        shade_ramp_box(120, tv, 1, 1, 2, TUSK_RAMP, seed=9)
+        paint_box_2x(img, 120, tv, 1, 1, 2, {
+            "front": ["WW", "PP"],
+            "top": ["00", "11", "22", "33"],
+        }, {**PAL, "0": TUSK_RAMP[0], "1": TUSK_RAMP[1], "2": TUSK_RAMP[2], "3": TUSK_RAMP[3]})
 
-    # 7. Forehead Lightning Curl Crest [1, 2, 1] at [32, 10] & [36, 10]
-    smooth_coat(img, 32, 10, 1, 2, 1, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE, ZX_SPOT)
-    smooth_coat(img, 36, 10, 1, 2, 1, ZX_WING_CORE, ZX_WING_HI, ZX_WING_BASE, ZX_SPARK)
+    # 8. Forehead Lightning Curl Crest [1, 2, 1] at [32, 10] & [36, 10] -> 2x4x2 px
+    shade_ramp_box(32, 10, 1, 2, 1, [PAL["K"], PAL["B"], PAL["V"], PAL["M"], PAL["G"]], seed=10)
+    paint_box_2x(img, 32, 10, 1, 2, 1, {
+        "front": ["MG", "VM", "BV", "KB"],
+        "back":  ["GM", "MV", "VB", "BK"],
+    }, PAL)
+    paint_box_2x(glow, 32, 10, 1, 2, 1, {
+        "front": ["MG", "VM", "..", ".."],
+    }, PAL)
+    shade_ramp_box(36, 10, 1, 2, 1, [PAL["V"], PAL["M"], PAL["G"], PAL["H"], PAL["C"]], seed=11)
+    paint_box_2x(img, 36, 10, 1, 2, 1, {
+        "front": ["GH", "HC", "GH", "MG"],
+        "back":  ["HG", "CH", "HG", "GM"],
+        "top":   ["GH", "HH"],
+    }, PAL)
+    paint_box_2x(glow, 36, 10, 1, 2, 1, {
+        "front": ["GH", "HC", "GH", "MG"],
+        "back":  ["HG", "CH", "HG", "GM"],
+        "top":   ["GH", "HH"],
+    }, PAL)
 
-    # 8. Expressive 2x3 Eyes at [40, 10] & [46, 10]
-    for idx, eu in enumerate((40, 46)):
-        ef = faces(eu, 10, 2, 3, 1)
-        for rect in ef.values():
-            fill(img, rect, ZX_TEAR)
-        ex, ey, _, _ = ef["front"]
-        fill(img, (ex, ey, 2, 3), ZX_EYE)
-        px_col = ex + (1 if idx == 0 else 0)
-        hi_col = ex + (0 if idx == 0 else 1)
-        put(img, px_col, ey, ZX_PUPIL)
-        put(img, px_col, ey + 1, ZX_PUPIL)
-        put(img, px_col, ey + 2, ZX_PUPIL)
-        put(img, hi_col, ey, ZX_WHITE)
-        put(img, hi_col, ey + 2, ZX_SPARK)
+    # 9. Expressive Cheetah-Fox Eyes:
+    #    eye_left  [2, 3, 1] @ [40, 10] -> lx=0 is INNER (toward snout), lx=3 is OUTER (toward temple)
+    #    eye_right [2, 3, 1] @ [46, 10] -> lx=0 is OUTER (toward temple), lx=3 is INNER (toward snout)
+    for is_left, eye_u in ((True, 40), (False, 46)):
+        shade_ramp_box(eye_u, 10, 2, 3, 1, [PAL["N"], PAL["n"], PAL["i"], PAL["R"], PAL["O"]], seed=12)
+        if is_left:
+            eye_front = [
+                "NNNn",
+                "NWNE",
+                "RNRE",
+                "ONOE",
+                "GYCE",
+                "nNNN",
+            ]
+            eye_glow = [
+                "....",
+                ".W..",
+                "....",
+                "O.O.",
+                "GYC.",
+                "....",
+            ]
+        else:
+            eye_front = [
+                "nNNN",
+                "ENWN",
+                "ERNR",
+                "EONO",
+                "ECYG",
+                "NNNn",
+            ]
+            eye_glow = [
+                "....",
+                "..W.",
+                "....",
+                ".O.O",
+                ".CYG",
+                "....",
+            ]
+        paint_box_2x(img, eye_u, 10, 2, 3, 1, {"front": eye_front}, PAL)
+        paint_box_2x(glow, eye_u, 10, 2, 3, 1, {"front": eye_glow}, PAL)
 
-    # 9. Hybrid Elephant-Fox Ears:
-    # Tall Fox Ear [2, 5, 1] at [0, 16] & [12, 16]; Flared Elephant Pinna [2, 4, 1] at [6, 16] & [18, 16]
-    for eu in (0, 12):
-        smooth_coat(img, eu, 16, 2, 5, 1, ZX_FOX_HI, ZX_FOX_RUFF, ZX_GOLD_DEEP, ZX_SPOT)
-        ef = faces(eu, 16, 2, 5, 1)
-        put(img, ef["front"][0] + (0 if eu == 0 else 1), ef["front"][1] + 2, ZX_GOLD_HI)
-        put(img, ef["front"][0] + (0 if eu == 0 else 1), ef["front"][1] + 3, ZX_GOLD_HI)
-        put(img, ef["front"][0] + (0 if eu == 0 else 1), ef["front"][1] + 4, ZX_GOLD_HI)
-        fill(img, ef["top"], ZX_SPOT)
-    for pu in (6, 18):
-        smooth_coat(img, pu, 16, 2, 4, 1, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_FOX_RUFF)
-        pf = faces(pu, 16, 2, 4, 1)
-        fill(img, (pf["front"][0], pf["front"][1] + 1, 2, 2), ZX_GOLD_HI)
+    # 10. Hybrid Elephant-Fox Ears:
+    # Tall Fox Ears [2, 5, 1] @ [0, 16] (ear_left, inner=lx0) & [12, 16] (ear_right, outer=lx0) -> 4x10x2 px
+    for is_left, eu in ((True, 0), (False, 12)):
+        shade_ramp_box(eu, 16, 2, 5, 1, FOX_RAMP, seed=13)
+        if is_left:
+            fox_front = [
+                "SSSS",
+                "SSUS",
+                "U77S",
+                "A7PS",
+                "F67S",
+                "F77U",
+                "F67U",
+                "f67F",
+                "f56F",
+                "f34f",
+            ]
+            fox_back = [
+                "SSSS",
+                "SUSS",
+                "SUfS",
+                "SfFF",
+                "UFFF",
+                "UFaF",
+                "FFaF",
+                "FFaf",
+                "fFaf",
+                "ffFf",
+            ]
+        else:
+            fox_front = [row[::-1] for row in [
+                "SSSS",
+                "SSUS",
+                "U77S",
+                "A7PS",
+                "F67S",
+                "F77U",
+                "F67U",
+                "f67F",
+                "f56F",
+                "f34f",
+            ]]
+            fox_back = [row[::-1] for row in [
+                "SSSS",
+                "SUSS",
+                "SUfS",
+                "SfFF",
+                "UFFF",
+                "UFaF",
+                "FFaF",
+                "FFaf",
+                "fFaf",
+                "ffFf",
+            ]]
+        paint_box_2x(img, eu, 16, 2, 5, 1, {"front": fox_front, "back": fox_back, "top": ["SSSS", "SUUS"]}, PAL)
 
-    # 10. Dramatic Jagged Orange Lightning-Bolt Wings (3 stepped blades per wing)
-    # Left wing: [24, 16] (1,5,3), [32, 16] (1,6,3), [40, 16] (1,5,3)
+    # Flared Elephant Pinnae [2, 4, 1] @ [6, 16] (ear_left, inner=lx0) & [18, 16] (ear_right, outer=lx0) -> 4x8x2 px
+    for is_left, pu in ((True, 6), (False, 18)):
+        shade_ramp_box(pu, 16, 2, 4, 1, COAT_RAMP, seed=14)
+        pinna_front = [
+            "34UU",
+            "46PU",
+            "57PU",
+            "577U",
+            "467U",
+            "366U",
+            "2553",
+            "1232",
+        ]
+        if not is_left:
+            pinna_front = [row[::-1] for row in pinna_front]
+        paint_box_2x(img, pu, 16, 2, 4, 1, {"front": pinna_front}, PAL)
+
+    # 11. Jagged Orange Sawtooth Lightning Wings (3 stepped blades per wing)
+    # Left wing:  [24, 16] (1,5,3), [32, 16] (1,6,3), [40, 16] (1,5,3) -> 2x10x6 or 2x12x6
     # Right wing: [48, 16] (1,5,3), [56, 16] (1,6,3), [64, 16] (1,5,3)
-    for wu, wh in ((24, 5), (32, 6), (40, 5), (48, 5), (56, 6), (64, 5)):
-        smooth_coat(img, wu, 16, 1, wh, 3, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE, ZX_FOX_RUFF)
-        wf = faces(wu, 16, 1, wh, 3)
-        fill(img, wf["top"], ZX_WING_CORE)
-        for side in ("east", "west"):
-            sx, sy, sw, sh = wf[side]
-            for dy in range(sh):
-                put(img, sx + (dy % sw), sy + dy, ZX_WING_HI if dy < 2 else ZX_WING_CORE if dy == 0 else ZX_WING_HI)
-                if dy == 0:
-                    put(img, sx + sw - 1, sy, ZX_SPARK)
+    wing_ramp = [PAL["K"], PAL["B"], PAL["V"], PAL["M"], PAL["G"], PAL["H"]]
+    for idx, (wu, wh) in enumerate(((24, 5), (32, 6), (40, 5), (48, 5), (56, 6), (64, 5))):
+        shade_ramp_box(wu, 16, 1, wh, 3, wing_ramp, seed=15 + idx)
+        if wh == 5:
+            # West has front=lx0..back=lx5; East is horizontally flipped (back=lx0..front=lx5)
+            west_wing = [
+                "BMGHHK",
+                "BMGHVB",
+                "BVHCBM",
+                "BVGHMB",
+                "KVGHVB",
+                "KVGHBK",
+                "KBGHBK",
+                "KBMHBK",
+                "KBBMBK",
+                "KKBBKK",
+            ]
+            west_glow = [
+                ".MGHH.",
+                ".MGH..",
+                "..HC..",
+                "..GH..",
+                "..GH..",
+                "..GH..",
+                "..GH..",
+                "...H..",
+                "......",
+                "......",
+            ]
+            top_wing = [
+                "MG",
+                "GH",
+                "HH",
+                "GG",
+                "MG",
+                "VM",
+            ]
+            front_wing = ["BG", "BG", "VM", "VM", "BM", "BV", "BV", "KV", "KB", "KK"]
+            back_wing = ["GH", "HH", "GH", "MG", "MG", "MV", "BV", "BK", "BK", "KK"]
+        else:
+            west_wing = [
+                "BMGHHK",
+                "BMGHVB",
+                "BVHCBM",
+                "BVGHMB",
+                "BVGHVB",
+                "KVGHVB",
+                "KVGHBK",
+                "KBGHBK",
+                "KBMHBK",
+                "KBMGBK",
+                "KBBMBK",
+                "KKBBKK",
+            ]
+            west_glow = [
+                ".MGHH.",
+                ".MGH..",
+                "..HC..",
+                "..GH..",
+                "..GH..",
+                "..GH..",
+                "..GH..",
+                "..GH..",
+                "...H..",
+                "...G..",
+                "......",
+                "......",
+            ]
+            top_wing = [
+                "MG",
+                "GH",
+                "HH",
+                "GG",
+                "MG",
+                "VM",
+            ]
+            front_wing = ["BG", "BG", "VM", "VM", "BM", "BM", "BV", "BV", "KV", "KB", "KB", "KK"]
+            back_wing = ["GH", "HH", "GH", "MG", "MG", "MG", "MV", "BV", "BK", "BK", "BK", "KK"]
 
-    # 11. Original Cheetah Whip-Tail + Zigzag Lightning-Bolt Tip
-    # tail_base [2, 2, 5] at [0, 26], tail_mid [2, 2, 5] at [14, 26]
-    for tu in (0, 14):
-        smooth_coat(img, tu, 26, 2, 2, 5, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-        tf = faces(tu, 26, 2, 2, 5)
-        for side in ("east", "west", "top"):
-            sx, sy, sw, sh = tf[side]
-            put(img, sx + 1, sy, ZX_SPOT)
-            put(img, sx + min(sw - 1, 3), sy + min(sh - 1, 1), ZX_SPOT)
+        east_wing = [row[::-1] for row in west_wing]
+        east_glow = [row[::-1] for row in west_glow]
+        paint_box_2x(img, wu, 16, 1, wh, 3, {
+            "west": west_wing,
+            "east": east_wing,
+            "top": top_wing,
+            "front": front_wing,
+            "back": back_wing,
+        }, PAL)
+        paint_box_2x(glow, wu, 16, 1, wh, 3, {
+            "west": west_glow,
+            "east": east_glow,
+            "top": top_wing,
+            "back": [r if i < 5 else ".." for i, r in enumerate(back_wing)],
+        }, PAL)
+
+    # 12. Original Cheetah Whip-Tail + Zigzag Lightning-Bolt Tip
+    # tail_base [2, 2, 5]@[0, 26], tail_mid [2, 2, 5]@[14, 26] -> 4x4x10 px
+    for idx, tu in enumerate((0, 14)):
+        shade_ramp_box(tu, 26, 2, 2, 5, COAT_RAMP, cream_bottom=True, seed=21 + idx)
+        tf = f2x(tu, 26, 2, 2, 5)
+        for fname in ("top", "east", "west"):
+            sx, sy, sw, sh = tf[fname]
+            if fname == "top":
+                stamp_spot(img, sx, sy, sw, sh, 1, 2, kind="sm")
+                stamp_spot(img, sx, sy, sw, sh, 2, 6, kind="sm")
+            else:
+                stamp_spot(img, sx, sy, sw, sh, 2, 1, kind="sm")
+                stamp_spot(img, sx, sy, sw, sh, 6, 1, kind="sm")
+                if idx == 1:
+                    for ly in range(sh):
+                        put(img, sx + 8, sy + ly, PAL["F"])
+                        put(img, sx + 9, sy + ly, PAL["V"])
     # Zigzag Lightning Bolt Tip: [28, 26] (1,2,3), [36, 26] (1,2,3), [44, 26] (1,1,3)
-    smooth_coat(img, 28, 26, 1, 2, 3, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE, ZX_FOX_RUFF)
-    smooth_coat(img, 36, 26, 1, 2, 3, ZX_WING_CORE, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE)
-    smooth_coat(img, 44, 26, 1, 1, 3, ZX_SPARK, ZX_WING_CORE, ZX_WING_HI, ZX_SPARK)
+    shade_ramp_box(28, 26, 1, 2, 3, [PAL["K"], PAL["B"], PAL["V"], PAL["M"], PAL["G"]], seed=23)
+    paint_box_2x(img, 28, 26, 1, 2, 3, {
+        "west": ["BMGHHG", "BBMMGG", "KKBBMM", "KKBBBB"],
+        "east": ["GHHGMB", "GGMMBB", "MMBBKK", "BBBBKK"],
+    }, PAL)
+    paint_box_2x(glow, 28, 26, 1, 2, 3, {
+        "west": ["..GHHG", "...MGG", "......", "......"],
+        "east": ["GHHG..", "GGM...", "......", "......"],
+    }, PAL)
 
-    # 12. Slender Cheetah Sprint Legs [2, 8, 2] at [0, 36], [10, 36], [20, 36], [30, 36]
-    for lu in (0, 10, 20, 30):
-        smooth_coat(img, lu, 36, 2, 8, 2, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-        lf = faces(lu, 36, 2, 8, 2)
-        for face_name in ("front", "east", "west"):
-            fx, fy, fw, fh = lf[face_name]
-            put(img, fx, fy + 2, ZX_SPOT)
-            put(img, fx + 1, fy + 4, ZX_SPOT)
-            fill(img, (fx, fy + 7, fw, 1), ZX_TEAR)
-        fill(img, lf["bottom"], ZX_TEAR)
+    shade_ramp_box(36, 26, 1, 2, 3, [PAL["V"], PAL["M"], PAL["G"], PAL["H"], PAL["C"]], seed=24)
+    paint_box_2x(img, 36, 26, 1, 2, 3, {
+        "west": ["GHHGGH", "MGHGGH", "BMMGGH", "KBBMMG"],
+        "east": ["HGGHHG", "HGGHGM", "HGGMMB", "GMMBBK"],
+        "top":  ["MG", "GH", "HH", "GG", "GH", "GG"],
+    }, PAL)
+    paint_box_2x(glow, 36, 26, 1, 2, 3, {
+        "west": ["GHHGGH", ".GHGGH", "..MGGH", "......"],
+        "east": ["HGGHHG", "HGGHG.", "HGGM..", "......"],
+        "top":  ["MG", "GH", "HH", "GG", "GH", "GG"],
+    }, PAL)
 
-    dest = OUT / "entity/zaphox.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    shade_ramp_box(44, 26, 1, 1, 3, [PAL["V"], PAL["M"], PAL["G"], PAL["H"], PAL["C"]], seed=25)
+    paint_box_2x(img, 44, 26, 1, 1, 3, {
+        "west": ["GHHCcH", "BMGGHM"],
+        "east": ["HcCHHG", "MHGGMB"],
+        "top":  ["MG", "GH", "HH", "Hc", "CC", "HH"],
+        "back": ["HH", "GG"],
+    }, PAL)
+    paint_box_2x(glow, 44, 26, 1, 1, 3, {
+        "west": ["GHHCcH", "..GGHM"],
+        "east": ["HcCHHG", "MHGG.."],
+        "top":  ["MG", "GH", "HH", "Hc", "CC", "HH"],
+        "back": ["HH", "GG"],
+    }, PAL)
+
+    # 13. Slender Cheetah Sprint Legs [2, 8, 2] at [0, 36], [10, 36], [20, 36], [30, 36] -> 4x16x4 px
+    for idx, lu in enumerate((0, 10, 20, 30)):
+        shade_ramp_box(lu, 36, 2, 8, 2, COAT_RAMP, cream_bottom=False, seed=30 + idx)
+        lf = f2x(lu, 36, 2, 8, 2)
+        for face_name in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = lf[face_name]
+            if face_name != "back":
+                stamp_spot(img, rx, ry, rw, rh, 0, 2, kind="sm")
+                stamp_spot(img, rx, ry, rw, rh, 2, 6, kind="sm")
+            else:
+                stamp_spot(img, rx, ry, rw, rh, 1, 4, kind="sm")
+            # Electric teal-cyan zigzag ankle cuff (rows 11..12) & storm-indigo sprint paws (rows 13..15)
+            for lx in range(rw):
+                put(img, rx + lx, ry + 11, PAL["C"] if (lx + idx) % 2 == 0 else PAL["T"])
+                put(img, rx + lx, ry + 12, PAL["T"] if (lx + idx) % 2 == 0 else PAL["t"])
+                put(img, rx + lx, ry + 13, PAL["i"] if face_name == "front" else PAL["n"])
+                put(img, rx + lx, ry + 14, PAL["n"] if lx in (1, 2) else PAL["N"])
+                put(img, rx + lx, ry + 15, PAL["N"])
+            if face_name == "front":
+                put(img, rx + 1, ry + 11, PAL["c"])
+                put(img, rx + 2, ry + 11, PAL["C"])
+                put(img, rx + 1, ry + 14, PAL["N"])
+                put(img, rx + 2, ry + 14, PAL["N"])
+                put(glow, rx + 1, ry + 11, PAL["c"])
+                put(glow, rx + 2, ry + 11, PAL["C"])
+        # Multi-tone shaded paw-pad on bottom face (4x4)
+        paint_box_2x(img, lu, 36, 2, 8, 2, {
+            "bottom": [
+                "NnnN",
+                "nTTn",
+                "nTCn",
+                "NNNN",
+            ],
+        }, PAL)
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "zaphox.png")
+    glow.save(entity_dir / "zaphox_glowmask.png")
 
 
 def make_galecorn():
@@ -2905,6 +3418,10 @@ def main():
     if "--cinder-crag" in sys.argv:
         make_cinder_crag()
         print("Generated Cinder Crag 256x128 texture and glowmask.")
+        return
+    if "--zaphox" in sys.argv:
+        make_zaphox()
+        print("Generated Zaphox 256x128 texture and glowmask.")
         return
     if "--zapkin" in sys.argv:
         make_zapkin()
