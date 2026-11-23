@@ -104,6 +104,15 @@ def _cube_quads(geo: dict, tex_size: tuple[int, int]):
             x1, y1, z1 = ox + sx + inf, oy + sy + inf, oz + sz + inf
 
             w, h, d = int(round(sx)), int(round(sy)), int(round(sz))
+            if w == 0:
+                x0 -= 0.002
+                x1 += 0.002
+            elif h == 0:
+                y0 -= 0.002
+                y1 += 0.002
+            elif d == 0:
+                z0 -= 0.002
+                z1 += 0.002
             mirror = bool(cube.get("mirror", False))
             uv = cube.get("uv", [0, 0])
             face_uvs: dict[str, tuple[tuple[int, int, int, int], bool, bool]] = {}
