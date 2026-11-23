@@ -93,7 +93,8 @@ public class Phase5SignOffGameTests {
 
         for (String armorId : List.of("dragonscale_armor", "twin_star_armor")) {
             assertResourceExists(helper, "assets/artilian/geo/item/armor/" + armorId + ".geo.json");
-            assertImageAtLeast(helper, "assets/artilian/textures/item/armor/" + armorId + ".png", 64, 64);
+            assertImageAtLeast(helper, "assets/artilian/textures/item/armor/" + armorId + ".png", 128, 128);
+            assertResourceExists(helper, "assets/artilian/textures/item/armor/" + armorId + "_glowmask.png");
         }
 
         assertResourceExists(helper, "assets/artilian/textures/block/primal_portal.png");
