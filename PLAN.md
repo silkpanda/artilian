@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 5 — Stage 9 (*Twin-Star Endgame Rewards*)** Added **Twin-Star Core** (`artilian:twin_star_core`, uniting `All-Seer's Lens` + `Sovereign's Ember Heart` + `Starlight Crystal` + `Sunsteel Ingot` + `Dragon Scale`, yielding `2` for co-op), **Twin-Star Blade** (`ArtilianTiers.TWIN_STAR`, `2800` durability, ignites + weakens + reveals foes), **Twin-Star Harmony Staff** (`WandSpell.TWIN_STAR_HARMONY`, `50` Mana, heals/buffs allies & pets while blasting hostiles safely), and 4-piece **Twin-Star Armor** (`ArtilianArmorMaterials.TWIN_STAR`, `30` defense, `4.0F` toughness, `0.25F` KB res, `TwinStarArmorRenderer` + `twin_star_armor.geo.json`, full-set `Fire Resistance` + `Strength` + `Night Vision` + `Regeneration`), `make_ores_and_gear_art.py`, `make_wand_art.py`, `check_armor_sheets.py` clean, datagen (`runData`), `build`, and 4 `TwinStarEndgameGameTests` (`226/226` green, including red-proof) on `phase-5-stage-9-twin-star-endgame-rewards`. |
-| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–9 (`qa/evidence/twin-star-endgame-2026-11-22.png`), then open PRs into `main`. 2. Begin **Phase 5 — Stage 10 (*Phase 5 Art Pass & Finale*)**: Final art polish & full family co-op finale verification. |
-| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, and family LAN co-op playtest across Phases 1–4 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | `phase-4-stage-6-great-all-seer` (`187/187`) and `phase-4-stage-7-art-pass` (`189/189`) awaiting live client screenshot & PR into `main` (included as ancestors of `phase-5-stage-1-dragon-jungle-portal`). |
+| **In progress** | **Phase 5 — Stage 10 (*Phase 5 Art Pass & Finale*)** Extended `tools/art/lint_art.py` with `PHASE5_ARMORS` (`dragonscale_armor`, `twin_star_armor`), verified `python tools/art/lint_art.py --phase5 --strict` (exit `0`, all 9 Phase 5 entities & armors clean) and `check_armor_sheets.py`, generated 4-angle previews (`qa/evidence/previews/dragonscale_armor-preview.png`, `twin_star_armor-preview.png`), added `Phase5SignOffGameTests` (`229/229` GameTests green), bumped `mod_version` to `0.2.0` in `gradle.properties`, built `build/libs/adventures-in-artilian-0.2.0.jar`, and opened the PR into `main` from `phase-5-stage-10-art-pass-and-finale`. |
+| **Next** | 1. Live `./gradlew runClient` visual check & screenshots for Phase 4 Stages 6–7 and Phase 5 Stages 1–10 (`qa/evidence/phase5-finale-2026-11-22.png`), then merge open PRs into `main`. 2. Family LAN co-op playtest across Phases 1–5 with Alex and Steve using `adventures-in-artilian-0.2.0.jar`. |
+| **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, **Embercrown Sovereign**, **Twin-Star Endgame**, and family LAN co-op playtest across Phases 1–5 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
+| **Other work in flight** | `phase-4-stage-6-great-all-seer` (PR #16, `187/187`) awaiting live client screenshot & merge into `main`; `phase-5-stage-10-art-pass-and-finale` PR into `main` includes Phase 4 Stage 7 and Phase 5 Stages 1–10 (`229/229`). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
 
 ---
@@ -628,7 +628,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ## Phase 5: Giant Dragon Jungle (Steve's Dimension) & Grand Finale
 
-- **Status:** 🔄 In Progress (Stage 1)
+- **Status:** 🔄 Code & GameTests Complete (Stage 10; awaiting live client & LAN co-op sign-off)
 - **Done When:** All checks green, dimension and dragon GameTests pass, and both kids can clear the full Eye Realm and Dragon Jungle finale.
 
 | Stage | Name | Scope | Status |
@@ -642,7 +642,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 7 | Dragonscale Gear & Mega TNT | Dragonscale armor/weapons/tools & **Dragonfire Mega TNT** (honors `allowDestructiveCustomTnt`) | 🔄 Code & GameTests complete (`218/218`); live client check pending |
 | 8 | Apex Dragon Boss | Phase 5 apex dragon boss (`ArtilianBossEntity`) with telegraphs & altar | 🔄 Code & GameTests complete (`222/222`); live client check pending |
 | 9 | Twin-Star Endgame Rewards | Combined endgame rewards uniting Alex's and Steve's realms | 🔄 Code & GameTests complete (`226/226`); live client check pending |
-| 10 | Phase 5 Art Pass & Finale | Final art polish & full family co-op finale verification | [ ] Pending |
+| 10 | Phase 5 Art Pass & Finale | Final art polish & full family co-op finale verification | 🔄 Code & GameTests complete (`229/229`); live client check pending |
 
 ### Phase 5 — Stage 1: Dimension & Primal Portal
 - [ ] **In Progress (`194/194` GameTests Green; Live Client Check Pending)** — `artilian:dragon_jungle` dimension, `PrimalPortalBlock` / `PrimalPortalShape`, `PrimalPortalEvents` (throw any `artilian:boss_drops` item into a lit Nether Portal to transform it), flat mossy placeholder terrain, safe return portal generation (`P5-01`), and `DragonJunglePortalGameTests`.
@@ -831,6 +831,23 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`TwinStarEndgameGameTests`):** `226/226` green (4 new tests). Red-proof recorded above.
 - **Security Gate:** `n/a` (endgame crafting, armor buffs, and `KidSafeTargets`-filtered staff).
 - **Done When:** `check_armor_sheets.py`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` verifies Twin-Star endgame rewards in-game.
+
+### Phase 5 — Stage 10: Phase 5 Art Pass & Finale
+- [ ] **In Progress (`229/229` GameTests & Strict Art Lint Clean; `0.2.0` JAR Built; Live Client Check Pending)** — Phase 5 art & preview audit (`--phase5` in `lint_art.py` including `PHASE5_ARMORS`), end-to-end Dragon Jungle & 5-phase finale sign-off tests (`Phase5SignOffGameTests`), and `mod_version=0.2.0` release JAR (`build/libs/adventures-in-artilian-0.2.0.jar`).
+- **Why & Decisions:** Ensure every Phase 5 dragon, pet dragonling, boss, armor set, block, item, and dimension meets `DESIGN.md`'s 3D Art Standard and plays cleanly end-to-end with kid-safe defaults intact:
+  1. **Phase 5 Art Linter (`tools/art/lint_art.py --phase5 --strict`):** Added `PHASE5_ARMORS` (`dragonscale_armor`, `twin_star_armor`) alongside all 7 Phase 5 entities (`canopy_wyvern`, `amber_wyvern`, `storm_glidewing`, `canopy_dragonling`, `amber_dragonling`, `storm_dragonling`, `embercrown_sovereign`) and verified zero UV overlaps, zero transparent holes, and zero flat single-color faces, plus 4-angle `qa/evidence/previews/*-preview.png` contact sheets for both Phase 5 armors.
+  2. **Phase 5 Sign-Off & Finale GameTests (`Phase5SignOffGameTests`):** Verifies all 7 Phase 5 GeckoLib entity models, required bones, animation clips, minimum sheet sizes (`256×128` wild dragons/boss, `128×128` dragonlings), `_glowmask.png` sheets, both Phase 5 armor models/sheets, animated `primal_portal.png` + `.mcmeta`, all 9 dragon egg stage textures, Phase 5 block/item textures, `EmbercrownSovereignEntity` telegraph windup floor (`>= 30` ticks), Phase 5 crafting recipes, `DragonJungleDimension` registration, Phase 5 loot tables, and cross-phase finale integration (`allowDestructiveCustomTnt = false`, `Chester` attachment, both `EyeRealmDimension` and `DragonJungleDimension` registered, `twin_star_core` recipe).
+  3. **Release Version Bump (`0.2.0`):** Updated `mod_version=0.2.0` in `gradle.properties` and built `build/libs/adventures-in-artilian-0.2.0.jar`.
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Phase 5 art audit, armor previews, `Phase5SignOffGameTests` & `0.2.0` JAR | Pending commit | Updated `tools/art/lint_art.py` (`PHASE5_ARMORS`), generated `dragonscale_armor-preview.png` & `twin_star_armor-preview.png`, added `Phase5SignOffGameTests` (`229/229` green), bumped `mod_version=0.2.0`, `lint_art.py --phase5 --strict` (exit `0`), `check_armor_sheets.py` clean, `runData`, and `build` (`adventures-in-artilian-0.2.0.jar`). |
+  | 2 Live client & family co-op finale sign-off | Pending | `./gradlew runClient` & LAN co-op walkthrough of Eye Realm + Dragon Jungle + Twin-Star Endgame (`qa/evidence/phase5-finale-2026-11-22.png`). |
+
+- **Tests & Red-proofs (`Phase5SignOffGameTests`):** `229/229` green (3 new tests) + `python tools/art/lint_art.py --phase5 --strict` (exit `0`).
+- **Security Gate:** `n/a` (art pass, linter, version bump, and finale sign-off; `P1-01`–`P5-01` already `HELD`).
+- **Done When:** `lint_art.py --phase5 --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green locally & in CI, and live `./gradlew runClient` / LAN co-op verifies the full 5-phase finale.
 
 ---
 

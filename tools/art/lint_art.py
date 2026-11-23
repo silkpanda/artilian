@@ -36,6 +36,7 @@ PHASE5_ENTITIES = (
     "storm_dragonling",
     "embercrown_sovereign",
 )
+PHASE5_ARMORS = ("dragonscale_armor", "twin_star_armor")
 BOSS_ENTITIES = ("training_golem", "crystal_colossus", "captain_brimstone", "great_all_seer", "embercrown_sovereign")
 SHARED_RIGS = {
     "dragon_rig": ("canopy_wyvern",),
@@ -159,6 +160,8 @@ def collect_pairs(phase3_only: bool, phase4_only: bool, phase5_only: bool) -> li
         for eid in PHASE5_ENTITIES:
             min_w = 128 if eid.endswith("_dragonling") else 256
             pairs.append((f"entity/{eid}", ENTITY_GEO_DIR / f"{eid}.geo.json", ENTITY_TEX_DIR / f"{eid}.png", min_w, 128))
+        for aid in PHASE5_ARMORS:
+            pairs.append((f"armor/{aid}", ARMOR_GEO_DIR / f"{aid}.geo.json", ARMOR_TEX_DIR / f"{aid}.png", 64, 64))
         return pairs
 
     for geo_path in sorted(ENTITY_GEO_DIR.glob("*.geo.json")):
