@@ -90,6 +90,7 @@ public final class EyeRealmDimension {
         generation.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, ArtilianWorldGen.BLINKING_EYE_PATCH_PLACED);
 
         MobSpawnSettings.Builder spawns = new MobSpawnSettings.Builder();
+        spawns.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(ArtilianEntities.BLINKY.get(), 12, 1, 2));
         spawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.PEEPER.get(), 45, 1, 3));
         spawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.OCULUS_SLIME.get(), 35, 1, 2));
         spawns.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ArtilianEntities.LENS_GUARDIAN.get(), 15, 1, 1));

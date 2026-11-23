@@ -31,6 +31,7 @@ public final class PetEvents {
             event.put(ArtilianEntities.SUNBEAM.get(), SunbeamEntity.createAttributes().build());
             event.put(ArtilianEntities.FROGDUCK.get(), FrogduckEntity.createAttributes().build());
             event.put(ArtilianEntities.ZAPKIN.get(), ZapkinEntity.createAttributes().build());
+            event.put(ArtilianEntities.BLINKY.get(), BlinkyEntity.createAttributes().build());
         }
 
         @SubscribeEvent
@@ -117,6 +118,13 @@ public final class PetEvents {
                     SpawnPlacementTypes.ON_GROUND,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     ZapkinEntity::checkZapkinSpawnRules,
+                    RegisterSpawnPlacementsEvent.Operation.REPLACE
+            );
+            event.register(
+                    ArtilianEntities.BLINKY.get(),
+                    SpawnPlacementTypes.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    BlinkyEntity::checkBlinkySpawnRules,
                     RegisterSpawnPlacementsEvent.Operation.REPLACE
             );
         }

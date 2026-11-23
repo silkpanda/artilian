@@ -57,6 +57,7 @@ public final class ArtilianClient {
                 ctx -> new EyeRealmEnemyRenderer<>(ctx, "oculus_slime", 0.65F));
         event.registerEntityRenderer(ArtilianEntities.LENS_GUARDIAN.get(),
                 ctx -> new EyeRealmEnemyRenderer<>(ctx, "lens_guardian", 0.65F));
+        event.registerEntityRenderer(ArtilianEntities.BLINKY.get(), BlinkyRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.TRAINING_GOLEM.get(),
                 ctx -> new TrainingGolemRenderer<>(ctx, "training_golem", 1.0F));
         event.registerEntityRenderer(ArtilianEntities.CRYSTAL_COLOSSUS.get(), CrystalColossusRenderer::new);

@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 4 — Stage 3 (*Eye Realm Enemies: Peepers, Oculus Slimes, Lens Guardians*)** Complete and live-client verified on branch `phase-4-stage-3-eye-realm-enemies` (`177/177` GameTests, `lint_art.py --strict` clean on all 3 enemies, `runData`, `build`, and live `./gradlew runClient` screenshot `qa/evidence/eye-realm-enemies-2026-11-20.png`). |
-| **Next** | 1. Open and merge PRs into `main` for `phase-3-stage-3-captain-brimstone`, `phase-3-stage-4-tier-3-arsenal`, `phase-3-stage-5-art-pass`, `phase-4-stage-1-eye-realm-portal`, `phase-4-stage-2-eye-realm-terrain-sky`, and `phase-4-stage-3-eye-realm-enemies`. 2. Begin **Phase 4 — Stage 4 (*Blinky Pet*)**. |
+| **In progress** | **Phase 4 — Stage 4 (*Blinky Pet*)** Complete and live-client verified on branch `phase-4-stage-4-blinky-pet` (`180/180` GameTests, `lint_art.py --strict` clean on `entity/blinky`, `runData`, `build`, and live `./gradlew runClient` screenshot `qa/evidence/blinky-pet-2026-11-20.png`). |
+| **Next** | 1. Open and merge PRs into `main` for `phase-3-stage-3-captain-brimstone`, `phase-3-stage-4-tier-3-arsenal`, `phase-3-stage-5-art-pass`, `phase-4-stage-1-eye-realm-portal`, `phase-4-stage-2-eye-realm-terrain-sky`, `phase-4-stage-3-eye-realm-enemies`, and `phase-4-stage-4-blinky-pet`. 2. Begin **Phase 4 — Stage 5 (*Eye Realm Structures*)**. |
 | **Waiting on the owner** | 1. In-game look & screenshots when home for **Boss Framework** (*Training Golem* v2 + *Boss Altar*), **Tier 3 Arsenal**, and family LAN co-op playtest across Phases 1–3 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
 | **Other work in flight** | `phase-3-stage-3-captain-brimstone` (ready for PR into `main`), `phase-3-stage-4-tier-3-arsenal` (branched from Stage 3), and `phase-3-stage-5-art-pass` (branched from Stage 4). |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). `python tools/art/make_pets_art.py` regenerates `crystal_fox.png` over its hand-touched art-pass version; restore it with `git checkout` after running the script, or pass `--prismling` / `--sunbeam` / `--frogduck` / `--zapkin` to paint a single pet. |
@@ -455,7 +455,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ## Phase 4: The Eye Realm (Alex's Dimension)
 
-- **Status:** 🔄 In Progress (Stage 3)
+- **Status:** 🔄 In Progress (Stage 4)
 - **Done When:** All checks green, dimension and portal GameTests pass, and the Eye Realm loop is playable end to end.
 
 | Stage | Name | Scope | Status |
@@ -463,7 +463,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 | 1 | Dimension & Portal | `artilian:eye_realm` dimension and Gazing Portal with flat placeholder terrain | ✅ Complete (`169/169` + client verified) |
 | 2 | Terrain & Sky | Eye-covered blocks, trees, terrain generation, blinking skybox | ✅ Complete (`173/173` + client verified) |
 | 3 | Eye Realm Enemies | **Peepers**, **Oculus Slimes**, **Lens Guardians** | ✅ Complete (`177/177` + client verified) |
-| 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | [ ] Pending |
+| 4 | Blinky Pet | **Blinky** capturable pet (`ArtilianPetEntity`) | ✅ Complete (`180/180` + client verified) |
 | 5 | Eye Realm Structures | Dimension structures & chests | [ ] Pending |
 | 6 | The Great All-Seer | Phase 4 boss (`ArtilianBossEntity`) with telegraphed attacks & rematch altar | [ ] Pending |
 | 7 | Phase 4 Art Pass | Final art polish against Alex's specs + co-op verification | [ ] Pending |
@@ -539,6 +539,30 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 - **Tests & Red-proofs (`EyeRealmEnemiesGameTests`):** `177/177` green (4 new tests). Red-proof recorded above.
 - **Security Gate:** `n/a` (standard hostile mobs with zero block-breaking and `KidSafeTargets` protection; spawn rules respect light level).
 - **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green, and live `./gradlew runClient` verifies all three Eye Realm enemies in-game.
+
+### Phase 4 — Stage 4: Blinky Pet
+- [x] **Complete (`180/180` GameTests & Live Client Verified)** — **Blinky** (`artilian:blinky`), Alex's signature Eye Realm capturable pet (`ArtilianPetEntity`), `256×128` GeckoLib model & `_glowmask.png`, natural `EYE_REALM_BIOME` creature spawn, spawn egg, and GameTests.
+- **Art Brief (`qa/reference/`):**
+  - **Target Scale:** `0.85 × 0.95` hovering ocular familiar (`~1.0` block tall, friendly rounded proportions distinct from hostile Peepers).
+  - **Silhouette Inspiration:** Friendly cyclopean starlight-eye sprite with a domed eyelid-hood, articulated upper & lower eyelids that periodically blink shut, twin angled Twilight Magenta (`#D946EF`) / Starlight Teal (`#38D9C0`) wing-fins, floating brow-crown halo, and a 3-segment comet tail.
+  - **Palette & Structural Anchor:** Deep Artilian Slate & Starlight Indigo armored cowl (`#2B2338`–`#5A467A`) with forged Sunsteel Gold (`#FF9F38`) ocular bezel, creamy sclera (`#E2E0F2`), and Pupil Glow (`#7DF9FF`) iris.
+  - **Key 3D Recessed/Angled Features:** Deeply recessed 3D eye socket framed by stepped bezel plates, articulated upper/lower eyelids (`lid_top`, `lid_bottom`), 15°/22° swept wing-fins, and an orbiting Starlight crystal crown.
+  - **Glowmask Zones (`blinky_glowmask.png`):** Cyan iris (`#7DF9FF`), wing-fin tips, floating crown crystal, and comet tail tip.
+- **Why & Decisions:**
+  1. **`BlinkyEntity` (`ArtilianPetEntity`):** `STARLIGHT` primary / `SHADOW` secondary (`26` HP, `0.34` speed, `5.0` attack damage), zero fall damage with gentle hover fall-damping (`deltaMovement.y * 0.62`), super-effective (`1.5x`) against Eye Realm `SHADOW` enemies (`Peeper`, `Oculus Slime`).
+  2. **Natural Spawns in `EYE_REALM_BIOME`:** Registered as `MobCategory.CREATURE` (`weight = 12`, `minCount = 1`, `maxCount = 2`) in `EyeRealmDimension.bootstrapBiome`, spawning on `EYE_TURF`, `GAZE_STONE`, `STARLIGHT_SLATE`, or `ANIMALS_SPAWNABLE_ON` (`BlinkyEntity::checkBlinkySpawnRules`).
+  3. **Kid-Safe & Capture Crystal Compatible:** Inherits full `ArtilianPetEntity` taming (`Biome Treat` affinity, `Capture Crystal` capture/release, non-lethal fainting, `OwnableEntity` spell/TNT immunity).
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Art Brief, `256×128` GeckoLib model, texture & glowmask | This commit | `tools/art/make_blinky_art.py`, `lint_art.py --strict` clean (`entity/blinky`), `preview_geo.py` (`qa/evidence/previews/blinky-preview.png`). |
+  | 2 `BlinkyEntity`, renderer, spawns, egg & GameTests | This commit | `BlinkyEntity`, `BlinkyModel`, `BlinkyRenderer` (`AutoGlowingGeoLayer`), `ArtilianEntities.BLINKY`, `ArtilianItems.BLINKY_SPAWN_EGG`, `PetEvents`, `EyeRealmDimension`, datagen (`runData`), `build`, and 3 `BlinkyPetGameTests` (`180/180` green). Red-proof: `BlinkyEntity.causeFallDamage` delegating to `super` → `blinkyRegisteredWithEggElementalTypesAndHoverImmunity` failed → restored green. |
+  | 3 Live client verification & evidence | This commit | `./gradlew runClient` screenshot of Blinky in the Eye Realm (`qa/evidence/blinky-pet-2026-11-20.png`). |
+
+- **Tests & Red-proofs (`BlinkyPetGameTests`):** `180/180` green (3 new tests). Red-proof recorded above.
+- **Security Gate:** `n/a` (inherits `P2-01`–`P2-04` `ArtilianPetEntity` ownership, non-lethal fainting, and `CaptureCrystalItem` anti-duplication).
+- **Done When:** `lint_art.py --strict`, `./gradlew runData`, `./gradlew build`, and `./gradlew runGameTestServer` are green, and live `./gradlew runClient` verifies Blinky in the Eye Realm.
 
 ---
 
