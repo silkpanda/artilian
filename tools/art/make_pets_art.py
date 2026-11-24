@@ -4271,23 +4271,23 @@ def make_flurrywing():
 def make_sunbeam():
     """Sunbeam: the kids' legendary Sunsteel guardian (qa/reference/pets/sunsteel-drawing-2026-11-17.jpg).
 
-    Art pass v2:
-    - Creature-like Sunsteel guardian head: dark recessed visor, angled glowing solar eyes,
-      forehead sun-diamond, 3D armored beak/jaw-crest (no human smiley face), and 5-ray solar crown
-    - Sculpted Sunsteel breastplate & layered chest chevron (no permanent chest orb/streamer)
-    - Attack-only `chest_beam` bone (hidden at scale 0 in idle/walk/sit, blasts forward in attack)
-    - Four articulated spiky solar wing-arms with 3-pronged starburst claws & chunky greaves
-
-    Writes sunbeam.geo.json, sunbeam.png, and sunbeam_glowmask.png from a single UV layout.
+    Art pass v3 (256x256 at 2x over sunbeam.geo.json's 128x128 UV layout):
+    - Multi-stop forged Sunsteel armor shading across all 6 faces (bevels, seams, corner rivets, sole treads)
+    - Creature-like Sunsteel guardian head: dark recessed visor, 2x angled glowing solar eyes,
+      faceted forehead sun-diamond, 3D armored beak/jaw-crest, carved back-of-head solar rune & 5-ray solar crown
+    - Sculpted Sunsteel breastplate & layered chest chevron (attack-only `chest_beam` stays hidden at scale 0)
+    - Four articulated spiky solar wing-arms with glowing plasma conduits & 3-pronged starburst claws
     """
     import json
 
-    img = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
-    glow = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+    S = 2
+    img = Image.new("RGBA", (128 * S, 128 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 128 * S), (0, 0, 0, 0))
 
-    # Rich Sunsteel & solar-plasma palette
+    # Rich 8-stop Sunsteel & solar-plasma palette
     WHITE_HOT = (255, 253, 236, 255)
     SUN_HI = (254, 224, 102, 255)
+    GOLD_BRIGHT = (252, 198, 54, 255)
     GOLD = (245, 168, 24, 255)
     GOLD_MID = (217, 119, 16, 255)
     BRONZE = (164, 76, 18, 255)
@@ -4299,7 +4299,7 @@ def make_sunbeam():
     FLAME_Y = (253, 224, 71, 255)
     FLAME_O = (249, 115, 22, 255)
 
-    # Box UV definitions: (u, v, w, h, d) — zero overlaps on 128x128
+    # Box UV definitions: (u, v, w, h, d) — zero overlaps on 128x128 UV grid
     CHEST = (0, 0, 12, 9, 8)
     CHEST_PLATE = (42, 0, 10, 6, 1)
     PELVIS = (66, 0, 10, 3, 7)
@@ -4332,185 +4332,252 @@ def make_sunbeam():
     FORE_LO = (42, 84, 7, 2, 2)
     SPIKE_SM = (62, 84, 3, 1, 1)
 
-    def plate(box, hi, base, shade, deep, target=img, rim=SEAM):
-        """Beveled Sunsteel armor plate with top highlight, side shading, and dark seam trim."""
-        for face, (x, y, fw, fh) in faces(*box).items():
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
+
+    def plate(box, hi, base, shade, deep, target=img, rim=SEAM, seed=0):
+        """Multi-stop forged Sunsteel armor plate with top/bottom bevels, panel seams, and rivets."""
+        for face, (x, y, fw, fh) in f2x(*box).items():
             for py in range(y, y + fh):
-                t = (py - y) / max(1, fh - 1)
+                ly = py - y
+                t = ly / max(1, fh - 1)
                 for px in range(x, x + fw):
+                    lx = px - x
+                    border = lx == 0 or lx == fw - 1 or ly == 0 or ly == fh - 1
+                    grain = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 11
                     if face == "top":
-                        color = hi
+                        if ly == 0:
+                            color = WHITE_HOT if hi == SUN_HI else hi
+                        elif border:
+                            color = hi
+                        elif fw >= 8 and fh >= 8 and (lx in (2, fw - 3) and ly in (2, fh - 3)):
+                            color = rim
+                        elif fh >= 6 and ly == fh // 2 and 2 <= lx <= fw - 3:
+                            color = shade if lx % 2 == 0 else base
+                        else:
+                            color = hi if (t < 0.42 and grain < 7) else (base if grain < 9 else shade)
                     elif face == "bottom":
-                        color = deep
+                        if border:
+                            color = rim
+                        elif fw >= 6 and fh >= 6 and (lx in (1, fw - 2) or ly in (1, fh - 2)):
+                            color = deep
+                        elif fw >= 8 and fh >= 8 and (lx in (2, fw - 3) and ly in (2, fh - 3)):
+                            color = rim
+                        else:
+                            color = base if (grain <= 1 or (lx + ly) % 5 == 0) else (shade if grain <= 6 else deep)
                     elif face in ("east", "west"):
-                        color = shade if t < 0.75 else deep
+                        if border:
+                            color = rim
+                        elif t < 0.25:
+                            color = base if grain < 8 else hi
+                        elif t < 0.72:
+                            color = shade if grain < 9 else base
+                        else:
+                            color = deep
                     else:
-                        color = hi if t < 0.18 else (base if t < 0.78 else shade)
+                        if ly == 0:
+                            color = hi
+                        elif ly == fh - 1:
+                            color = rim
+                        elif lx == 0 or lx == fw - 1:
+                            color = rim if (fw >= 6 and fh >= 6) else shade
+                        elif fw >= 8 and fh >= 8 and (lx in (2, fw - 3) and ly in (2, fh - 3)):
+                            color = rim
+                        else:
+                            color = hi if (t < 0.18 and grain < 9) else (base if (t < 0.75 and grain < 9) else shade)
                     put(target, px, py, color)
-            if face in ("front", "back", "east", "west") and fw >= 3 and fh >= 3:
-                for py in range(y, y + fh):
-                    put(target, x, py, rim)
-                    put(target, x + fw - 1, py, rim)
-                for px in range(x, x + fw):
-                    put(target, px, y + fh - 1, rim)
-                    if fh >= 5:
-                        put(target, px, y, rim)
 
     def flat(box, color, target):
-        for rect in faces(*box).values():
+        for rect in f2x(*box).values():
             fill(target, rect, color)
 
-    # 1. Armor plates
-    plate(CHEST, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(CHEST_PLATE, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(FLAP, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(PELVIS, GOLD, BRONZE, BRONZE_DEEP, SEAM)
-    plate(NECK, BRONZE, BRONZE_DEEP, BRONZE_DEEP, SEAM)
+    # 1. Forged Sunsteel Armor Plates at 2x resolution
+    plate(CHEST, SUN_HI, GOLD, GOLD_MID, BRONZE, seed=1)
+    plate(CHEST_PLATE, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=2)
+    plate(FLAP, SUN_HI, GOLD, GOLD_MID, BRONZE, seed=3)
+    plate(PELVIS, GOLD_BRIGHT, GOLD, BRONZE, BRONZE_DEEP, seed=4)
+    plate(NECK, GOLD, BRONZE, BRONZE_DEEP, SEAM, seed=5)
 
-    plate(THIGH, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(SHIN, GOLD, BRONZE, BRONZE_DEEP, SEAM)
-    plate(BOOT, SUN_HI, GOLD, GOLD_MID, BRONZE_DEEP)
+    plate(THIGH, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=6)
+    plate(SHIN, GOLD, BRONZE, BRONZE_DEEP, SEAM, seed=7)
+    plate(BOOT, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE_DEEP, seed=8)
 
-    plate(PAULDRON_UP, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(ARM_UP, GOLD, BRONZE, BRONZE_DEEP, SEAM)
-    plate(FORE_UP, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(PAULDRON_UP, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=9)
+    plate(ARM_UP, GOLD, BRONZE, BRONZE_DEEP, SEAM, seed=10)
+    plate(FORE_UP, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=11)
 
-    plate(PAULDRON_LO, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(ARM_LO, GOLD, BRONZE, BRONZE_DEEP, SEAM)
-    plate(FORE_LO, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(PAULDRON_LO, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=12)
+    plate(ARM_LO, GOLD, BRONZE, BRONZE_DEEP, SEAM, seed=13)
+    plate(FORE_LO, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=14)
 
-    # Sculpted Sunsteel breastplate chevron & recessed sternum seam (no permanent orb)
-    cx, cy, cw, ch = faces(*CHEST_PLATE)["front"]
-    for i in range(4):
-        put(img, cx + 1 + i, cy + 1 + i, SEAM)
-        put(img, cx + cw - 2 - i, cy + 1 + i, SEAM)
-        put(img, cx + 1 + i, cy + i, SUN_HI)
-        put(img, cx + cw - 2 - i, cy + i, SUN_HI)
-    for py in range(cy + 3, cy + ch - 1):
-        put(img, cx + cw // 2 - 1, py, BRONZE)
-        put(img, cx + cw // 2, py, BRONZE)
-    # Subtle glowing solar-forge vents along the upper chest flanks
+    # Boot sole treads on bottom (8x12 px)
+    bsx, bsy, bsw, bsh = f2x(*BOOT)["bottom"]
+    for tread_y in (bsy + 2, bsy + 5, bsy + 8):
+        fill(img, (bsx + 2, tread_y, bsw - 4, 2), SEAM)
+        fill(img, (bsx + 2, tread_y, bsw - 4, 1), BRONZE)
+
+    # Sculpted Sunsteel breastplate chevron & recessed sternum seam (20x12 px)
+    cx, cy, cw, ch = f2x(*CHEST_PLATE)["front"]
+    for i in range(8):
+        for t in range(2):
+            put(img, cx + 2 + i, cy + 2 + i + t, SEAM)
+            put(img, cx + cw - 3 - i, cy + 2 + i + t, SEAM)
+        put(img, cx + 2 + i, cy + 1 + i, WHITE_HOT if i < 3 else SUN_HI)
+        put(img, cx + cw - 3 - i, cy + 1 + i, WHITE_HOT if i < 3 else SUN_HI)
+    for py in range(cy + 6, cy + ch - 2):
+        fill(img, (cx + cw // 2 - 2, py, 4, 1), BRONZE)
+        fill(img, (cx + cw // 2 - 1, py, 2, 1), SEAM)
+    # Glowing solar-forge vents along the upper chest flanks
     for target in (img, glow):
-        put(target, cx + 1, cy + 2, FLAME_Y)
-        put(target, cx + cw - 2, cy + 2, FLAME_Y)
+        fill(target, (cx + 2, cy + 4, 2, 2), FLAME_Y)
+        fill(target, (cx + cw - 4, cy + 4, 2, 2), FLAME_Y)
+        put(target, cx + 2, cy + 4, WHITE_HOT)
+        put(target, cx + cw - 4, cy + 4, WHITE_HOT)
 
-    # Backplate solar spine & shoulder vents
-    bx, by, bw, bh = faces(*CHEST)["back"]
-    for py in range(by + 1, by + bh - 1):
-        put(img, bx + bw // 2 - 1, py, SEAM)
-        put(img, bx + bw // 2, py, SEAM)
-        if py % 2 == 0:
+    # Backplate solar spine & shoulder vents (24x18 px)
+    bx, by, bw, bh = f2x(*CHEST)["back"]
+    for py in range(by + 2, by + bh - 2):
+        fill(img, (bx + bw // 2 - 2, py, 4, 1), SEAM)
+        if py % 4 in (0, 1):
             for target in (img, glow):
-                put(target, bx + bw // 2 - 2, py, FLAME_Y)
-                put(target, bx + bw // 2 + 1, py, FLAME_Y)
+                fill(target, (bx + bw // 2 - 4, py, 2, 1), FLAME_Y if py % 4 == 0 else FLAME_O)
+                fill(target, (bx + bw // 2 + 2, py, 2, 1), FLAME_Y if py % 4 == 0 else FLAME_O)
 
-    # Pelvis belt buckle
-    px0, py0, pw, ph = faces(*PELVIS)["front"]
-    fill(img, (px0 + pw // 2 - 2, py0, 4, ph), GOLD)
+    # Pelvis belt buckle (20x6 px)
+    px0, py0, pw, ph = f2x(*PELVIS)["front"]
+    fill(img, (px0 + pw // 2 - 4, py0, 8, ph), GOLD_BRIGHT)
+    for px in range(px0 + pw // 2 - 4, px0 + pw // 2 + 4):
+        put(img, px, py0, SUN_HI)
+        put(img, px, py0 + ph - 1, SEAM)
     for target in (img, glow):
-        fill(target, (px0 + pw // 2 - 1, py0 + 1, 2, 1), FLAME_Y)
+        fill(target, (px0 + pw // 2 - 2, py0 + 2, 4, 2), FLAME_Y)
+        fill(target, (px0 + pw // 2 - 1, py0 + 2, 2, 1), WHITE_HOT)
 
     # Pauldron ridge + glowing wing conduits
     for box in (PAULDRON_UP, PAULDRON_LO):
         for face in ("front", "back", "east", "west"):
-            x, y, fw, fh = faces(*box)[face]
-            for px in range(x + 1, x + fw - 1):
-                put(img, px, y + 2, BRONZE)
+            x, y, fw, fh = f2x(*box)[face]
+            fill(img, (x + 2, y + 4, fw - 4, 2), BRONZE)
     for box in (ARM_UP, FORE_UP, ARM_LO):
         for face in ("front", "back", "top"):
-            x, y, fw, fh = faces(*box)[face]
-            for px in range(x + 1, x + fw - 1):
+            x, y, fw, fh = f2x(*box)[face]
+            for px in range(x + 2, x + fw - 2):
                 for target in (img, glow):
+                    put(target, px, y + fh // 2 - 1, WHITE_HOT if box == FORE_UP else FLAME_Y)
                     put(target, px, y + fh // 2, FLAME_Y if box == FORE_UP else FLAME_O)
     for face in ("front", "back", "top"):
-        x, y, fw, fh = faces(*FORE_LO)[face]
-        for px in range(x + 1, x + fw - 1):
+        x, y, fw, fh = f2x(*FORE_LO)[face]
+        for px in range(x + 2, x + fw - 2):
             for target in (img, glow):
-                put(target, px, y, FLAME_Y)
+                put(target, px, y + 1, FLAME_Y)
 
     # Boot glowing ankle trim
-    x, y, fw, fh = faces(*BOOT)["front"]
+    x, y, fw, fh = f2x(*BOOT)["front"]
     for target in (img, glow):
-        fill(target, (x + 1, y, fw - 2, 1), FLAME_Y)
+        fill(target, (x + 2, y + 1, fw - 4, 1), WHITE_HOT)
+        fill(target, (x + 2, y + 2, fw - 4, 1), FLAME_Y)
 
-    # 2. Creature Head: gold helm, dark recessed visor, angled glowing solar eyes, forehead sun-gem, armored snout
-    plate(HEAD_CORE, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(HEAD_BAND, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(HEAD_CAP, WHITE_HOT, SUN_HI, GOLD, GOLD_MID)
-    plate(HEAD_CHIN, GOLD, GOLD_MID, BRONZE, BRONZE_DEEP)
-    plate(SNOUT, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    # 2. Creature Head: gold helm, dark recessed visor, 2x angled glowing solar eyes, forehead sun-gem, carved backplate
+    plate(HEAD_CORE, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=15)
+    plate(HEAD_BAND, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=16)
+    plate(HEAD_CAP, WHITE_HOT, SUN_HI, GOLD_BRIGHT, GOLD_MID, seed=17)
+    plate(HEAD_CHIN, GOLD, GOLD_MID, BRONZE, BRONZE_DEEP, seed=18)
+    plate(SNOUT, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=19)
 
-    # Snout beak-ridge detail
-    sx0, sy0, sw, sh = faces(*SNOUT)["front"]
-    fill(img, (sx0 + 1, sy0 + 1, sw - 2, 1), BRONZE)
-    put(img, sx0 + sw // 2 - 1, sy0, WHITE_HOT)
-    put(img, sx0 + sw // 2, sy0, WHITE_HOT)
+    # Snout beak-ridge detail (12x6 px)
+    sx0, sy0, sw, sh = f2x(*SNOUT)["front"]
+    fill(img, (sx0 + 2, sy0 + 2, sw - 4, 2), BRONZE)
+    fill(img, (sx0 + sw // 2 - 2, sy0, 4, 2), WHITE_HOT)
 
     # Side ear-crests glow softly on HEAD_BAND east/west
     for face in ("east", "west"):
-        x, y, fw, fh = faces(*HEAD_BAND)[face]
+        x, y, fw, fh = f2x(*HEAD_BAND)[face]
         for target in (img, glow):
-            fill(target, (x + fw // 2 - 1, y + 1, 2, fh - 2), FLAME_Y)
+            fill(target, (x + fw // 2 - 2, y + 2, 4, fh - 4), FLAME_Y)
+            fill(target, (x + fw // 2 - 1, y + 3, 2, fh - 6), WHITE_HOT)
 
-    # Dark Sunsteel visor recess on HEAD_CORE front
-    hx, hy, hw, hh = faces(*HEAD_CORE)["front"]
-    fill(img, (hx + 1, hy + 1, hw - 2, hh - 2), VISOR)
-    for px in range(hx + 1, hx + hw - 1):
-        put(img, px, hy + 1, VISOR_SHADE)
+    # Dark Sunsteel visor recess on HEAD_CORE front (24x18 px)
+    hx, hy, hw, hh = f2x(*HEAD_CORE)["front"]
+    fill(img, (hx + 2, hy + 2, hw - 4, hh - 4), VISOR)
+    for py in range(hy + 2, hy + hh - 2):
+        if py % 2 == 0:
+            fill(img, (hx + 2, py, hw - 4, 1), VISOR_SHADE)
 
-    # Forehead sun-diamond (honoring the 3rd circle in the kid's drawing)
+    # Faceted forehead sun-diamond (honoring the 3rd circle in the kid's drawing)
     for target in (img, glow):
-        put(target, hx + hw // 2 - 1, hy + 1, FLAME_Y)
-        put(target, hx + hw // 2, hy + 1, FLAME_Y)
-        put(target, hx + hw // 2 - 1, hy + 2, WHITE_HOT)
-        put(target, hx + hw // 2, hy + 2, WHITE_HOT)
+        cx0 = hx + hw // 2
+        fill(target, (cx0 - 2, hy + 2, 4, 4), FLAME_O)
+        fill(target, (cx0 - 1, hy + 2, 2, 4), FLAME_Y)
+        fill(target, (cx0 - 2, hy + 3, 4, 2), FLAME_Y)
+        fill(target, (cx0 - 1, hy + 3, 2, 2), WHITE_HOT)
 
-    # Angled glowing creature eyes (fierce yet noble, no human sclera/pupils)
-    # Left eye slopes down-right, right eye slopes down-left
+    # Angled glowing creature eyes (2x crisp detail)
     for target in (img, glow):
         # Left eye
-        put(target, hx + 2, hy + 3, FLAME_O)
-        put(target, hx + 3, hy + 3, FLAME_Y)
-        put(target, hx + 2, hy + 4, FLAME_Y)
-        put(target, hx + 3, hy + 4, WHITE_HOT)
-        put(target, hx + 4, hy + 4, WHITE_HOT)
+        fill(target, (hx + 4, hy + 6, 4, 2), FLAME_O)
+        fill(target, (hx + 5, hy + 6, 3, 2), FLAME_Y)
+        fill(target, (hx + 4, hy + 8, 6, 2), FLAME_Y)
+        fill(target, (hx + 6, hy + 8, 4, 2), WHITE_HOT)
         # Right eye
-        put(target, hx + hw - 3, hy + 3, FLAME_O)
-        put(target, hx + hw - 4, hy + 3, FLAME_Y)
-        put(target, hx + hw - 3, hy + 4, FLAME_Y)
-        put(target, hx + hw - 4, hy + 4, WHITE_HOT)
-        put(target, hx + hw - 5, hy + 4, WHITE_HOT)
+        fill(target, (hx + hw - 8, hy + 6, 4, 2), FLAME_O)
+        fill(target, (hx + hw - 8, hy + 6, 3, 2), FLAME_Y)
+        fill(target, (hx + hw - 10, hy + 8, 6, 2), FLAME_Y)
+        fill(target, (hx + hw - 10, hy + 8, 4, 2), WHITE_HOT)
 
-    # 3. Solar Crown Rays behind/above the head (glowing!)
+    # Carved back-of-head Sunsteel helm plate + glowing 8-rayed solar crest rune (24x18 px)
+    hbx, hby, hbw, hbh = f2x(*HEAD_CORE)["back"]
+    fill(img, (hbx + 3, hby + 3, hbw - 6, hbh - 6), GOLD)
+    for px in range(hbx + 3, hbx + hbw - 3):
+        put(img, px, hby + 3, SEAM)
+        put(img, px, hby + hbh - 4, SEAM)
+    for py in range(hby + 3, hby + hbh - 3):
+        put(img, hbx + 3, py, BRONZE)
+        put(img, hbx + hbw - 4, py, BRONZE)
+    rcx, rcy = hbx + hbw // 2, hby + hbh // 2
+    for target in (img, glow):
+        fill(target, (rcx - 2, rcy - 2, 4, 4), FLAME_Y)
+        fill(target, (rcx - 1, rcy - 1, 2, 2), WHITE_HOT)
+        for dx, dy in ((-4, 0), (3, 0), (0, -4), (0, 3), (-3, -3), (2, -3), (-3, 2), (2, 2)):
+            put(target, rcx + dx, rcy + dy, FLAME_O)
+
+    # 3. Solar Crown Rays behind/above the head (glowing coronal plasma)
     for box in (CROWN_RAY, CROWN_RAY_SM):
         for target in (img, glow):
-            for face, (x, y, fw, fh) in faces(*box).items():
+            for face, (x, y, fw, fh) in f2x(*box).items():
                 for py in range(y, y + fh):
                     t = (py - y) / max(1, fh - 1)
-                    color = WHITE_HOT if t < 0.35 else (FLAME_Y if t < 0.75 else FLAME_O)
                     for px in range(x, x + fw):
+                        lx = px - x
+                        inner = 1 <= lx <= fw - 2
+                        if t < 0.35:
+                            color = WHITE_HOT if inner else FLAME_Y
+                        elif t < 0.75:
+                            color = FLAME_Y if inner else FLAME_O
+                        else:
+                            color = FLAME_O
                         put(target, px, py, color)
 
     # 4. Spiky Solar Starburst Claws (glowing white-hot -> gold!)
     for box in (SPIKE_LG, SPIKE_MD, SPIKE_SM):
         for target in (img, glow):
-            for face, (x, y, fw, fh) in faces(*box).items():
+            for face, (x, y, fw, fh) in f2x(*box).items():
                 for py in range(y, y + fh):
                     for px in range(x, x + fw):
-                        put(target, px, py, WHITE_HOT if px == x else (FLAME_Y if px < x + fw - 1 else FLAME_O))
+                        tx = (px - x) / max(1, fw - 1)
+                        put(target, px, py, WHITE_HOT if tx < 0.25 else (FLAME_Y if tx < 0.72 else FLAME_O))
 
     # 5. Attack-only Chest Solar Beam (hidden at scale 0 in idle/walk/sit)
     for target in (img, glow):
         flat(BEAM_CORE, FLAME_Y, target)
-        for face, (x, y, fw, fh) in faces(*BEAM_CORE).items():
-            if fw >= 3 and fh >= 3:
-                fill(target, (x + 1, y + 1, fw - 2, fh - 2), WHITE_HOT)
-        for face, (x, y, fw, fh) in faces(*BEAM_FLARE).items():
-            fill(target, (x, y, fw, fh), FLAME_O)
-            if fw >= 4 and fh >= 4:
-                fill(target, (x + 1, y + 1, fw - 2, fh - 2), FLAME_Y)
-            if fw >= 6 and fh >= 6:
+        for face, (x, y, fw, fh) in f2x(*BEAM_CORE).items():
+            if fw >= 5 and fh >= 5:
                 fill(target, (x + 2, y + 2, fw - 4, fh - 4), WHITE_HOT)
+        for face, (x, y, fw, fh) in f2x(*BEAM_FLARE).items():
+            fill(target, (x, y, fw, fh), FLAME_O)
+            if fw >= 6 and fh >= 6:
+                fill(target, (x + 2, y + 2, fw - 4, fh - 4), FLAME_Y)
+            if fw >= 10 and fh >= 10:
+                fill(target, (x + 4, y + 4, fw - 8, fh - 8), WHITE_HOT)
 
     # Save textures
     dest = OUT / "entity/sunbeam.png"
@@ -5050,7 +5117,7 @@ def main():
         return
     if "--sunbeam" in sys.argv:
         make_sunbeam()
-        print("Generated Sunbeam 128x128 texture and glowmask.")
+        print("Generated Sunbeam 256x256 texture and glowmask.")
         return
     if "--prismling" in sys.argv:
         make_prismling()
