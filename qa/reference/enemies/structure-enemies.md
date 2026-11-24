@@ -16,9 +16,11 @@ Reference silhouettes and palettes for the three Phase 2 biome structure guardia
 ## 2. Cinder Raider (`artilian:cinder_raider`)
 - **Biome / Structure:** Emberbloom Meadows — **Emberbloom Outpost**
 - **Elements / Hitbox:** `FIRE / EARTH` (`0.80 × 1.75`, `eyeHeight = 1.45F`, `shadowRadius = 0.45F`)
-- **Silhouette Archetype:** Compact, hunched **Volcanic-Basalt & Forged-Iron Pyro-Raider** with a horned brazier helm, ember-furnace backpack, and heavy magma-cleaver gauntlets.
+- **Silhouette Archetype:** Stocky, hunched **Volcanic-Basalt & Forged-Iron Pyro-Brigand** with swept volcanic ram horns, a V-slit iron faceguard over blazing magma eyes, a barred iron furnace-grate chest core, a strapped magma-brazier backpack with twin iron smokestacks + billowing ember cutouts, roaring cutout brazier head flame (`crest`), spiked bronze-trimmed pauldrons, and twin `entityCutoutNoCull` molten cleaver arm-blades.
+- **Palette & Glowmask:** Charred Volcanic Basalt (`#140B0C` → `#CCA092`), Hammered Bronze-Copper (`#3B1A0A` → `#FEF3C7`), and Molten Magma (`#5E1408` → `#F97316` → `#FDE047` → `#FFFFFF`). Glowmask illuminates V-slit magma eyes, furnace-grate chest core, brazier head flame & backpack exhaust plume, molten cleaver edges, and boot ember vents.
 
 ## 3. Astral Stalker (`artilian:astral_stalker`)
 - **Biome / Structure:** Starlight Highlands — **Starlight Watchtower**
 - **Elements / Hitbox:** `STARLIGHT / SHADOW` (`0.85 × 1.85`, `eyeHeight = 1.55F`, `shadowRadius = 0.48F`)
-- **Silhouette Archetype:** Lithe, hooded **Twilight-Slate & Nebula-Cloak Watchtower Phantom** with a crescent starlight crown, tattered astral mantle cutouts, and twin starlight wrist-blades.
+- **Silhouette Archetype:** Lithe, hooded **Twilight-Slate & Nebula-Cloak Watchtower Phantom** with a pointed assassin hood casting a void shadow over 3 glowing constellation eyes (two slanted `#7DF9FF` Starlight-Cyan eyes + brow `#D946EF` Twilight-Magenta eye), a 4-pointed Starlight Compass chest core, a flowing tattered starry nebula cape + side ribbons (`entityCutoutNoCull`), a hovering crescent-moon & north-star `crest`, crescent pauldrons, and curved Starlight-Katar wrist-blades.
+- **Palette & Glowmask:** Shadow-Slate & Nebula Weave (`#0C0918` → `#B4A4E0`), Twilight-Magenta (`#3B0A4E` → `#D946EF` → `#FFFFFF`), and Starlight-Cyan (`#093648` → `#38D9C0` → `#7DF9FF` → `#FFFFFF`). Glowmask illuminates the 3 constellation eyes, Starlight Compass chest core, hovering crescent/north-star halo, starry nebula cape flecks, and curved Starlight-Katar blade edges.
