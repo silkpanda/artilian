@@ -4038,11 +4038,16 @@ def make_flurrywing():
         "head_cap": (20, 16, 3, 5, 3),
     }
     HAT = {"hat_brim": (32, 16, 6, 1, 6), "hat_crown": (74, 16, 4, 1, 4)}
-    STICKS = {"stick_upper": (100, 29, 5, 1, 1), "stick_lower": (40, 25, 1, 3, 1), "mitten_arm": (12, 32, 4, 1, 1)}
-    MITTENS = {"mitten_palm": (12, 25, 3, 2, 2), "mitten_tip": (32, 25, 2, 2, 2)}
+    STICKS = {"stick_left": (0, 36, 4, 1, 1), "stick_right": (34, 36, 4, 1, 1)}
+    MITTENS = {
+        "mitten_palm_left": (12, 36, 3, 2, 2),
+        "mitten_tip_left": (24, 36, 2, 2, 2),
+        "mitten_palm_right": (46, 36, 3, 2, 2),
+        "mitten_tip_right": (58, 36, 2, 2, 2),
+    }
     UPPER_WINGS = [
-        [(22, 25, 4, 3, 1), (90, 16, 6, 4, 1), (0, 25, 5, 3, 1), (88, 29, 3, 2, 1), (96, 29, 1, 2, 1)],
-        [(78, 29, 4, 2, 1), (104, 16, 7, 3, 1), (56, 16, 8, 4, 1), (36, 29, 6, 2, 1), (22, 32, 4, 1, 1)],
+        [(0, 42, 4, 2, 1), (12, 42, 7, 3, 1), (30, 42, 8, 4, 1), (50, 42, 6, 2, 1), (66, 42, 4, 1, 1)],
+        [(0, 49, 4, 2, 1), (12, 49, 7, 3, 1), (30, 49, 8, 4, 1), (50, 49, 6, 2, 1), (66, 49, 4, 1, 1)],
     ]
     LOWER_WINGS = [
         [(50, 29, 6, 2, 1), (84, 25, 8, 2, 1), (44, 25, 9, 2, 1), (102, 25, 8, 2, 1), (112, 29, 5, 1, 1)],
@@ -4193,17 +4198,19 @@ def make_flurrywing():
             if (lx + ly) % 2 == 0 or (2 <= lx <= htw - 3 and 2 <= ly <= hth - 3):
                 put(img, htx + lx, hty + ly, SNOW_RAMP[7 if (lx + ly) % 3 == 0 else 5])
 
-    # 3. Wood-Bark Stick Arm & Quilted Ice-Blue Mitten
+    # 3. Matching Wood-Bark Stick & Quilted Ice-Blue Mitten Arms
     for i, box in enumerate(STICKS.values()):
         shade_ramp_box(*box, STICK_RAMP, seed=20 + i)
     for i, (mname, box) in enumerate(MITTENS.items()):
         shade_ramp_box(*box, MITTEN_RAMP, seed=30 + i)
-        if mname == "mitten_palm":
+        if mname.startswith("mitten_palm_"):
+            is_left = mname.endswith("_left")
             mf = f2x(*box)
             for fname in ("front", "back", "top", "bottom"):
                 rx, ry, rw, rh = mf[fname]
+                cuff_x = (rw - 1 if fname != "back" else 0) if is_left else (0 if fname != "back" else rw - 1)
                 for ly in range(rh):
-                    put(img, rx, ry + ly, SNOW_RAMP[6 if ly % 2 == 0 else 4])
+                    put(img, rx + cuff_x, ry + ly, SNOW_RAMP[6 if ly % 2 == 0 else 4])
 
     # 4. Four Veined Crystalline Frost Butterfly Wings + Glowmask
     for wing_idx, slabs in enumerate(UPPER_WINGS + LOWER_WINGS):
