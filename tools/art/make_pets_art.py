@@ -5407,108 +5407,111 @@ def make_zapkin():
         ],
     }, PAL)
 
-    # 3. Cheek fins [1, 3, 2] @ [44, 0] & [50, 0] + jagged cheek spark cutouts [3, 4, 0] @ [56, 0] & [62, 0]
+    # 3. Cheek fins [1, 3, 2] @ [44, 0] & [50, 0] + razor-sharp cheek lightning sparks [3, 4, 0] @ [56, 0] & [62, 0]
     for cu in (44, 50):
         shade_armor_box(cu, 0, 1, 3, 2, RED_RAMP, riveted=False, seed=3)
     cheek_spark_l = [
-        "....RY",
-        "..RYHW",
-        "RYHWY.",
-        ".RY...",
-        "..RYW.",
-        "RYHW..",
-        ".R....",
+        ".....K",
+        "....WY",
+        "..KYWb",
+        ".YWHb.",
+        "..bWY.",
+        ".YWHK.",
+        "KYb...",
         "......",
     ]
     cheek_spark_r = [row[::-1] for row in cheek_spark_l]
-    paint_cutout_z(56, 0, 3, 4, cheek_spark_l, glow_keys={"Y", "H", "W", "R"})
-    paint_cutout_z(62, 0, 3, 4, cheek_spark_r, glow_keys={"Y", "H", "W", "R"})
+    paint_cutout_z(56, 0, 3, 4, cheek_spark_l, glow_keys={"Y", "H", "W", "K"})
+    paint_cutout_z(62, 0, 3, 4, cheek_spark_r, glow_keys={"Y", "H", "W", "K"})
 
-    # 4. Head Lightning Crown (`spikes`):
-    #    3 roots: [1, 2, 1] @ [0, 14] & [4, 14], [2, 3, 1] @ [8, 14]
-    for ru, rw, rh in ((0, 1, 2), (4, 1, 2), (8, 2, 3)):
-        shade_armor_box(ru, 14, rw, rh, 1, RED_RAMP, riveted=False, seed=4)
-        rf = f2x(ru, 14, rw, rh, 1)["front"]
-        put(img, rf[0] + rf[2] // 2, rf[1], PAL["Y"])
-        put(glow, rf[0] + rf[2] // 2, rf[1], PAL["Y"])
-
-    #    Front/back 3-bolt jagged crown cutout [10, 9, 0] @ [16, 13] -> 20x18 px
-    #    On front (+X is viewer-right, -X is viewer-left; note front UV col 0 = -X or +X depending on model,
-    #    let's place the tall S-hooked bolt on cols 12..19 (+X) and verify in preview_geo.py!)
-    crown_front = [
-        "...............RR...",
-        "..............RYWR..",
-        ".............RYHWR..",
-        "............RYHWYR..",
-        "........RR..RYHYR...",
-        ".......RYWR..RYHYR..",
-        "......RYHYR..RYHWR..",
-        ".RR...RYHYR.RYHWYR..",
-        "RYWR.RYHYR..RYHYR...",
-        "RYHYRRYHYR.RYHYR....",
-        "RYHWRRYHWRRYHYR.....",
-        ".RYHYRYHWRYHYR......",
-        ".RYHWRYHYRYHYR......",
-        "..RYHYYHYRYHYR......",
-        "..RYHYRYHYYHYR......",
-        "...RYHYRYHYHYR......",
-        "...RYYR.RYYRYR......",
-        "....RR...RR.R.......",
+    # 4. Head Lightning Crown (`spikes`): 4 angled cutout Z-bolts with 1px needle tips & zero red borders
+    #    4a. Tall Right Hero Z-Bolt [7, 11, 0] @ [28, 11] -> 14x22 px
+    hero_bolt = [
+        ".............K",
+        "............KW",
+        "...........KWH",
+        "..........YWHb",
+        ".........YWHb.",
+        "........YWHb..",
+        ".......YWHb...",
+        "......YWHb....",
+        ".....YWHYYHK..",
+        "....bYWWWWWHb.",
+        ".....bYYYYWHb.",
+        ".........YWHb.",
+        "........YWHb..",
+        ".......YWHb...",
+        "......YWHb....",
+        ".....YWHYYHK..",
+        "....bYWWWWHb..",
+        ".....bYYWHb...",
+        ".......YWHb...",
+        "......YWHb....",
+        ".....YWHb.....",
+        "....bWHb......",
     ]
-    paint_cutout_z(16, 13, 10, 9, crown_front, glow_keys={"Y", "H", "W", "R", "E"})
+    paint_cutout_z(28, 11, 7, 11, hero_bolt, glow_keys={"Y", "H", "W", "K"})
 
-    #    Three crossed sagittal bolt blades:
-    #    Center [0, 7, 5] @ [36, 12] -> 10x14 px
-    paint_cutout_x(36, 12, 7, 5, [
-        "....RR....",
-        "...RYWR...",
-        "...RYHWR..",
-        "....RYHYR.",
-        "...RYHWR..",
-        "..RYHYR...",
-        "..RYHYR...",
-        "...RYHYR..",
-        "..RYHWR...",
-        "..RYHYR...",
-        "...RYHYR..",
-        "...RYHYR..",
-        "....RYYR..",
-        ".....RR...",
-    ], glow_keys={"Y", "H", "W", "R"})
-    #    Tall outer [0, 9, 4] @ [46, 11] -> 8x18 px
-    paint_cutout_x(46, 11, 9, 4, [
-        "...RR...",
-        "..RYWR..",
-        ".RYHWR..",
-        ".RYHYR..",
-        "..RYHYR.",
-        "..RYHWR.",
-        "...RYHYR",
-        "..RYHWR.",
-        "..RYHYR.",
-        "..RYHYR.",
-        "...RYHYR",
-        "..RYHWR.",
-        "..RYHYR.",
-        "..RYHYR.",
-        "...RYHYR",
-        "...RYHYR",
-        "....RYYR",
-        ".....RR.",
-    ], glow_keys={"Y", "H", "W", "R"})
-    #    Inner [0, 5, 3] @ [54, 14] -> 6x10 px
-    paint_cutout_x(54, 14, 5, 3, [
-        "..RR..",
-        ".RYWR.",
-        ".RYHYR",
-        "..RYHR",
-        ".RYHWR",
-        ".RYHYR",
-        "..RYHR",
-        "..RYHR",
-        "..RYYR",
-        "...RR.",
-    ], glow_keys={"Y", "H", "W", "R"})
+    #    4b. Center Sharp Z-Bolt [5, 8, 0] @ [44, 11] -> 10x16 px
+    center_bolt = [
+        "........K.",
+        ".......KW.",
+        "......KWH.",
+        ".....YWHb.",
+        "....YWHb..",
+        "...YWHb...",
+        "..YWHYYHK.",
+        ".bYWWWWWHb",
+        "..bYYYWHb.",
+        ".....YWHb.",
+        "....YWHb..",
+        "...YWHb...",
+        "..YWHb....",
+        "...YWHb...",
+        "....YWHb..",
+        "....bWHb..",
+    ]
+    paint_cutout_z(44, 11, 5, 8, center_bolt, glow_keys={"Y", "H", "W", "K"})
+
+    #    4c. Left Forked Z-Bolt [5, 7, 0] @ [56, 11] -> 10x14 px
+    left_bolt = [
+        "K.........",
+        "WK........",
+        "HWK.......",
+        "bHWY......",
+        ".bHWY.....",
+        "..bHWY..K.",
+        "..bYYWHYHK",
+        ".bHWWWWWHb",
+        "..bHWYYYb.",
+        "...bHWY...",
+        "....bHWY..",
+        ".....bHWY.",
+        "......bHWY",
+        ".......bWb",
+    ]
+    paint_cutout_z(56, 11, 5, 7, left_bolt, glow_keys={"Y", "H", "W", "K"})
+
+    #    4d. Swept-Back Sagittal Z-Crest [0, 8, 6] @ [68, 10] -> 12x16 px (col 0 = front -Z, col 11 = back +Z)
+    sagittal_bolt = [
+        "...........K",
+        "..........KW",
+        ".........KWH",
+        "........YWHb",
+        ".......YWHb.",
+        "......YWHb..",
+        ".....YWHYYHK",
+        "....bYWWWWWH",
+        ".....bYYYWHb",
+        "........YWHb",
+        ".......YWHb.",
+        "......YWHb..",
+        ".....YWHb...",
+        "....YWHb....",
+        "...YWHb.....",
+        "...bWHb.....",
+    ]
+    paint_cutout_x(68, 10, 8, 6, sagittal_bolt, glow_keys={"Y", "H", "W", "K"})
 
     # 5. Torso: Waist [5, 3, 4] @ [0, 26] -> 10x6 px
     shade_armor_box(0, 26, 5, 3, 4, NAVY_RAMP, riveted=False, seed=5)
