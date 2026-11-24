@@ -2,6 +2,7 @@ package com.silkpanda.artilian.client;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.pet.FrogduckEntity;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 
@@ -23,5 +24,10 @@ public class FrogduckModel extends GeoModel<FrogduckEntity> {
     @Override
     public ResourceLocation getAnimationResource(FrogduckEntity entity) {
         return ANIMATIONS;
+    }
+
+    @Override
+    public RenderType getRenderType(FrogduckEntity animatable, ResourceLocation texture) {
+        return RenderType.entityCutoutNoCull(texture);
     }
 }

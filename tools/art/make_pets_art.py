@@ -4748,99 +4748,418 @@ def make_sunbeam():
 
 
 def make_frogduck():
-    """Frogduck: the kids' amphibious teal frog with an orange duck on its head (qa/reference/pets/frog-duck-drawing-2026-11-17.jpg).
+    """256x128 (2x scale over 128x64 UV grid) Frogduck: dappled lagoon-teal frog + tangerine duck + glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    Layout matches src/main/resources/assets/artilian/geo/entity/frogduck.geo.json (box UV, 128x64).
-    """
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    # 8-stop Lagoon Teal Frog Skin ramp (#063B3A -> #38D9C0 -> #D5FBF6)
+    TEAL_RAMP = [
+        (6, 59, 58, 255),      # 0: Deep crevice shadow
+        (11, 93, 89, 255),     # 1: Dark lagoon shadow
+        (13, 130, 122, 255),   # 2: Shaded amphibian teal
+        (20, 168, 155, 255),   # 3: Mid teal base
+        (34, 199, 180, 255),   # 4: Bright lagoon teal
+        (56, 217, 192, 255),   # 5: DESIGN.md Starlight Teal (#38D9C0)
+        (124, 238, 224, 255),  # 6: Sunlit aqua highlight
+        (213, 251, 246, 255),  # 7: Wet amphibian dew glint
+    ]
+    # 8-stop Tangerine Duck Plumage ramp (#5C1D08 -> #F97316 -> #FEF3C7)
+    DUCK_RAMP = [
+        (92, 29, 8, 255),      # 0: Deep burnt umber shadow
+        (140, 45, 12, 255),    # 1: Rich russet orange
+        (194, 65, 12, 255),    # 2: Shaded tangerine
+        (234, 88, 12, 255),    # 3: Mid warm orange
+        (249, 115, 22, 255),   # 4: DESIGN.md Ember Amber (#F97316)
+        (251, 146, 60, 255),   # 5: Sunlit tangerine feather
+        (253, 186, 116, 255),  # 6: Soft apricot highlight
+        (254, 243, 199, 255),  # 7: Warm cream feather glint
+    ]
+    # 8-stop Chestnut/Umber Eye & Cloud ramp (#2E1105 -> #FFF7ED)
+    BROWN_RAMP = [
+        (46, 17, 5, 255),      # 0: Deep espresso outline
+        (74, 29, 9, 255),      # 1: Dark chestnut
+        (107, 45, 14, 255),    # 2: Rich umber brown
+        (140, 62, 20, 255),    # 3: Mid warm brown
+        (180, 83, 9, 255),     # 4: Golden chestnut
+        (217, 119, 36, 255),   # 5: Amber-brown highlight
+        (242, 166, 90, 255),   # 6: Warm caramel rim
+        (255, 247, 237, 255),  # 7: Specular eye catchlight
+    ]
+    # 8-stop Golden Bill ramp (#78350F -> #FEF9C3)
+    BILL_RAMP = [
+        (120, 53, 15, 255),
+        (161, 82, 12, 255),
+        (202, 118, 16, 255),
+        (234, 158, 22, 255),
+        (251, 191, 36, 255),
+        (253, 214, 78, 255),
+        (254, 235, 138, 255),
+        (254, 249, 195, 255),
+    ]
+    # 8-stop Pearl-Aqua Claw ramp (#1B4D4A -> #F2FFFD)
+    CLAW_RAMP = [
+        (27, 77, 74, 255),
+        (45, 110, 106, 255),
+        (78, 148, 142, 255),
+        (122, 186, 180, 255),
+        (170, 220, 216, 255),
+        (210, 242, 238, 255),
+        (232, 252, 249, 255),
+        (242, 255, 253, 255),
+    ]
 
-    TEAL_HI = (94, 234, 212, 255)
-    TEAL = (20, 184, 166, 255)
-    TEAL_DEEP = (13, 148, 136, 255)
-    TEAL_OUTLINE = (15, 118, 110, 255)
-    FACE = (186, 248, 240, 255)
-    BROWN = (120, 53, 15, 255)
-    BROWN_HI = (146, 64, 14, 255)
-    CLAW = (224, 252, 248, 255)
+    PAL = {
+        "0": TEAL_RAMP[0],
+        "1": TEAL_RAMP[1],
+        "2": TEAL_RAMP[2],
+        "3": TEAL_RAMP[3],
+        "4": TEAL_RAMP[4],
+        "5": TEAL_RAMP[5],
+        "6": TEAL_RAMP[6],
+        "7": TEAL_RAMP[7],
+        "d": DUCK_RAMP[0],
+        "r": DUCK_RAMP[1],
+        "R": DUCK_RAMP[2],
+        "o": DUCK_RAMP[3],
+        "O": DUCK_RAMP[4],
+        "A": DUCK_RAMP[5],
+        "a": DUCK_RAMP[6],
+        "Y": DUCK_RAMP[7],
+        "k": BROWN_RAMP[0],
+        "b": BROWN_RAMP[1],
+        "B": BROWN_RAMP[2],
+        "u": BROWN_RAMP[3],
+        "n": BROWN_RAMP[4],
+        "N": BROWN_RAMP[5],
+        "W": BROWN_RAMP[7],
+        "g": BILL_RAMP[2],
+        "G": BILL_RAMP[4],
+        "y": BILL_RAMP[6],
+        "c": CLAW_RAMP[4],
+        "C": CLAW_RAMP[7],
+        "m": (162, 242, 232, 255),  # Lagoon-mint face plate inner base
+        "M": (196, 250, 242, 255),  # Pale mint face plate highlight
+        "s": (132, 224, 212, 255),  # Soft mint face plate bevel
+        "Q": (125, 249, 255, 255),  # Bioluminescent cyan-teal dew glow
+    }
 
-    ORANGE_HI = (253, 186, 116, 255)
-    ORANGE = (249, 115, 22, 255)
-    ORANGE_DEEP = (234, 88, 12, 255)
-    ORANGE_OUTLINE = (194, 65, 12, 255)
-    GOLD_BILL = (251, 191, 36, 255)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    def paint_box(box, base, side, top_c, outline_c):
-        f = faces(*box)
-        for face, (x, y, fw, fh) in f.items():
-            color = {"top": top_c, "bottom": outline_c, "east": side, "west": side}.get(face, base)
-            fill(img, (x, y, fw, fh), color)
-            if face in ("front", "back", "east", "west"):
-                for py in range(y, y + fh):
-                    put(img, x, py, outline_c)
-                    put(img, x + fw - 1, py, outline_c)
-                for px in range(x, x + fw):
-                    put(img, px, y + fh - 1, outline_c)
+    def shade_ramp_box(u, v, w, h, d, ramp, *, dappled=False, feathered=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.3,
+            "front": 4.6,
+            "east": 4.1,
+            "west": 3.7,
+            "back": 3.2,
+            "bottom": 2.1,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.4 - edge_dist * 1.1
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.55 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                    if dappled:
+                        spot = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 13
+                        if spot <= 1:
+                            idx += 0.9
+                        elif spot >= 11:
+                            idx -= 0.75
+                    elif feathered:
+                        vane = ((lx + (ly // 2)) % 3 == 0)
+                        if vane:
+                            idx += 0.55
+                        elif (lx * 5 + ly * 11 + seed * 3) % 9 == 0:
+                            idx -= 0.55
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.6
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
 
-    # 1. Teal frog body & hump
-    TORSO = (0, 0, 12, 8, 10)
-    HUMP = (46, 0, 10, 1, 8)
-    FACE_PLATE = (46, 10, 8, 7, 1)
-    paint_box(TORSO, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
-    paint_box(HUMP, TEAL_HI, TEAL, TEAL_HI, TEAL_OUTLINE)
-    paint_box(FACE_PLATE, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
 
-    # Face in the middle of the body: brown eyes, two teal dots, brown cloud below them.
-    fx, fy, fw, fh = faces(*FACE_PLATE)["front"]
-    fill(img, (fx + 1, fy + 1, fw - 2, fh - 2), FACE)
-    # Two round brown eyes
-    fill(img, (fx + 1, fy + 1, 2, 2), BROWN)
-    fill(img, (fx + 5, fy + 1, 2, 2), BROWN)
-    put(img, fx + 1, fy + 1, BROWN_HI)
-    put(img, fx + 5, fy + 1, BROWN_HI)
-    # Two teal nostril dots
-    put(img, fx + 2, fy + 3, TEAL_OUTLINE)
-    put(img, fx + 5, fy + 3, TEAL_OUTLINE)
-    # Brown cloud shape below them
-    fill(img, (fx + 2, fy + 4, 4, 2), BROWN)
-    put(img, fx + 1, fy + 5, BROWN_HI)
-    put(img, fx + 6, fy + 5, BROWN_HI)
-    put(img, fx + 3, fy + 4, BROWN_HI)
-    put(img, fx + 4, fy + 4, BROWN_HI)
+    def paint_cutout_z(u, v, w, h, front_grid, *, glow_keys=()):
+        back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
 
-    # 2. Four legs with clawed feet
-    for leg in ((0, 20, 3, 5, 3), (32, 20, 3, 5, 3), (0, 30, 3, 4, 3), (32, 30, 3, 4, 3)):
-        paint_box(leg, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
-    for foot in ((14, 20, 4, 1, 4), (46, 20, 4, 1, 4), (14, 30, 4, 1, 4), (46, 30, 4, 1, 4)):
-        paint_box(foot, TEAL_DEEP, TEAL_OUTLINE, TEAL, TEAL_OUTLINE)
-    for face, rect in faces(66, 10, 1, 1, 1).items():
-        fill(img, rect, CLAW)
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
 
-    # 3. Orange duck on top of its head (part of the same creature)
-    DUCK_CHEST = (84, 0, 5, 3, 5)
-    DUCK_CREST = (106, 0, 2, 2, 1)
-    DUCK_HEAD = (84, 10, 5, 4, 4)
-    DUCK_BILL = (104, 10, 3, 1, 1)
-    paint_box(DUCK_CHEST, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
-    paint_box(DUCK_CREST, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
-    paint_box(DUCK_HEAD, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
-    for face, rect in faces(*DUCK_BILL).items():
-        fill(img, rect, GOLD_BILL)
-    # Duck slit eyes
-    dx, dy, _, _ = faces(*DUCK_HEAD)["front"]
-    put(img, dx + 1, dy + 1, BROWN)
-    put(img, dx + 1, dy + 2, BROWN)
-    put(img, dx + 3, dy + 1, BROWN)
-    put(img, dx + 3, dy + 2, BROWN)
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
 
-    # Outstretched orange duck wings
-    for wing in ((66, 20, 6, 2, 2), (66, 26, 6, 2, 2)):
-        paint_box(wing, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
-    for tip in ((84, 20, 3, 1, 1), (84, 26, 3, 1, 1)):
-        paint_box(tip, ORANGE_HI, ORANGE, ORANGE_HI, ORANGE_OUTLINE)
+    # 1. Teal frog body [12, 8, 10] @ [0, 0] + back hump [10, 1, 8] @ [44, 0]
+    shade_ramp_box(0, 0, 12, 8, 10, TEAL_RAMP, dappled=True, seed=1)
+    bf = f2x(0, 0, 12, 8, 10)
+    # Bioluminescent lagoon dew-spots on back & flanks
+    for side in ("east", "west"):
+        sx, sy, sw, sh = bf[side]
+        for ox, oy, ch in ((4, 3, "6"), (5, 4, "Q"), (12, 5, "6"), (13, 6, "Q"), (8, 9, "7")):
+            if ox < sw and oy < sh:
+                put(img, sx + ox, sy + oy, PAL[ch])
+                if ch in ("Q", "7"):
+                    put(glow, sx + ox, sy + oy, PAL["Q"])
+
+    shade_ramp_box(44, 0, 10, 1, 8, TEAL_RAMP, dappled=True, seed=2)
+    hf = f2x(44, 0, 10, 1, 8)
+    htx, hty, htw, hth = hf["top"]
+    for ox, oy in ((3, 4), (4, 5), (15, 4), (16, 5), (5, 11), (14, 11)):
+        put(img, htx + ox, hty + oy, PAL["7"])
+        put(glow, htx + ox, hty + oy, PAL["Q"])
+
+    # 2. Middle front face plate [8, 8, 1] @ [44, 9] -> 16x16 front canvas
+    shade_ramp_box(44, 9, 8, 8, 1, TEAL_RAMP, dappled=True, seed=3)
+    paint_box_2x(img, 44, 9, 8, 8, 1, {
+        "front": [
+            "1234455445544321",
+            "13sMMMMMMMMMMs31",
+            "2smkbbMMMMbbkms2",
+            "2smkWbbMMbbWkms2",
+            "3smkBBBMMBBBkms3",
+            "3smMkbbMMbbkMms3",
+            "3smMMMMMMMMMMms3",
+            "2smMMM1mMMm1Mms2",
+            "2smMMM2mMMm2Mms2",
+            "2smMMMMMMMMMMms2",
+            "2smMMkbbkkbbkMs2",
+            "1smMkBBuBuBBkMs1",
+            "1smkBBuuuuuBBks1",
+            "1smMkBBuuBBBkMs1",
+            "02ssMkbbbbkMss20",
+            "0112333333332110",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 44, 9, 8, 8, 1, {
+        "front": [
+            "................",
+            "................",
+            "................",
+            "....W......W....",
+            "................",
+            "................",
+            "................",
+            "......Q....Q....",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+        ],
+    }, PAL)
+
+    # 3. Frog shoulder puffs [1, 4, 5] @ [62, 9] + cheek gill-frills [2, 4, 0] @ [74, 9] & [78, 9] + rear fin [0, 4, 2] @ [116, 0]
+    shade_ramp_box(62, 9, 1, 4, 5, TEAL_RAMP, dappled=True, seed=4)
+    gill_left = [
+        "Q6..",
+        "653.",
+        "4320",
+        "Q53.",
+        "642.",
+        "3210",
+        "Q42.",
+        ".21.",
+    ]
+    gill_right = [row[::-1] for row in gill_left]
+    paint_cutout_z(74, 9, 2, 4, gill_left, glow_keys={"Q"})
+    paint_cutout_z(78, 9, 2, 4, gill_right, glow_keys={"Q"})
+    paint_cutout_x(116, 0, 4, 2, [
+        ".Q6.",
+        "567.",
+        "3456",
+        "234Q",
+        "1235",
+        "123.",
+        "012.",
+        "01..",
+    ], glow_keys={"Q"})
+
+    # 4. Duck torso [6, 3, 5] @ [80, 0] + diamond keel [3, 3, 1] @ [102, 0] + tail tuft [3, 2, 2] @ [102, 4]
+    shade_ramp_box(80, 0, 6, 3, 5, DUCK_RAMP, feathered=True, seed=5)
+    # Twin-lobed warm breast shading on duck front
+    paint_box_2x(img, 80, 0, 6, 3, 5, {
+        "front": [
+            "rOAaYYaOOaYYaAOr",
+            "ROAaaAORROAaaAOR",
+            "dROOOORddROOOORd",
+            "drROOORddROOORrd",
+            "ddrrRRddddRRrrdd",
+            "dddrrddddddrrddd",
+        ][:6] if False else [
+            "ROAaYYAOROAaYYAO"[:12],
+            "oOAAaaAAOOAAaaAO"[:12],
+            "rOOAaaAOrOOAaaAO"[:12],
+            "rROOOOORrROOOOOR"[:12],
+            "drrRRRRddrrRRRRd"[:12],
+            "ddrrrrddddrrrrdd"[:12],
+        ],
+    }, PAL)
+
+    shade_ramp_box(102, 0, 3, 3, 1, DUCK_RAMP, feathered=True, seed=6)
+    paint_box_2x(img, 102, 0, 3, 3, 1, {
+        "front": [
+            "rOYYOr",
+            "OAYYAO",
+            "OAaaAO",
+            "oOAAOo",
+            "ROOOOR",
+            "drRRrd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 102, 0, 3, 3, 1, {
+        "front": [
+            "..YY..",
+            "..YY..",
+            "......",
+            "......",
+            "......",
+            "......",
+        ],
+    }, PAL)
+
+    shade_ramp_box(102, 4, 3, 2, 2, DUCK_RAMP, feathered=True, seed=7)
+
+    # 5. Duck head [5, 4, 4] @ [84, 9] + cleft crown lobes [2, 1, 3] @ [102, 9] + golden bill [3, 1, 2] @ [112, 9]
+    shade_ramp_box(84, 9, 5, 4, 4, DUCK_RAMP, feathered=True, seed=8)
+    paint_box_2x(img, 84, 9, 5, 4, 4, {
+        "front": [
+            "ROAaYYaAOR",
+            "oOAAAAAAOo",
+            "OAkkoOkkoO",
+            "OAbBOOBbAO",
+            "oObBOOBbOo",
+            "ROkBOOBkOR",
+            "rROOOOOORr",
+            "drRRRRRRrd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 84, 9, 5, 4, 4, {
+        "front": [
+            "....YY....",
+            "..........",
+            "..........",
+            "..W....W..",
+            "..........",
+            "..........",
+            "..........",
+            "..........",
+        ],
+    }, PAL)
+    shade_ramp_box(102, 9, 2, 1, 3, DUCK_RAMP, feathered=True, seed=9)
+    shade_ramp_box(112, 9, 3, 1, 2, BILL_RAMP, seed=10)
+
+    # 6. Outstretched feathered duck wings:
+    #    Left: inner [5, 2, 2] @ [64, 18], outer [4, 1, 2] @ [78, 18], vert cutout [9, 4, 0] @ [90, 18], horiz fan [9, 0, 4] @ [64, 28]
+    #    Right: inner [5, 2, 2] @ [64, 23], outer [4, 1, 2] @ [78, 23], vert cutout [9, 4, 0] @ [90, 23], horiz fan [9, 0, 4] @ [90, 28]
+    for idx, wu in enumerate(((64, 18, 78, 18), (64, 23, 78, 23))):
+        iu, iv, ou, ov = wu
+        shade_ramp_box(iu, iv, 5, 2, 2, DUCK_RAMP, feathered=True, seed=11 + idx)
+        shade_ramp_box(ou, ov, 4, 1, 2, DUCK_RAMP, feathered=True, seed=13 + idx)
+
+    wing_vert_left = [
+        "AAOOAAOOAAOOAAaY..",
+        "OOooOOooOOooAAaYY.",
+        "RRrOOrrOOrrOOaAYY.",
+        "dR.rO.rO.rO.rOaY..",
+        "...dR.rR.rR..rO...",
+        "......d..d...d....",
+        "..................",
+        "..................",
+    ]
+    wing_vert_right = [row[::-1] for row in wing_vert_left]
+    paint_cutout_z(90, 18, 9, 4, wing_vert_left, glow_keys={"Y"})
+    paint_cutout_z(90, 23, 9, 4, wing_vert_right, glow_keys={"Y"})
+
+    wing_horiz_left = [
+        "aAAOOaAAOOaAAaYY..",
+        "OOAAaOOAAaOOAaYYY.",
+        "oOOAAoOOAAoOOaAY..",
+        "RoOOARoOOARoOAa...",
+        "rROOOrROOOrROO....",
+        ".drRO.drRO.drR....",
+        "..d....d....d.....",
+        "..................",
+    ]
+    wing_horiz_right = [row[::-1] for row in wing_horiz_left]
+    paint_cutout_y(64, 28, 9, 4, wing_horiz_left, glow_keys={"Y"})
+    paint_cutout_y(90, 28, 9, 4, wing_horiz_right, glow_keys={"Y"})
+
+    # 7. Four webbed 3-toed legs with clawed toes and ankle fins
+    ankle_fin = [
+        "..6Q",
+        ".457",
+        "2356",
+        "124Q",
+        "0135",
+        ".01.",
+    ]
+    # Front legs: left @ u=0, right @ u=32, v=20
+    for idx, bu in enumerate((0, 32)):
+        shade_ramp_box(bu, 20, 3, 5, 3, TEAL_RAMP, dappled=True, seed=20 + idx)
+        shade_ramp_box(bu + 12, 20, 4, 1, 4, TEAL_RAMP, dappled=True, seed=22 + idx)
+        for ti, tu in enumerate((bu + 12, bu + 18, bu + 24)):
+            shade_ramp_box(tu, 25, 1, 1, 2, TEAL_RAMP, seed=24 + ti)
+            tf = f2x(tu, 25, 1, 1, 2)
+            fx, fy, fw, fh = tf["front"]
+            for px in range(fw):
+                put(img, fx + px, fy, PAL["C"])
+                put(img, fx + px, fy + 1, PAL["c"])
+        paint_cutout_x(bu + 28, 20, 3, 2, ankle_fin, glow_keys={"Q"})
+
+    # Back legs: left @ u=0, right @ u=32, v=30
+    for idx, bu in enumerate((0, 32)):
+        shade_ramp_box(bu, 30, 3, 4, 4, TEAL_RAMP, dappled=True, seed=30 + idx)
+        shade_ramp_box(bu + 14, 30, 4, 1, 4, TEAL_RAMP, dappled=True, seed=32 + idx)
+        for ti, tu in enumerate((bu + 14, bu + 20, bu + 26)):
+            shade_ramp_box(tu, 35, 1, 1, 2, TEAL_RAMP, seed=34 + ti)
+            tf = f2x(tu, 35, 1, 1, 2)
+            fx, fy, fw, fh = tf["front"]
+            for px in range(fw):
+                put(img, fx + px, fy, PAL["C"])
+                put(img, fx + px, fy + 1, PAL["c"])
+        paint_cutout_x(bu, 38, 3, 2, ankle_fin, glow_keys={"Q"})
 
     dest = OUT / "entity/frogduck.png"
     dest.parent.mkdir(parents=True, exist_ok=True)
     img.save(dest)
+    glow.save(OUT / "entity/frogduck_glowmask.png")
 
 
 def make_zapkin():
@@ -5090,7 +5409,7 @@ def main():
         return
     if "--frogduck" in sys.argv:
         make_frogduck()
-        print("Generated Frogduck 128x64 texture.")
+        print("Generated Frogduck 256x128 texture and glowmask.")
         return
     if "--sunbeam" in sys.argv:
         make_sunbeam()
