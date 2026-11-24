@@ -4,6 +4,7 @@ import com.silkpanda.artilian.registry.ArtilianBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
@@ -215,6 +217,34 @@ public class SunbeamEntity extends ArtilianPetEntity {
             this.clearPlacedLight();
         }
         super.remove(reason);
+    }
+
+    @Override
+    public boolean doHurtTarget(Entity entity) {
+        boolean hit = super.doHurtTarget(entity);
+        if (hit && this.level() instanceof ServerLevel serverLevel) {
+            this.emitChestSunbeam(serverLevel, entity);
+        }
+        return hit;
+    }
+
+    /** Fires a focused beam of solar particles from Sunbeam's chest core to the attacked target. */
+    private void emitChestSunbeam(ServerLevel serverLevel, Entity target) {
+        Vec3 chest = new Vec3(this.getX(), this.getY(0.55), this.getZ());
+        Vec3 dest = new Vec3(target.getX(), target.getY(0.5), target.getZ());
+        Vec3 delta = dest.subtract(chest);
+        double dist = delta.length();
+        int steps = Math.max(4, (int) Math.ceil(dist * 4.0));
+        for (int i = 0; i <= steps; i++) {
+            double t = (double) i / steps;
+            Vec3 p = chest.add(delta.scale(t));
+            serverLevel.sendParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, 0.03, 0.03, 0.03, 0.0);
+            if (i % 2 == 0) {
+                serverLevel.sendParticles(ParticleTypes.FLAME, p.x, p.y, p.z, 1, 0.05, 0.05, 0.05, 0.01);
+            }
+        }
+        serverLevel.sendParticles(ParticleTypes.WAX_ON, dest.x, dest.y, dest.z, 8, 0.25, 0.25, 0.25, 0.03);
+        this.playSound(SoundEvents.BLAZE_SHOOT, 0.55F, 1.3F);
     }
 
     @Override

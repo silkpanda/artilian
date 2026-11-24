@@ -4275,7 +4275,7 @@ def make_sunbeam():
     - Multi-stop forged Sunsteel armor shading across all 6 faces (bevels, seams, corner rivets, sole treads)
     - Creature-like Sunsteel guardian head: dark recessed visor, 2x angled glowing solar eyes,
       faceted forehead sun-diamond, 3D armored beak/jaw-crest, carved back-of-head solar rune & 5-ray solar crown
-    - Sculpted Sunsteel breastplate & layered chest chevron (attack-only `chest_beam` stays hidden at scale 0)
+    - Sculpted Sunsteel breastplate with a flush solar-emitter core (sunbeam attack fires as particles in-world)
     - Four articulated spiky solar wing-arms with glowing plasma conduits & 3-pronged starburst claws
     """
     import json
@@ -4313,9 +4313,6 @@ def make_sunbeam():
     SNOUT = (84, 33, 6, 3, 2)
     CROWN_RAY = (102, 33, 2, 5, 2)
     CROWN_RAY_SM = (112, 33, 2, 4, 2)
-
-    BEAM_CORE = (0, 42, 4, 4, 14)
-    BEAM_FLARE = (38, 42, 6, 6, 1)
 
     THIGH = (0, 60, 4, 3, 4)
     SHIN = (18, 60, 4, 3, 3)
@@ -4387,10 +4384,6 @@ def make_sunbeam():
                             color = hi if (t < 0.18 and grain < 9) else (base if (t < 0.75 and grain < 9) else shade)
                     put(target, px, py, color)
 
-    def flat(box, color, target):
-        for rect in f2x(*box).values():
-            fill(target, rect, color)
-
     # 1. Forged Sunsteel Armor Plates at 2x resolution
     plate(CHEST, SUN_HI, GOLD, GOLD_MID, BRONZE, seed=1)
     plate(CHEST_PLATE, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=2)
@@ -4427,8 +4420,14 @@ def make_sunbeam():
     for py in range(cy + 6, cy + ch - 2):
         fill(img, (cx + cw // 2 - 2, py, 4, 1), BRONZE)
         fill(img, (cx + cw // 2 - 1, py, 2, 1), SEAM)
-    # Glowing solar-forge vents along the upper chest flanks
+    # Flush recessed chest solar-emitter emblem & solar-forge flank vents
+    em_x, em_y = cx + cw // 2, cy + 5
+    fill(img, (em_x - 3, em_y - 2, 6, 5), SEAM)
     for target in (img, glow):
+        fill(target, (em_x - 2, em_y - 1, 4, 3), FLAME_O)
+        fill(target, (em_x - 1, em_y - 1, 2, 3), FLAME_Y)
+        fill(target, (em_x - 2, em_y, 4, 1), FLAME_Y)
+        fill(target, (em_x - 1, em_y, 2, 1), WHITE_HOT)
         fill(target, (cx + 2, cy + 4, 2, 2), FLAME_Y)
         fill(target, (cx + cw - 4, cy + 4, 2, 2), FLAME_Y)
         put(target, cx + 2, cy + 4, WHITE_HOT)
@@ -4566,19 +4565,6 @@ def make_sunbeam():
                         tx = (px - x) / max(1, fw - 1)
                         put(target, px, py, WHITE_HOT if tx < 0.25 else (FLAME_Y if tx < 0.72 else FLAME_O))
 
-    # 5. Attack-only Chest Solar Beam (hidden at scale 0 in idle/walk/sit)
-    for target in (img, glow):
-        flat(BEAM_CORE, FLAME_Y, target)
-        for face, (x, y, fw, fh) in f2x(*BEAM_CORE).items():
-            if fw >= 5 and fh >= 5:
-                fill(target, (x + 2, y + 2, fw - 4, fh - 4), WHITE_HOT)
-        for face, (x, y, fw, fh) in f2x(*BEAM_FLARE).items():
-            fill(target, (x, y, fw, fh), FLAME_O)
-            if fw >= 6 and fh >= 6:
-                fill(target, (x + 2, y + 2, fw - 4, fh - 4), FLAME_Y)
-            if fw >= 10 and fh >= 10:
-                fill(target, (x + 4, y + 4, fw - 8, fh - 8), WHITE_HOT)
-
     # Save textures
     dest = OUT / "entity/sunbeam.png"
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -4703,15 +4689,6 @@ def make_sunbeam():
                             cube([-6, 10, -4], CHEST),
                             cube([-5, 12, -4.8], CHEST_PLATE),
                             cube([6, 10, -1.5], FLAP),
-                        ],
-                    },
-                    {
-                        "name": "chest_beam",
-                        "parent": "body",
-                        "pivot": [0, 14.5, -5],
-                        "cubes": [
-                            cube([-3, 11.5, -5.5], BEAM_FLARE),
-                            cube([-2, 12.5, -19.5], BEAM_CORE),
                         ],
                     },
                     {
