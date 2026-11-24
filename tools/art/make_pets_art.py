@@ -5163,208 +5163,609 @@ def make_frogduck():
 
 
 def make_zapkin():
-    """128x128 texture + glowmask for Zapkin (sleek storm-navy, electric-cyan, neon-yellow & plasma-red electric buddy)."""
-    img = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
-    glow = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+    """256x256 (2x scale over 128x128 UV grid) Zapkin: storm-navy armor, crimson trim, cutout lightning crown & plasma orb halos + glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 128 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 128 * S), (0, 0, 0, 0))
 
-    pal = {
-        "N": (30, 38, 66, 255),      # Storm navy armor
-        "S": (18, 23, 42, 255),      # Deep slate shadow
-        "B": (49, 64, 108, 255),     # Steel-blue highlight
-        "Y": (250, 204, 21, 255),    # High-voltage electric yellow
-        "H": (254, 240, 138, 255),   # Bright spark yellow
-        "W": (255, 253, 240, 255),   # White-hot plasma core
-        "C": (56, 189, 248, 255),    # Electric sky cyan
-        "K": (125, 249, 255, 255),   # Neon cyan glow
-        "R": (239, 68, 68, 255),     # Charged crimson-red plasma
-        "O": (249, 115, 22, 255),    # Hot amber-orange edge
+    # 8-stop Storm-Navy Armor ramp (#0B1022 -> #B4CCF4)
+    NAVY_RAMP = [
+        (11, 16, 34, 255),     # 0: Deep storm-void seam
+        (18, 25, 50, 255),     # 1: Dark storm-navy shadow
+        (28, 38, 72, 255),     # 2: Shaded storm-navy plate
+        (40, 54, 98, 255),     # 3: Mid storm-navy
+        (56, 76, 132, 255),    # 4: Storm-cobalt highlight
+        (78, 104, 168, 255),   # 5: Forged steel-blue bevel
+        (118, 148, 208, 255),  # 6: Bright edge sheen
+        (180, 204, 244, 255),  # 7: Specular armor glint
+    ]
+    # 8-stop Charged Crimson-Red & Amber Plasma Trim ramp (#4C0814 -> #FDE047)
+    RED_RAMP = [
+        (76, 8, 20, 255),      # 0: Deep crimson shadow
+        (124, 16, 32, 255),    # 1: Dark scarlet
+        (185, 28, 44, 255),    # 2: Rich crimson
+        (239, 68, 68, 255),    # 3: Charged red
+        (249, 115, 22, 255),   # 4: Hot ember-orange
+        (251, 168, 42, 255),   # 5: Solar amber rim
+        (253, 214, 78, 255),   # 6: Bright plasma gold
+        (254, 240, 138, 255),  # 7: White-gold highlight
+    ]
+    # 8-stop High-Voltage Yellow-Gold Lightning ramp (#713F12 -> #FFFFFF)
+    VOLT_RAMP = [
+        (113, 63, 18, 255),    # 0: Dark bronze-gold
+        (161, 98, 7, 255),     # 1: Amber shadow
+        (202, 138, 4, 255),    # 2: Rich gold
+        (234, 179, 8, 255),    # 3: Electric gold
+        (250, 204, 21, 255),   # 4: High-voltage yellow
+        (254, 240, 138, 255),  # 5: Bright spark yellow
+        (255, 253, 216, 255),  # 6: White-hot cream
+        (255, 255, 255, 255),  # 7: Pure arc flash
+    ]
+    # 8-stop Arc-Cyan Plasma ramp (#0B3B4C -> #FFFFFF)
+    CYAN_RAMP = [
+        (11, 59, 76, 255),
+        (18, 96, 128, 255),
+        (28, 142, 186, 255),
+        (56, 189, 248, 255),
+        (92, 224, 252, 255),
+        (125, 249, 255, 255),
+        (206, 254, 255, 255),
+        (255, 255, 255, 255),
+    ]
+
+    PAL = {
+        "0": NAVY_RAMP[0],
+        "1": NAVY_RAMP[1],
+        "2": NAVY_RAMP[2],
+        "3": NAVY_RAMP[3],
+        "4": NAVY_RAMP[4],
+        "5": NAVY_RAMP[5],
+        "6": NAVY_RAMP[6],
+        "7": NAVY_RAMP[7],
+        "d": RED_RAMP[0],
+        "r": RED_RAMP[1],
+        "R": RED_RAMP[2],
+        "E": RED_RAMP[3],
+        "O": RED_RAMP[4],
+        "A": RED_RAMP[5],
+        "G": RED_RAMP[6],
+        "y": RED_RAMP[7],
+        "b": VOLT_RAMP[1],
+        "Y": VOLT_RAMP[4],
+        "H": VOLT_RAMP[5],
+        "I": VOLT_RAMP[6],
+        "W": VOLT_RAMP[7],
+        "c": CYAN_RAMP[3],
+        "K": CYAN_RAMP[5],
+        "i": CYAN_RAMP[6],
     }
 
-    def box_fill(target, u, v, w, h, d, fill_col, edge_col, hi_col=None):
-        for name, (rx, ry, rw, rh) in faces(u, v, w, h, d).items():
-            for px in range(rx, rx + rw):
-                for py in range(ry, ry + rh):
-                    is_edge = (px == rx or px == rx + rw - 1 or py == ry or py == ry + rh - 1)
-                    if is_edge:
-                        put(target, px, py, edge_col)
-                    elif hi_col is not None and (py == ry + 1 or name == "top"):
-                        put(target, px, py, hi_col)
-                    else:
-                        put(target, px, py, fill_col)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # Head cranium [7, 5, 7] at (0, 0)
-    box_fill(img, 0, 0, 7, 5, 7, pal["N"], pal["S"], pal["B"])
-    # Electric yellow stripe along top & back of cranium
-    paint_geo_box(img, 0, 0, 7, 5, 7, {
+    def shade_armor_box(u, v, w, h, d, ramp, *, riveted=True, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.2,
+            "front": 4.4,
+            "east": 3.9,
+            "west": 3.5,
+            "back": 3.0,
+            "bottom": 1.9,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.4 - edge_dist * 1.1
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.6 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                        if ly == 0:
+                            idx += 0.55
+                        elif ly == rh - 1:
+                            idx -= 0.7
+                        elif lx in (0, rw - 1):
+                            idx -= 0.45
+                    if (lx * 5 + ly * 11 + seed * 7) % 13 == 0:
+                        idx += 0.35
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+            if riveted and rw >= 6 and rh >= 6 and name in ("front", "back", "east", "west"):
+                for rvx, rvy in ((1, 1), (rw - 2, 1), (1, rh - 2), (rw - 2, rh - 2)):
+                    put(img, rx + rvx, ry + rvy, ramp[6])
+
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    def paint_cutout_z(u, v, w, h, front_grid, *, back_grid=None, glow_keys=()):
+        if back_grid is None:
+            back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
+
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
+
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
+
+    # 1. Head cranium [7, 5, 7] @ [0, 0] -> 14x10x14 px
+    shade_armor_box(0, 0, 7, 5, 7, NAVY_RAMP, seed=1)
+    paint_box_2x(img, 0, 0, 7, 5, 7, {
         "top": [
-            "SSBBBSS",
-            "SYYYYYS",
-            "SYHHHYH",
-            "SYHHHYH",
-            "SYYYYYS",
-            "SYCYCYS",
-            "SSBBBSS",
+            "12456666665421",
+            "24565555556542",
+            "34RRRRRRRRRR43",
+            "34RYYYYYYYYR43",
+            "34RYHHHHHHYR43",
+            "34RYHWWWWWHYR3",
+            "34RYHWWWWWHYR3",
+            "34RYHHHHHHYR43",
+            "34RYYYYYYYYR43",
+            "23RYYcYYcYYR32",
+            "234RRKYYKRR432",
+            "12344555544321",
+            "12233444433221",
+            "01122333322110",
         ],
         "back": [
-            "SYYYYYS",
-            "SYHHHYH",
-            "SSCYCSS",
-            "SSCYCSS",
-            "SSSSSSS",
+            "12345666654321",
+            "23RRYYYYYYRR32",
+            "23RYHHHHHHYR32",
+            "22RYYHWWWHYY22",
+            "123RRKYYKRR321",
+            "12343cYYc34321",
+            "12322cKKc22321",
+            "01222222222210",
+            "01112222221110",
+            "00111111111100",
         ],
-    }, pal)
-    paint_geo_box(glow, 0, 0, 7, 5, 7, {
+    }, PAL)
+    paint_box_2x(glow, 0, 0, 7, 5, 7, {
         "top": [
-            ".......",
-            ".YYYYY.",
-            ".YHHHY.",
-            ".YHHHY.",
-            ".YYYYY.",
-            "..C.C..",
-            ".......",
+            "..............",
+            "..............",
+            "..............",
+            "...YYYYYYYY...",
+            "...YHHHHHHY...",
+            "...YHWWWWWHY..",
+            "...YHWWWWWHY..",
+            "...YHHHHHHY...",
+            "...YYYYYYYY...",
+            "...YY.YY.YY...",
+            ".....KYYK.....",
+            "..............",
+            "..............",
+            "..............",
         ],
-    }, pal)
+        "back": [
+            "..............",
+            "....YYYYYY....",
+            "...YHHHHHHY...",
+            "....YHWWWHY...",
+            ".....KYYK.....",
+            ".....cYYc.....",
+            ".....cKKc.....",
+            "..............",
+            "..............",
+            "..............",
+        ],
+    }, PAL)
 
-    # Sleek storm-visor face plate [7, 4, 1] at (28, 0)
-    box_fill(img, 28, 0, 7, 4, 1, pal["S"], pal["B"])
-    visor_front = [
-        "BBBBBBB",
-        "SKWKWKS",
-        "SKCKCKS",
-        "SRYYRYS",
-    ]
-    paint_geo_box(img, 28, 0, 7, 4, 1, {"front": visor_front}, pal)
-    visor_glow = [
-        ".......",
-        ".KW.WK.",
-        ".KC.CK.",
-        "..YY.Y.",
-    ]
-    paint_geo_box(glow, 28, 0, 7, 4, 1, {"front": visor_glow}, pal)
-
-    # Cheek lightning fins [2, 3, 2] at (44, 0) and (52, 0)
-    for cu in (44, 52):
-        box_fill(img, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
-        box_fill(glow, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
-
-    # Three sharp Z-kink lightning head bolts: blazing electric yellow + white-hot core (no orange candy-corn stripes!)
-    for (u, v, w, h, d, is_tip) in [
-        (0, 14, 1, 3, 1, False),
-        (6, 14, 2, 1, 1, False),
-        (14, 14, 1, 3, 1, True),
-        (20, 14, 1, 3, 1, False),
-        (26, 14, 2, 1, 1, False),
-        (34, 14, 1, 3, 1, True),
-        (40, 14, 1, 3, 1, False),
-        (46, 14, 3, 1, 1, False),
-        (56, 14, 1, 3, 1, False),
-        (62, 14, 2, 1, 1, False),
-        (70, 14, 1, 3, 1, True),
-    ]:
-        for name, (rx, ry, rw, rh) in faces(u, v, w, h, d).items():
-            for px in range(rx, rx + rw):
-                for py in range(ry, ry + rh):
-                    if is_tip and py == ry:
-                        c = pal["W"]
-                    elif name in ("front", "back"):
-                        c = pal["H"] if is_tip else pal["Y"]
-                    else:
-                        c = pal["W"] if is_tip else pal["H"]
-                    put(img, px, py, c)
-                    put(glow, px, py, c)
-
-    # Waist [5, 3, 4] at (0, 26) — dark slate with glowing cyan energy belt
-    box_fill(img, 0, 26, 5, 3, 4, pal["S"], pal["N"])
-    paint_geo_box(img, 0, 26, 5, 3, 4, {
-        "front": ["SSSSS", "CKWKC", "SSSSS"],
-        "back":  ["SSSSS", "CKCKC", "SSSSS"],
-    }, pal)
-    paint_geo_box(glow, 0, 26, 5, 3, 4, {
-        "front": [".....", "CKWKC", "....."],
-        "back":  [".....", "CKCKC", "....."],
-    }, pal)
-
-    # Chest [8, 4, 5] at (18, 26) — storm-navy armor with yellow/cyan circuit seams
-    box_fill(img, 18, 26, 8, 4, 5, pal["N"], pal["S"], pal["B"])
-    paint_geo_box(img, 18, 26, 8, 4, 5, {
+    # 2. Storm visor [7, 4, 1] @ [28, 0] -> 14x8 px front
+    shade_armor_box(28, 0, 7, 4, 1, NAVY_RAMP, riveted=False, seed=2)
+    paint_box_2x(img, 28, 0, 7, 4, 1, {
         "front": [
-            "SBBBBBBBS"[:8],
-            "NYYNNYYN",
-            "NCNNNNNC",
-            "SSSSSSSS",
+            "24566666666542",
+            "12000000000021",
+            "10KWWK00KWWK01",
+            "10KHHK00KHHK01",
+            "10cYYc00cYYc01",
+            "10000000000001",
+            "0RYYRYYRYYRYY0",
+            "01111111111110",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 28, 0, 7, 4, 1, {
+        "front": [
+            "..............",
+            "..............",
+            "..KWWK..KWWK..",
+            "..KHHK..KHHK..",
+            "..cYYc..cYYc..",
+            "..............",
+            "..YY.YY.YY.YY.",
+            "..............",
+        ],
+    }, PAL)
+
+    # 3. Cheek fins [1, 3, 2] @ [44, 0] & [50, 0] + jagged cheek spark cutouts [3, 4, 0] @ [56, 0] & [62, 0]
+    for cu in (44, 50):
+        shade_armor_box(cu, 0, 1, 3, 2, RED_RAMP, riveted=False, seed=3)
+    cheek_spark_l = [
+        "....RY",
+        "..RYHW",
+        "RYHWY.",
+        ".RY...",
+        "..RYW.",
+        "RYHW..",
+        ".R....",
+        "......",
+    ]
+    cheek_spark_r = [row[::-1] for row in cheek_spark_l]
+    paint_cutout_z(56, 0, 3, 4, cheek_spark_l, glow_keys={"Y", "H", "W", "R"})
+    paint_cutout_z(62, 0, 3, 4, cheek_spark_r, glow_keys={"Y", "H", "W", "R"})
+
+    # 4. Head Lightning Crown (`spikes`):
+    #    3 roots: [1, 2, 1] @ [0, 14] & [4, 14], [2, 3, 1] @ [8, 14]
+    for ru, rw, rh in ((0, 1, 2), (4, 1, 2), (8, 2, 3)):
+        shade_armor_box(ru, 14, rw, rh, 1, RED_RAMP, riveted=False, seed=4)
+        rf = f2x(ru, 14, rw, rh, 1)["front"]
+        put(img, rf[0] + rf[2] // 2, rf[1], PAL["Y"])
+        put(glow, rf[0] + rf[2] // 2, rf[1], PAL["Y"])
+
+    #    Front/back 3-bolt jagged crown cutout [10, 9, 0] @ [16, 13] -> 20x18 px
+    #    On front (+X is viewer-right, -X is viewer-left; note front UV col 0 = -X or +X depending on model,
+    #    let's place the tall S-hooked bolt on cols 12..19 (+X) and verify in preview_geo.py!)
+    crown_front = [
+        "...............RR...",
+        "..............RYWR..",
+        ".............RYHWR..",
+        "............RYHWYR..",
+        "........RR..RYHYR...",
+        ".......RYWR..RYHYR..",
+        "......RYHYR..RYHWR..",
+        ".RR...RYHYR.RYHWYR..",
+        "RYWR.RYHYR..RYHYR...",
+        "RYHYRRYHYR.RYHYR....",
+        "RYHWRRYHWRRYHYR.....",
+        ".RYHYRYHWRYHYR......",
+        ".RYHWRYHYRYHYR......",
+        "..RYHYYHYRYHYR......",
+        "..RYHYRYHYYHYR......",
+        "...RYHYRYHYHYR......",
+        "...RYYR.RYYRYR......",
+        "....RR...RR.R.......",
+    ]
+    paint_cutout_z(16, 13, 10, 9, crown_front, glow_keys={"Y", "H", "W", "R", "E"})
+
+    #    Three crossed sagittal bolt blades:
+    #    Center [0, 7, 5] @ [36, 12] -> 10x14 px
+    paint_cutout_x(36, 12, 7, 5, [
+        "....RR....",
+        "...RYWR...",
+        "...RYHWR..",
+        "....RYHYR.",
+        "...RYHWR..",
+        "..RYHYR...",
+        "..RYHYR...",
+        "...RYHYR..",
+        "..RYHWR...",
+        "..RYHYR...",
+        "...RYHYR..",
+        "...RYHYR..",
+        "....RYYR..",
+        ".....RR...",
+    ], glow_keys={"Y", "H", "W", "R"})
+    #    Tall outer [0, 9, 4] @ [46, 11] -> 8x18 px
+    paint_cutout_x(46, 11, 9, 4, [
+        "...RR...",
+        "..RYWR..",
+        ".RYHWR..",
+        ".RYHYR..",
+        "..RYHYR.",
+        "..RYHWR.",
+        "...RYHYR",
+        "..RYHWR.",
+        "..RYHYR.",
+        "..RYHYR.",
+        "...RYHYR",
+        "..RYHWR.",
+        "..RYHYR.",
+        "..RYHYR.",
+        "...RYHYR",
+        "...RYHYR",
+        "....RYYR",
+        ".....RR.",
+    ], glow_keys={"Y", "H", "W", "R"})
+    #    Inner [0, 5, 3] @ [54, 14] -> 6x10 px
+    paint_cutout_x(54, 14, 5, 3, [
+        "..RR..",
+        ".RYWR.",
+        ".RYHYR",
+        "..RYHR",
+        ".RYHWR",
+        ".RYHYR",
+        "..RYHR",
+        "..RYHR",
+        "..RYYR",
+        "...RR.",
+    ], glow_keys={"Y", "H", "W", "R"})
+
+    # 5. Torso: Waist [5, 3, 4] @ [0, 26] -> 10x6 px
+    shade_armor_box(0, 26, 5, 3, 4, NAVY_RAMP, riveted=False, seed=5)
+    paint_box_2x(img, 0, 26, 5, 3, 4, {
+        "front": [
+            "1234444321",
+            "0122222210",
+            "cKKWWWWKKc",
+            "cKKYYYYKKc",
+            "0122222210",
+            "0011111100",
         ],
         "back": [
-            "SBBBBBBBS"[:8],
-            "NCNNNNNC",
-            "NYYNNYYN",
-            "SSSSSSSS",
+            "1233333321",
+            "0122222210",
+            "cKKYYYYKKc",
+            "cKKccccKKc",
+            "0122222210",
+            "0011111100",
         ],
-    }, pal)
-    paint_geo_box(glow, 18, 26, 8, 4, 5, {
-        "front": ["........", ".YY..YY.", ".C....C.", "........"],
-        "back":  ["........", ".C....C.", ".YY..YY.", "........"],
-    }, pal)
+    }, PAL)
+    paint_box_2x(glow, 0, 26, 5, 3, 4, {
+        "front": ["..........", "..........", "cKKWWWWKKc", "cKKYYYYKKc", "..........", ".........."],
+        "back":  ["..........", "..........", "cKKYYYYKKc", "cKKccccKKc", "..........", ".........."],
+    }, PAL)
 
-    # Chest lightning core [4, 3, 1] at (44, 26)
-    box_fill(img, 44, 26, 4, 3, 1, pal["H"], pal["R"], pal["W"])
-    paint_geo_box(img, 44, 26, 4, 3, 1, {"front": ["RRWR", "RWHR", "RWRR"]}, pal)
-    paint_geo_box(glow, 44, 26, 4, 3, 1, {"front": ["..W.", ".WH.", ".W.."]}, pal)
+    #    Chest [8, 4, 5] @ [18, 26] -> 16x8 px
+    shade_armor_box(18, 26, 8, 4, 5, NAVY_RAMP, seed=6)
+    paint_box_2x(img, 18, 26, 8, 4, 5, {
+        "front": [
+            "2456666666666542",
+            "234YYYY22YYYY432",
+            "13RYYH2222HYYR31",
+            "12cKK222222KKc21",
+            "12cKK222222KKc21",
+            "1233222222223321",
+            "0122222222222210",
+            "0011111111111100",
+        ],
+        "back": [
+            "2345555555555432",
+            "13cKK333333KKc31",
+            "12cKK333333KKc21",
+            "123RYY3333YYR321",
+            "123RYY3333YYR321",
+            "0122222222222210",
+            "0111111111111110",
+            "0011111111111100",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 18, 26, 8, 4, 5, {
+        "front": [
+            "................",
+            "...YYYY..YYYY...",
+            "...YYH....HYY...",
+            "..cKK......KKc..",
+            "..cKK......KKc..",
+            "................",
+            "................",
+            "................",
+        ],
+        "back": [
+            "................",
+            "..cKK......KKc..",
+            "..cKK......KKc..",
+            "....YY....YY....",
+            "....YY....YY....",
+            "................",
+            "................",
+            "................",
+        ],
+    }, PAL)
 
-    # Shoulders [3, 2, 4] at (56, 26) & (70, 26) — crimson-trimmed storm pauldrons with yellow stripes
+    #    Chest lightning core [4, 3, 1] @ [44, 26] -> 8x6 px
+    shade_armor_box(44, 26, 4, 3, 1, RED_RAMP, riveted=False, seed=7)
+    paint_box_2x(img, 44, 26, 4, 3, 1, {
+        "front": [
+            "dRRYYRRd",
+            "RYWWWWYR",
+            "RWHWWWHR",
+            "RWHWWWHR",
+            "RYWWWWYR",
+            "dRRYYRRd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 44, 26, 4, 3, 1, {
+        "front": [
+            "...YY...",
+            ".YWWWWY.",
+            ".WHWWWH.",
+            ".WHWWWH.",
+            ".YWWWWY.",
+            "...YY...",
+        ],
+    }, PAL)
+
+    #    Pauldrons [3, 2, 4] @ [56, 26] & [70, 26]
     for su in (56, 70):
-        box_fill(img, su, 26, 3, 2, 4, pal["N"], pal["R"], pal["Y"])
-        paint_geo_box(glow, su, 26, 3, 2, 4, {"top": ["...", ".Y.", ".Y.", "..."]}, pal)
+        shade_armor_box(su, 26, 3, 2, 4, NAVY_RAMP, riveted=False, seed=8)
+        pf = f2x(su, 26, 3, 2, 4)
+        for fname in ("front", "back", "top"):
+            rx, ry, rw, rh = pf[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + rh - 1, PAL["R"])
+                put(img, rx + lx, ry, PAL["Y"] if lx in (2, 3) else PAL["6"])
+                if lx in (2, 3):
+                    put(glow, rx + lx, ry, PAL["Y"])
 
-    # Back Tesla coils [2, 5, 2] at (84, 26) & (92, 26)
+    #    Back Tesla coils [2, 5, 2] @ [84, 26] & [92, 26]
     for cu in (84, 92):
-        for name, (rx, ry, rw, rh) in faces(cu, 26, 2, 5, 2).items():
-            for px in range(rx, rx + rw):
-                for py in range(ry, ry + rh):
-                    row = py - ry
-                    c = pal["W"] if row == 0 else (pal["K"] if row in (1, 3) else pal["N"])
-                    put(img, px, py, c)
-                    if row in (0, 1, 3):
-                        put(glow, px, py, c)
+        shade_armor_box(cu, 26, 2, 5, 2, NAVY_RAMP, riveted=False, seed=9)
+        tf = f2x(cu, 26, 2, 5, 2)
+        for fname in ("front", "back", "east", "west", "top"):
+            rx, ry, rw, rh = tf[fname]
+            for ly in range(rh):
+                if fname == "top" or ly in (0, 1):
+                    col = "W"
+                elif ly in (3, 6):
+                    col = "K"
+                else:
+                    continue
+                for lx in range(rw):
+                    put(img, rx + lx, ry + ly, PAL[col])
+                    put(glow, rx + lx, ry + ly, PAL[col])
 
-    # Arms [3, 2, 2] + cuffs [2, 2, 2]
+    # 6. Arms & cuffs
     for au in (0, 20):
-        box_fill(img, au, 38, 3, 2, 2, pal["N"], pal["S"], pal["C"])
+        shade_armor_box(au, 38, 3, 2, 2, NAVY_RAMP, riveted=False, seed=10)
     for cu in (10, 30):
-        box_fill(img, cu, 38, 2, 2, 2, pal["R"], pal["O"], pal["Y"])
-        box_fill(glow, cu, 38, 2, 2, 2, pal["Y"], (0, 0, 0, 0), pal["W"])
+        shade_armor_box(cu, 38, 2, 2, 2, RED_RAMP, riveted=False, seed=11)
+        cf = f2x(cu, 38, 2, 2, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = cf[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + 1, PAL["Y"])
+                put(glow, rx + lx, ry + 1, PAL["Y"])
 
-    # Electric Plasma Orb Hands: white-hot/yellow core [3, 3, 3] + crimson-red & cyan energy rings!
-    for ou in (0, 44):
-        box_fill(img, ou, 44, 3, 3, 3, pal["H"], pal["Y"], pal["W"])
-        box_fill(glow, ou, 44, 3, 3, 3, pal["H"], pal["Y"], pal["W"])
-    for ru in (12, 56):
-        box_fill(img, ru, 44, 4, 1, 5, pal["R"], pal["O"], pal["Y"])
-        box_fill(glow, ru, 44, 4, 1, 5, pal["R"], pal["O"], pal["Y"])
-    for ru in (30, 74):
-        box_fill(img, ru, 44, 1, 4, 5, pal["C"], pal["K"], pal["W"])
-        box_fill(glow, ru, 44, 1, 4, 5, pal["C"], pal["K"], pal["W"])
+    # 7. Spherical Yellow-and-Red Plasma Orb Hands [3, 3, 3] @ [0, 44] & [50, 44] + Circular Cutout Halo Rings
+    orb_face = [
+        "rROYYO",
+        "ROHWWY",
+        "OYWWWW",
+        "OYWWWW",
+        "ROHWWY",
+        "dROYYO",
+    ]
+    for ou in (0, 50):
+        shade_armor_box(ou, 44, 3, 3, 3, RED_RAMP, riveted=False, seed=12)
+        paint_box_2x(img, ou, 44, 3, 3, 3, {
+            "front": orb_face,
+            "back":  orb_face,
+            "east":  orb_face,
+            "west":  orb_face,
+            "top":   orb_face,
+            "bottom": orb_face,
+        }, PAL)
+        paint_box_2x(glow, ou, 44, 3, 3, 3, {
+            "front": orb_face,
+            "back":  orb_face,
+            "east":  orb_face,
+            "west":  orb_face,
+            "top":   orb_face,
+            "bottom": orb_face,
+        }, PAL)
 
-    # Legs [2, 5, 3] at (0, 56) & (24, 56) — storm-navy greaves with glowing yellow/cyan bolts
+    ring_12x12 = [
+        "...rRYYRr...",
+        "..RYHWWGYR..",
+        ".RYW....WYR.",
+        "rYH......HYr",
+        "RYW......WYR",
+        "YH........HY",
+        "YH........HY",
+        "RYW......WYR",
+        "rYH......HYr",
+        ".RYW....WYR.",
+        "..RYGWWGYR..",
+        "...rRYYRr...",
+    ]
+    for ru in (12, 62):
+        paint_cutout_y(ru, 44, 6, 6, ring_12x12, glow_keys={"r", "R", "Y", "H", "W", "G"})
+    for ru in (36, 86):
+        paint_cutout_x(ru, 44, 6, 6, ring_12x12, glow_keys={"r", "R", "Y", "H", "W", "G"})
+
+    # 8. Legs [2, 5, 3] @ [0, 60] & [24, 60] + Boots [3, 2, 4] @ [10, 60] & [34, 60]
     for lu in (0, 24):
-        box_fill(img, lu, 56, 2, 5, 3, pal["N"], pal["S"], pal["B"])
-        paint_geo_box(img, lu, 56, 2, 5, 3, {
-            "front": ["YY", "NY", "YN", "YY", "RR"],
-            "east":  ["NYY", "NNY", "YNN", "NYY", "RRR"],
-            "west":  ["NYY", "NNY", "YNN", "NYY", "RRR"],
-        }, pal)
-        paint_geo_box(glow, lu, 56, 2, 5, 3, {
-            "front": ["YY", ".Y", "Y.", "YY", ".."],
-        }, pal)
+        shade_armor_box(lu, 60, 2, 5, 3, NAVY_RAMP, riveted=False, seed=13)
+        paint_box_2x(img, lu, 60, 2, 5, 3, {
+            "front": [
+                "3443",
+                "2YY2",
+                "1HY1",
+                "1WY1",
+                "1YH1",
+                "1YY1",
+                "1221",
+                "RYYR",
+                "dRRd",
+                "0110",
+            ],
+        }, PAL)
+        paint_box_2x(glow, lu, 60, 2, 5, 3, {
+            "front": [
+                "....",
+                ".YY.",
+                ".HY.",
+                ".WY.",
+                ".YH.",
+                ".YY.",
+                "....",
+                "RYYR",
+                "....",
+                "....",
+            ],
+        }, PAL)
 
-    # Boots/feet [3, 2, 4] at (10, 56) & (34, 56)
     for fu in (10, 34):
-        box_fill(img, fu, 56, 3, 2, 4, pal["S"], pal["R"], pal["Y"])
-        paint_geo_box(glow, fu, 56, 3, 2, 4, {"front": ["YYY", "..."]}, pal)
+        shade_armor_box(fu, 60, 3, 2, 4, NAVY_RAMP, riveted=False, seed=14)
+        paint_box_2x(img, fu, 60, 3, 2, 4, {
+            "front": [
+                "RYYYYR",
+                "dRRRRd",
+                "123321",
+                "011110",
+            ],
+            "bottom": [
+                "012210",
+                "120021",
+                "123321",
+                "120021",
+                "123321",
+                "120021",
+                "123321",
+                "011110",
+            ],
+        }, PAL)
+        paint_box_2x(glow, fu, 60, 3, 2, 4, {
+            "front": [
+                "RYYYYR",
+                "......",
+                "......",
+                "......",
+            ],
+        }, PAL)
 
-    # Floating static sparks [1, 2, 1] at (50, 56) & (56, 56)
-    for su in (50, 56):
-        box_fill(img, su, 56, 1, 2, 1, pal["K"], pal["W"])
-        box_fill(glow, su, 56, 1, 2, 1, pal["K"], pal["W"])
+    # 9. Floating Z-sparks: [2, 3, 0] @ [50, 60] & [60, 60], [0, 3, 2] @ [54, 60] & [64, 60]
+    z_spark = [
+        "KYWK",
+        "..WK",
+        ".KW.",
+        "KW..",
+        "KYWK",
+        "....",
+    ]
+    for su, sxu in ((50, 54), (60, 64)):
+        paint_cutout_z(su, 60, 2, 3, z_spark, glow_keys={"K", "Y", "W"})
+        paint_cutout_x(sxu, 60, 3, 2, z_spark, glow_keys={"K", "Y", "W"})
 
     entity_dir = OUT / "entity"
     entity_dir.mkdir(parents=True, exist_ok=True)
@@ -5405,7 +5806,7 @@ def main():
         return
     if "--zapkin" in sys.argv:
         make_zapkin()
-        print("Generated Zapkin 64x64 texture and glowmask.")
+        print("Generated Zapkin 256x256 texture and glowmask.")
         return
     if "--frogduck" in sys.argv:
         make_frogduck()
