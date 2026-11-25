@@ -10,11 +10,11 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Full Art Pass (Sections 1 & 2.1–2.4) COMPLETE — PR open (`art/pass-3-pets` → `main`).** Includes 5 v3 `256×256` 3D armor sets + 20 armor icons (`art/sunsteel-armor-redesign` / `art/pass-1-armor`), 11 hero weapons & staves + 39 tool/summon/trophy/material/utility icons (`art/pass-2-weapons-items`), 17 upgraded Section 2.4 entities (Chester, 12 Phase 2 pets, Prism Sentinel, Cinder Raider, Astral Stalker, Crystal Colossus), and the consolidated 89-preview gallery (`qa/art-pass-gallery.md`). Full `python tools/art/lint_art.py --strict` exits `0` across all 32 entities + 5 armors, and `./gradlew build runGameTestServer` is `229/229` green. |
-| **Next** | Review and merge the Art Pass PR (`art/pass-3-pets` → `main`) once CI is green, and run `./gradlew runClient` visual check when home. |
-| **Waiting on the owner** | 1. In-game look & screenshots when home for the 5 v3 armor sets, Section 2.2/2.3 icons, Section 2.4 upgraded pets (`chester`, `crystal_fox`, `shadow_wisp`, `cinder_crag`, `zaphox`, `galecorn`, `ember_drake`, `peepkin`, `prismling`, `flurrywing`, `sunbeam`, `frogduck`, `zapkin`), **Boss Framework**, **Tier 3 Arsenal**, **The Great All-Seer**, **Primal Portal / Dragon Jungle**, **Embercrown Sovereign**, **Twin-Star Endgame**, and family LAN co-op playtest across Phases 1–5 (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. |
-| **Other work in flight** | `art/sunsteel-armor-redesign` → `art/pass-1-armor` → `art/pass-2-weapons-items` → `art/pass-3-pets` (all rolled up into the `art/pass-3-pets` → `main` PR). |
-| **Loose ends** | Stage 5 kid drawings (`steve-pets-drawing-2026-11-15.jpg`, `alex-pets-drawing-2026-11-15.jpg`) are filed in `qa/reference/pets/` alongside Stage 6 drawings — always inspect the kid's drawing before upgrading a pet; `tools/art/preview_geo.py` now applies Bedrock/GeckoLib `-rx/-ry/-rz` Euler rotations accurately. `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). Pass `--crystal-fox` / `--shadow-wisp` / `--cinder-crag` / `--zaphox` / `--galecorn` / `--ember-drake` / `--peepkin` / `--prismling` / `--flurrywing` / `--sunbeam` / `--frogduck` / `--zapkin` to `tools/art/make_pets_art.py` to regenerate a single pet (`make_crystal_fox()`..`make_flurrywing()` and `make_frogduck()` target `128×64` at `256×128`; `make_sunbeam()` and `make_zapkin()` target `128×128` at `256×256`). |
+| **In progress** | **`1.0.0` Release & `2.0.0` Roadmap PR open (`release/1.0.0` → `main`).** Bumped `mod_version=1.0.0`, built & verified `adventures-in-artilian-1.0.0.jar` (`229/229` GameTests green), deployed to the local CurseForge instance (`%USERPROFILE%\curseforge\minecraft\Instances\Adventures in Artilian\mods\`, replacing `0.1.0`), and locked in the `1.0.0` → `2.0.0` checkpoint versioning policy and Phases 6–10 roadmap in `PLAN.md`. |
+| **Next** | Merge `release/1.0.0` PR once CI is green, playtest `1.0.0` in CurseForge, then start **Phase 6 — Stage 1 (`1.0.1`): Weapons & Tools Active Abilities Pass** on its own feature branch. |
+| **Waiting on the owner** | 1. Family co-op playtest feedback on `1.0.0` in CurseForge (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. 5. Alex & Steve's theme pick for the Phase 10 3rd dimension. |
+| **Other work in flight** | `release/1.0.0` → `main`. |
+| **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). Pass `--crystal-fox` / `--shadow-wisp` / `--cinder-crag` / `--zaphox` / `--galecorn` / `--ember-drake` / `--peepkin` / `--prismling` / `--flurrywing` / `--sunbeam` / `--frogduck` / `--zapkin` to `tools/art/make_pets_art.py` to regenerate a single pet (`make_crystal_fox()`..`make_flurrywing()` and `make_frogduck()` target `128×64` at `256×128`; `make_sunbeam()` and `make_zapkin()` target `128×128` at `256×256`). |
 
 ---
 
@@ -22,14 +22,29 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 Sizes are ballparks in evenings of work, corrected as stages finish.
 
-| Phase | Description | Stages | Rough size | Status |
+| Phase | Description | Stages | Checkpoint / Size | Status |
 |---|---|---|---|---|
 | 0 | Project prep: folder, Git repo, 5-doc stack, registers, GitHub repo & CI | n/a | n/a | ✅ Done |
-| 1 | NeoForge `1.21.1` baseline, Chester, starter gear, custom TNTs, Wands & Staves | 6 | 4–6 weeks | ⏳ Waiting on LAN co-op sign-off |
-| 2 | Overworld biomes (`TerraBlender`), pet capture & battle, kids' roster, structures & enemies | 9 | 2–3 months | ⏳ Art signed off; LAN co-op & official names pending |
-| 3 | Custom bosses, rematch altars, Tier 3 gear, advanced Staves/TNTs | 5 | 6–8 weeks | ⏳ Stages 1–5 complete; awaiting PR merges & LAN co-op sign-off |
-| 4 | Alex's Dimension: The Eye Realm | 7 | 2–3 months | ⏹ Pending |
-| 5 | Steve's Dimension: Giant Dragon Jungle & Grand Finale | 10 | 3–4 months | ⏳ Stages 1–10 complete & locked in PR #17 (`0.2.0`); awaiting LAN co-op sign-off |
+| 1 | NeoForge `1.21.1` baseline, Chester, starter gear, custom TNTs, Wands & Staves | 6 | `1.0.0` | ✅ Shipped in `1.0.0` (co-op polish via `1.0.x`) |
+| 2 | Overworld biomes (`TerraBlender`), pet capture & battle, kids' roster, structures & enemies | 9 | `1.0.0` | ✅ Shipped in `1.0.0` (official kid names via `1.0.x`) |
+| 3 | Custom bosses, rematch altars, Tier 3 gear, advanced Staves/TNTs | 5 | `1.0.0` | ✅ Shipped in `1.0.0` |
+| 4 | Alex's Dimension: The Eye Realm | 7 | `1.0.0` | ✅ Shipped in `1.0.0` |
+| 5 | Steve's Dimension: Giant Dragon Jungle & Grand Finale | 10 | `1.0.0` | ✅ Shipped in `1.0.0` |
+| 6 | Abilities Overhaul — Weapons, Tools, Armor & Pets | 4 | `1.0.1` → `1.1.0` | ⏹ Planned |
+| 7 | In-Game Guidebook, Quests & Advancements | 4 | `1.1.1` → `1.2.0` | ⏹ Planned |
+| 8 | Pet Evolution, Rideable Dragons & Battle Arenas | 5 | `1.2.1` → `1.3.0` | ⏹ Planned |
+| 9 | Co-op Home, Chester Upgrades & Magic Expansion | 4 | `1.3.1` → `1.4.0` | ⏹ Planned |
+| 10 | Next-Tier Dimension(s), Bosses & `2.0.0` Grand Finale | 5 | `1.4.1` → `2.0.0` | ⏹ Planned |
+
+---
+
+## Versioning & Checkpoint Policy (`1.0.0` → `2.0.0`)
+
+- **`1.0.0` (Baseline Release):** Phases 0–5 + Full v3 Art Pass (`229/229` GameTests green, strict art lint clean).
+- **`1.<minor>.<patch>` (Stage Checkpoint):** Every merged stage bumps `<patch>` (`1.0.1`, `1.0.2`, `1.0.3`, …) and produces a playable CurseForge `.jar`.
+- **`1.<minor>.0` (Phase Checkpoint):** Completing the final stage of a Phase bumps `<minor>` and resets `<patch>` to `0` (`1.1.0` for Phase 6, `1.2.0` for Phase 7, `1.3.0` for Phase 8, `1.4.0` for Phase 9).
+- **`2.0.0` (Major Milestone):** Completing the final stage of Phase 10 ships `adventures-in-artilian-2.0.0.jar`.
+- **Hotfixes:** Bugfixes or kid-name/balance patches between stages increment `<patch>` and are logged in `qa/FINDINGS.md`.
 
 ---
 
@@ -851,9 +866,72 @@ Nobody on this project is an artist and there is no budget for commissions. The 
 
 ---
 
-## Security Gates Summary (`P1-01`–`P3-04`)
+## `2.0.0` Roadmap (Phases 6–10)
 
-All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`162/162`** GameTests passing.
+Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bumps the checkpoint version per **Versioning & Checkpoint Policy**, and preserves all kid-safe defaults (`KidSafeTargets`, non-lethal pet fainting, player-bound Chester storage, `allowDestructiveCustomTnt = false`, and boss telegraphs `>= 30` ticks).
+
+### Phase 6: Abilities Overhaul — Weapons, Tools, Armor & Pets (`1.0.1` → `1.1.0`)
+
+- **Goal:** Give every weapon, tool, armor set, and pet a distinct, readable, kid-friendly active/passive ability identity.
+
+| Stage | Checkpoint | Name | Scope | Status |
+|---|---|---|---|---|
+| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced) | ⏹ Planned |
+| 2 | `1.0.2` | Armor Set Bonuses & Visual/Passive Identity Pass | Distinct 2-piece & 4-piece passive/reactive perks across all 5 armor sets with clear HUD/particle cues | ⏹ Planned |
+| 3 | `1.0.3` | Pet Signature Abilities, Stances & Elemental Synergies Pass | Upgraded active signature skills for all 16 pets, elemental combo bonuses, pet stance/command whistle controls, battle telegraphs/VFX | ⏹ Planned |
+| 4 | `1.1.0` | Phase 6 Balance, `KidSafeTargets` Security Audit (`P6-01`) & `1.1.0` Checkpoint | Co-op balance pass, red-proven `P6-01` probe across all new abilities, and `1.1.0` CurseForge JAR | ⏹ Planned |
+
+### Phase 7: In-Game Guidebook, Quests & Advancements (`1.1.1` → `1.2.0`)
+
+- **Goal:** Help Alex and Steve discover every biome, pet, recipe, boss, and dimension in-game without external docs.
+
+| Stage | Checkpoint | Name | Scope | Status |
+|---|---|---|---|---|
+| 1 | `1.1.1` | Artilian Field Guide | Illustrated kid-friendly in-game guidebook granted on first login + craftable | ⏹ Planned |
+| 2 | `1.1.2` | Advancement Tree & Progression Tracker | Full `artilian` Advancement tab covering Phases 1–5 + `2.0` milestones | ⏹ Planned |
+| 3 | `1.1.3` | Bestiary & Pet-Dex Discovery Log | Auto-unlocking entries for pets, mobs, dragons, and bosses with elemental matchups & treats | ⏹ Planned |
+| 4 | `1.2.0` | Co-op Quest Board & `1.2.0` Checkpoint | Repeatable co-op bounty quests with treat/cosmetic rewards and `1.2.0` CurseForge JAR | ⏹ Planned |
+
+### Phase 8: Pet Evolution, Rideable Dragons & Battle Arenas (`1.2.1` → `1.3.0`)
+
+- **Goal:** Deepen the pet bond with leveling, evolved forms, rideable dragon mounts, and safe friendly sparring.
+
+| Stage | Checkpoint | Name | Scope | Status |
+|---|---|---|---|---|
+| 1 | `1.2.1` | Pet Leveling, XP & Friendship Progression | Stored on `PetRosterData` (`copyOnDeath()`), stat scaling & milestone perks | ⏹ Planned |
+| 2 | `1.2.2` | Pet Evolution System & Evolved Forms | Evolution Shards/Stones + bespoke Art-Gate GeckoLib evolved models & glowmasks | ⏹ Planned |
+| 3 | `1.2.3` | Rideable Adult Dragon Mounts | Grow hatched dragonlings into rideable `Canopy`/`Amber`/`Storm` dragons with kid-friendly flying controls & zero fall-death dismount | ⏹ Planned |
+| 4 | `1.2.4` | Pet Battle Arena & Friendly Sparring | Non-lethal co-op duels between Alex & Steve's teams (`P8-01` zero loss + auto-heal) | ⏹ Planned |
+| 5 | `1.3.0` | Phase 8 Art Pass, Co-op Playtest & `1.3.0` Checkpoint | Art lint + co-op verification and `1.3.0` CurseForge JAR | ⏹ Planned |
+
+### Phase 9: Co-op Home, Chester Upgrades & Magic Expansion (`1.3.1` → `1.4.0`)
+
+- **Goal:** Reward base-building, expand Chester & magic progression, and elevate audio/VFX polish.
+
+| Stage | Checkpoint | Name | Scope | Status |
+|---|---|---|---|---|
+| 1 | `1.3.1` | Chester Upgrades & Cosmetics | Expandable pouches (`27` → `54` slots), optional pickup magnet, craftable Chester hats/themes while keeping sleeping disguise & `P1-01`–`P1-06` owner-only security | ⏹ Planned |
+| 2 | `1.3.2` | Magic Expansion & New Staves | Mana Crystal max-mana upgrades + 4 new playful `KidSafeTargets`-safe spells/staves & HUD polish | ⏹ Planned |
+| 3 | `1.3.3` | Co-op Base Decor & Trophy Displays | Boss trophy pedestals, pet beds/perches, biome lanterns, weapon/armor racks | ⏹ Planned |
+| 4 | `1.4.0` | Custom Soundscape, VFX Pass & `1.4.0` Checkpoint | Custom spell/pet/boss sound & particle polish and `1.4.0` CurseForge JAR | ⏹ Planned |
+
+### Phase 10: Next-Tier Dimension(s), Bosses & `2.0.0` Grand Finale (`1.4.1` → `2.0.0`)
+
+- **Goal:** Deliver a third signature dimension chosen with Alex & Steve, culminating in the `2.0.0` Grand Finale.
+
+| Stage | Checkpoint | Name | Scope | Status |
+|---|---|---|---|---|
+| 1 | `1.4.1` | `2.0` Dimension Concept & Safe Portal Ritual | Theme chosen with Alex & Steve; safe arrival pad (`P10-01`) | ⏹ Planned |
+| 2 | `1.4.2` | `2.0` Dimension Biomes, Worldgen & Structures | Custom terrain, glowing flora, hand-built 3D landmarks & loot | ⏹ Planned |
+| 3 | `1.4.3` | `2.0` Dimension Enemies, New Pets & Mini-Boss | Art-Gate pass-1 entities, capturable pets & mid-tier boss | ⏹ Planned |
+| 4 | `1.4.4` | `2.0` Apex Boss & Mythic Co-op Finale Gear | Multi-phase telegraphed apex boss (`>= 30`t windup), zero griefing, Mythic rewards uniting all 3 dimensions | ⏹ Planned |
+| 5 | `2.0.0` | `2.0.0` Final Art Pass, Full Security & Co-op Sign-Off | `lint_art.py --strict`, full GameTests, and `adventures-in-artilian-2.0.0.jar` | ⏹ Planned |
+
+---
+
+## Security Gates Summary (`P1-01`–`P5-02`)
+
+All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on) and logged in `security/FINDINGS.md`. Current suite: **`229/229`** GameTests passing.
 
 | IDs | Phase / Stage | Area | GameTest Class | Index |
 |---|---|---|---|---|
@@ -862,6 +940,8 @@ All probes are red-proven (`EXPLOITED` with control off, `HELD` with control on)
 | `P2-01`–`P2-04` | Phase 2 Stages 3–4 | Pet crystal ownership, non-lethal fainting, anti-duplication, battle safety | `PetSecurityProbes` | `security/pets/README.md` |
 | `P2-05` | Phase 2 Stage 6C | Sunbeam chest `minecraft:light` air-only placement & removal cleanup | `PetRosterGameTests` | `security/FINDINGS.md` |
 | `P3-01`–`P3-03` | Phase 3 Stages 1–3 | Boss Altar anti-spam & Crystal Colossus / Captain Brimstone non-griefing / Chester safety | `BossSecurityProbes` | `security/bosses/README.md` |
+| `P4-01` | Phase 4 Stage 1 | Gazing Portal safe arrival pad & obsidian frame ordering | `EyeRealmPortalGameTests` | `security/FINDINGS.md` |
+| `P5-01`–`P5-02` | Phase 5 Stages 1 & 7 | Primal Portal safe arrival pad & Dragonfire Mega TNT `allowDestructiveCustomTnt` gate | `DragonJunglePortalGameTests`, `TntSecurityProbes` | `security/FINDINGS.md` |
 
 ---
 
