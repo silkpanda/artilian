@@ -8,6 +8,10 @@ import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
 import com.silkpanda.artilian.gear.ArtilianSwordItem;
 import com.silkpanda.artilian.gear.ArtilianTiers;
+import com.silkpanda.artilian.gear.DragonscaleAxeItem;
+import com.silkpanda.artilian.gear.DragonscaleHoeItem;
+import com.silkpanda.artilian.gear.DragonscalePickaxeItem;
+import com.silkpanda.artilian.gear.DragonscaleShovelItem;
 import com.silkpanda.artilian.gear.DragonscaleSwordItem;
 import com.silkpanda.artilian.gear.PrismaticAxeItem;
 import com.silkpanda.artilian.gear.PrismaticHoeItem;
@@ -518,19 +522,19 @@ public class ArtilianItems {
                     "item.artilian.dragonscale_sword.tooltip",
                     ChatFormatting.GREEN));
     public static final DeferredItem<PickaxeItem> DRAGONSCALE_PICKAXE = ITEMS.register("dragonscale_pickaxe",
-            () -> new PickaxeItem(ArtilianTiers.DRAGONSCALE,
+            () -> new DragonscalePickaxeItem(ArtilianTiers.DRAGONSCALE,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(PickaxeItem.createAttributes(ArtilianTiers.DRAGONSCALE, 1.0F, -2.8F))));
     public static final DeferredItem<AxeItem> DRAGONSCALE_AXE = ITEMS.register("dragonscale_axe",
-            () -> new AxeItem(ArtilianTiers.DRAGONSCALE,
+            () -> new DragonscaleAxeItem(ArtilianTiers.DRAGONSCALE,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(AxeItem.createAttributes(ArtilianTiers.DRAGONSCALE, 5.0F, -3.0F))));
     public static final DeferredItem<ShovelItem> DRAGONSCALE_SHOVEL = ITEMS.register("dragonscale_shovel",
-            () -> new ShovelItem(ArtilianTiers.DRAGONSCALE,
+            () -> new DragonscaleShovelItem(ArtilianTiers.DRAGONSCALE,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(ShovelItem.createAttributes(ArtilianTiers.DRAGONSCALE, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> DRAGONSCALE_HOE = ITEMS.register("dragonscale_hoe",
-            () -> new HoeItem(ArtilianTiers.DRAGONSCALE,
+            () -> new DragonscaleHoeItem(ArtilianTiers.DRAGONSCALE,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(HoeItem.createAttributes(ArtilianTiers.DRAGONSCALE, -4.0F, 0.0F))));
     public static final DeferredItem<ArmorItem> DRAGONSCALE_HELMET =

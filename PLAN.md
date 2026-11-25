@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **`Phase 6 — Stage 1C (Tier 3 Prismatic Brimstone Weapons & Tools Abilities, 1.0.2)` implemented & verified on `phase-6-stage-1c-prismatic-abilities` (`241/241` GameTests green, `adventures-in-artilian-1.0.2.jar` built).** (`release/1.0.0` → `main` PR open with `adventures-in-artilian-1.0.0.jar`, deployed to CurseForge; Stage 1A `1.0.1` green on `phase-6-stage-1a-sunsteel-abilities`.) |
-| **Next** | Run live `./gradlew runClient` visual showcase for Stage 1A & Stage 1C (`qa/evidence/`), open/merge PRs for `phase-6-stage-1a-sunsteel-abilities` & `phase-6-stage-1c-prismatic-abilities` → `main`, begin implementing Stage 1B (Starlight, locked in), and lock in Stage 1D–1E (Dragonscale / Twin-Star) plans. |
+| **In progress** | **`Phase 6 — Stage 1D (Tier 4 Dragonscale Weapons & Tools Abilities, 1.0.3)` implemented & verified on `phase-6-stage-1d-dragonscale-abilities` (`248/248` GameTests green, `adventures-in-artilian-1.0.3.jar` built).** (`release/1.0.0` → `main` PR open with `adventures-in-artilian-1.0.0.jar`, deployed to CurseForge; Stage 1A `1.0.1` green on `phase-6-stage-1a-sunsteel-abilities`; Stage 1C `1.0.2` committed on `phase-6-stage-1c-prismatic-abilities`.) |
+| **Next** | Run live `./gradlew runClient` visual showcase for Stage 1A, Stage 1C & Stage 1D (`qa/evidence/`), open/merge PRs for `phase-6-stage-1a-sunsteel-abilities`, `phase-6-stage-1c-prismatic-abilities`, & `phase-6-stage-1d-dragonscale-abilities` → `main`, begin implementing Stage 1B (Starlight, locked in), and lock in Stage 1E (Twin-Star) plan. |
 | **Waiting on the owner** | 1. Family co-op playtest feedback on `1.0.0` in CurseForge (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. 5. Alex & Steve's theme pick for the Phase 10 3rd dimension. |
 | **Other work in flight** | `release/1.0.0` → `main`, `plan/2026-11-25-phase6-sunsteel`. |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). Pass `--crystal-fox` / `--shadow-wisp` / `--cinder-crag` / `--zaphox` / `--galecorn` / `--ember-drake` / `--peepkin` / `--prismling` / `--flurrywing` / `--sunbeam` / `--frogduck` / `--zapkin` to `tools/art/make_pets_art.py` to regenerate a single pet (`make_crystal_fox()`..`make_flurrywing()` and `make_frogduck()` target `128×64` at `256×128`; `make_sunbeam()` and `make_zapkin()` target `128×128` at `256×256`). |
@@ -876,7 +876,7 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
 
 | Stage | Checkpoint | Name | Scope | Status |
 |---|---|---|---|---|
-| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced). **Stage 1A (Sunsteel) implemented & `235/235` green**; **Stage 1B (Starlight) locked in (`1.0.x`)**; **Stage 1C (Tier 3 Prismatic Brimstone) implemented & `241/241` green (`1.0.2`)**; 1D–1E pending lock-in. | ⏳ 1A & 1C Green; 1B Locked; 1D–1E Planned |
+| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced). **Stage 1A (Sunsteel) implemented & `235/235` green**; **Stage 1B (Starlight) locked in (`1.0.x`)**; **Stage 1C (Tier 3 Prismatic Brimstone) implemented & `241/241` green (`1.0.2`)**; **Stage 1D (Tier 4 Dragonscale) implemented & `248/248` green (`1.0.3`)**; 1E pending lock-in. | ⏳ 1A, 1C & 1D Green; 1B Locked; 1E Planned |
 | 2 | `1.0.2` | Armor Set Bonuses & Visual/Passive Identity Pass | Distinct 2-piece & 4-piece passive/reactive perks across all 5 armor sets with clear HUD/particle cues | ⏹ Planned |
 | 3 | `1.0.3` | Pet Signature Abilities, Stances & Elemental Synergies Pass | Upgraded active signature skills for all 16 pets, elemental combo bonuses, pet stance/command whistle controls, battle telegraphs/VFX | ⏹ Planned |
 | 4 | `1.1.0` | Phase 6 Balance, `KidSafeTargets` Security Audit (`P6-01`) & `1.1.0` Checkpoint | Co-op balance pass, red-proven `P6-01` probe across all new abilities, and `1.1.0` CurseForge JAR | ⏹ Planned |
@@ -991,6 +991,45 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
   - `prismaticHarvestGrowsHydratesAndReplantsMatureCrops` (red-proof: limit radius or skip mature crop replant → red)
 - **Security Gate:** Feeds into Phase 6 `P6-01` (`KidSafeTargets` offensive filtering, zero fire blocks placed, tag-only & zero-`BlockEntity` block breaking, wall-stop beam raycast).
 - **Evidence & Done When:** `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` green locally & in CI; live `./gradlew runClient` verifies all 5 Prismatic abilities in-game; playable JAR built.
+
+#### Phase 6 — Stage 1D: Tier 4 Dragonscale Weapons & Tools Abilities (`1.0.3`)
+- [ ] **In Progress (`248/248` GameTests Green & `1.0.3` JAR Built; Live Client Check Pending)**
+- **Why & Decisions:**
+  - **Theme:** **Primal Dragon Jungle / Wyvern Breath & Apex Predator** across all 5 Dragonscale items (`dragonscale_sword`, `dragonscale_pickaxe`, `dragonscale_axe`, `dragonscale_shovel`, `dragonscale_hoe`) — a clear step up from Tier 3 Prismatic Brimstone (`25–30` Mana, `11.5–12.0` skill damage, cone/gust combat skills, tunnel/canopy/rake excavation, and `9×9` overgrowth).
+  - **Preserved existing behavior:** Keeps `DragonscaleSwordItem`'s on-hit `3s` fire + `Weakness` (`60`t) passive intact.
+  - **Shared invariants:**
+    - All offensive and knockback skills filter strictly through `KidSafeTargets` (never harm or displace players, Chester, villagers, golems, babies, or owned/tamed pets).
+    - Mana costs use `ManaService` via `SunsteelAbilities.consumeAbilityMana` (server-authoritative, Creative-friendly).
+    - Zero terrain fire blocks placed and zero `BlockEntity` or fluid modification.
+    - Tag-gated block breaking only (`BlockTags.MINEABLE_WITH_PICKAXE`, `BlockTags.LOGS`, `BlockTags.MINEABLE_WITH_SHOVEL`), skipping unbreakables/obsidian (`destroySpeed < 0 || destroySpeed >= 50.0F`) on `Dragon Bore`; Silk Touch respected on `Wyvern Forge` / `Dragon Bore` auto-smelt.
+    - Right-click tool actives never conflict with vanilla stripping/tilling/pathing.
+
+  | Item | Ability | Trigger & Cost / Cooldown | Effect |
+  |---|---|---|---|
+  | **Dragonscale Sword** | **Dragonfire Breath** *(+ existing on-hit Fire/Weakness)* | Right-Click (`30` Mana, `90`t / `4.5s`) | Unleashes a `7`-block dragonfire cone (`DRAGON_BREATH` + `FLAME` particles, zero fire blocks placed) dealing `12.0` damage + `4s` fire + `Weakness II` (`80`t) + knockback to `KidSafeTargets` hostiles; grants caster `Fire Resistance` (`120`t) + `Strength I` (`80`t). |
+  | **Dragonscale Pickaxe** | **Wyvern Forge** + **Dragon Bore** | Passive (ore break) / `Shift + Right-Click` on pickaxe-mineable block (`25` Mana, `100`t / `5s`) | Passive: mining ores grants `Haste II` (`100`t), pulls drops within `8` blocks, and auto-smelts smeltable ore drops (disabled if Silk Touch is present). Active: carves a `3×3` tunnel face (up to `9` blocks) of `MINEABLE_WITH_PICKAXE` blocks (zero `BlockEntity`, skips unbreakables/obsidian & fluids), auto-smelts ore drops unless Silk Touch, and pulls drops to the player. |
+  | **Dragonscale Axe** | **Wingbeat Roar** + **Canopy Fell** | Right-Click in air (`30` Mana, `100`t / `5s`) / `Shift + Right-Click` on log (`20` Mana, `80`t / `4s`) | Combat active: unleashes a `6.5`-block wingbeat gust dealing `11.5` damage + `Slowness II` (`60`t) + strong outward knockback to `KidSafeTargets` hostiles, and grants caster + nearby friendly players/Chester/tamed pets `Resistance I` (`80`t). Utility active: fells up to `24` connected matching `BlockTags.LOGS` blocks (zero `BlockEntity`) and pulls log drops to the player. |
+  | **Dragonscale Shovel** | **Sovereign Scoop** + **Terra Rake** | Passive (block break) / `Shift + Right-Click` on shovel-mineable block (`25` Mana, `90`t / `4.5s`) | Passive: breaking shovel-mineable blocks grants `Speed II` (`80`t) + `Haste I` (`60`t) and pulls drops within `8` blocks. Active: clears a `3×3×2` (up to `18` blocks) pocket of matching `MINEABLE_WITH_SHOVEL` blocks (zero `BlockEntity`, zero fluids) and pulls all drops to the player. |
+  | **Dragonscale Hoe** | **Primal Overgrowth** | `Shift + Right-Click` on crop/sapling/farmland (`25` Mana, `90`t / `4.5s`) | Applies a `9×9` double bone-meal growth pulse, hydrates dry farmland in `9×9`, auto-harvests + replants mature crops in `7×7` (pulling drops to the player), and grants caster `Regeneration I` (`80`t). |
+
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Core Dragonscale abilities & tooltips | Pending commit | `DragonscaleAbilities`, `DragonscaleEvents`, `DragonscaleSwordItem`, `DragonscalePickaxeItem`, `DragonscaleAxeItem`, `DragonscaleShovelItem`, `DragonscaleHoeItem`, `ArtilianItems`, `ArtilianLanguageProvider`, `runData` (`en_us.json`). |
+  | 2 GameTests & Red-proofs | Pending commit | `DragonscaleAbilitiesGameTests` (`7` new tests, `248/248` green). Red-proofs: bypassed `KidSafeTargets` in `castDragonfireBreath` → `dragonfirebreathhitsconehostilesspareskidsafeandnofireblocks` failed (exit 1); bypassed `BlockEntity`/obsidian guard in `isDragonBoreBreakable` → `dragonborecarvesthreebythreesafelyskippingblockentitiesandobsidian` failed (exit 1); restored green (`248/248`). |
+  | 3 Version bump, build & client verification | Pending | `mod_version=1.0.3` (`adventures-in-artilian-1.0.3.jar`), `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` (`248/248` green); live `./gradlew runClient` showcase & PR pending. |
+
+- **Tests & Red-proofs (`DragonscaleAbilitiesGameTests`):**
+  - `dragonfireBreathHitsConeHostilesSparesKidSafeAndNoFireBlocks` (red-proof: bypass `KidSafeTargets` filter → hits Villager/Chester → red)
+  - `wyvernForgeAutoSmeltsOresAndRespectsSilkTouch` (red-proof: disable auto-smelt or Silk Touch guard → red)
+  - `dragonBoreCarvesThreeByThreeSafelySkippingBlockEntitiesAndObsidian` (red-proof: bypass `BlockEntity`/obsidian guard → breaks Chest/Obsidian → red)
+  - `wingbeatRoarDamagesHostilesSparesKidSafeAndBuffsAllies` (red-proof: bypass `KidSafeTargets` or omit ally `Resistance I` → red)
+  - `canopyFellBreaksConnectedMatchingLogsOnly` (red-proof: allow non-log or `BlockEntity` → red)
+  - `terraRakeClearsThreeByThreeByTwoShovelBlocksSafely` (red-proof: allow non-shovel / `BlockEntity` → red)
+  - `primalOvergrowthGrowsHydratesNineByNineAndReplantsSevenBySeven` (red-proof: limit radius or skip mature crop replant → red)
+- **Security Gate:** Feeds into Phase 6 `P6-01` (`KidSafeTargets` offensive filtering, zero fire blocks placed, tag-only & zero-`BlockEntity` block breaking, obsidian/unbreakable protection).
+- **Evidence & Done When:** `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` green locally & in CI; live `./gradlew runClient` verifies all 5 Dragonscale abilities in-game; `adventures-in-artilian-1.0.3.jar` built.
 
 ### Phase 7: In-Game Guidebook, Quests & Advancements (`1.1.1` → `1.2.0`)
 

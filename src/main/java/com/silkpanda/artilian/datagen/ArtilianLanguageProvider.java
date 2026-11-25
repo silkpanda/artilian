@@ -85,11 +85,15 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("item.artilian.prismatic_armor.tooltip", "Full Set — Grants Fire Resistance!");
 
         this.addItem(ArtilianItems.DRAGONSCALE_SWORD, "Dragonscale Sword");
-        this.add("item.artilian.dragonscale_sword.tooltip", "Dragon-forged blade — Scorches and weakens foes!");
+        this.add("item.artilian.dragonscale_sword.tooltip", "Right-Click (30 Mana) — Dragonfire Breath + Scorch & Weaken!");
         this.addItem(ArtilianItems.DRAGONSCALE_PICKAXE, "Dragonscale Pickaxe");
+        this.add("item.artilian.dragonscale_pickaxe.tooltip", "Wyvern Forge + Shift+Click (25 Mana) 3x3 Dragon Bore!");
         this.addItem(ArtilianItems.DRAGONSCALE_AXE, "Dragonscale Axe");
+        this.add("item.artilian.dragonscale_axe.tooltip", "Right-Click (30 Mana) Wingbeat Roar + Shift+Click Log (20 Mana) Canopy Fell!");
         this.addItem(ArtilianItems.DRAGONSCALE_SHOVEL, "Dragonscale Shovel");
+        this.add("item.artilian.dragonscale_shovel.tooltip", "Sovereign Scoop + Shift+Click (25 Mana) 3x3x2 Terra Rake!");
         this.addItem(ArtilianItems.DRAGONSCALE_HOE, "Dragonscale Hoe");
+        this.add("item.artilian.dragonscale_hoe.tooltip", "Shift+Click Crop (25 Mana) — 9x9 Growth & 7x7 Replant!");
         this.addItem(ArtilianItems.DRAGONSCALE_HELMET, "Dragonscale Helmet");
         this.addItem(ArtilianItems.DRAGONSCALE_CHESTPLATE, "Dragonscale Chestplate");
         this.addItem(ArtilianItems.DRAGONSCALE_LEGGINGS, "Dragonscale Leggings");
