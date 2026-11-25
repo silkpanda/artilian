@@ -9,6 +9,10 @@ import com.silkpanda.artilian.gear.ArtilianArmorItem;
 import com.silkpanda.artilian.gear.ArtilianSwordItem;
 import com.silkpanda.artilian.gear.ArtilianTiers;
 import com.silkpanda.artilian.gear.DragonscaleSwordItem;
+import com.silkpanda.artilian.gear.PrismaticAxeItem;
+import com.silkpanda.artilian.gear.PrismaticHoeItem;
+import com.silkpanda.artilian.gear.PrismaticPickaxeItem;
+import com.silkpanda.artilian.gear.PrismaticShovelItem;
 import com.silkpanda.artilian.gear.PrismaticSwordItem;
 import com.silkpanda.artilian.gear.SunsteelAxeItem;
 import com.silkpanda.artilian.gear.SunsteelHoeItem;
@@ -290,19 +294,19 @@ public class ArtilianItems {
                     "item.artilian.prismatic_sword.tooltip",
                     ChatFormatting.LIGHT_PURPLE));
     public static final DeferredItem<PickaxeItem> PRISMATIC_PICKAXE = ITEMS.register("prismatic_pickaxe",
-            () -> new PickaxeItem(ArtilianTiers.PRISMATIC,
+            () -> new PrismaticPickaxeItem(ArtilianTiers.PRISMATIC,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(PickaxeItem.createAttributes(ArtilianTiers.PRISMATIC, 1.0F, -2.8F))));
     public static final DeferredItem<AxeItem> PRISMATIC_AXE = ITEMS.register("prismatic_axe",
-            () -> new AxeItem(ArtilianTiers.PRISMATIC,
+            () -> new PrismaticAxeItem(ArtilianTiers.PRISMATIC,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(AxeItem.createAttributes(ArtilianTiers.PRISMATIC, 5.0F, -3.0F))));
     public static final DeferredItem<ShovelItem> PRISMATIC_SHOVEL = ITEMS.register("prismatic_shovel",
-            () -> new ShovelItem(ArtilianTiers.PRISMATIC,
+            () -> new PrismaticShovelItem(ArtilianTiers.PRISMATIC,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(ShovelItem.createAttributes(ArtilianTiers.PRISMATIC, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> PRISMATIC_HOE = ITEMS.register("prismatic_hoe",
-            () -> new HoeItem(ArtilianTiers.PRISMATIC,
+            () -> new PrismaticHoeItem(ArtilianTiers.PRISMATIC,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(HoeItem.createAttributes(ArtilianTiers.PRISMATIC, -4.0F, 0.0F))));
 

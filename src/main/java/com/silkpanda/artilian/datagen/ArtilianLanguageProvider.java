@@ -69,11 +69,15 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.STARLIGHT_BOOTS, "Starlight Boots");
 
         this.addItem(ArtilianItems.PRISMATIC_SWORD, "Prismatic Sword");
-        this.add("item.artilian.prismatic_sword.tooltip", "Boss-forged blade — Lights up and burns foes!");
+        this.add("item.artilian.prismatic_sword.tooltip", "Right-Click (25 Mana) — Prism Beam + Glowing & Embers!");
         this.addItem(ArtilianItems.PRISMATIC_PICKAXE, "Prismatic Pickaxe");
+        this.add("item.artilian.prismatic_pickaxe.tooltip", "Prism Smelt + Shift+Click Ore (20 Mana) Vein Pulse!");
         this.addItem(ArtilianItems.PRISMATIC_AXE, "Prismatic Axe");
+        this.add("item.artilian.prismatic_axe.tooltip", "Right-Click (25 Mana) — Brimstone Slam shockwave!");
         this.addItem(ArtilianItems.PRISMATIC_SHOVEL, "Prismatic Shovel");
+        this.add("item.artilian.prismatic_shovel.tooltip", "Molten Scoop + Shift+Click (20 Mana) 3x3 Excavation!");
         this.addItem(ArtilianItems.PRISMATIC_HOE, "Prismatic Hoe");
+        this.add("item.artilian.prismatic_hoe.tooltip", "Shift+Click Crop (25 Mana) — 7x7 Growth & 5x5 Replant!");
         this.addItem(ArtilianItems.PRISMATIC_HELMET, "Prismatic Helmet");
         this.addItem(ArtilianItems.PRISMATIC_CHESTPLATE, "Prismatic Chestplate");
         this.addItem(ArtilianItems.PRISMATIC_LEGGINGS, "Prismatic Leggings");

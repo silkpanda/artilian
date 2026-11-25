@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **`Phase 6 — Stage 1A (Sunsteel Weapons & Tools Abilities, 1.0.1)` implemented & verified on `phase-6-stage-1a-sunsteel-abilities` (`235/235` GameTests green, `adventures-in-artilian-1.0.1.jar` built).** (`release/1.0.0` → `main` PR open with `adventures-in-artilian-1.0.0.jar`, deployed to CurseForge.) |
-| **Next** | Run live `./gradlew runClient` visual showcase for Stage 1A (`qa/evidence/sunsteel-abilities-2026-11-25.png`), open/merge PR for `phase-6-stage-1a-sunsteel-abilities` → `main`, and lock in Stage 1B–1E (Starlight / Prismatic / Dragonscale / Twin-Star) plans. |
+| **In progress** | **`Phase 6 — Stage 1C (Tier 3 Prismatic Brimstone Weapons & Tools Abilities, 1.0.2)` implemented & verified on `phase-6-stage-1c-prismatic-abilities` (`241/241` GameTests green, `adventures-in-artilian-1.0.2.jar` built).** (`release/1.0.0` → `main` PR open with `adventures-in-artilian-1.0.0.jar`, deployed to CurseForge; Stage 1A `1.0.1` green on `phase-6-stage-1a-sunsteel-abilities`.) |
+| **Next** | Run live `./gradlew runClient` visual showcase for Stage 1A & Stage 1C (`qa/evidence/`), open/merge PRs for `phase-6-stage-1a-sunsteel-abilities` & `phase-6-stage-1c-prismatic-abilities` → `main`, begin implementing Stage 1B (Starlight, locked in), and lock in Stage 1D–1E (Dragonscale / Twin-Star) plans. |
 | **Waiting on the owner** | 1. Family co-op playtest feedback on `1.0.0` in CurseForge (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. 5. Alex & Steve's theme pick for the Phase 10 3rd dimension. |
 | **Other work in flight** | `release/1.0.0` → `main`, `plan/2026-11-25-phase6-sunsteel`. |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). Pass `--crystal-fox` / `--shadow-wisp` / `--cinder-crag` / `--zaphox` / `--galecorn` / `--ember-drake` / `--peepkin` / `--prismling` / `--flurrywing` / `--sunbeam` / `--frogduck` / `--zapkin` to `tools/art/make_pets_art.py` to regenerate a single pet (`make_crystal_fox()`..`make_flurrywing()` and `make_frogduck()` target `128×64` at `256×128`; `make_sunbeam()` and `make_zapkin()` target `128×128` at `256×256`). |
@@ -876,7 +876,7 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
 
 | Stage | Checkpoint | Name | Scope | Status |
 |---|---|---|---|---|
-| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced). **Stage 1A (Sunsteel) implemented & `235/235` green** (live client check pending); 1B–1E pending lock-in. | ⏳ 1A Green (`1.0.1`); 1B–1E Planned |
+| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced). **Stage 1A (Sunsteel) implemented & `235/235` green**; **Stage 1B (Starlight) locked in (`1.0.x`)**; **Stage 1C (Tier 3 Prismatic Brimstone) implemented & `241/241` green (`1.0.2`)**; 1D–1E pending lock-in. | ⏳ 1A & 1C Green; 1B Locked; 1D–1E Planned |
 | 2 | `1.0.2` | Armor Set Bonuses & Visual/Passive Identity Pass | Distinct 2-piece & 4-piece passive/reactive perks across all 5 armor sets with clear HUD/particle cues | ⏹ Planned |
 | 3 | `1.0.3` | Pet Signature Abilities, Stances & Elemental Synergies Pass | Upgraded active signature skills for all 16 pets, elemental combo bonuses, pet stance/command whistle controls, battle telegraphs/VFX | ⏹ Planned |
 | 4 | `1.1.0` | Phase 6 Balance, `KidSafeTargets` Security Audit (`P6-01`) & `1.1.0` Checkpoint | Co-op balance pass, red-proven `P6-01` probe across all new abilities, and `1.1.0` CurseForge JAR | ⏹ Planned |
@@ -916,6 +916,81 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
   - `sunburstGrowthBonemealsThreeByThreeCrops` (red-proof: limit to single block → red)
 - **Security Gate:** Feeds into Phase 6 `P6-01` (`KidSafeTargets` offensive filtering + air-only light placement safety; zero `BlockEntity` modification).
 - **Evidence & Done When:** `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` green locally & in CI; live `./gradlew runClient` verifies all 5 Sunsteel abilities in-game; `adventures-in-artilian-1.0.1.jar` built.
+
+#### Phase 6 — Stage 1B: Starlight Weapons & Tools Abilities (`1.0.x`)
+- [ ] **Planned (Locked In)**
+- **Why & Decisions:**
+  - **Theme:** **Cosmic / Astral / Gravity & Swiftness** across all 5 Starlight items (`starlight_sword`, `starlight_pickaxe`, `starlight_axe`, `starlight_shovel`, `starlight_hoe`) — a clear step up from Sunsteel (`15–20` Mana, `7.0–7.5` damage, mobility, gravity crowd-control, and deep-caving utility).
+  - **Shared invariants:**
+    - All offensive and pull skills filter through `KidSafeTargets` (never harm or displace players, Chester, villagers, golems, babies, or owned/tamed pets).
+    - Mana costs use `ManaService` (server-authoritative, Creative-friendly).
+    - `Starstep Dash` checks solid-block collision along the lunge path so players never clip into walls or suffocate.
+    - `Constellation Pulse` ore scan is strictly read-only (particle beacons only; zero block/chunk modification).
+    - Zero `BlockEntity` or terrain griefing; right-click tool actives never conflict with vanilla stripping/tilling/pathing.
+
+  | Item | Ability | Trigger & Cost / Cooldown | Effect |
+  |---|---|---|---|
+  | **Starlight Sword** | **Starstep Dash** | Right-Click (`20` Mana, `70`t / `3.5s`) | Safe 6-block forward astral lunge (stops before solid blocks) leaving a cyan starlight trail; deals `7.5` damage + `Levitation I` (`30`t) to `KidSafeTargets` hostiles along the path, and grants the caster `Slow Falling` (`40`t). |
+  | **Starlight Pickaxe** | **Starlit Magnet** + **Constellation Pulse** | Passive (ore break) / `Shift + Right-Click` (`15` Mana, `100`t / `5s`) | Passive: mining ore blocks grants `Haste I` (`80`t) and pulls ore drops within `6` blocks toward the player. Active: grants `Night Vision` (`160`t / `8s`) and emits a `12`-block read-only ore scan marking nearby ores with cyan starlight particle beacons. |
+  | **Starlight Axe** | **Gravity Vortex** | Right-Click in air (`20` Mana, `90`t / `4.5s`) | Pulls `KidSafeTargets` hostiles within `5` blocks inward to a point `3.5` blocks ahead, dealing `7.0` damage + `Levitation I` (`35`t). |
+  | **Starlight Shovel** | **Meteor Scoop** + **Star-Hop** | Passive (block break) / `Shift + Right-Click` (`15` Mana, `80`t / `4s`) | Passive: breaking shovel-mineable blocks grants `Speed I` (`60`t) and pulls drops within `5` blocks. Active: launches the player upward/forward in a low-gravity hop with `Slow Falling` (`60`t). |
+  | **Starlight Hoe** | **Astral Bloom** | `Shift + Right-Click` on crop/sapling/farmland (`20` Mana, `90`t / `4.5s`) | Applies a `5×5` bone-meal growth pulse and hydrates dry farmland within that `5×5` area with teal starlight particles. |
+
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Core Starlight abilities & tooltips | Pending | `StarlightAbilities`, `StarlightEvents`, `StarlightSwordItem`, `StarlightPickaxeItem`, `StarlightAxeItem`, `StarlightShovelItem`, `StarlightHoeItem`, `ArtilianItems`, `ArtilianLanguageProvider`, `runData` (`en_us.json`). |
+  | 2 GameTests & Red-proofs | Pending | `StarlightAbilitiesGameTests` (`6` new tests) + red-proofs for `KidSafeTargets`, solid-block dash stop, read-only ore scan, pull/float, and `5×5` bloom/hydration. |
+  | 3 Version bump, build & client verification | Pending | Bump patch version (`1.0.x`), `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer`, live `./gradlew runClient` showcase (`qa/evidence/starlight-abilities-*.png`) & PR. |
+
+- **Tests & Red-proofs (`StarlightAbilitiesGameTests`):**
+  - `starstepDashHitsHostilesSparesKidSafeAndStopsAtWalls` (red-proof: bypass `KidSafeTargets` or wall-stop check → red)
+  - `constellationPulseScansOresAndGrantsNightVision` (red-proof: omit `Night Vision` or ore scan → red)
+  - `starlitMagnetGrantsHasteAndPullsOreDrops` (red-proof: disable ore check or drop pull → red)
+  - `gravityVortexPullsFloatsAndSparesKidSafeTargets` (red-proof: bypass `KidSafeTargets` or omit `Levitation` → red)
+  - `starHopLaunchesWithSlowFallingAndMeteorScoopPullsDrops` (red-proof: omit `Slow Falling` or drop pull → red)
+  - `astralBloomGrowsAndHydratesFiveByFive` (red-proof: limit to `3×3` or skip farmland hydration → red)
+- **Security Gate:** Feeds into Phase 6 `P6-01` (`KidSafeTargets` offensive/pull filtering, collision-safe dash, read-only ore scan, zero `BlockEntity` modification).
+- **Evidence & Done When:** `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` green locally & in CI; live `./gradlew runClient` verifies all 5 Starlight abilities in-game; playable JAR built.
+
+#### Phase 6 — Stage 1C: Tier 3 Prismatic Brimstone Weapons & Tools Abilities (`1.0.2`)
+- [ ] **In Progress (`241/241` GameTests Green & `1.0.2` JAR Built; Live Client Check Pending)**
+- **Why & Decisions:**
+  - **Theme:** **Boss-Forged Prism Crystal + Brimstone Fire** (forged from *Crystal Colossus* + *Captain Brimstone*) across all 5 Tier 3 items (`prismatic_sword`, `prismatic_pickaxe`, `prismatic_axe`, `prismatic_shovel`, `prismatic_hoe`) — a clear step up from Starlight (`20–25` Mana, `9.0–9.5` skill damage, piercing/AoE boss-forged combat skills, and high-tier mining/farming convenience).
+  - **Preserved existing behavior:** Keeps `PrismaticSwordItem`'s on-hit `Glowing` (`60`t) + `2s` brimstone embers passive intact.
+  - **Shared invariants:**
+    - All offensive and pull skills filter strictly through `KidSafeTargets` (never harm or displace players, Chester, villagers, golems, babies, or owned/tamed pets).
+    - Mana costs use `ManaService` (server-authoritative, Creative-friendly).
+    - Zero terrain fire blocks placed and zero `BlockEntity` modification; `Prism Beam` stops at solid walls.
+    - `Vein Pulse` (`Tags.Blocks.ORES` only) and `Prism Excavation` (`BlockTags.MINEABLE_WITH_SHOVEL` matching blocks only, zero fluids) never touch `BlockEntity` blocks; `Prism Smelt` respects Silk Touch.
+    - Right-click tool actives never conflict with vanilla stripping/tilling/pathing.
+
+  | Item | Ability | Trigger & Cost / Cooldown | Effect |
+  |---|---|---|---|
+  | **Prismatic Sword** | **Prism Beam** *(+ existing on-hit Glowing/Embers)* | Right-Click (`25` Mana, `80`t / `4s`) | Fires a piercing `10`-block rainbow-and-ember beam in the look direction (stops at solid walls, zero block/fire griefing); deals `9.5` damage + `Glowing` (`100`t) + `3s` fire to `KidSafeTargets` hostiles along the line, and grants caster `Fire Resistance` (`80`t) + `Speed I` (`60`t). |
+  | **Prismatic Pickaxe** | **Prism Smelt** + **Vein Pulse** | Passive (ore break) / `Shift + Right-Click` on ore (`20` Mana, `100`t / `5s`) | Passive: mining ores grants `Haste II` (`80`t), pulls drops within `6` blocks, and auto-smelts smeltable ore drops (disabled if Silk Touch is present). Active: breaks up to `8` connected matching ore blocks (`Tags.Blocks.ORES` only, zero `BlockEntity`) in a `3×3×3` vein with crystal + flame bursts. |
+  | **Prismatic Axe** | **Brimstone Slam** | Right-Click in air (`25` Mana, `100`t / `5s`) | Unleashes a `5.5`-block fiery-prism shockwave ring dealing `9.0` damage + `3s` fire + `Weakness I` (`80`t) + outward knockback to `KidSafeTargets` hostiles (zero block breaking, zero fire blocks placed); grants caster `Resistance I` (`60`t). |
+  | **Prismatic Shovel** | **Molten Scoop** + **Prism Excavation** | Passive (block break) / `Shift + Right-Click` on shovel-mineable block (`20` Mana, `80`t / `4s`) | Passive: breaking shovel-mineable blocks grants `Speed II` (`60`t) and pulls drops within `6` blocks. Active: clears a `3×3` face of matching `MINEABLE_WITH_SHOVEL` blocks (zero `BlockEntity`, zero fluids) and pulls the drops to the player. |
+  | **Prismatic Hoe** | **Prismatic Harvest** | `Shift + Right-Click` on crop/sapling/farmland (`25` Mana, `100`t / `5s`) | Applies a `7×7` bone-meal growth pulse, hydrates dry farmland in `7×7`, and auto-harvests + replants mature crops in `5×5` (pulling drops to the player). |
+
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Core Prismatic abilities & tooltips | Pending commit | `PrismaticAbilities`, `PrismaticEvents`, `PrismaticSwordItem`, `PrismaticPickaxeItem`, `PrismaticAxeItem`, `PrismaticShovelItem`, `PrismaticHoeItem`, `ArtilianItems`, `ArtilianLanguageProvider`, `runData` (`en_us.json`). |
+  | 2 GameTests & Red-proofs | Pending commit | `PrismaticAbilitiesGameTests` (`6` new tests, `241/241` green). Red-proofs: bypassed `KidSafeTargets` in `castPrismBeam` → `prismbeamdamageshostilesspareskidsafeandstopsatwalls` failed (exit 1); bypassed `Tags.Blocks.ORES` & `BlockEntity` guard in `castVeinPulse` → `veinpulseminesconnectedmatchingoresonly` failed (exit 1); restored green (`241/241`). |
+  | 3 Version bump, build & client verification | Pending | `mod_version=1.0.2` (`adventures-in-artilian-1.0.2.jar`), `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` (`241/241` green); live `./gradlew runClient` showcase (`qa/evidence/prismatic-abilities-2026-11-25.png`) & PR pending. |
+
+- **Tests & Red-proofs (`PrismaticAbilitiesGameTests`):**
+  - `prismBeamDamagesHostilesSparesKidSafeAndStopsAtWalls` (red-proof: bypass `KidSafeTargets` or wall-stop check → red)
+  - `prismSmeltAutoSmeltsOresAndGrantsHasteII` (plus Silk Touch bypass check; red-proof: disable auto-smelt or Silk Touch guard → red)
+  - `veinPulseMinesConnectedMatchingOresOnly` (red-proof: allow non-ore / `BlockEntity` → red)
+  - `brimstoneSlamDamagesWeakensHostilesAndSparesKidSafe` (red-proof: bypass `KidSafeTargets` or omit `Weakness I` → red)
+  - `prismExcavationClearsThreeByThreeShovelBlocksSafely` (red-proof: allow non-shovel / `BlockEntity` → red)
+  - `prismaticHarvestGrowsHydratesAndReplantsMatureCrops` (red-proof: limit radius or skip mature crop replant → red)
+- **Security Gate:** Feeds into Phase 6 `P6-01` (`KidSafeTargets` offensive filtering, zero fire blocks placed, tag-only & zero-`BlockEntity` block breaking, wall-stop beam raycast).
+- **Evidence & Done When:** `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` green locally & in CI; live `./gradlew runClient` verifies all 5 Prismatic abilities in-game; playable JAR built.
 
 ### Phase 7: In-Game Guidebook, Quests & Advancements (`1.1.1` → `1.2.0`)
 
