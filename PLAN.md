@@ -10,10 +10,10 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **`1.0.0` Release & `2.0.0` Roadmap PR open (`release/1.0.0` → `main`).** Bumped `mod_version=1.0.0`, built & verified `adventures-in-artilian-1.0.0.jar` (`229/229` GameTests green), deployed to the local CurseForge instance (`%USERPROFILE%\curseforge\minecraft\Instances\Adventures in Artilian\mods\`, replacing `0.1.0`), and locked in the `1.0.0` → `2.0.0` checkpoint versioning policy and Phases 6–10 roadmap in `PLAN.md`. |
-| **Next** | Merge `release/1.0.0` PR once CI is green, playtest `1.0.0` in CurseForge, then start **Phase 6 — Stage 1 (`1.0.1`): Weapons & Tools Active Abilities Pass** on its own feature branch. |
+| **In progress** | **`Phase 6 — Stage 1A (Sunsteel Weapons & Tools Abilities, 1.0.1)` plan locked in on `plan/2026-11-25-phase6-sunsteel`.** (`release/1.0.0` → `main` PR open with `adventures-in-artilian-1.0.0.jar`, `229/229` GameTests green, deployed to CurseForge.) |
+| **Next** | Merge `release/1.0.0` PR once CI is green, review/merge `plan/2026-11-25-phase6-sunsteel` (or implement Stage 1A directly on a feature branch), and lock in Starlight / Prismatic / Dragonscale / Twin-Star tier plans. |
 | **Waiting on the owner** | 1. Family co-op playtest feedback on `1.0.0` in CurseForge (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. 5. Alex & Steve's theme pick for the Phase 10 3rd dimension. |
-| **Other work in flight** | `release/1.0.0` → `main`. |
+| **Other work in flight** | `release/1.0.0` → `main`, `plan/2026-11-25-phase6-sunsteel`. |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). Pass `--crystal-fox` / `--shadow-wisp` / `--cinder-crag` / `--zaphox` / `--galecorn` / `--ember-drake` / `--peepkin` / `--prismling` / `--flurrywing` / `--sunbeam` / `--frogduck` / `--zapkin` to `tools/art/make_pets_art.py` to regenerate a single pet (`make_crystal_fox()`..`make_flurrywing()` and `make_frogduck()` target `128×64` at `256×128`; `make_sunbeam()` and `make_zapkin()` target `128×128` at `256×256`). |
 
 ---
@@ -876,10 +876,46 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
 
 | Stage | Checkpoint | Name | Scope | Status |
 |---|---|---|---|---|
-| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced) | ⏹ Planned |
+| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced). **Stage 1A (Sunsteel) locked in**; 1B–1E pending lock-in. | 📋 Planned — 1A Locked |
 | 2 | `1.0.2` | Armor Set Bonuses & Visual/Passive Identity Pass | Distinct 2-piece & 4-piece passive/reactive perks across all 5 armor sets with clear HUD/particle cues | ⏹ Planned |
 | 3 | `1.0.3` | Pet Signature Abilities, Stances & Elemental Synergies Pass | Upgraded active signature skills for all 16 pets, elemental combo bonuses, pet stance/command whistle controls, battle telegraphs/VFX | ⏹ Planned |
 | 4 | `1.1.0` | Phase 6 Balance, `KidSafeTargets` Security Audit (`P6-01`) & `1.1.0` Checkpoint | Co-op balance pass, red-proven `P6-01` probe across all new abilities, and `1.1.0` CurseForge JAR | ⏹ Planned |
+
+#### Phase 6 — Stage 1A: Sunsteel Weapons & Tools Abilities (`1.0.1`)
+- [ ] **Planned (Locked in 2026-11-25)**
+- **Why & Decisions:**
+  - **Theme:** **Solar / Warmth / Starter Paladin** across all 5 Sunsteel items (`sunsteel_sword`, `sunsteel_pickaxe`, `sunsteel_axe`, `sunsteel_shovel`, `sunsteel_hoe`).
+  - **Shared invariants:**
+    - All offensive skills filter through `KidSafeTargets` (never harm players, Chester, villagers, golems, babies, or owned/tamed pets).
+    - Mana costs use `ManaService` (server-authoritative, Creative-friendly).
+    - Temporary light motes place `minecraft:light` in **air only** and auto-expire after `300` ticks (`15`s) without ever overwriting non-air or `BlockEntity` blocks.
+    - Right-click tool actives never conflict with vanilla stripping/tilling/pathing.
+
+  | Item | Ability | Trigger & Cost / Cooldown | Effect |
+  |---|---|---|---|
+  | **Sunsteel Sword** | **Solar Slash** | Right-Click (`15` Mana, `60`t / `3s`) | 5-block golden arc dealing `6.0` damage, `Glowing` (`60`t), and gentle knockback to `KidSafeTargets` hostiles; grants user `Speed I` (`60`t). |
+  | **Sunsteel Pickaxe** | **Sunlit Mining** + **Solar Flare** | Passive (ore break) / `Shift + Right-Click` (`10` Mana, `80`t / `4s`) | Passive: mining ore blocks grants `Haste I` (`60`t). Active: places a temporary level-15 `minecraft:light` mote in air only (auto-removed after `300`t / `15s`). |
+  | **Sunsteel Axe** | **Sun-Cleave** | Right-Click in air (`15` Mana, `80`t / `4s`) | 3.5-block front sweep dealing `6.0` damage + `Slowness I` (`40`t) to `KidSafeTargets` hostiles. |
+  | **Sunsteel Shovel** | **Warm Scoop** | Passive (block break) | Breaking shovel-mineable blocks grants `Speed I` (`50`t) and pulls dropped items within 3 blocks toward the player. |
+  | **Sunsteel Hoe** | **Sunburst Growth** | `Shift + Right-Click` on crop/sapling (`15` Mana, `80`t / `4s`) | Applies a `3×3` bone-meal growth pulse around the targeted crop/sapling. |
+
+- **Sub-stages:**
+
+  | Sub-stage | Commit | Summary & Verification |
+  |---|---|---|
+  | 1 Core Sunsteel abilities & tooltips | Pending | `SunsteelAbilities` service, tool/weapon hooks, `en_us` tooltips, `runData`. |
+  | 2 GameTests & Red-proofs | Pending | `SunsteelAbilitiesGameTests` covering all 5 items + kid-safe & air-only red-proofs. |
+  | 3 Client verification & `1.0.1` JAR | Pending | `./gradlew runClient` showcase (`qa/evidence/sunsteel-abilities-2026-11-25.png`), `mod_version=1.0.1` JAR & PR. |
+
+- **Tests & Red-proofs (`SunsteelAbilitiesGameTests`):**
+  - `solarSlashHitsHostilesAndSparesKidSafeTargets` (red-proof: bypass `KidSafeTargets` filter → hits Chester/villager → red)
+  - `solarFlarePlacesAirOnlyLightAndExpires` (red-proof: skip air-only guard or expiry cleanup → red)
+  - `sunlitMiningGrantsHasteOnOreBreak` (red-proof: disable ore check → red)
+  - `sunCleaveDamagesAndSlowsHostiles` (red-proof: omit `Slowness I` → red)
+  - `warmScoopGrantsSpeedAndPullsDrops` (red-proof: disable drop pull → red)
+  - `sunburstGrowthBonemealsThreeByThreeCrops` (red-proof: limit to single block → red)
+- **Security Gate:** Feeds into Phase 6 `P6-01` (`KidSafeTargets` offensive filtering + air-only light placement safety; zero `BlockEntity` modification).
+- **Evidence & Done When:** `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` green locally & in CI; live `./gradlew runClient` verifies all 5 Sunsteel abilities in-game; `adventures-in-artilian-1.0.1.jar` built.
 
 ### Phase 7: In-Game Guidebook, Quests & Advancements (`1.1.1` → `1.2.0`)
 
