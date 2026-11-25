@@ -115,159 +115,426 @@ def smooth_coat(img, u, v, w, h, d, hi, base, shade, deep):
 
 
 def make_crystal_fox():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Crystal Fox coat, faceted Starlight crystal & glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # 1. Body [6, 4, 9] at [0, 0] — sleek pearl-frost coat with a soft crystal-teal spine stripe
-    smooth_coat(img, 0, 0, 6, 4, 9, FUR_HI, FUR_BASE, FUR_SHADE, FUR_DEEP)
-    bf = faces(0, 0, 6, 4, 9)
+    # 8-stop Pearl-Frost & Ice-Mist fur ramp (no harsh flat white or alpha holes)
+    FUR = {
+        "0": (94, 150, 166, 255),   # Deep ice-slate crevice shadow
+        "1": (128, 184, 198, 255),  # Cool shadow
+        "2": (162, 214, 222, 255),  # Soft ice-teal shade
+        "3": (194, 234, 236, 255),  # Mist midtone
+        "4": (218, 245, 245, 255),  # Pearl-frost base
+        "5": (236, 251, 251, 255),  # Upper coat highlight
+        "6": (248, 254, 253, 255),  # Soft cream ruff/muzzle highlight
+    }
+    # 7-stop Starlight Crystal + Prism Violet accent palette
+    CRYS = {
+        "k": (16, 62, 74, 255),     # Deep crystal bevel
+        "d": (24, 102, 114, 255),   # Dark crystal facet
+        "s": (34, 156, 158, 255),   # Shaded Starlight teal
+        "m": (56, 217, 192, 255),   # #38D9C0 Starlight Teal
+        "l": (96, 238, 232, 255),   # Light cyan facet
+        "b": (125, 249, 255, 255),  # #7DF9FF Bright cyan glow
+        "c": (226, 255, 254, 255),  # Specular white-aqua glint
+        "V": (72, 42, 128, 255),    # Deep prism amethyst
+        "v": (134, 84, 218, 255),   # Prism violet
+        "p": (188, 150, 255, 255),  # Pale prism highlight
+    }
+    EYE_PAL = {
+        **FUR,
+        **CRYS,
+        "L": (26, 18, 46, 255),     # Upper lash / dark outline
+        "P": (34, 22, 64, 255),     # Deep pupil
+        "I": (68, 42, 126, 255),    # Indigo upper iris
+        "T": (44, 142, 168, 255),   # Mid teal iris
+        "G": (76, 234, 218, 255),   # Glowing lower iris crescent
+        "W": (244, 250, 255, 255),  # Sclera white
+        "S": (200, 222, 238, 255),  # Sclera shade
+        "H": (255, 255, 255, 255),  # Crisp specular catchlight
+        "N": (28, 20, 48, 255),     # Nose dark
+        "M": (54, 40, 86, 255),     # Nose mid
+        "U": (124, 104, 164, 255),  # Nose glint
+    }
+
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
+
+    def shade_fur_box(u, v, w, h, d, *, cream_bottom=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        ramp = [FUR["0"], FUR["1"], FUR["2"], FUR["3"], FUR["4"], FUR["5"], FUR["6"]]
+        face_bias = {"top": 5.3, "front": 4.5, "east": 3.8, "west": 3.6, "back": 3.1, "bottom": 3.4 if cream_bottom else 1.8}
+        for name, (rx, ry, rw, rh) in f.items():
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        # Radial cushion shading so bottom faces are never flat
+                        cx = abs(tx - 0.5) * 2.0
+                        cy = abs(ty - 0.5) * 2.0
+                        edge_dist = max(cx, cy)
+                        idx = bias + (1.0 - edge_dist) * (2.2 if cream_bottom else 1.5) - edge_dist * 1.4
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.6 if edge == 0 else 0.0) + (0.4 if ty < 0.4 else -0.2)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.8 + (0.25 - tx) * 0.4
+                    tuft = ((lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 11)
+                    if tuft <= 1:
+                        idx += 0.45
+                    elif tuft >= 9:
+                        idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.7
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+
+    def shade_crystal_box(u, v, w, h, d, *, glow_thresh=3, prism_trim=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        ramp = [CRYS["k"], CRYS["d"], CRYS["s"], CRYS["m"], CRYS["l"], CRYS["b"], CRYS["c"]]
+        face_bias = {"top": 5.2, "front": 4.4, "east": 3.6, "west": 3.2, "back": 2.6, "bottom": 1.8}
+        for name, (rx, ry, rw, rh) in f.items():
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    is_rim = (lx == 0 or ly == 0 or lx == rw - 1 or ly == rh - 1)
+                    # Faceted diagonal crystal planes
+                    facet = ((lx + ly + seed) % 4 == 0)
+                    diag = (lx * rh + ly * rw) / max(1, rw * rh * 2)
+                    idx = bias + (0.5 - diag) * 2.2
+                    if facet:
+                        idx += 0.9
+                    if is_rim and (lx == rw - 1 or ly == rh - 1) and rw >= 4 and rh >= 4:
+                        idx -= 1.3
+                    elif is_rim and (lx == 0 or ly == 0) and rw >= 4 and rh >= 4:
+                        idx += 0.6
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    col = ramp[c_idx]
+                    if prism_trim and is_rim and (lx + ly) % 3 == 0:
+                        col = CRYS["v"] if c_idx >= 3 else CRYS["V"]
+                    put(img, rx + lx, ry + ly, col)
+                    if c_idx >= glow_thresh:
+                        put(glow, rx + lx, ry + ly, col)
+
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    # 1. Body [6, 4, 9] at [0, 0] -> 12x8x18 px
+    shade_fur_box(0, 0, 6, 4, 9, cream_bottom=True, seed=1)
+    bf = f2x(0, 0, 6, 4, 9)
+    # Starlight crystal dorsal ridge & shoulder/hip markings
     tx, ty, tw, th = bf["top"]
     for dy in range(1, th - 1):
-        put(img, tx + 2, ty + dy, STAR_MAIN if dy % 2 == 0 else STAR_SHADE)
-        put(img, tx + 3, ty + dy, STAR_MAIN if dy % 2 == 1 else STAR_BRIGHT)
-    # Soft teal hip gradient
+        half_w = 2 if 4 <= dy <= 13 else 1
+        for dx in range(tw // 2 - half_w, tw // 2 + half_w):
+            is_center = (dx in (tw // 2 - 1, tw // 2))
+            if is_center and (dy % 3 != 0):
+                col = CRYS["b"] if 6 <= dy <= 11 else CRYS["l"]
+                put(img, tx + dx, ty + dy, col)
+                if 5 <= dy <= 12:
+                    put(glow, tx + dx, ty + dy, col)
+            elif is_center:
+                put(img, tx + dx, ty + dy, CRYS["m"])
+            else:
+                put(img, tx + dx, ty + dy, CRYS["s"] if dy % 2 == 0 else FUR["3"])
+    # Subtle crystal flank markings on east & west
     for side in ("east", "west"):
         sx, sy, sw, sh = bf[side]
-        put(img, sx + (sw - 2 if side == "east" else 1), sy + 1, STAR_MAIN)
-        put(img, sx + (sw - 3 if side == "east" else 2), sy + 1, FUR_SHADE)
-    fill(img, bf["bottom"], FUR_CHEST)
+        hi_x = sx + sw - 5 if side == "east" else sx + 3
+        for ox, oy, c in [(0, 2, CRYS["m"]), (1, 2, CRYS["b"]), (1, 3, CRYS["m"]), (2, 3, CRYS["s"]), (0, 3, FUR["3"])]:
+            put(img, hi_x + ox, sy + oy, c)
+    # Back crystal stripe continuation
+    bx, by, bw, bh = bf["back"]
+    for dy in range(1, 5):
+        put(img, bx + bw // 2 - 1, by + dy, CRYS["m"] if dy < 3 else CRYS["s"])
+        put(img, bx + bw // 2, by + dy, CRYS["l"] if dy < 3 else CRYS["m"])
 
-    # 2. Fluffy Frost Chest Ruff [7, 3, 2] at [32, 0] with jagged bottom edge
-    smooth_coat(img, 32, 0, 7, 3, 2, FUR_CHEST, FUR_HI, FUR_BASE, FUR_SHADE)
-    rf = faces(32, 0, 7, 3, 2)
-    rx, ry, rw, rh = rf["front"]
-    for rx_i in (0, 2, 4, 6):
-        put(img, rx + rx_i, ry + rh - 1, (0, 0, 0, 0))
+    # Dorsal crystal spines [1, 2, 1] at [60, 0] and [1, 3, 1] at [66, 0]
+    shade_crystal_box(60, 0, 1, 2, 1, glow_thresh=4, seed=2)
+    shade_crystal_box(66, 0, 1, 3, 1, glow_thresh=3, seed=3)
 
-    # 3. Single Diamond Chest Gem [2, 2, 1] at [52, 0]
-    paint_geo_box(img, 52, 0, 2, 2, 1, {
-        "top": ["vh"],
-        "bottom": ["ms"],
-        "east": ["h", "m"],
-        "west": ["b", "s"],
-        "front": ["gh", "bm"],
-        "back": ["pp", "PP"],
-    }, CRYSTAL_PALETTE)
+    # 2. Fluffy Frost Chest Ruff [5, 4, 2] at [32, 0] -> 10x8x4 px (100% opaque, sculpted V-tuft shading!)
+    shade_fur_box(32, 0, 5, 4, 2, cream_bottom=True, seed=4)
+    paint_box_2x(img, 32, 0, 5, 4, 2, {
+        "front": [
+            "5666666665",
+            "4666666664",
+            "3566556653",
+            "3456556543",
+            "2356666532",
+            "1245665421",
+            "1324554231",
+            "0112332110",
+        ],
+    }, FUR)
 
-    # 4. Head [7, 5, 6] at [0, 15] — sleek pearl-frost face with teal-crystal cheek/crown markings
-    smooth_coat(img, 0, 15, 7, 5, 6, FUR_HI, FUR_BASE, FUR_SHADE, FUR_DEEP)
-    hf = faces(0, 15, 7, 5, 6)
+    # 3. Chest Gem [2, 2, 1] at [52, 0] -> 4x4x2 px (Starlight diamond & prism-violet bezel)
+    shade_crystal_box(52, 0, 2, 2, 1, glow_thresh=3, prism_trim=True, seed=5)
+    paint_box_2x(img, 52, 0, 2, 2, 1, {
+        "front": [
+            "VcbV",
+            "cbbl",
+            "blms",
+            "VsPV",
+        ],
+    }, CRYS)
+    paint_box_2x(glow, 52, 0, 2, 2, 1, {
+        "front": [
+            ".cb.",
+            "cbbl",
+            "blm.",
+            "....",
+        ],
+    }, CRYS)
+
+    # 4. Head [8, 5, 6] at [80, 0] -> 16x10x12 px
+    shade_fur_box(80, 0, 8, 5, 6, cream_bottom=True, seed=6)
+    hf = f2x(80, 0, 8, 5, 6)
+    # Soft cream cheeks & muzzle halo + subtle ice-teal temple accents on front
     hx, hy, hw, hh = hf["front"]
-    # Cream cheeks & lower face
-    fill(img, (hx + 1, hy + hh - 2, hw - 2, 2), FUR_CHEST)
-    # Subtle crystal crown stripe at top of head
-    tx, ty, tw, th = hf["top"]
-    for dy in range(1, th):
-        put(img, tx + 3, ty + dy, STAR_MAIN if dy > 2 else STAR_BRIGHT)
+    for dy in range(6, 10):
+        for dx in range(2, 14):
+            col = FUR["6"] if dy <= 8 and 3 <= dx <= 12 else (FUR["4"] if dy == 9 else FUR["5"])
+            if dy == 9 and dx in (2, 13):
+                col = FUR["3"]
+            put(img, hx + dx, hy + dy, col)
+    # Subtle Starlight-teal cheek whiskers & brow mark
+    for sx_off in (1, 14):
+        put(img, hx + sx_off, hy + 5, CRYS["m"])
+        put(img, hx + sx_off, hy + 6, CRYS["s"])
+    # Crown crystal stripe on top of head
+    htx, hty, htw, hth = hf["top"]
+    for dy in range(2, hth - 1):
+        put(img, htx + 7, hty + dy, CRYS["b"] if dy < 6 else CRYS["m"])
+        put(img, htx + 8, hty + dy, CRYS["l"] if dy < 6 else CRYS["s"])
+    # Cheek ruffs [2, 2, 2] at [0, 16] -> 4x4x4 px
+    shade_fur_box(0, 16, 2, 2, 2, cream_bottom=False, seed=7)
+    cf_ruff = f2x(0, 16, 2, 2, 2)
+    for fname in ("front", "back"):
+        rx, ry, rw, rh = cf_ruff[fname]
+        put(img, rx + 2, ry + 1, FUR["6"])
+        put(img, rx + 3, ry + 2, CRYS["l"])
 
-    # 5. Delicate Tapered Fox Snout [3, 2, 3] at [28, 15]
-    smooth_coat(img, 28, 15, 3, 2, 3, FUR_CHEST, FUR_HI, FUR_BASE, FUR_SHADE)
-    sf = faces(28, 15, 3, 2, 3)
-    sx, sy, sw, sh = sf["front"]
-    put(img, sx + 1, sy, NOSE)
+    # 5. Delicate Fox Snout [3, 2, 3] at [110, 0] -> 6x4x6 px
+    shade_fur_box(110, 0, 3, 2, 3, cream_bottom=True, seed=8)
+    paint_box_2x(img, 110, 0, 3, 2, 3, {
+        "front": [
+            "56UN65",
+            "66MM66",
+            "566665",
+            "345543",
+        ],
+        "top": [
+            "344443",
+            "455554",
+            "455554",
+            "566665",
+            "566665",
+            "46NN64",
+        ],
+    }, EYE_PAL)
 
-    # 6. Single Diamond Forehead Gem [2, 2, 1] at [42, 15]
-    paint_geo_box(img, 42, 15, 2, 2, 1, {
-        "top": ["gh"],
-        "bottom": ["ms"],
-        "east": ["h", "m"],
-        "west": ["b", "s"],
-        "front": ["gh", "bm"],
-        "back": ["pp", "PP"],
-    }, CRYSTAL_PALETTE)
+    # 6. Forehead Brow Gem [1, 1, 1] at [36, 16] -> 2x2x2 px
+    shade_crystal_box(36, 16, 1, 1, 1, glow_thresh=2, prism_trim=True, seed=9)
+    paint_box_2x(img, 36, 16, 1, 1, 1, {"front": ["cb", "lp"]}, CRYS)
+    paint_box_2x(glow, 36, 16, 1, 1, 1, {"front": ["cb", "lp"]}, CRYS)
 
-    # 7. Sleek Crystal-Tipped Fox Ears [3, 5, 2] at [50, 15] & [62, 15]
-    # Base fur fades smoothly into a sharp tapered Starlight Crystal ear tip!
-    for eu in (50, 62):
-        paint_geo_box(img, eu, 15, 3, 5, 2, {
-            "top": [".g.", ".h."],
-            "bottom": ["FFF", "FFF"],
-            "east": [".h", "gb", "bm", "FD", "FF"],
-            "front": [".g.", "ghb", "bCb", "FCF", "FFF"],
-            "west": ["h.", "bg", "mb", "DF", "FF"],
-            "back": [".h.", "bmb", "sms", "DDD", "DDD"],
-        }, {
-            **CRYSTAL_PALETTE,
-            "F": FUR_BASE,
-            "D": FUR_SHADE,
-            "C": STAR_BRIGHT,
-        })
+    # 7. Tapered 3-Tier Crystal-Tipped Ears (shared UVs at [12,16], [22,16], [30,16])
+    # Base [3, 3, 1] at [12, 16] -> 6x6 front/back, 2x6 sides
+    shade_fur_box(12, 16, 3, 3, 1, cream_bottom=False, seed=10)
+    paint_box_2x(img, 12, 16, 3, 3, 1, {
+        "front": [
+            "5lbbm5",
+            "4smms4",
+            "4sdms4",
+            "3sdds3",
+            "3kVVk3",
+            "234432",
+        ],
+        "back": [
+            "3ssmm3",
+            "44ss44",
+            "454454",
+            "344443",
+            "233332",
+            "122221",
+        ],
+    }, {**FUR, **CRYS})
+    paint_box_2x(glow, 12, 16, 3, 3, 1, {
+        "front": [
+            ".lbbm.",
+            "..mm..",
+            "......",
+            "......",
+            "......",
+            "......",
+        ],
+    }, CRYS)
 
-    # 8. Soulful Monster-Tamer Eyes [2, 2, 1] at [74, 15] & [82, 15]
-    for idx, eye_u in enumerate((74, 82)):
-        ef = faces(eye_u, 15, 2, 2, 1)
-        for rect in ef.values():
-            fill(img, rect, EYE_WHITE)
-        fx, fy, fw, fh = ef["front"]
-        inner_x = fx if idx == 0 else fx + 1
-        outer_x = fx + 1 if idx == 0 else fx
-        put(img, inner_x, fy, EYE_IRIS)
-        put(img, inner_x, fy + 1, EYE_PUPIL)
-        put(img, outer_x, fy, EYE_WHITE)
-        put(img, outer_x, fy + 1, EYE_SPARK)
+    # Mid [2, 2, 1] at [22, 16] -> 4x4 front/back, 2x4 sides
+    shade_crystal_box(22, 16, 2, 2, 1, glow_thresh=4, seed=11)
+    paint_box_2x(img, 22, 16, 2, 2, 1, {
+        "front": [
+            "lcbm",
+            "mbbs",
+            "smmd",
+            "4ss3",
+        ],
+        "back": [
+            "smms",
+            "dssd",
+            "3ss2",
+            "3442",
+        ],
+    }, {**FUR, **CRYS})
+    paint_box_2x(glow, 22, 16, 2, 2, 1, {
+        "front": [
+            "lcbm",
+            ".bb.",
+            "....",
+            "....",
+        ],
+    }, CRYS)
 
-    # 9. Tapering 3-Segment Tail ending in a Faceted Crystal Spearhead!
-    # Tail Base [3, 3, 4] at [0, 30] — soft fur transitioning to mist-teal
-    smooth_coat(img, 0, 30, 3, 3, 4, FUR_HI, FUR_BASE, FUR_SHADE, FUR_DEEP)
-    tbf = faces(0, 30, 3, 3, 4)
-    fill(img, tbf["back"], STAR_MAIN)
+    # Tip [1, 1, 1] at [30, 16] -> 2x2 per face (glowing crystal spear tip)
+    shade_crystal_box(30, 16, 1, 1, 1, glow_thresh=2, seed=12)
+    paint_box_2x(img, 30, 16, 1, 1, 1, {
+        "front": ["cb", "bl"],
+        "back": ["bm", "ms"],
+    }, CRYS)
+    paint_box_2x(glow, 30, 16, 1, 1, 1, {
+        "front": ["cb", "bl"],
+        "back": ["bm", "ms"],
+        "top": ["cc", "bb"],
+    }, CRYS)
 
-    # Tail Mid [2, 2, 4] at [16, 30] — blends smoothly from fur into translucent-cyan crystal!
-    paint_geo_box(img, 16, 30, 2, 2, 4, {
-        "top": ["FF", "Db", "bm", "gh"],
-        "bottom": ["DD", "Dm", "ms", "bh"],
-        "east": ["FDmg", "DDsb"],
-        "front": ["FF", "DD"],
-        "west": ["gmDF", "bsDD"],
-        "back": ["gh", "bm"],
-    }, {
-        **CRYSTAL_PALETTE,
-        "F": FUR_BASE,
-        "D": FUR_SHADE,
-    })
+    # 8. Soulful Monster-Tamer Eyes: eye_left [2,3,1]@[44,16] (inner=left, outer=right)
+    #                                 eye_right [2,3,1]@[52,16] (outer=left, inner=right)
+    for is_left, eye_u in ((True, 44), (False, 52)):
+        shade_fur_box(eye_u, 16, 2, 3, 1, cream_bottom=False, seed=13)
+        if is_left:
+            front_eye = [
+                "LLL2",
+                "PHIW",
+                "PPPW",
+                "PGGW",
+                "ITGS",
+                "3562",
+            ]
+            glow_eye = [
+                "....",
+                ".H..",
+                "....",
+                ".GG.",
+                "..G.",
+                "....",
+            ]
+        else:
+            front_eye = [
+                "2LLL",
+                "WIHP",
+                "WPPP",
+                "WGGP",
+                "SGTI",
+                "2653",
+            ]
+            glow_eye = [
+                "....",
+                "..H.",
+                "....",
+                ".GG.",
+                ".G..",
+                "....",
+            ]
+        paint_box_2x(img, eye_u, 16, 2, 3, 1, {"front": front_eye}, EYE_PAL)
+        paint_box_2x(glow, eye_u, 16, 2, 3, 1, {"front": glow_eye}, EYE_PAL)
 
-    # Tail Crystal Cluster: central prism + 3 angled faceted crystal shards fanning from the tapered tip!
-    paint_geo_box(img, 30, 30, 2, 2, 4, {
-        "top": ["bm", "hb", "gh", ".g"],
-        "bottom": ["ms", "bm", "bh", ".h"],
-        "east": ["mbh.", "smg."],
-        "front": ["hb", "ms"],
-        "west": [".hbm", ".gms"],
-        "back": [".g", ".h"],
-    }, CRYSTAL_PALETTE)
+    # 9. Tapering 3-Segment Crystal-Tipped Tail
+    # Tail base [3, 3, 4] at [0, 24] -> 6x6x8 px
+    shade_fur_box(0, 24, 3, 3, 4, cream_bottom=True, seed=14)
+    tbf = f2x(0, 24, 3, 3, 4)
+    ttx, tty, ttw, tth = tbf["top"]
+    for dy in range(tth):
+        put(img, ttx + 2, tty + dy, CRYS["m"] if dy < 5 else CRYS["s"])
+        put(img, ttx + 3, tty + dy, CRYS["l"] if dy < 4 else CRYS["m"])
 
-    for shard_u in (44, 54):
-        paint_geo_box(img, shard_u, 30, 1, 2, 3, {
-            "top": ["m", "b", "g"],
-            "bottom": ["s", "m", "h"],
-            "east": ["bh.", "mg."],
-            "front": ["b", "s"],
-            "west": [".hb", ".gm"],
-            "back": ["g", "h"],
-        }, CRYSTAL_PALETTE)
+    # Tail mid [4, 4, 5] at [16, 24] -> 8x8x10 px (fluffy frosted plume fading into crystal at z1 tip)
+    shade_fur_box(16, 24, 4, 4, 5, cream_bottom=True, seed=15)
+    tmf = f2x(16, 24, 4, 4, 5)
+    for fname in ("top", "east", "west"):
+        rx, ry, rw, rh = tmf[fname]
+        for ly in range(rh):
+            for lx in range(rw):
+                dist_tip = ly if fname == "top" else (lx if fname == "east" else (rw - 1 - lx))
+                if dist_tip <= 1:
+                    col = CRYS["b"] if (lx + ly) % 2 == 0 else CRYS["l"]
+                    put(img, rx + lx, ry + ly, col)
+                    put(glow, rx + lx, ry + ly, col)
+                elif dist_tip == 2 or (dist_tip == 3 and (lx + ly) % 2 == 0):
+                    put(img, rx + lx, ry + ly, CRYS["m"])
+                elif dist_tip == 3:
+                    put(img, rx + lx, ry + ly, CRYS["s"])
+    # Back face of tail_mid meets the crystal collar
+    bx, by, bw, bh = tmf["back"]
+    for ly in range(bh):
+        for lx in range(bw):
+            is_inner = (1 <= lx <= bw - 2 and 1 <= ly <= bh - 2)
+            col = CRYS["l"] if is_inner and (lx + ly) % 2 == 0 else (CRYS["m"] if is_inner else CRYS["s"])
+            put(img, bx + lx, by + ly, col)
 
-    paint_geo_box(img, 64, 30, 1, 1, 3, {
-        "top": ["b", "h", "g"],
-        "bottom": ["m", "b", "h"],
-        "east": ["bh."],
-        "front": ["h"],
-        "west": [".hb"],
-        "back": ["g"],
-    }, CRYSTAL_PALETTE)
+    # Tail Crystal Collar [3, 3, 2] at [36, 24] -> 6x6x4 px
+    shade_crystal_box(36, 24, 3, 3, 2, glow_thresh=4, prism_trim=True, seed=16)
+    # Tail Crystal Central Spearhead [2, 2, 3] at [48, 24] -> 4x4x6 px
+    shade_crystal_box(48, 24, 2, 2, 3, glow_thresh=3, seed=17)
+    # Tail Crystal Angled Side Shards [1, 1, 3] at [60, 24] -> 2x2x6 px
+    shade_crystal_box(60, 24, 1, 1, 3, glow_thresh=3, seed=18)
 
-    # 10. Agile Fox Legs [2, 4, 2] at [0, 42], [10, 42], [20, 42], [30, 42]
-    # Pearl-frost leg fading organically into glowing crystal-dipped paws!
-    for lu in (0, 10, 20, 30):
-        smooth_coat(img, lu, 42, 2, 4, 2, FUR_HI, FUR_BASE, FUR_SHADE, FUR_DEEP)
-        lf = faces(lu, 42, 2, 4, 2)
-        for face_name in ("front", "back", "east", "west"):
-            fx, fy, fw, fh = lf[face_name]
-            fill(img, (fx, fy + 2, fw, 1), STAR_MAIN)
-            fill(img, (fx, fy + 3, fw, 1), STAR_BRIGHT if face_name == "front" else STAR_SHADE)
-        fill(img, lf["bottom"], STAR_DARK)
+    # 10. Agile Fox Legs [2, 5, 2] at [0, 40], [10, 40], [20, 40], [30, 40] -> 4x10x4 px
+    for idx, lu in enumerate((0, 10, 20, 30)):
+        shade_fur_box(lu, 40, 2, 5, 2, cream_bottom=False, seed=20 + idx)
+        lf = f2x(lu, 40, 2, 5, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = lf[fname]
+            # Frosted crystal cuff (rows 6..7) & sculpted crystal paw (rows 8..9)
+            for lx in range(rw):
+                put(img, rx + lx, ry + 6, CRYS["l"] if (lx + idx) % 2 == 0 else CRYS["m"])
+                put(img, rx + lx, ry + 7, CRYS["m"] if fname == "front" else CRYS["s"])
+                put(img, rx + lx, ry + 8, CRYS["s"] if fname != "back" else CRYS["d"])
+                put(img, rx + lx, ry + 9, CRYS["d"] if lx in (0, 3) else CRYS["k"])
+            if fname == "front":
+                # Subtle bright crystal paw glint & toe split
+                put(img, rx + 1, ry + 7, CRYS["b"])
+                put(img, rx + 2, ry + 7, CRYS["b"])
+                put(img, rx + 1, ry + 8, CRYS["m"])
+                put(img, rx + 2, ry + 8, CRYS["m"])
+                put(glow, rx + 1, ry + 6, CRYS["l"])
+                put(glow, rx + 2, ry + 6, CRYS["l"])
+        # Multi-tone shaded crystal paw-pad on bottom face (4x4)
+        paint_box_2x(img, lu, 40, 2, 5, 2, {
+            "bottom": [
+                "dkkd",
+                "kVVk",
+                "kVmk",
+                "ddkd",
+            ],
+        }, CRYS)
 
-    dest = OUT / "entity/crystal_fox.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "crystal_fox.png")
+    glow.save(entity_dir / "crystal_fox_glowmask.png")
 
 
 def draw_crystal(core_dark, core_mid, core_hi, ring_color=None):
@@ -372,595 +639,2868 @@ def make_biome_treat():
 
 
 def make_shadow_wisp():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Shadow Wisp matching Steve's drawing & original look."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # Dark charcoal-violet blocky head + vivid purple tapered torso & tendrils (Steve's drawing)
-    SH_HEAD_HI = (78, 68, 98, 255)
-    SH_HEAD_BASE = (58, 50, 76, 255)
-    SH_HEAD_SHADE = (42, 36, 58, 255)
-    SH_HEAD_DEEP = (28, 23, 40, 255)
-    SH_SPOT = (22, 18, 32, 255)
+    # Charcoal-violet blocky head ramp faithful to Steve's shaded sketch & original Shadow Wisp
+    HEAD_RAMP = [
+        (22, 18, 32, 255),   # 0: Shadow speckle
+        (28, 23, 40, 255),   # 1: Deep charcoal-violet
+        (36, 30, 50, 255),   # 2: Low-mid charcoal
+        (44, 38, 60, 255),   # 3: Shaded slate
+        (54, 46, 72, 255),   # 4: Mid charcoal-violet
+        (64, 55, 84, 255),   # 5: Charcoal-violet base
+        (74, 64, 96, 255),   # 6: Soft upper highlight
+        (86, 76, 108, 255),  # 7: Edge sheen
+    ]
+    # Vivid purple V-torso & tendril ramp faithful to Steve's drawing & original Shadow Wisp
+    BODY_RAMP = [
+        (62, 24, 112, 255),  # 0: Deep shadow purple
+        (78, 30, 138, 255),  # 1: Royal violet shade
+        (98, 40, 166, 255),  # 2: Shaded purple
+        (118, 52, 192, 255), # 3: Rich violet midtone
+        (138, 66, 214, 255), # 4: Vivid shadow-purple base
+        (158, 84, 232, 255), # 5: Upper purple highlight
+        (174, 104, 244, 255),# 6: Soft wisp highlight
+        (188, 124, 250, 255),# 7: Top edge highlight
+    ]
+    # Glowing violet-magenta eyes, chest core, and subtle tendril tips
+    MAG = {
+        "d": (164, 44, 194, 255),   # Shaded magenta bevel
+        "m": (196, 56, 220, 255),   # Rich violet-magenta
+        "e": (217, 70, 239, 255),   # #D946EF Eye/Shadow magenta
+        "l": (236, 152, 249, 255),  # Soft lavender-pink glow
+        "g": (248, 208, 255, 255),  # Glowing lavender-white
+        "w": (253, 232, 255, 255),  # Bright core glint
+    }
 
-    SH_BODY_HI = (178, 108, 248, 255)
-    SH_BODY_BASE = (142, 68, 218, 255)
-    SH_BODY_SHADE = (104, 42, 174, 255)
-    SH_BODY_DEEP = (68, 26, 122, 255)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    SH_EYE_OUTER = (217, 70, 239, 255)   # #D946EF Eye/Shadow magenta
-    SH_EYE_GLOW = (248, 208, 255, 255)
+    def shade_ramp_box(u, v, w, h, d, ramp, *, seed=0, texture_scale=1):
+        f = f2x(u, v, w, h, d)
+        face_bias = {"top": 5.3, "front": 4.6, "east": 4.0, "west": 3.6, "back": 3.2, "bottom": 2.2}
+        for name, (rx, ry, rw, rh) in f.items():
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        cx = abs(tx - 0.5) * 2.0
+                        cy = abs(ty - 0.5) * 2.0
+                        edge_dist = max(cx, cy)
+                        idx = bias + (1.0 - edge_dist) * 1.9 - edge_dist * 1.1
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias + (0.6 if edge == 0 else 0.0) + (0.4 if ty < 0.45 else -0.2)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.9 + (0.2 - tx) * 0.35
+                    sx = lx // texture_scale
+                    sy = ly // texture_scale
+                    mottle = ((sx * 7 + sy * 13 + seed * 5 + (sx ^ sy) * 3) % 11)
+                    if mottle <= 1:
+                        idx += 0.45
+                    elif mottle >= 9:
+                        idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.65
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
 
-    # Upper & lower tapered V-torso
-    smooth_coat(img, 0, 0, 5, 4, 4, SH_BODY_HI, SH_BODY_BASE, SH_BODY_SHADE, SH_BODY_DEEP)
-    smooth_coat(img, 20, 0, 3, 3, 3, SH_BODY_HI, SH_BODY_BASE, SH_BODY_SHADE, SH_BODY_DEEP)
-    # Glowing chest core
-    cf = faces(34, 0, 2, 2, 1)
-    for rect in cf.values():
-        fill(img, rect, SH_EYE_OUTER)
-    fill(img, cf["front"], SH_EYE_GLOW)
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
 
-    # Boxy charcoal-violet head with shadowy speckles matching Steve's shaded head block
-    smooth_coat(img, 0, 10, 8, 6, 7, SH_HEAD_HI, SH_HEAD_BASE, SH_HEAD_SHADE, SH_HEAD_DEEP)
-    hf = faces(0, 10, 8, 6, 7)
-    fx, fy, fw, fh = hf["front"]
-    for sx, sy in [(1, 1), (6, 1), (3, 2), (4, 3), (2, 4), (5, 4), (1, 5), (6, 5)]:
-        put(img, fx + sx, fy + sy, SH_SPOT)
-    tx, ty, tw, th = hf["top"]
-    for sx, sy in [(2, 2), (5, 2), (3, 4), (4, 5)]:
-        put(img, tx + sx, ty + sy, SH_SPOT)
+    # 1. Upper & lower tapered V-torso [5, 4, 4]@[0, 0] and [3, 3, 3]@[20, 0] — clean shaded purple
+    shade_ramp_box(0, 0, 5, 4, 4, BODY_RAMP, seed=1, texture_scale=2)
+    shade_ramp_box(20, 0, 3, 3, 3, BODY_RAMP, seed=2, texture_scale=2)
 
-    # Glowing Shadow eyes
+    # 2. Glowing chest core [2, 2, 1] at [34, 0] -> 4x4x2 px (clean soft lavender-magenta core)
+    shade_ramp_box(34, 0, 2, 2, 1, [MAG["d"], MAG["m"], MAG["e"], MAG["l"], MAG["g"]], seed=3)
+    paint_box_2x(img, 34, 0, 2, 2, 1, {
+        "front": [
+            "lggl",
+            "gwwg",
+            "gwwg",
+            "lggl",
+        ],
+        "top": ["elge", "emle"],
+        "bottom": ["dmed", "deed"],
+    }, MAG)
+    paint_box_2x(glow, 34, 0, 2, 2, 1, {
+        "front": [
+            "lggl",
+            "gwwg",
+            "gwwg",
+            "lggl",
+        ],
+    }, MAG)
+
+    # 3. Boxy charcoal-violet head [8, 6, 7] at [0, 10] -> 16x12x14 px with Steve's shadowy speckles
+    shade_ramp_box(0, 10, 8, 6, 7, HEAD_RAMP, seed=4, texture_scale=2)
+    hf = f2x(0, 10, 8, 6, 7)
+    hfx, hfy, _, _ = hf["front"]
+    # Subtle crayon-like vertical texture & dark shadow speckles matching Steve's drawing + original look
+    for sx, sy in [(2, 2), (12, 2), (6, 4), (8, 6), (4, 8), (10, 8), (2, 10), (12, 10)]:
+        for oy in range(2):
+            for ox in range(2):
+                put(img, hfx + sx + ox, hfy + sy + oy, HEAD_RAMP[0] if (ox + oy) % 2 == 0 else HEAD_RAMP[1])
+    htx, hty, _, _ = hf["top"]
+    for sx, sy in [(4, 4), (10, 4), (6, 8), (8, 10)]:
+        for oy in range(2):
+            for ox in range(2):
+                put(img, htx + sx + ox, hty + sy + oy, HEAD_RAMP[0] if (ox + oy) % 2 == 0 else HEAD_RAMP[1])
+
+    # 4. Glowing Shadow eyes: [2, 2, 1]@[34, 10] and [42, 10] -> 4x4x2 px
+    # Clean 2x upscale of the original 2x2 diagonal-glow magenta/lavender eyes
     for eye_u in (34, 42):
-        ef = faces(eye_u, 10, 2, 2, 1)
-        for rect in ef.values():
-            fill(img, rect, SH_EYE_OUTER)
-        ex, ey, _, _ = ef["front"]
-        put(img, ex, ey, SH_EYE_GLOW)
-        put(img, ex + 1, ey, SH_EYE_OUTER)
-        put(img, ex, ey + 1, SH_EYE_OUTER)
-        put(img, ex + 1, ey + 1, SH_EYE_GLOW)
+        shade_ramp_box(eye_u, 10, 2, 2, 1, [MAG["d"], MAG["m"], MAG["e"], MAG["l"]], seed=5)
+        eye_front = [
+            "ggee",
+            "wgee",
+            "eelg",
+            "eegg",
+        ]
+        paint_box_2x(img, eye_u, 10, 2, 2, 1, {"front": eye_front}, MAG)
+        paint_box_2x(glow, eye_u, 10, 2, 2, 1, {"front": eye_front}, MAG)
 
-    # Spindly purple arms + 3 splayed claw tendrils each
-    for au in (0, 24):
-        smooth_coat(img, au, 26, 1, 5, 1, SH_BODY_HI, SH_BODY_BASE, SH_BODY_SHADE, SH_BODY_DEEP)
-    for cu in (6, 12, 18, 30, 36, 42):
-        smooth_coat(img, cu, 26, 1, 3, 1, SH_BODY_HI, SH_BODY_BASE, SH_BODY_SHADE, SH_BODY_DEEP)
-        cf = faces(cu, 26, 1, 3, 1)
-        put(img, cf["front"][0], cf["front"][1] + 2, SH_EYE_OUTER)
-        put(img, cf["bottom"][0], cf["bottom"][1], SH_EYE_GLOW)
+    # 5. Spindly purple arms [1, 5, 1] at [0, 26] & [24, 26] -> 2x10x2 px
+    for idx, au in enumerate((0, 24)):
+        shade_ramp_box(au, 26, 1, 5, 1, BODY_RAMP, seed=6 + idx, texture_scale=2)
 
-    # Two long purple lower legs/tendrils
-    for lu in (0, 20):
-        smooth_coat(img, lu, 36, 2, 4, 2, SH_BODY_HI, SH_BODY_BASE, SH_BODY_SHADE, SH_BODY_DEEP)
-    for tu in (10, 30):
-        smooth_coat(img, tu, 36, 2, 3, 2, SH_BODY_BASE, SH_BODY_SHADE, SH_BODY_DEEP, SH_HEAD_DEEP)
-        tf = faces(tu, 36, 2, 3, 2)
-        fill(img, tf["bottom"], SH_EYE_OUTER)
+    # 6. Six splayed purple claw tendrils [1, 3, 1] at u in (6, 12, 18, 30, 36, 42), v=26 -> 2x6x2 px
+    for idx, cu in enumerate((6, 12, 18, 30, 36, 42)):
+        shade_ramp_box(cu, 26, 1, 3, 1, BODY_RAMP, seed=10 + idx, texture_scale=2)
+        cf = f2x(cu, 26, 1, 3, 1)
+        for fname in ("front", "back", "east", "west"):
+            cx, cy, _, _ = cf[fname]
+            put(img, cx, cy + 5, MAG["e"])
+            put(img, cx + 1, cy + 5, MAG["e"])
+            put(glow, cx, cy + 5, MAG["e"])
+            put(glow, cx + 1, cy + 5, MAG["e"])
+        bx, by, _, _ = cf["bottom"]
+        paint_grid(img, bx, by, ["lg", "gl"], MAG)
+        paint_grid(glow, bx, by, ["lg", "gl"], MAG)
 
-    dest = OUT / "entity/shadow_wisp.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    # 7. Two curved purple lower legs [2, 4, 2]@[0, 36] & [20, 36] and tips [2, 3, 2]@[10, 36] & [30, 36]
+    for idx, lu in enumerate((0, 20)):
+        shade_ramp_box(lu, 36, 2, 4, 2, BODY_RAMP, seed=16 + idx, texture_scale=2)
+    for idx, tu in enumerate((10, 30)):
+        shade_ramp_box(tu, 36, 2, 3, 2, BODY_RAMP[:7], seed=20 + idx, texture_scale=2)
+        paint_box_2x(img, tu, 36, 2, 3, 2, {
+            "bottom": [
+                "dmmd",
+                "meem",
+                "meem",
+                "dmmd",
+            ],
+        }, MAG)
+        paint_box_2x(glow, tu, 36, 2, 3, 2, {
+            "bottom": [
+                "....",
+                ".ee.",
+                ".ee.",
+                "....",
+            ],
+        }, MAG)
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "shadow_wisp.png")
+    glow.save(entity_dir / "shadow_wisp_glowmask.png")
 
 
 def make_cinder_crag():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Cinder Crag faithful to Steve's fire/rock creature."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # Crimson-basalt stone & molten orange-gold magma core (Steve's fire/rock creature)
-    RK_HI = (225, 56, 84, 255)
-    RK_BASE = (182, 32, 62, 255)
-    RK_SHADE = (132, 22, 48, 255)
-    RK_DEEP = (82, 16, 36, 255)
+    # 8-stop crimson-basalt stone ramp anchored in deep volcanic crimson-charcoal
+    ROCK_RAMP = [
+        (52, 12, 28, 255),   # 0: Deep basalt crevice / anchor shadow
+        (78, 16, 36, 255),   # 1: Dark volcanic crimson-basalt
+        (108, 22, 46, 255),  # 2: Shaded crimson stone
+        (140, 28, 56, 255),  # 3: Mid-low stone
+        (174, 34, 64, 255),  # 4: Crimson stone base
+        (198, 46, 76, 255),  # 5: Upper warm crimson stone
+        (222, 62, 90, 255),  # 6: Sunlit crimson edge highlight
+        (240, 84, 108, 255), # 7: Bevel rim catchlight
+    ]
+    # 8-stop molten flame & magma ramp (crimson rim -> orange -> solar gold -> white-hot core)
+    FLAME_RAMP = [
+        (140, 24, 52, 255),  # 0: Deep crimson stone/flame anchor
+        (200, 32, 62, 255),  # 1: Crimson flame edge
+        (225, 42, 48, 255),  # 2: Hot red-crimson
+        (245, 92, 24, 255),  # 3: Molten red-orange
+        (249, 128, 28, 255), # 4: Ember orange
+        (255, 178, 44, 255), # 5: Solar gold
+        (255, 224, 96, 255), # 6: Bright flame yellow
+        (255, 246, 176, 255),# 7: White-hot magma core
+    ]
+    MAGMA = {
+        "0": ROCK_RAMP[0],
+        "1": ROCK_RAMP[1],
+        "2": ROCK_RAMP[2],
+        "3": ROCK_RAMP[3],
+        "4": ROCK_RAMP[4],
+        "5": ROCK_RAMP[5],
+        "6": ROCK_RAMP[6],
+        "7": ROCK_RAMP[7],
+        "k": (52, 12, 28, 255),    # Deep volcanic socket
+        "R": (140, 24, 52, 255),   # Dark crimson bevel
+        "r": (225, 29, 72, 255),   # Crimson flame rim (#E11D48)
+        "d": (194, 65, 12, 255),   # Deep ember orange
+        "o": (249, 115, 22, 255),  # Molten orange (#F97316)
+        "g": (255, 184, 48, 255),  # Solar gold (#FFB830)
+        "y": (255, 226, 104, 255), # Bright flame yellow
+        "w": (255, 246, 176, 255), # White-hot magma core
+    }
 
-    FL_CORE = (255, 242, 148, 255)
-    FL_GOLD = (255, 184, 48, 255)
-    FL_ORANGE = (249, 115, 22, 255)   # #F97316
-    FL_CRIMSON = (225, 29, 72, 255)   # #E11D48
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # Main middle body [9, 7, 7] at [0, 0] with molten magma cracks & glowing inner face
-    smooth_coat(img, 0, 0, 9, 7, 7, RK_HI, RK_BASE, RK_SHADE, RK_DEEP)
-    bf = faces(0, 0, 9, 7, 7)
-    fx, fy, fw, fh = bf["front"]
-    # Molten magma arch framing the eyes & mouth on the middle body
-    for dy in range(1, fh - 1):
-        for dx in range(1, fw - 1):
-            if dx in (1, fw - 2) or dy in (1, fh - 1):
-                put(img, fx + dx, fy + dy, FL_ORANGE if (dx + dy) % 2 == 0 else FL_GOLD)
-    # Molten cracks on sides & back
-    for side in ("east", "west", "back"):
+    def shade_ramp_box(u, v, w, h, d, ramp, *, seed=0, texture_scale=2):
+        f = f2x(u, v, w, h, d)
+        face_bias = {"top": 5.4, "front": 4.7, "east": 4.1, "west": 3.7, "back": 3.3, "bottom": 2.1}
+        for name, (rx, ry, rw, rh) in f.items():
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        cx = abs(tx - 0.5) * 2.0
+                        cy = abs(ty - 0.5) * 2.0
+                        edge_dist = max(cx, cy)
+                        idx = bias + (1.0 - edge_dist) * 2.2 - edge_dist * 1.2
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias + (0.7 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 2.0 + (0.2 - tx) * 0.4
+                    sx = lx // texture_scale
+                    sy = ly // texture_scale
+                    mottle = ((sx * 7 + sy * 13 + seed * 5 + (sx ^ sy) * 3) % 11)
+                    if mottle <= 1:
+                        idx += 0.65
+                    elif mottle >= 9:
+                        idx -= 0.65
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.75
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    # 1. Squat Crimson-Basalt Main Body [9, 7, 7] at [0, 0] -> 18x14x14 px
+    shade_ramp_box(0, 0, 9, 7, 7, ROCK_RAMP, seed=1, texture_scale=2)
+    paint_box_2x(img, 0, 0, 9, 7, 7, {
+        "front": [
+            "345544444444445543",
+            "34dooooooooooood43",
+            "2dgo11R1do1R11ogd2",
+            "2do100R1og1R001od2",
+            "2do10011og11001od2",
+            "2do11R12oo21R11od2",
+            "2dgo22RdggdR22ogd2",
+            "2dgo2RdooooodR2og2",
+            "2do2Rgo2222ogR2od2",
+            "2do1go211112og1od2",
+            "1do1oo111111oo1od1",
+            "1ddgoo111111oogdd1",
+            "12RddddddddddddR21",
+            "011222222222222110",
+        ],
+    }, MAGMA)
+    paint_box_2x(glow, 0, 0, 9, 7, 7, {
+        "front": [
+            "..................",
+            "..dooooooooooood..",
+            "..go....do....og..",
+            "..o.....og.....o..",
+            "..o.....og.....o..",
+            "..o.....oo.....o..",
+            "..go....gg....og..",
+            "..go..doooood.og..",
+            "..o..go....og..o..",
+            "..o.go......og.o..",
+            "..o.oo......oo.o..",
+            "...goo......oog...",
+            "..................",
+            "..................",
+        ],
+    }, MAGMA)
+
+    # Molten fissures on sides & back of body
+    bf = f2x(0, 0, 9, 7, 7)
+    for side_idx, side in enumerate(("east", "west", "back")):
         sx, sy, sw, sh = bf[side]
-        put(img, sx + sw // 2, sy + 2, FL_ORANGE)
-        put(img, sx + sw // 2, sy + 3, FL_GOLD)
-        put(img, sx + max(0, sw // 2 - 1), sy + 4, FL_ORANGE)
+        mid = sw // 2
+        fissure = [
+            (mid - 1, 3, "r"), (mid, 3, "d"),
+            (mid, 4, "o"), (mid + 1, 4, "r"),
+            (mid, 5, "g"), (mid - 1, 5, "o"),
+            (mid - 1, 6, "y"), (mid, 6, "g"),
+            (mid - 2, 7, "o"), (mid - 1, 7, "g"),
+            (mid - 2, 8, "d"), (mid - 1, 8, "o"),
+            (mid, 9, "d"), (mid - 1, 9, "r"),
+        ]
+        if side == "back":
+            fissure += [(mid - 4, 4, "d"), (mid - 4, 5, "o"), (mid + 3, 7, "o"), (mid + 3, 8, "d")]
+        for fx_off, fy_off, key in fissure:
+            if 0 <= fx_off < sw and 0 <= fy_off < sh:
+                put(img, sx + fx_off, sy + fy_off, MAGMA[key])
+                if key in ("o", "g", "y"):
+                    put(glow, sx + fx_off, sy + fy_off, MAGMA[key])
+    # Warm center ember core on bottom of body (ensures rich bottom contrast)
+    bx, by, bw, bh = bf["bottom"]
+    for dy in range(4, bh - 4):
+        for dx in range(5, bw - 5):
+            col = MAGMA["o"] if (dx in (6, 11) or dy in (4, 9)) else MAGMA["g"]
+            put(img, bx + dx, by + dy, col)
+            if col == MAGMA["g"]:
+                put(glow, bx + dx, by + dy, MAGMA["d"])
 
-    # Flat rocky brow [10, 2, 8] at [34, 0]
-    smooth_coat(img, 34, 0, 10, 2, 8, RK_HI, RK_BASE, RK_SHADE, RK_DEEP)
-    brf = faces(34, 0, 10, 2, 8)
-    for px in range(brf["front"][0] + 1, brf["front"][0] + 9, 2):
-        put(img, px, brf["front"][1] + 1, FL_ORANGE)
+    # 2. Flat Overhanging Stone Brow [10, 2, 8] at [34, 0] -> 20x4x16 px
+    shade_ramp_box(34, 0, 10, 2, 8, ROCK_RAMP, seed=2, texture_scale=2)
+    paint_box_2x(img, 34, 0, 10, 2, 8, {
+        "front": [
+            "66655555555555555666",
+            "45544444444444444554",
+            "34433333333333333443",
+            "1do11do11go11od11od1",
+        ],
+        "back": [
+            "45544444444444444554",
+            "34433333333333333443",
+            "23322222222222222332",
+            "1do112211do112211od1",
+        ],
+    }, MAGMA)
+    paint_box_2x(glow, 34, 0, 10, 2, 8, {
+        "front": [
+            "....................",
+            "....................",
+            "....................",
+            ".do..do..go..od..od.",
+        ],
+    }, MAGMA)
+    # Glowing lava vents on top of brow under the 3 flame spires
+    brf = f2x(34, 0, 10, 2, 8)
+    btx, bty, _, _ = brf["top"]
+    for vx, vy, vw, vh in ((2, 6, 4, 4), (14, 6, 4, 4), (8, 7, 4, 2)):
+        for dy in range(vh):
+            for dx in range(vw):
+                is_core = 0 < dx < vw - 1 and 0 < dy < vh - 1
+                col = MAGMA["g"] if is_core else MAGMA["o"]
+                put(img, btx + vx + dx, bty + vy + dy, col)
+                put(glow, btx + vx + dx, bty + vy + dy, col if is_core else MAGMA["d"])
 
-    # Eyes [2, 2, 1] at [72, 0] & [80, 0] — glowing fiery amber eyes
-    for idx, eu in enumerate((72, 80)):
-        ef = faces(eu, 0, 2, 2, 1)
-        for rect in ef.values():
-            fill(img, rect, FL_CRIMSON)
-        ex, ey, _, _ = ef["front"]
-        fill(img, (ex, ey, 2, 2), FL_GOLD)
-        put(img, ex + (1 if idx == 0 else 0), ey, FL_CORE)
-        put(img, ex + (0 if idx == 0 else 1), ey + 1, FL_ORANGE)
+    # 3. Fierce Angled Fiery Eyes: eye_left [2,2,1]@[72,0] & eye_right [2,2,1]@[80,0] -> 4x4x2 px
+    # eye_left is viewer's left (outer=left, inner=right); eye_right is viewer's right (inner=left, outer=right)
+    for is_left, eu in ((True, 72), (False, 80)):
+        shade_ramp_box(eu, 0, 2, 2, 1, [MAGMA["k"], MAGMA["R"], MAGMA["r"], MAGMA["d"], MAGMA["o"]], seed=3)
+        if is_left:
+            eye_front = [
+                "RroR",
+                "rogy",
+                "ogww",
+                "Rdog",
+            ]
+            eye_glow = [
+                ".ro.",
+                ".ogy",
+                "ogww",
+                ".dog",
+            ]
+        else:
+            eye_front = [
+                "RorR",
+                "ygor",
+                "wwgo",
+                "godR",
+            ]
+            eye_glow = [
+                ".or.",
+                "ygo.",
+                "wwgo",
+                "god.",
+            ]
+        paint_box_2x(img, eu, 0, 2, 2, 1, {"front": eye_front}, MAGMA)
+        paint_box_2x(glow, eu, 0, 2, 2, 1, {"front": eye_glow}, MAGMA)
 
-    # Wide arched magma mouth [5, 2, 1] at [88, 0]
-    mf = faces(88, 0, 5, 2, 1)
-    for rect in mf.values():
-        fill(img, rect, RK_DEEP)
-    mx, my, mw, mh = mf["front"]
-    fill(img, (mx, my, mw, mh), FL_ORANGE)
-    fill(img, (mx + 1, my, mw - 2, 1), FL_CORE)
-    put(img, mx + 2, my + 1, FL_GOLD)
-    put(img, mx, my, FL_CRIMSON)
-    put(img, mx + mw - 1, my, FL_CRIMSON)
+    # 4. Wide Arched Magma Furnace Mouth [5, 2, 1] at [88, 0] -> 10x4x2 px
+    shade_ramp_box(88, 0, 5, 2, 1, [MAGMA["k"], MAGMA["R"], MAGMA["r"], MAGMA["d"], MAGMA["o"]], seed=4)
+    mouth_front = [
+        "RrggwwggrR",
+        "rogwwwwgor",
+        "doogwwgood",
+        "kRddoooodk",
+    ]
+    mouth_glow = [
+        ".rggwwggr.",
+        ".ogwwwwgo.",
+        ".oogwwgoo.",
+        "..ddoood..",
+    ]
+    paint_box_2x(img, 88, 0, 5, 2, 1, {"front": mouth_front}, MAGMA)
+    paint_box_2x(glow, 88, 0, 5, 2, 1, {"front": mouth_glow}, MAGMA)
 
-    # 3 Pointy Flame Spires on top
-    # Base [3, 3, 3] at [0, 16] and [30, 16]
-    for fu in (0, 30):
-        smooth_coat(img, fu, 16, 3, 3, 3, FL_GOLD, FL_ORANGE, FL_CRIMSON, RK_SHADE)
-        ff = faces(fu, 16, 3, 3, 3)
-        for face_name in ("front", "back", "east", "west"):
-            x0, y0, _, _ = ff[face_name]
-            put(img, x0 + 1, y0 + 1, FL_CORE)
-            put(img, x0 + 1, y0 + 2, FL_GOLD)
-    # Mid [2, 2, 2] at [14, 16], [44, 16], and center base [60, 16]
-    for mu in (14, 44, 60):
-        smooth_coat(img, mu, 16, 2, 2, 2, FL_CORE, FL_GOLD, FL_ORANGE, FL_CRIMSON)
-    # Tips [1, 2, 1] at [24, 16], [54, 16], [70, 16]
-    for tu in (24, 54, 70):
-        smooth_coat(img, tu, 16, 1, 2, 1, FL_CORE, FL_CORE, FL_GOLD, FL_ORANGE)
+    # 5. Three Actual Crossed-Plane Fire Tongues on Top (0-depth cutout fire billboards + full glowmask)
+    def paint_cutout_flame(u, v, w, h, front_grid):
+        back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, MAGMA)
+        paint_box_2x(glow, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, MAGMA)
 
-    # 2 Sturdy Crimson-Stone Pillar Legs + Flared Feet
-    for lu in (0, 32):
-        smooth_coat(img, lu, 26, 3, 4, 3, RK_HI, RK_BASE, RK_SHADE, RK_DEEP)
-        lf = faces(lu, 26, 3, 4, 3)
-        put(img, lf["front"][0] + 1, lf["front"][1] + 1, FL_ORANGE)
-    for fu in (14, 46):
-        smooth_coat(img, fu, 26, 4, 1, 4, RK_BASE, RK_SHADE, RK_DEEP, RK_DEEP)
+    flame_outer_a = [
+        "....o...",
+        "...ry...",
+        "...o..r.",
+        "..ro..o.",
+        "..oyr.o.",
+        ".rogorg.",
+        ".roygyo.",
+        ".ogwygo.",
+        ".ogywgo.",
+        "rogywgor",
+        "roywwyor",
+        "ogwwwwgo",
+        "ogywwwgo",
+        ".dggggd.",
+    ]
+    flame_outer_b = [
+        "..o.....",
+        "..yr....",
+        ".r..o...",
+        ".o..or..",
+        ".o.ryo..",
+        ".grogr..",
+        ".oygyor.",
+        ".ogywgo.",
+        ".ogwygo.",
+        "rogywgor",
+        "roywwyor",
+        "ogwwwwgo",
+        "ogwwwwgo",
+        ".dggggd.",
+    ]
+    flame_outer_core = [
+        "...o..",
+        "..yg..",
+        ".ro.r.",
+        ".og.o.",
+        "rogyor",
+        "ogywgo",
+        "ogywgo",
+        "ogwwgo",
+        "gywwyg",
+        "gwwwwg",
+        "ywwwwy",
+        ".gggg.",
+    ]
+    # Left & Right outer fire crowns (mirror horizontally on right for balanced flame dancing)
+    paint_cutout_flame(0, 16, 4, 7, flame_outer_a)
+    paint_cutout_flame(10, 16, 4, 7, flame_outer_b)
+    paint_cutout_flame(20, 16, 3, 6, flame_outer_core)
+    paint_cutout_flame(30, 16, 4, 7, [row[::-1] for row in flame_outer_a])
+    paint_cutout_flame(40, 16, 4, 7, [row[::-1] for row in flame_outer_b])
+    paint_cutout_flame(50, 16, 3, 6, [row[::-1] for row in flame_outer_core])
 
-    dest = OUT / "entity/cinder_crag.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    flame_center_a = [
+        "..o...",
+        "..yr..",
+        ".o..r.",
+        ".og.o.",
+        "rogyor",
+        "ogywgo",
+        "ogwwgo",
+        "gywwyg",
+        "gwwwwg",
+        ".dggd.",
+    ]
+    flame_center_b = [
+        "...o..",
+        "..ry..",
+        ".r..o.",
+        ".o.go.",
+        "roygor",
+        "ogwygo",
+        "ogwwgo",
+        "gywwyg",
+        "gwwwwg",
+        ".dggd.",
+    ]
+    flame_center_core = [
+        "..y...",
+        "..go..",
+        ".og.r.",
+        "rogyo.",
+        "ogywgr",
+        "ogwwgo",
+        "gywwyg",
+        "gwwwwg",
+        "ywwwwy",
+        ".dggd.",
+    ]
+    paint_cutout_flame(60, 16, 3, 5, flame_center_a)
+    paint_cutout_flame(68, 16, 3, 5, flame_center_b)
+    paint_cutout_flame(76, 16, 3, 5, flame_center_core)
+
+    # 6. Two Blocky Crimson-Stone Pillar Legs + Flared Feet
+    # Legs [3, 4, 3] at [0, 26] & [32, 26] -> 6x8x6 px (with Steve's subtle X ember fissure on front!)
+    for idx, lu in enumerate((0, 26 + 6)):
+        shade_ramp_box(lu, 26, 3, 4, 3, ROCK_RAMP, seed=15 + idx, texture_scale=2)
+        paint_box_2x(img, lu, 26, 3, 4, 3, {
+            "front": [
+                "455554",
+                "3o44o3",
+                "3do2d3",
+                "23og32",
+                "23go32",
+                "2d22d2",
+                "1o22o1",
+                "011110",
+            ],
+        }, MAGMA)
+        paint_box_2x(glow, lu, 26, 3, 4, 3, {
+            "front": [
+                "......",
+                ".o..o.",
+                ".d..d.",
+                "..og..",
+                "..go..",
+                ".d..d.",
+                ".o..o.",
+                "......",
+            ],
+        }, MAGMA)
+
+    # Flared Feet [4, 1, 4] at [14, 26] & [46, 26] -> 8x2x8 px
+    for idx, fu in enumerate((14, 46)):
+        shade_ramp_box(fu, 26, 4, 1, 4, ROCK_RAMP[:7], seed=18 + idx, texture_scale=2)
+        paint_box_2x(img, fu, 26, 4, 1, 4, {
+            "front": [
+                "34244243",
+                "01011010",
+            ],
+        }, MAGMA)
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "cinder_crag.png")
+    glow.save(entity_dir / "cinder_crag_glowmask.png")
 
 
 def make_zaphox():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Zaphox with alpha-cutout sawtooth lightning wings, pointed ears & tapered limbs."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    ZX_GOLD_HI = (254, 240, 178, 255)
-    ZX_GOLD_BASE = (251, 191, 36, 255)
-    ZX_GOLD_SHADE = (217, 138, 16, 255)
-    ZX_GOLD_DEEP = (176, 92, 12, 255)
-    ZX_SPOT = (92, 42, 14, 255)
+    # 8-stop Golden Cheetah Coat (rich amber shadows -> bright gold -> warm cream highlights)
+    COAT_RAMP = [
+        (132, 66, 12, 255),   # 0: Deep amber crevice shadow
+        (166, 92, 16, 255),   # 1: Rich ochre shade
+        (198, 122, 18, 255),  # 2: Warm saffron shade
+        (226, 152, 24, 255),  # 3: Golden midtone
+        (248, 184, 34, 255),  # 4: Cheetah gold base
+        (253, 210, 74, 255),  # 5: Sunlit gold highlight
+        (254, 232, 134, 255), # 6: Warm honey-cream
+        (255, 246, 194, 255), # 7: Cream-ivory ruff & belly highlight
+    ]
+    # 7-stop Fox-Russet Fur ramp for ears & ruff accents
+    FOX_RAMP = [
+        (96, 32, 10, 255),    # 0: Deep burnt umber
+        (138, 46, 12, 255),   # 1: Dark fox-russet
+        (178, 66, 14, 255),   # 2: Shaded copper-orange
+        (214, 88, 18, 255),   # 3: Fox-russet base
+        (238, 118, 34, 255),  # 4: Warm fox-orange
+        (251, 154, 64, 255),  # 5: Sunlit fox-apricot
+        (254, 198, 116, 255), # 6: Soft cream-peach fur edge
+    ]
 
-    ZX_FOX_HI = (251, 146, 60, 255)
-    ZX_FOX_RUFF = (234, 88, 12, 255)
+    PAL = {
+        "0": COAT_RAMP[0],
+        "1": COAT_RAMP[1],
+        "2": COAT_RAMP[2],
+        "3": COAT_RAMP[3],
+        "4": COAT_RAMP[4],
+        "5": COAT_RAMP[5],
+        "6": COAT_RAMP[6],
+        "7": COAT_RAMP[7],
+        "f": FOX_RAMP[1],
+        "F": FOX_RAMP[3],
+        "a": FOX_RAMP[4],
+        "A": FOX_RAMP[5],
+        "P": FOX_RAMP[6],
+        # Spots & dark structural anchors
+        "S": (56, 24, 12, 255),    # Espresso spot core / dark ear tip
+        "U": (108, 48, 14, 255),   # Umber spot halo
+        "N": (24, 20, 56, 255),    # Deep storm-indigo tear-mark / lash / nose / paw
+        "n": (38, 34, 84, 255),    # Mid storm-indigo
+        "i": (58, 54, 118, 255),   # Light storm-indigo highlight
+        # Eye iris & catchlights
+        "R": (176, 44, 14, 255),   # Deep coral-amber iris rim
+        "O": (240, 92, 22, 255),   # Warm coral-orange iris
+        "Y": (253, 188, 36, 255),  # Golden-amber lower iris
+        "W": (255, 255, 255, 255), # Crisp white catchlight / tusk tip
+        "E": (236, 242, 255, 255), # Sclera highlight
+        # Ivory tusk tones
+        "q": (178, 154, 116, 255), # Warm bone root
+        "Q": (228, 214, 182, 255), # Shaded ivory
+        # Lightning wing & bolt palette
+        "K": (134, 36, 10, 255),   # Deep burnt-crimson rim
+        "B": (196, 58, 12, 255),   # Ember orange
+        "V": (245, 112, 20, 255),  # Vivid lightning orange
+        "M": (252, 168, 34, 255),  # Molten amber
+        "G": (254, 224, 76, 255),  # Solar yellow
+        "H": (255, 250, 206, 255), # White-hot lightning core
+        # Electric cyan-teal sparks & anklets
+        "t": (22, 128, 134, 255),  # Deep teal bevel
+        "T": (56, 217, 192, 255),  # Starlight teal (#38D9C0)
+        "C": (125, 249, 255, 255), # Electric cyan spark (#7DF9FF)
+        "c": (226, 254, 255, 255), # White-cyan spark core
+    }
 
-    ZX_WING_CORE = (254, 249, 195, 255)
-    ZX_WING_HI = (253, 224, 71, 255)
-    ZX_WING_BASE = (249, 115, 22, 255)
-    ZX_WING_SHADE = (194, 65, 12, 255)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    ZX_TEAR = (30, 27, 75, 255)
-    ZX_SPARK = (125, 249, 255, 255)
-    ZX_EYE = (250, 204, 21, 255)
-    ZX_PUPIL = (24, 24, 27, 255)
-    ZX_WHITE = (255, 255, 255, 255)
-    ZX_TUSK = (254, 249, 195, 255)
-    ZX_NOSE = (49, 46, 129, 255)
+    def shade_ramp_box(u, v, w, h, d, ramp, *, cream_bottom=False, seed=0, texture_scale=1):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.5 if len(ramp) >= 7 else 2.6,
+            "front": 4.7 if len(ramp) >= 7 else 2.2,
+            "east": 4.1 if len(ramp) >= 7 else 1.8,
+            "west": 3.7 if len(ramp) >= 7 else 1.6,
+            "back": 3.2 if len(ramp) >= 7 else 1.3,
+            "bottom": (5.0 if cream_bottom else 2.2) if len(ramp) >= 7 else 1.0,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        cx = abs(tx - 0.5) * 2.0
+                        cy = abs(ty - 0.5) * 2.0
+                        edge_dist = max(cx, cy)
+                        idx = bias + (1.0 - edge_dist) * (2.3 if cream_bottom else 1.8) - edge_dist * 1.4
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.55 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                    sx = lx // texture_scale
+                    sy = ly // texture_scale
+                    tuft = ((sx * 7 + sy * 13 + seed * 5 + (sx ^ sy) * 3) % 11)
+                    if tuft <= 1:
+                        idx += 0.45
+                    elif tuft >= 9:
+                        idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.65
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
 
-    # 1. Sleek Cheetah Torso [5, 4, 11] at [0, 0]
-    smooth_coat(img, 0, 0, 5, 4, 11, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    bf = faces(0, 0, 5, 4, 11)
-    fill(img, bf["bottom"], ZX_GOLD_HI)
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    def paint_cutout_z(u, v, w, h, front_grid, *, back_grid=None, glow_keys=()):
+        """Paint a 0-depth (size [w, h, 0]) cutout plane with pixel-aligned front & back faces."""
+        if back_grid is None:
+            back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
+
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        """Paint a 0-width (size [0, h, d]) cutout plane where west col 0 is front (-Z) and col 2d-1 is back (+Z)."""
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
+
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        """Paint a 0-height (size [w, 0, d]) cutout plane where top row 0 is back (+Z) and row 2d-1 is front (-Z)."""
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
+
+    def stamp_spot(target, rx, ry, rw, rh, cx, cy, *, kind="med"):
+        if kind == "big":
+            offsets = [
+                (0, 0, "S"), (1, 0, "S"), (0, 1, "S"), (1, 1, "S"),
+                (-1, 0, "U"), (2, 1, "U"), (0, -1, "U"), (1, 2, "U"),
+            ]
+        elif kind == "med":
+            offsets = [
+                (0, 0, "S"), (1, 0, "S"), (0, 1, "S"),
+                (1, 1, "U"), (-1, 0, "U"), (0, -1, "U"),
+            ]
+        else:
+            offsets = [(0, 0, "S"), (1, 0, "U"), (0, 1, "U")]
+        for ox, oy, ch in offsets:
+            px, py = cx + ox, cy + oy
+            if 0 <= px < rw and 0 <= py < rh:
+                put(target, rx + px, ry + py, PAL[ch])
+
+    # 1. Sleek Cheetah Torso [5, 4, 11] at [0, 0] -> 10x8x22 px
+    shade_ramp_box(0, 0, 5, 4, 11, COAT_RAMP, cream_bottom=True, seed=1)
+    bf = f2x(0, 0, 5, 4, 11)
+    tx, ty, tw, th = bf["top"]
+    for dy in range(1, th - 1):
+        put(img, tx + 4, ty + dy, PAL["3"] if dy % 3 != 0 else PAL["a"])
+        put(img, tx + 5, ty + dy, PAL["a"] if dy % 2 == 0 else PAL["3"])
+    for cx, cy, kind in [(2, 3, "med"), (7, 5, "med"), (2, 8, "big"), (7, 11, "med"), (2, 14, "med"), (7, 17, "big"), (3, 19, "sm")]:
+        stamp_spot(img, tx, ty, tw, th, cx, cy, kind=kind)
     for side in ("east", "west"):
         sx, sy, sw, sh = bf[side]
-        for px, py in [(2, 1), (5, 2), (8, 1), (3, 3), (7, 3), (9, 2)]:
-            put(img, sx + px, sy + py, ZX_SPOT)
-        put(img, sx + 4, sy + 1, ZX_SPARK)
-    tx, ty, tw, th = bf["top"]
-    for px, py in [(1, 2), (3, 3), (1, 6), (3, 7), (2, 9)]:
-        put(img, tx + px, ty + py, ZX_SPOT)
+        spots = (
+            [(4, 2, "big"), (9, 4, "med"), (14, 2, "big"), (18, 4, "med"), (6, 5, "sm"), (12, 5, "sm"), (19, 2, "sm")]
+            if side == "west"
+            else [(2, 2, "sm"), (5, 4, "med"), (9, 2, "big"), (14, 4, "med"), (18, 2, "big"), (7, 5, "sm"), (15, 5, "sm")]
+        )
+        for cx, cy, kind in spots:
+            stamp_spot(img, sx, sy, sw, sh, cx, cy, kind=kind)
+        spark_x = 10 if side == "west" else 11
+        for ox, oy, key in [(0, 1, "T"), (1, 1, "C"), (1, 2, "c"), (2, 2, "T")]:
+            put(img, sx + spark_x + ox, sy + oy, PAL[key])
+            if key in ("C", "c"):
+                put(glow, sx + spark_x + ox, sy + oy, PAL[key])
+    bx, by, bw, bh = bf["back"]
+    stamp_spot(img, bx, by, bw, bh, 2, 2, kind="sm")
+    stamp_spot(img, bx, by, bw, bh, 7, 2, kind="sm")
 
-    # 2. Chest / Shoulder Arch [6, 5, 3] at [32, 0] — warm fox orange with cream bib
-    smooth_coat(img, 32, 0, 6, 5, 3, ZX_FOX_HI, ZX_FOX_RUFF, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    rf = faces(32, 0, 6, 5, 3)
-    fill(img, (rf["front"][0] + 1, rf["front"][1] + 1, 4, 3), ZX_GOLD_HI)
+    # 2. Seamless Ribcage / Chest Swell [5, 4, 4] at [32, 0] -> 10x8x8 px (same golden coat ramp, zero box border!)
+    shade_ramp_box(32, 0, 5, 4, 4, COAT_RAMP, cream_bottom=True, seed=2)
+    cf = f2x(32, 0, 5, 4, 4)
+    paint_box_2x(img, 32, 0, 5, 4, 4, {
+        "front": [
+            "4556666554",
+            "4567777654",
+            "4567777654",
+            "3567777653",
+            "3467777643",
+            "3456776543",
+            "2345665432",
+            "2234554322",
+        ],
+    }, PAL)
+    for side in ("east", "west"):
+        sx, sy, sw, sh = cf[side]
+        stamp_spot(img, sx, sy, sw, sh, 3, 2, kind="med")
+        stamp_spot(img, sx, sy, sw, sh, 5, 5, kind="sm")
 
-    # 3. Head [7, 5, 5] at [50, 0] — cheetah-fox face with tear-marks & cream muzzle frame
-    smooth_coat(img, 50, 0, 7, 5, 5, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    hf = faces(50, 0, 7, 5, 5)
-    fx, fy, fw, fh = hf["front"]
-    fill(img, (fx + 1, fy + 3, fw - 2, 2), ZX_GOLD_HI)
-    # Cheetah tear-marks + electric cheek accent
-    for dy in (2, 3, 4):
-        put(img, fx + 1, fy + dy, ZX_TEAR)
-        put(img, fx + fw - 2, fy + dy, ZX_TEAR)
-    put(img, fx, fy + 2, ZX_SPARK)
-    put(img, fx + fw - 1, fy + 2, ZX_SPARK)
-    # Cheek ruffs [1, 3, 2] at [74, 0] & [80, 0]
-    for cu in (74, 80):
-        smooth_coat(img, cu, 0, 1, 3, 2, ZX_GOLD_HI, ZX_FOX_HI, ZX_FOX_RUFF, ZX_GOLD_DEEP)
+    # 2b. Fluffy Pointed Chest-Ruff Cutout Plane [5, 4, 0] at [32, 9] -> 10x8 px
+    paint_cutout_z(32, 9, 5, 4, [
+        ".56777765.",
+        "4677GH7764",
+        "577GccG775",
+        ".677CG776.",
+        ".46777764.",
+        "..567765..",
+        "...4664...",
+        "....44....",
+    ], glow_keys={"G", "H", "C", "c"})
 
-    # 4. Snout [3, 2, 2] at [86, 0]
-    smooth_coat(img, 86, 0, 3, 2, 2, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    sf = faces(86, 0, 3, 2, 2)
-    put(img, sf["front"][0] + 1, sf["front"][1], ZX_NOSE)
+    # 3. Head [7, 5, 5] at [50, 0] -> 14x10x10 px
+    shade_ramp_box(50, 0, 7, 5, 5, COAT_RAMP, cream_bottom=True, seed=3)
+    paint_box_2x(img, 50, 0, 7, 5, 5, {
+        "front": [
+            "345S45544S5432"[:14],
+            "45565566556543",
+            "34556666665543",
+            "34456666665443",
+            "234n667766n432",
+            "233N677776N332",
+            "23Nn777777nN32",
+            "23N67N66N76N32",
+            "22n667NN766n22",
+            "22344566544322",
+        ],
+    }, PAL)
+    hf = f2x(50, 0, 7, 5, 5)
+    htx, hty, htw, hth = hf["top"]
+    stamp_spot(img, htx, hty, htw, hth, 2, 2, kind="med")
+    stamp_spot(img, htx, hty, htw, hth, 10, 2, kind="med")
+    stamp_spot(img, htx, hty, htw, hth, 3, 6, kind="sm")
+    stamp_spot(img, htx, hty, htw, hth, 9, 6, kind="sm")
+    for side in ("east", "west"):
+        sx, sy, sw, sh = hf[side]
+        stamp_spot(img, sx, sy, sw, sh, 4, 2, kind="med")
+        stamp_spot(img, sx, sy, sw, sh, 2, 6, kind="sm")
+        stamp_spot(img, sx, sy, sw, sh, 7, 5, kind="sm")
+        spark_x = 8 if side == "east" else 1
+        put(img, sx + spark_x, sy + 4, PAL["T"])
+        put(img, sx + spark_x, sy + 5, PAL["C"])
+        put(glow, sx + spark_x, sy + 5, PAL["C"])
 
-    # 5. Upward-Curling Elephant Mini-Trunk: Base [2,2,2]@[96,0], Mid [2,2,2]@[104,0], Tip [2,2,2]@[112,0]
-    smooth_coat(img, 96, 0, 2, 2, 2, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    smooth_coat(img, 104, 0, 2, 2, 2, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP, ZX_SPOT)
-    smooth_coat(img, 112, 0, 2, 2, 2, ZX_WING_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-    ttf = faces(112, 0, 2, 2, 2)
-    fill(img, ttf["front"], ZX_SPARK)
-    fill(img, ttf["top"], ZX_WING_CORE)
+    # 4. Wispy Fox Cheek-Fur Tufts [3, 4, 0] at [74, 0] (left, inner=lx0) & [80, 0] (right, inner=lx5) -> 6x8 px cutout
+    cheek_left = [
+        "456...",
+        "46764.",
+        "577765",
+        "4676..",
+        "5777TC",
+        "3565..",
+        "4675..",
+        "24....",
+    ]
+    cheek_right = [row[::-1] for row in cheek_left]
+    paint_cutout_z(74, 0, 3, 4, cheek_left, glow_keys={"T", "C"})
+    paint_cutout_z(80, 0, 3, 4, cheek_right, glow_keys={"T", "C"})
 
-    # 6. Small Ivory Tusks [1, 1, 2] at [120, 0] & [120, 4]
-    for tv in (0, 4):
-        smooth_coat(img, 120, tv, 1, 1, 2, ZX_WHITE, ZX_TUSK, ZX_GOLD_HI, ZX_GOLD_BASE)
+    # 5. Snout [3, 2, 2] at [86, 0] -> 6x4x4 px
+    shade_ramp_box(86, 0, 3, 2, 2, COAT_RAMP, cream_bottom=True, seed=5)
+    paint_box_2x(img, 86, 0, 3, 2, 2, {
+        "front": [
+            "55nNn5",
+            "566665",
+            "667766",
+            "567765",
+        ],
+        "top": [
+            "455554",
+            "455554",
+            "556655",
+            "45nNn4",
+        ],
+    }, PAL)
 
-    # 7. Forehead Lightning Curl Crest [1, 2, 1] at [32, 10] & [36, 10]
-    smooth_coat(img, 32, 10, 1, 2, 1, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE, ZX_SPOT)
-    smooth_coat(img, 36, 10, 1, 2, 1, ZX_WING_CORE, ZX_WING_HI, ZX_WING_BASE, ZX_SPARK)
+    # 6. Tapered Upward-Curling Elephant Mini-Trunk:
+    #    Base [2,2,2]@[96,0], Mid [2,2,2]@[104,0], Tip [1,1,2]@[112,0] + Cutout Tip Spark [2,2,0]@[118,0]
+    for idx, tu in enumerate((96, 104)):
+        shade_ramp_box(tu, 0, 2, 2, 2, COAT_RAMP, cream_bottom=True, seed=6 + idx)
+        tf = f2x(tu, 0, 2, 2, 2)
+        for fname in ("top", "east", "west", "front"):
+            rx, ry, rw, rh = tf[fname]
+            for wy in (1, 3):
+                for lx in range(rw):
+                    put(img, rx + lx, ry + wy, PAL["2"] if lx in (0, 3) else PAL["3"])
+    shade_ramp_box(112, 0, 1, 1, 2, COAT_RAMP, cream_bottom=True, seed=8)
+    paint_box_2x(img, 112, 0, 1, 1, 2, {
+        "front": ["GC", "cG"],
+        "top":   ["45", "34", "4G", "GC"],
+    }, PAL)
+    paint_box_2x(glow, 112, 0, 1, 1, 2, {
+        "front": ["GC", "cG"],
+        "top":   ["..", "..", ".G", "GC"],
+    }, PAL)
+    # 4x4 Alpha-Cutout Star Spark at Trunk Tip [2, 2, 0] @ [118, 0]
+    paint_cutout_z(118, 0, 2, 2, [
+        ".G..",
+        "GcCG",
+        "GCcG",
+        "..G.",
+    ], glow_keys={"G", "C", "c"})
 
-    # 8. Expressive 2x3 Eyes at [40, 10] & [46, 10]
-    for idx, eu in enumerate((40, 46)):
-        ef = faces(eu, 10, 2, 3, 1)
-        for rect in ef.values():
-            fill(img, rect, ZX_TEAR)
-        ex, ey, _, _ = ef["front"]
-        fill(img, (ex, ey, 2, 3), ZX_EYE)
-        px_col = ex + (1 if idx == 0 else 0)
-        hi_col = ex + (0 if idx == 0 else 1)
-        put(img, px_col, ey, ZX_PUPIL)
-        put(img, px_col, ey + 1, ZX_PUPIL)
-        put(img, px_col, ey + 2, ZX_PUPIL)
-        put(img, hi_col, ey, ZX_WHITE)
-        put(img, hi_col, ey + 2, ZX_SPARK)
+    # 7. Curved Pointed Alpha-Cutout Ivory Tusks [0, 2, 3] at [74, 5] & [80, 5] -> 6x4 px (lx=0 is front tip, lx=5 is root)
+    tusk_west = [
+        "W.....",
+        "WWQ...",
+        ".WWQQq",
+        "...QQq",
+    ]
+    paint_cutout_x(74, 5, 2, 3, tusk_west)
+    paint_cutout_x(80, 5, 2, 3, tusk_west)
 
-    # 9. Hybrid Elephant-Fox Ears:
-    # Tall Fox Ear [2, 5, 1] at [0, 16] & [12, 16]; Flared Elephant Pinna [2, 4, 1] at [6, 16] & [18, 16]
-    for eu in (0, 12):
-        smooth_coat(img, eu, 16, 2, 5, 1, ZX_FOX_HI, ZX_FOX_RUFF, ZX_GOLD_DEEP, ZX_SPOT)
-        ef = faces(eu, 16, 2, 5, 1)
-        put(img, ef["front"][0] + (0 if eu == 0 else 1), ef["front"][1] + 2, ZX_GOLD_HI)
-        put(img, ef["front"][0] + (0 if eu == 0 else 1), ef["front"][1] + 3, ZX_GOLD_HI)
-        put(img, ef["front"][0] + (0 if eu == 0 else 1), ef["front"][1] + 4, ZX_GOLD_HI)
-        fill(img, ef["top"], ZX_SPOT)
-    for pu in (6, 18):
-        smooth_coat(img, pu, 16, 2, 4, 1, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_FOX_RUFF)
-        pf = faces(pu, 16, 2, 4, 1)
-        fill(img, (pf["front"][0], pf["front"][1] + 1, 2, 2), ZX_GOLD_HI)
+    # 8. Crossed Alpha-Cutout Forehead Lightning Curl Crest:
+    #    crest_base [0, 4, 4] @ [86, 5] (8x8 side profile) & crest_tip [3, 4, 0] @ [94, 5] (6x8 front profile)
+    paint_cutout_x(86, 5, 4, 4, [
+        "..cH....",
+        ".CHG....",
+        "..GHM...",
+        "...GHV..",
+        "..GHM...",
+        ".MGHB...",
+        "..MVB...",
+        "..KB....",
+    ], glow_keys={"c", "C", "H", "G", "M"})
+    paint_cutout_z(94, 5, 3, 4, [
+        "..cH..",
+        "..HC..",
+        ".GHHG.",
+        "C.GH.C",
+        "..GH..",
+        ".VMMV.",
+        "..MV..",
+        "..BB..",
+    ], glow_keys={"c", "C", "H", "G", "M"})
 
-    # 10. Dramatic Jagged Orange Lightning-Bolt Wings (3 stepped blades per wing)
-    # Left wing: [24, 16] (1,5,3), [32, 16] (1,6,3), [40, 16] (1,5,3)
-    # Right wing: [48, 16] (1,5,3), [56, 16] (1,6,3), [64, 16] (1,5,3)
-    for wu, wh in ((24, 5), (32, 6), (40, 5), (48, 5), (56, 6), (64, 5)):
-        smooth_coat(img, wu, 16, 1, wh, 3, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE, ZX_FOX_RUFF)
-        wf = faces(wu, 16, 1, wh, 3)
-        fill(img, wf["top"], ZX_WING_CORE)
-        for side in ("east", "west"):
-            sx, sy, sw, sh = wf[side]
-            for dy in range(sh):
-                put(img, sx + (dy % sw), sy + dy, ZX_WING_HI if dy < 2 else ZX_WING_CORE if dy == 0 else ZX_WING_HI)
-                if dy == 0:
-                    put(img, sx + sw - 1, sy, ZX_SPARK)
+    # 9. Flush Feline Almond Alpha-Cutout Eyes:
+    #    eye_left  [2, 3, 0] @ [100, 5] -> lx=0 is INNER (toward snout), lx=3 is OUTER (toward temple)
+    #    eye_right [2, 3, 0] @ [104, 5] -> lx=0 is OUTER (toward temple), lx=3 is INNER (toward snout)
+    eye_left_grid = [
+        ".NNN",
+        "NWNE",
+        "RNRE",
+        "ONOE",
+        "GYCE",
+        "NNn.",
+    ]
+    eye_right_grid = [row[::-1] for row in eye_left_grid]
+    paint_cutout_z(100, 5, 2, 3, eye_left_grid, glow_keys={"W", "Y", "G", "C"})
+    paint_cutout_z(104, 5, 2, 3, eye_right_grid, glow_keys={"W", "Y", "G", "C"})
 
-    # 11. Original Cheetah Whip-Tail + Zigzag Lightning-Bolt Tip
-    # tail_base [2, 2, 5] at [0, 26], tail_mid [2, 2, 5] at [14, 26]
-    for tu in (0, 14):
-        smooth_coat(img, tu, 26, 2, 2, 5, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-        tf = faces(tu, 26, 2, 2, 5)
-        for side in ("east", "west", "top"):
-            sx, sy, sw, sh = tf[side]
-            put(img, sx + 1, sy, ZX_SPOT)
-            put(img, sx + min(sw - 1, 3), sy + min(sh - 1, 1), ZX_SPOT)
-    # Zigzag Lightning Bolt Tip: [28, 26] (1,2,3), [36, 26] (1,2,3), [44, 26] (1,1,3)
-    smooth_coat(img, 28, 26, 1, 2, 3, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE, ZX_FOX_RUFF)
-    smooth_coat(img, 36, 26, 1, 2, 3, ZX_WING_CORE, ZX_WING_HI, ZX_WING_BASE, ZX_WING_SHADE)
-    smooth_coat(img, 44, 26, 1, 1, 3, ZX_SPARK, ZX_WING_CORE, ZX_WING_HI, ZX_SPARK)
+    # 10. Sculpted Alpha-Cutout Hybrid Fox-Elephant Ears:
+    #     Main Plane [5, 7, 0] @ [0, 16] (ear_left, inner=lx0..outer=lx9) & [14, 16] (ear_right, outer=lx0..inner=lx9) -> 10x14 px
+    #     Side Rib   [0, 6, 2] @ [10, 16] & [24, 16] -> 4x12 px
+    ear_left_front = [
+        "..SS......",
+        ".SSSS.....",
+        ".SU7SS....",
+        "SU777S....",
+        "SFA7PSUU..",
+        "SF677FA3U.",
+        "SF677a674U",
+        "SF6776775U",
+        "Uf6776775U",
+        ".f5676764U",
+        ".f4566653U",
+        "..f345542.",
+        "..f23432..",
+        "...1221...",
+    ]
+    # Back of ear in front-facing coordinates (same silhouette mask, rich fox-russet & golden back with wildcat cream ocellus spot)
+    ear_left_back_in_front_coords = [
+        "..SS......",
+        ".SSSS.....",
+        ".SSUSS....",
+        "SSUfSS....",
+        "SfFFfSUU..",
+        "Uf77FFa3U.",
+        "UF77Fa443U",
+        "UFFaaF454U",
+        "UfFFa4454U",
+        ".fFFa3443U",
+        ".ffF33432U",
+        "..ff23321.",
+        "..f12221..",
+        "...1111...",
+    ]
+    ear_left_back_uv = [row[::-1] for row in ear_left_back_in_front_coords]
+    ear_right_front = [row[::-1] for row in ear_left_front]
+    ear_right_back_uv = ear_left_back_in_front_coords
 
-    # 12. Slender Cheetah Sprint Legs [2, 8, 2] at [0, 36], [10, 36], [20, 36], [30, 36]
-    for lu in (0, 10, 20, 30):
-        smooth_coat(img, lu, 36, 2, 8, 2, ZX_GOLD_HI, ZX_GOLD_BASE, ZX_GOLD_SHADE, ZX_GOLD_DEEP)
-        lf = faces(lu, 36, 2, 8, 2)
-        for face_name in ("front", "east", "west"):
-            fx, fy, fw, fh = lf[face_name]
-            put(img, fx, fy + 2, ZX_SPOT)
-            put(img, fx + 1, fy + 4, ZX_SPOT)
-            fill(img, (fx, fy + 7, fw, 1), ZX_TEAR)
-        fill(img, lf["bottom"], ZX_TEAR)
+    paint_cutout_z(0, 16, 5, 7, ear_left_front, back_grid=ear_left_back_uv)
+    paint_cutout_z(14, 16, 5, 7, ear_right_front, back_grid=ear_right_back_uv)
 
-    dest = OUT / "entity/zaphox.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    ear_side_rib = [
+        ".SS.",
+        ".SS.",
+        "SUUS",
+        "UffU",
+        "fFFf",
+        "fFFf",
+        "FaaF",
+        "Fa4F",
+        "f44f",
+        "f34f",
+        ".23.",
+        ".12.",
+    ]
+    paint_cutout_x(10, 16, 6, 2, ear_side_rib)
+    paint_cutout_x(24, 16, 6, 2, ear_side_rib)
+
+    # 11. Razor-Sharp Alpha-Cutout Jagged Sawtooth Lightning-Bolt Wings!
+    #     Main Wing Sheet [0, 10, 12] @ [28, 16] (left) & [70, 16] (right) -> 24x20 px (lx=0 front -Z, lx=23 back +Z)
+    wing_main_west = [
+        "......................cH",
+        ".............cH......CHG",
+        "............CHG.....GHMV",
+        ".....cH....GHMB....GHMVK",
+        "....CHG...GHMVK...GHMVB.",
+        "...GHMB..GHMVB...GHMVK..",
+        "..GHMVK.GHMVK..GGHMVB...",
+        "..GHMVBGHMVB..GHGMVK....",
+        ".BGHMVGHMVK..GHMMVB.....",
+        ".VGHMGHMVB..GHMMVK......",
+        ".KVGHcHMVGGGHMMVB.......",
+        "..BGHcHHGHGGMMVK........",
+        "..KVGHcHHHHMMVB.........",
+        "..BVGHHcHHMMMVK.........",
+        ".KBVGMHHHHMMVB..........",
+        ".KBVMMGHHMMVK...........",
+        "KKBVMMGHMMVB............",
+        "KBVMMGHMMVK.............",
+        "KBVMMMMBK...............",
+        ".KKBBBKK................",
+    ]
+    paint_cutout_x(28, 16, 10, 12, wing_main_west, glow_keys={"c", "C", "H", "G", "M"})
+    paint_cutout_x(70, 16, 10, 12, wing_main_west, glow_keys={"c", "C", "H", "G", "M"})
+
+    #     Secondary Outer Flared Lightning Pinion [0, 7, 9] @ [52, 16] (left) & [94, 16] (right) -> 18x14 px
+    wing_sub_west = [
+        "................cH",
+        "........cH.....CHG",
+        ".......CHG....GHMB",
+        "......GHMB...GHMVK",
+        ".....GHMVK..GHMVB.",
+        "....GHMVB..GHMVK..",
+        "...GHMVGHGGHMVB...",
+        "..BGHMGHcHHMVK....",
+        ".KVGHGHcHHMVB.....",
+        "..BVGHHcHMVK......",
+        ".KBVGMHHMVB.......",
+        "KKBVMMGMVK........",
+        "KBVMMMMBK.........",
+        ".KKBBBKK..........",
+    ]
+    paint_cutout_x(52, 16, 7, 9, wing_sub_west, glow_keys={"c", "C", "H", "G", "M"})
+    paint_cutout_x(94, 16, 7, 9, wing_sub_west, glow_keys={"c", "C", "H", "G", "M"})
+
+    # 12. Tapered Cheetah Whip-Tail + Crossed Alpha-Cutout Zigzag Lightning-Bolt Tip
+    #     tail_base [2, 2, 5]@[0, 26], tail_mid [2, 2, 5]@[14, 26] -> 4x4x10 px
+    for idx, tu in enumerate((0, 14)):
+        shade_ramp_box(tu, 26, 2, 2, 5, COAT_RAMP, cream_bottom=True, seed=21 + idx)
+        tf = f2x(tu, 26, 2, 2, 5)
+        for fname in ("top", "east", "west"):
+            sx, sy, sw, sh = tf[fname]
+            if fname == "top":
+                stamp_spot(img, sx, sy, sw, sh, 1, 2, kind="sm")
+                stamp_spot(img, sx, sy, sw, sh, 2, 6, kind="sm")
+            else:
+                stamp_spot(img, sx, sy, sw, sh, 2, 1, kind="sm")
+                stamp_spot(img, sx, sy, sw, sh, 6, 1, kind="sm")
+                if idx == 1:
+                    for ly in range(sh):
+                        put(img, sx + 8, sy + ly, PAL["F"])
+                        put(img, sx + 9, sy + ly, PAL["V"])
+
+    #     tail_bolt Vertical Cutout Plane [0, 5, 8] @ [96, 34] -> 16x10 px (lx=0 front root, lx=15 back tip)
+    tail_bolt_vert = [
+        "..............cH",
+        ".......GH....CHG",
+        "......GHM...GHMB",
+        ".....GHMV..GHMVK",
+        "..BGGHMVK.GHMVB.",
+        "KVMGHMVBGGHMVK..",
+        "KBVGHMGHcHMVB...",
+        ".KBVGMHcHMVK....",
+        "..KKBMMGMVB.....",
+        "....KKBBKK......",
+    ]
+    paint_cutout_x(96, 34, 5, 8, tail_bolt_vert, glow_keys={"c", "C", "H", "G", "M"})
+
+    #     tail_bolt Horizontal Crossed Cutout Plane [4, 0, 8] @ [72, 39] -> 8x16 px (ly=0 back tip +Z, ly=15 front root -Z)
+    tail_bolt_horiz = [
+        "...cH...",
+        "..CHGC..",
+        "..GHMG..",
+        ".BGHMV..",
+        ".VGHMVK.",
+        "..GHMV..",
+        "..HcHG..",
+        ".GHcHMB.",
+        ".MGHMVK.",
+        "..GHMB..",
+        "..GHM...",
+        ".BGHMV..",
+        ".VGHMB..",
+        "..GMMB..",
+        "..VMMV..",
+        "..KBBK..",
+    ]
+    paint_cutout_y(72, 39, 4, 8, tail_bolt_horiz, glow_keys={"c", "C", "H", "G", "M"})
+
+    # 13. Sculpted Tapered Cheetah Legs + Forward Paws + Trailing Lightning Fetlock Fins
+    #     leg_fl (0), leg_fr (18), leg_bl (36), leg_br (54) at v=39
+    fetlock_west = [
+        "...C",
+        "..cT",
+        "GGCT",
+        "MGT.",
+        "GGcC",
+        "MVT.",
+    ]
+    for idx, base_u in enumerate((0, 18, 36, 54)):
+        # Upper muscular thigh [2, 4, 2] @ [base_u, 39] -> 4x8x4 px
+        shade_ramp_box(base_u, 39, 2, 4, 2, COAT_RAMP, cream_bottom=False, seed=30 + idx)
+        uf = f2x(base_u, 39, 2, 4, 2)
+        for fname in ("front", "east", "west", "back"):
+            rx, ry, rw, rh = uf[fname]
+            if fname != "back":
+                stamp_spot(img, rx, ry, rw, rh, 1, 2, kind="med")
+                stamp_spot(img, rx, ry, rw, rh, 2, 5, kind="sm")
+            else:
+                stamp_spot(img, rx, ry, rw, rh, 1, 3, kind="sm")
+
+        # Slender lower shin [2, 4, 2] @ [base_u + 8, 39] -> 4x8x4 px
+        shade_ramp_box(base_u + 8, 39, 2, 4, 2, COAT_RAMP, cream_bottom=False, seed=34 + idx)
+        lf = f2x(base_u + 8, 39, 2, 4, 2)
+        for fname in ("front", "east", "west", "back"):
+            rx, ry, rw, rh = lf[fname]
+            stamp_spot(img, rx, ry, rw, rh, 1, 1, kind="sm")
+            # Crisp diagonal/chevron electric-teal ankle spark (rows 5..6) & tapered storm-indigo ankle (row 7)
+            for lx in range(rw):
+                y_off = 5 if lx in (1, 2) else 6
+                put(img, rx + lx, ry + y_off, PAL["C"] if lx in (1, 2) else PAL["T"])
+                put(img, rx + lx, ry + 7, PAL["n"] if lx in (1, 2) else PAL["N"])
+                if fname == "front" and lx in (1, 2):
+                    put(glow, rx + lx, ry + y_off, PAL["C"])
+
+        # Forward-stepping sculpted paw [2, 1, 2] @ [base_u, 46] -> 4x2x4 px
+        shade_ramp_box(base_u, 46, 2, 1, 2, [PAL["N"], PAL["n"], PAL["i"], PAL["t"], PAL["T"]], seed=38 + idx)
+        paint_box_2x(img, base_u, 46, 2, 1, 2, {
+            "front": [
+                "niin",
+                "NnNN",
+            ],
+            "top": [
+                "nnnn",
+                "niin",
+                "iTTi",
+                "NnNN",
+            ],
+            "bottom": [
+                "NnnN",
+                "nTTn",
+                "nTCn",
+                "NNNN",
+            ],
+        }, PAL)
+
+        # Trailing Alpha-Cutout Lightning Fetlock Fin [0, 3, 2] @ [base_u + 8, 46] -> 4x6 px
+        paint_cutout_x(base_u + 8, 46, 3, 2, fetlock_west, glow_keys={"c", "C", "G"})
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "zaphox.png")
+    glow.save(entity_dir / "zaphox_glowmask.png")
 
 
 def make_galecorn():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Galecorn fox-unicorn with swirling cloud-fan tail, cutout mane & glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # Sunny pastel-yellow fox-unicorn coat (Alex's drawing yellow body) + aqua-mint mane/accents + billowing white cloud fan
-    GC_COAT_CORE = (255, 252, 232, 255)
-    GC_COAT_HI = (254, 246, 194, 255)
-    GC_COAT_BASE = (253, 224, 104, 255)
-    GC_COAT_SHADE = (238, 188, 64, 255)
+    # 8-stop Sunny Butter-Gold Fox Coat ramp (faithful to Alex's drawing & reference render)
+    COAT_RAMP = [
+        (158, 98, 16, 255),   # 0: Deep golden-ochre crevice shadow
+        (198, 130, 22, 255),  # 1: Warm amber shade
+        (228, 162, 34, 255),  # 2: Soft saffron shade
+        (245, 194, 56, 255),  # 3: Mid butter-gold
+        (253, 224, 104, 255), # 4: Sunny fox-unicorn gold base
+        (254, 240, 166, 255), # 5: Warm pastel sunlit gold
+        (255, 248, 206, 255), # 6: Soft cream-butter highlight
+        (255, 253, 240, 255), # 7: Ivory-cream chest & muzzle fur
+    ]
+    # 8-stop Aqua-Teal / Starlight Mint Mane & Crown ramp
+    MANE_RAMP = [
+        (18, 94, 110, 255),   # 0: Deep ocean-teal shadow
+        (24, 128, 140, 255),  # 1: Shaded lagoon teal
+        (32, 164, 172, 255),  # 2: Rich sea-teal
+        (56, 217, 192, 255),  # 3: Starlight teal (#38D9C0)
+        (100, 232, 212, 255), # 4: Mint-aqua base
+        (152, 244, 230, 255), # 5: Pastel seafoam highlight
+        (200, 250, 244, 255), # 6: Frosted mint sheen
+        (238, 254, 252, 255), # 7: Silky highlight tip
+    ]
+    # 8-stop Billowing Sky-Cloud Tail & Horn ramp
+    CLOUD_RAMP = [
+        (120, 180, 220, 255), # 0: Deep sky-breeze shadow
+        (154, 204, 238, 255), # 1: Cool cloud-blue shadow
+        (188, 224, 246, 255), # 2: Soft mist-blue
+        (214, 234, 248, 255), # 3: Light cloud blue
+        (232, 243, 252, 255), # 4: Airy cloud midtone
+        (243, 249, 255, 255), # 5: Bright cloud white-blue
+        (250, 253, 255, 255), # 6: Crisp cloud puff highlight
+        (255, 255, 255, 255), # 7: Pure cloud crest white
+    ]
 
-    GC_CYAN_HI = (178, 248, 244, 255)
-    GC_CYAN_BASE = (56, 217, 192, 255)
-    GC_CYAN_SHADE = (28, 168, 178, 255)
+    PAL = {
+        "0": COAT_RAMP[0],
+        "1": COAT_RAMP[1],
+        "2": COAT_RAMP[2],
+        "3": COAT_RAMP[3],
+        "4": COAT_RAMP[4],
+        "5": COAT_RAMP[5],
+        "6": COAT_RAMP[6],
+        "7": COAT_RAMP[7],
+        "a": MANE_RAMP[0],
+        "t": MANE_RAMP[1],
+        "T": MANE_RAMP[2],
+        "m": MANE_RAMP[3],
+        "M": MANE_RAMP[4],
+        "s": MANE_RAMP[5],
+        "S": MANE_RAMP[6],
+        "p": MANE_RAMP[7],
+        "u": CLOUD_RAMP[0],
+        "b": CLOUD_RAMP[1],
+        "B": CLOUD_RAMP[2],
+        "l": CLOUD_RAMP[3],
+        "L": CLOUD_RAMP[4],
+        "w": CLOUD_RAMP[5],
+        "h": CLOUD_RAMP[6],
+        "W": CLOUD_RAMP[7],
+        # Structural anchor & sky-blue eyes / nose / hoof trim
+        "N": (16, 58, 92, 255),    # Deep ocean-indigo anchor (lash, pupil, nose base, hoof trim)
+        "i": (22, 94, 120, 255),   # Dark teal-indigo
+        "I": (14, 148, 214, 255),  # Sky-blue iris
+        "K": (56, 186, 238, 255),  # Bright breeze-blue
+        "C": (125, 249, 255, 255), # Electric cyan spark (#7DF9FF)
+        "c": (224, 254, 255, 255), # White-cyan starlight glow
+        "f": (254, 214, 174, 255), # Warm inner-ear peach-cream
+    }
 
-    GC_HORN_CORE = (255, 255, 255, 255)
-    GC_HORN_HI = (224, 247, 255, 255)
-    GC_HORN_BLUE = (125, 249, 255, 255)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    GC_CLOUD_HI = (255, 255, 255, 255)
-    GC_CLOUD_BASE = (240, 247, 255, 255)
-    GC_CLOUD_SHADE = (214, 232, 248, 255)
-    GC_CLOUD_BREEZE = (166, 224, 248, 255)
+    def shade_ramp_box(u, v, w, h, d, ramp, *, cream_bottom=False, seed=0, texture_scale=1):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.6,
+            "front": 4.8,
+            "east": 4.2,
+            "west": 3.8,
+            "back": 3.3,
+            "bottom": 5.1 if cream_bottom else 2.2,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        cx = abs(tx - 0.5) * 2.0
+                        cy = abs(ty - 0.5) * 2.0
+                        edge_dist = max(cx, cy)
+                        idx = bias + (1.0 - edge_dist) * (2.2 if cream_bottom else 1.8) - edge_dist * 1.4
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.45 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                    sx = lx // texture_scale
+                    sy = ly // texture_scale
+                    tuft = (sx * 7 + sy * 13 + seed * 5 + (sx ^ sy) * 3) % 11
+                    if tuft <= 1:
+                        idx += 0.45
+                    elif tuft >= 9:
+                        idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.65
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
 
-    GC_EYE_IRIS = (14, 148, 214, 255)
-    GC_EYE_PUPIL = (16, 62, 104, 255)
-    GC_NOSE = (28, 152, 206, 255)
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
 
-    # 1. Sunny Yellow Fox-Unicorn Body [5, 4, 9] at [0, 0]
-    smooth_coat(img, 0, 0, 5, 4, 9, GC_COAT_HI, GC_COAT_BASE, GC_COAT_SHADE, GC_COAT_SHADE)
-    bf = faces(0, 0, 5, 4, 9)
-    fill(img, bf["bottom"], GC_COAT_CORE)
+    def paint_cutout_z(u, v, w, h, front_grid, *, back_grid=None, glow_keys=()):
+        if back_grid is None:
+            back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
 
-    # 2. Fluffy Cream Chest Tuft [4, 3, 2] at [28, 0]
-    smooth_coat(img, 28, 0, 4, 3, 2, GC_COAT_CORE, GC_COAT_HI, GC_COAT_BASE, GC_COAT_SHADE)
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
 
-    # 3. Flowing Silky Unicorn Mane: neck [3, 4, 3] at [40, 0] & back lock [2, 3, 4] at [52, 0]
-    smooth_coat(img, 40, 0, 3, 4, 3, GC_CYAN_HI, GC_CYAN_BASE, GC_CLOUD_BREEZE, GC_CYAN_SHADE)
-    mnf = faces(40, 0, 3, 4, 3)
-    fill(img, mnf["top"], GC_CLOUD_HI)
-    smooth_coat(img, 52, 0, 2, 3, 4, GC_CLOUD_HI, GC_CYAN_HI, GC_CYAN_BASE, GC_CYAN_SHADE)
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
 
-    # 4. Head [6, 5, 5] at [64, 0] — Aqua-teal crown & outer head blending into clean cream face
-    smooth_coat(img, 64, 0, 6, 5, 5, GC_CYAN_HI, GC_CYAN_BASE, GC_CYAN_SHADE, GC_CYAN_SHADE)
-    hf = faces(64, 0, 6, 5, 5)
-    fx, fy, fw, fh = hf["front"]
-    fill(img, (fx + 1, fy + 2, fw - 2, fh - 2), GC_COAT_CORE)
-    fill(img, (fx + 2, fy + 1, fw - 4, 1), GC_COAT_HI)
-    # Cheek tufts [1, 3, 2] at [86, 0] & [92, 0]
-    for cu in (86, 92):
-        smooth_coat(img, cu, 0, 1, 3, 2, GC_COAT_CORE, GC_COAT_HI, GC_CYAN_HI, GC_CYAN_BASE)
+    # 1. Sunny Butter-Gold Fox-Unicorn Body [5, 4, 9] at [0, 0] -> 10x8x18 px
+    shade_ramp_box(0, 0, 5, 4, 9, COAT_RAMP, cream_bottom=True, seed=1)
+    bf = f2x(0, 0, 5, 4, 9)
+    tx, ty, tw, th = bf["top"]
+    for dy in range(1, th - 1):
+        put(img, tx + 4, ty + dy, PAL["M"] if dy % 4 == 0 else PAL["6"])
+        put(img, tx + 5, ty + dy, PAL["S"] if dy % 4 == 0 else PAL["7"])
+    for side in ("east", "west"):
+        sx, sy, sw, sh = bf[side]
+        # Subtle breeze-swirl flank streak
+        for ox, oy, ch in [(6, 2, "6"), (7, 2, "M"), (8, 3, "C"), (9, 3, "M"), (10, 4, "6")]:
+            put(img, sx + ox, sy + oy, PAL[ch])
+            if ch == "C":
+                put(glow, sx + ox, sy + oy, PAL[ch])
 
-    # 5. Clean Cream Snout [3, 2, 3] at [98, 0]
-    smooth_coat(img, 98, 0, 3, 2, 3, GC_COAT_CORE, GC_COAT_HI, GC_COAT_BASE, GC_COAT_BASE)
-    sf = faces(98, 0, 3, 2, 3)
-    put(img, sf["front"][0] + 1, sf["front"][1], GC_NOSE)
+    # 2. Fluffy Cream Chest Swell [5, 4, 3] at [28, 0] -> 10x8x6 px
+    shade_ramp_box(28, 0, 5, 4, 3, COAT_RAMP, cream_bottom=True, seed=2)
+    paint_box_2x(img, 28, 0, 5, 4, 3, {
+        "front": [
+            "4567777654",
+            "4577777754",
+            "3577777753",
+            "3467777643",
+            "3467777643",
+            "2356776532",
+            "2345665432",
+            "1234554321",
+        ],
+    }, PAL)
 
-    # 6. Spiraling Tapered Unicorn Horn: Base [2,2,2]@[110,0], Mid [1,3,1]@[118,0], Tip [1,2,1]@[122,0]
-    smooth_coat(img, 110, 0, 2, 2, 2, GC_HORN_CORE, GC_HORN_HI, GC_HORN_BLUE, GC_CYAN_BASE)
-    smooth_coat(img, 118, 0, 1, 3, 1, GC_HORN_CORE, GC_HORN_BLUE, GC_HORN_HI, GC_CYAN_BASE)
-    hm = faces(118, 0, 1, 3, 1)
-    for side in ("front", "east", "west", "back"):
-        put(img, hm[side][0], hm[side][1] + 1, GC_HORN_CORE)
-    smooth_coat(img, 122, 0, 1, 2, 1, GC_HORN_CORE, GC_HORN_CORE, GC_HORN_BLUE, GC_HORN_HI)
+    # 2b. Fluffy Pointed Chest-Ruff Cutout Plane [5, 4, 0] at [44, 0] -> 10x8 px
+    paint_cutout_z(44, 0, 5, 4, [
+        ".56777765.",
+        "4677MS7764",
+        "577MCcM775",
+        ".677SM776.",
+        ".46777764.",
+        "..567765..",
+        "...4664...",
+        "....55....",
+    ], glow_keys={"C", "c", "M"})
 
-    # 7. Forelock Crest [2, 3, 2] at [28, 6]
-    smooth_coat(img, 28, 6, 2, 3, 2, GC_CLOUD_HI, GC_CYAN_HI, GC_CYAN_BASE, GC_CYAN_SHADE)
+    # 3. Flowing Silky Aqua-Teal Unicorn Mane:
+    #    Neck mane [3, 4, 3] @ [0, 13] -> 6x8x6 px & Back mane [2, 3, 4] @ [12, 13] -> 4x6x8 px
+    shade_ramp_box(0, 13, 3, 4, 3, MANE_RAMP, seed=3)
+    nmf = f2x(0, 13, 3, 4, 3)
+    for fname in ("top", "east", "west", "back"):
+        rx, ry, rw, rh = nmf[fname]
+        for ly in range(rh):
+            for lx in range(rw):
+                if (lx + ly) % 3 == 0 and ly < rh - 1:
+                    put(img, rx + lx, ry + ly, PAL["S"])
+                if fname == "top" and lx in (2, 3) and ly in (1, 3):
+                    put(img, rx + lx, ry + ly, PAL["C"])
+                    put(glow, rx + lx, ry + ly, PAL["C"])
 
-    # 8. Alert Fox Ears [2, 4, 1] at [36, 7] & [42, 7]
-    for eu in (36, 42):
-        smooth_coat(img, eu, 7, 2, 4, 1, GC_CYAN_HI, GC_CYAN_BASE, GC_CYAN_SHADE, GC_CYAN_SHADE)
-        ef = faces(eu, 7, 2, 4, 1)
-        inner_x = ef["front"][0] + (0 if eu == 36 else 1)
-        put(img, inner_x, ef["front"][1] + 1, GC_COAT_CORE)
-        put(img, inner_x, ef["front"][1] + 2, GC_COAT_CORE)
-        put(img, inner_x, ef["front"][1] + 3, GC_COAT_HI)
+    shade_ramp_box(12, 13, 2, 3, 4, MANE_RAMP, seed=4)
+    bmf = f2x(12, 13, 2, 3, 4)
+    for fname in ("top", "east", "west"):
+        rx, ry, rw, rh = bmf[fname]
+        for ly in range(rh):
+            for lx in range(rw):
+                if (lx + ly) % 4 == 0:
+                    put(img, rx + lx, ry + ly, PAL["p"] if fname == "top" else PAL["s"])
+                if fname == "top" and ly == rh - 2 and lx in (1, 2):
+                    put(img, rx + lx, ry + ly, PAL["C"])
+                    put(glow, rx + lx, ry + ly, PAL["C"])
 
-    # 9. Expressive 2x3 Sky-Blue Eyes at [48, 7] & [54, 7]
-    for idx, eu in enumerate((48, 54)):
-        ef = faces(eu, 7, 2, 3, 1)
-        for rect in ef.values():
-            fill(img, rect, GC_EYE_PUPIL)
-        ex, ey, _, _ = ef["front"]
-        fill(img, (ex, ey, 2, 3), GC_EYE_IRIS)
-        px_col = ex + (1 if idx == 0 else 0)
-        hi_col = ex + (0 if idx == 0 else 1)
-        put(img, px_col, ey, GC_EYE_PUPIL)
-        put(img, px_col, ey + 1, GC_EYE_PUPIL)
-        put(img, px_col, ey + 2, GC_EYE_PUPIL)
-        put(img, hi_col, ey, GC_CLOUD_HI)
-        put(img, hi_col, ey + 2, GC_HORN_BLUE)
+    # 3b. Flowing Alpha-Cutout Side Mane Locks [0, 5, 5] @ [24, 13] & [34, 13] -> 10x10 px
+    #     west col 0 = front (-Z), col 9 = back (+Z)
+    mane_lock_west = [
+        "mmmMS.....",
+        "TMMSsp....",
+        "tTMMSC....",
+        "tTMMSsp...",
+        ".tTMMSs...",
+        "..tTMMSC..",
+        "...tMMSs..",
+        "....tmMs..",
+        ".....tm...",
+        "..........",
+    ]
+    paint_cutout_x(24, 13, 5, 5, mane_lock_west, glow_keys={"C"})
+    paint_cutout_x(34, 13, 5, 5, mane_lock_west, glow_keys={"C"})
 
-    # 10. Giant Horizontal Whirlwind Cloud-Fan Tail
-    # tail_root [4,3,3]@[0,14], tail_cloud_center [5,4,6]@[14,14], crest [4,2,4]@[36,14]
-    # tail_fan_left [4,3,6]@[52,14], tail_fan_right [4,3,6]@[72,14]
-    # tail_gust_tips center [4,3,4]@[92,14], fins [2,2,4]@[108,14] & [0,24]
-    smooth_coat(img, 0, 14, 4, 3, 3, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_BREEZE, GC_CYAN_HI)
-    smooth_coat(img, 14, 14, 5, 4, 6, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_SHADE, GC_CLOUD_BREEZE)
-    smooth_coat(img, 36, 14, 4, 2, 4, GC_CLOUD_HI, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_BREEZE)
-    for fan_u in (52, 72):
-        smooth_coat(img, fan_u, 14, 4, 3, 6, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_SHADE, GC_CLOUD_BREEZE)
-        ff = faces(fan_u, 14, 4, 3, 6)
-        tx, ty, tw, th = ff["top"]
-        for dy in range(th):
-            put(img, tx + (dy % tw), ty + dy, GC_HORN_BLUE if dy % 2 == 0 else GC_CLOUD_BREEZE)
-    smooth_coat(img, 92, 14, 4, 3, 4, GC_CLOUD_HI, GC_CLOUD_BASE, GC_CLOUD_BREEZE, GC_CYAN_HI)
-    smooth_coat(img, 108, 14, 2, 2, 4, GC_CLOUD_HI, GC_HORN_HI, GC_CLOUD_BREEZE, GC_CYAN_BASE)
-    smooth_coat(img, 0, 24, 2, 2, 4, GC_CLOUD_HI, GC_HORN_HI, GC_CLOUD_BREEZE, GC_CYAN_BASE)
+    # 4. Head [6, 5, 5] at [56, 0] -> 12x10x10 px
+    #    Aqua-teal unicorn crown & temples blending into sunny butter-gold & cream fox face
+    shade_ramp_box(56, 0, 6, 5, 5, COAT_RAMP, cream_bottom=True, seed=5)
+    paint_box_2x(img, 56, 0, 6, 5, 5, {
+        "front": [
+            "ttTMMSpSMMTt",
+            "tTMMS67SMMTt",
+            "tTM567C75MTt",
+            "Tm45677765mt",
+            "T4567777654m",
+            "345677776543",
+            "345677776543",
+            "235677776532",
+            "234677776432",
+            "123456654321",
+        ],
+        "top": [
+            "atTMMSpSMMTa",
+            "tTMMSppSMMTt",
+            "tTMSSppSSMTt",
+            "tMMSpppSSMMt",
+            "mMSpCccpSMMm",
+            "MMSpCCCCpSMM",
+            "MMSSppppSSMM",
+            "tMMSppppSMMt",
+            "tTMMSppSMMTt",
+            "ttTMMSpSMMTt",
+        ],
+        "back": [
+            "atTMMSpSMMTa",
+            "tTTMMSpSMMTt",
+            "tTTMMSpSMMTt",
+            "atTMMSpSMMTa",
+            "atTTMMMSMMTa",
+            "aaTTTMMTTTaa",
+            "1aTTMMpMMTa1",
+            "123tTMMMt321",
+            "123456654321",
+            "012345543210",
+        ],
+        "east": [
+            "atTMMSSMMT",
+            "tTMMSpSMMt",
+            "TMM566MSmt",
+            "TM45665mTt",
+            "M4567654mT",
+            "456776543t",
+            "4567765432",
+            "3567765432",
+            "2456654321",
+            "1234543210",
+        ],
+        "west": [
+            "TMMSSMMTta",
+            "tMMSpSMMTt",
+            "tmSM665MMT",
+            "tTm56654MT",
+            "Tm4567654M",
+            "t345677654",
+            "2345677654",
+            "2345677653",
+            "1234566542",
+            "0123454321",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 56, 0, 6, 5, 5, {
+        "front": [
+            "............",
+            "............",
+            "......C.....",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+        ],
+        "top": [
+            "............",
+            "............",
+            "............",
+            "............",
+            "....CccC....",
+            "....CCCC....",
+            "............",
+            "............",
+            "............",
+            "............",
+        ],
+    }, PAL)
 
-    # 11. Graceful Yellow Legs + Aqua Fetlocks + Pearlescent Hooves [2, 6, 2] at [0, 34]..[30, 34]
-    for lu in (0, 10, 20, 30):
-        smooth_coat(img, lu, 34, 2, 6, 2, GC_COAT_HI, GC_COAT_BASE, GC_COAT_SHADE, GC_COAT_SHADE)
-        lf = faces(lu, 34, 2, 6, 2)
-        for face_name in ("front", "back", "east", "west"):
-            fx, fy, fw, fh = lf[face_name]
-            fill(img, (fx, fy + 3, fw, 2), GC_CYAN_BASE)
-            fill(img, (fx, fy + 5, fw, 1), GC_HORN_HI)
-        fill(img, lf["bottom"], GC_CLOUD_BREEZE)
+    # 4b. Wispy Cheek-Fur Tufts [3, 4, 0] @ [78, 0] (left) & [84, 0] (right) -> 6x8 px
+    cheek_left = [
+        "456...",
+        "46764.",
+        "57776M",
+        "4676..",
+        "5777SC",
+        "3565..",
+        "4675..",
+        "24....",
+    ]
+    cheek_right = [row[::-1] for row in cheek_left]
+    paint_cutout_z(78, 0, 3, 4, cheek_left, glow_keys={"C"})
+    paint_cutout_z(84, 0, 3, 4, cheek_right, glow_keys={"C"})
 
-    dest = OUT / "entity/galecorn.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    # 5. Clean Cream Fox Snout [3, 2, 3] at [90, 0] -> 6x4x6 px
+    shade_ramp_box(90, 0, 3, 2, 3, COAT_RAMP, cream_bottom=True, seed=6)
+    paint_box_2x(img, 90, 0, 3, 2, 3, {
+        "front": [
+            "56NiN6",
+            "57iIi7",
+            "677776",
+            "567765",
+        ],
+        "top": [
+            "456654",
+            "456654",
+            "567765",
+            "567765",
+            "67NiN7",
+            "56iIi6",
+        ],
+    }, PAL)
+
+    # 6. Spiraling Tapered Unicorn Horn + Starlight-Breeze Tip Spark:
+    #    Base [2, 2, 2] @ [102, 0] -> 4x4x4 px
+    shade_ramp_box(102, 0, 2, 2, 2, CLOUD_RAMP, seed=7)
+    for fname in ("front", "back", "east", "west"):
+        paint_box_2x(img, 102, 0, 2, 2, 2, {
+            fname: [
+                "wCcW",
+                "KccK",
+                "mKcm",
+                "tmKm",
+            ],
+        }, PAL)
+        paint_box_2x(glow, 102, 0, 2, 2, 2, {
+            fname: [
+                ".Cc.",
+                ".cc.",
+                "..c.",
+                "....",
+            ],
+        }, PAL)
+
+    #    Mid [1, 3, 1] @ [110, 0] -> 2x6x2 px
+    shade_ramp_box(110, 0, 1, 3, 1, CLOUD_RAMP, seed=8)
+    for fname in ("front", "back", "east", "west"):
+        paint_box_2x(img, 110, 0, 1, 3, 1, {
+            fname: [
+                "cW",
+                "CC",
+                "Wc",
+                "Kc",
+                "WC",
+                "mK",
+            ],
+        }, PAL)
+        paint_box_2x(glow, 110, 0, 1, 3, 1, {
+            fname: [
+                "c.",
+                "CC",
+                ".c",
+                ".c",
+                ".C",
+                "..",
+            ],
+        }, PAL)
+
+    #    Tip [1, 2, 1] @ [114, 0] -> 2x4x2 px
+    shade_ramp_box(114, 0, 1, 2, 1, CLOUD_RAMP, seed=9)
+    for fname in ("front", "back", "east", "west"):
+        paint_box_2x(img, 114, 0, 1, 2, 1, {
+            fname: [
+                "cc",
+                "cC",
+                "CW",
+                "KC",
+            ],
+        }, PAL)
+        paint_box_2x(glow, 114, 0, 1, 2, 1, {
+            fname: [
+                "cc",
+                "cC",
+                "C.",
+                ".C",
+            ],
+        }, PAL)
+
+    #    Star Spark Cutout [2, 2, 0] @ [118, 0] -> 4x4 px
+    paint_cutout_z(118, 0, 2, 2, [
+        ".cC.",
+        "cWWc",
+        "CWWC",
+        ".CC.",
+    ], glow_keys={"C", "c", "W"})
+
+    # 7. Windswept Forelock Crest: volume [2, 3, 2] @ [78, 5] & cutout [3, 4, 0] @ [86, 5] -> 6x8 px
+    shade_ramp_box(78, 5, 2, 3, 2, MANE_RAMP, seed=10)
+    paint_cutout_z(86, 5, 3, 4, [
+        "..cp..",
+        ".cSSp.",
+        ".CMMs.",
+        "tTMMS.",
+        "tTMmC.",
+        ".tMm..",
+        "..m...",
+        "......",
+    ], glow_keys={"C", "c"})
+
+    # 8. Expressive Flush Sky-Blue Almond Eyes: [2, 3, 0] @ [92, 5] & [96, 5] -> 4x6 px
+    eye_left_grid = [
+        ".NNN",
+        "NWNI",
+        "INIK",
+        "IKIC",
+        "KCKc",
+        "NNi.",
+    ]
+    eye_right_grid = [row[::-1] for row in eye_left_grid]
+    paint_cutout_z(92, 5, 2, 3, eye_left_grid, glow_keys={"W", "K", "C", "c"})
+    paint_cutout_z(96, 5, 2, 3, eye_right_grid, glow_keys={"W", "K", "C", "c"})
+
+    # 9. Sculpted Alpha-Cutout Pointed Fox-Unicorn Ears:
+    #    Main Plane [4, 6, 0] @ [44, 13] & [56, 13] -> 8x12 px (inner=lx0..outer=lx7 for left)
+    #    Side Rib   [0, 5, 2] @ [52, 13] & [64, 13] -> 4x10 px
+    ear_left_front = [
+        "..aa....",
+        ".aTTa...",
+        ".aTMta..",
+        "aT6Sma..",
+        "tT76Mma.",
+        "tM7f6Mta",
+        "tM7ffMta",
+        "tM676Mta",
+        ".m676Mt.",
+        ".m565mt.",
+        "..454t..",
+        "..343...",
+    ]
+    ear_left_back_in_front_coords = [
+        "..aa....",
+        ".aTTa...",
+        ".aTMTa..",
+        "aTMMTa..",
+        "tTMmMTa.",
+        "tMMsMTta",
+        "tMMSSMTa",
+        "tTMssMTa",
+        ".tTMmMT.",
+        ".tTTMTt.",
+        "..ttTt..",
+        "..aaat..",
+    ]
+    ear_left_back_uv = [row[::-1] for row in ear_left_back_in_front_coords]
+    ear_right_front = [row[::-1] for row in ear_left_front]
+    ear_right_back_uv = ear_left_back_in_front_coords
+
+    paint_cutout_z(44, 13, 4, 6, ear_left_front, back_grid=ear_left_back_uv)
+    paint_cutout_z(56, 13, 4, 6, ear_right_front, back_grid=ear_right_back_uv)
+
+    ear_side_rib = [
+        ".aa.",
+        "aTTa",
+        "tMMt",
+        "tSSt",
+        "m76t",
+        "m76t",
+        "m65t",
+        "m54t",
+        ".34.",
+        ".23.",
+    ]
+    paint_cutout_x(52, 13, 5, 2, ear_side_rib)
+    paint_cutout_x(64, 13, 5, 2, ear_side_rib)
+
+    # 10. Giant Swirling Whirlwind Cloud-Fan Tail:
+    #     tail_root [4, 3, 3] @ [102, 5] -> 8x6x6 px
+    shade_ramp_box(102, 5, 4, 3, 3, CLOUD_RAMP, seed=11)
+    trf = f2x(102, 5, 4, 3, 3)
+    for fname in ("top", "bottom", "east", "west"):
+        rx, ry, rw, rh = trf[fname]
+        for ly in range(rh):
+            for lx in range(rw):
+                if (lx + ly) % 3 == 0:
+                    put(img, rx + lx, ry + ly, PAL["B"] if fname == "bottom" else PAL["W"])
+                if fname == "top" and lx in (3, 4) and ly in (1, 3):
+                    put(img, rx + lx, ry + ly, PAL["C"])
+                    put(glow, rx + lx, ry + ly, PAL["C"])
+
+    #     tail_cloud_center [5, 4, 6] @ [0, 23] -> 10x8x12 px
+    shade_ramp_box(0, 23, 5, 4, 6, CLOUD_RAMP, seed=12)
+    tcf = f2x(0, 23, 5, 4, 6)
+    for fname in ("top", "bottom", "east", "west", "back"):
+        rx, ry, rw, rh = tcf[fname]
+        for ly in range(rh):
+            for lx in range(rw):
+                # Sculpted swirling cloud ridges & cyan wind ribbons (ensures rich contrast on top & bottom)
+                swirl = (lx * 2 + ly * 3) % 7
+                if fname == "bottom":
+                    put(img, rx + lx, ry + ly, PAL["B"] if swirl < 2 else (PAL["l"] if swirl < 5 else PAL["L"]))
+                elif fname == "top":
+                    if swirl == 0:
+                        put(img, rx + lx, ry + ly, PAL["B"])
+                    elif swirl == 3 and 2 <= lx <= rw - 3:
+                        put(img, rx + lx, ry + ly, PAL["C"])
+                        put(glow, rx + lx, ry + ly, PAL["C"])
+                elif swirl == 1 and ly < rh - 2:
+                    put(img, rx + lx, ry + ly, PAL["K"] if ly == 2 else PAL["W"])
+                    if ly == 2 and lx % 3 == 0:
+                        put(glow, rx + lx, ry + ly, PAL["C"])
+
+    #     tail_cloud_center upper crest [4, 2, 4] @ [22, 23] -> 8x4x8 px
+    shade_ramp_box(22, 23, 4, 2, 4, CLOUD_RAMP, seed=13)
+    ucf = f2x(22, 23, 4, 2, 4)
+    for fname in ("top", "bottom", "east", "west"):
+        rx, ry, rw, rh = ucf[fname]
+        for ly in range(rh):
+            for lx in range(rw):
+                if (lx + ly * 2) % 4 == 0:
+                    put(img, rx + lx, ry + ly, PAL["B"] if fname == "bottom" else PAL["W"])
+                if fname == "top" and ly in (2, 5) and lx in (3, 4):
+                    put(img, rx + lx, ry + ly, PAL["C"])
+                    put(glow, rx + lx, ry + ly, PAL["C"])
+
+    #     tail_cloud_center dorsal swirling plume cutout [0, 6, 8] @ [68, 11] -> 16x12 px
+    #     west col 0 = front (-Z), col 15 = back (+Z)
+    dorsal_plume_west = [
+        "........WWcC....",
+        "......WhWWCCw...",
+        ".....WhwWWKbw...",
+        "....WhhWWhwWW...",
+        "...BhhWWhwhWhC..",
+        "..bLhhWhhwhWhWC.",
+        ".bLLhhwhhwWhKbw.",
+        "uBLLhhwhwWhKbw..",
+        "uubLLhwhWhCbw...",
+        ".uuBLLhWhKbw....",
+        "..uuBBLhwb......",
+        "...uuuBBb.......",
+    ]
+    paint_cutout_x(68, 11, 6, 8, dorsal_plume_west, glow_keys={"C", "c"})
+
+    #     tail_fan_left [4, 3, 6] @ [38, 23] & tail_fan_right [4, 3, 6] @ [58, 25] -> 8x6x12 px
+    for idx, fan_u, fan_v in ((0, 38, 23), (1, 58, 25)):
+        shade_ramp_box(fan_u, fan_v, 4, 3, 6, CLOUD_RAMP, seed=14 + idx)
+        ff = f2x(fan_u, fan_v, 4, 3, 6)
+        for fname in ("top", "bottom", "east", "west"):
+            rx, ry, rw, rh = ff[fname]
+            for ly in range(rh):
+                for lx in range(rw):
+                    if fname == "bottom":
+                        put(img, rx + lx, ry + ly, PAL["b"] if (lx + ly) % 3 == 0 else PAL["l"])
+                    elif fname == "top" and (lx + ly) % 4 == 0:
+                        put(img, rx + lx, ry + ly, PAL["K"] if lx in (2, 5) else PAL["W"])
+                        if lx == 3 and ly % 3 == 1:
+                            put(img, rx + lx, ry + ly, PAL["C"])
+                            put(glow, rx + lx, ry + ly, PAL["C"])
+
+    #     Sweeping Wind-Plume Fan Cutout Wings [5, 0, 8] @ [84, 11] (left) & [84, 19] (right) -> 10x16 px
+    #     top row 0 = back (+Z), row 15 = front (-Z); lx=0 inner, lx=9 outer tip
+    fan_wing_left_top = [
+        ".......C..",
+        "......cCW.",
+        ".....WhwC.",
+        "....WhhwK.",
+        "...WhhhbK.",
+        "..BLhhwb..",
+        ".bLLhwhKC.",
+        ".bLhhwhcC.",
+        "bLLhhwCKb.",
+        "BLLhhwhb..",
+        "uBLLhhw...",
+        "uuBLLhw...",
+        ".uuBLLh...",
+        "..uuBLw...",
+        "...uuBb...",
+        "....uu....",
+    ]
+    fan_wing_right_top = [row[::-1] for row in fan_wing_left_top]
+    paint_cutout_y(84, 11, 5, 8, fan_wing_left_top, glow_keys={"C", "c"})
+    paint_cutout_y(84, 19, 5, 8, fan_wing_right_top, glow_keys={"C", "c"})
+
+    #     tail_gust_tips rear cushion [4, 3, 4] @ [0, 33] -> 8x6x8 px, plumes [2, 2, 4] @ [16, 33] & [28, 33]
+    shade_ramp_box(0, 33, 4, 3, 4, CLOUD_RAMP, seed=16)
+    gtf = f2x(0, 33, 4, 3, 4)
+    for fname in ("top", "bottom"):
+        rx, ry, rw, rh = gtf[fname]
+        for ly in range(rh):
+            for lx in range(rw):
+                if (lx + ly) % 2 == 0:
+                    put(img, rx + lx, ry + ly, PAL["B"] if fname == "bottom" else PAL["W"])
+    for idx, pu in enumerate((16, 28)):
+        shade_ramp_box(pu, 33, 2, 2, 4, CLOUD_RAMP, seed=17 + idx)
+        pf = f2x(pu, 33, 2, 2, 4)
+        for fname in ("top", "east", "west", "back"):
+            rx, ry, rw, rh = pf[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + (0 if fname == "top" else rh - 1), PAL["C"] if lx % 2 == 0 else PAL["K"])
+                if lx % 2 == 0:
+                    put(glow, rx + lx, ry + (0 if fname == "top" else rh - 1), PAL["C"])
+
+    #     tail_gust_tips trailing wind-spiral cutout [0, 5, 6] @ [40, 33] -> 12x10 px
+    gust_spiral_west = [
+        "........cC..",
+        "......WhCC..",
+        "....WhhwCK..",
+        "..BLhhwKC...",
+        ".bLLhhwhw...",
+        "uBLLhhwhwcC.",
+        "uuBLLhWhKCC.",
+        ".uuBBLhKbw..",
+        "..uuBBbwb...",
+        "...uuu......",
+    ]
+    paint_cutout_x(40, 33, 5, 6, gust_spiral_west, glow_keys={"C", "c"})
+
+    # 11. Four Tapered Sunny Fox-Unicorn Legs + Aqua Fetlocks + Cloven Hooves + Breeze Fins:
+    #     leg_fl (0), leg_fr (18), leg_bl (36), leg_br (54) at v=45
+    fetlock_west = [
+        "..cC",
+        ".SMT",
+        "mMSC",
+        "TMm.",
+        "tMS.",
+        ".t..",
+    ]
+    for idx, base_u in enumerate((0, 18, 36, 54)):
+        # Upper thigh [2, 3, 2] @ [base_u, 45] -> 4x6x4 px
+        shade_ramp_box(base_u, 45, 2, 3, 2, COAT_RAMP, seed=20 + idx)
+        uf = f2x(base_u, 45, 2, 3, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = uf[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + 5, PAL["M"] if lx in (1, 2) else PAL["m"])
+
+        # Tapered lower shin [2, 3, 2] @ [base_u + 8, 45] -> 4x6x4 px
+        shade_ramp_box(base_u + 8, 45, 2, 3, 2, MANE_RAMP, seed=24 + idx)
+        lf = f2x(base_u + 8, 45, 2, 3, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = lf[fname]
+            for lx in range(rw):
+                y_off = 3 if lx in (1, 2) else 4
+                put(img, rx + lx, ry + y_off, PAL["C"] if lx in (1, 2) else PAL["S"])
+                put(img, rx + lx, ry + 5, PAL["t"] if lx in (1, 2) else PAL["a"])
+                if fname == "front" and lx in (1, 2):
+                    put(glow, rx + lx, ry + y_off, PAL["C"])
+
+        # Pearlescent cloven hoof [2, 1, 2] @ [base_u, 52] -> 4x2x4 px
+        shade_ramp_box(base_u, 52, 2, 1, 2, CLOUD_RAMP, seed=28 + idx)
+        paint_box_2x(img, base_u, 52, 2, 1, 2, {
+            "front": [
+                "wWWw",
+                "NiIN",
+            ],
+            "top": [
+                "llLl",
+                "LwwL",
+                "wWWw",
+                "BllB",
+            ],
+            "bottom": [
+                "NiIN",
+                "iKKi",
+                "iCCi",
+                "NNNN",
+            ],
+        }, PAL)
+
+        # Trailing breeze fetlock fin [0, 3, 2] @ [base_u + 8, 52] -> 4x6 px
+        paint_cutout_x(base_u + 8, 52, 3, 2, fetlock_west, glow_keys={"C", "c"})
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "galecorn.png")
+    glow.save(entity_dir / "galecorn_glowmask.png")
+
 
 
 def make_ember_drake():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Ember Drake: Canopy Emerald & Ember Amber dragon hatchling + glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # DESIGN.md Dragon Jungle Accent: Canopy Emerald (#22C55E) + Ember Amber (#F97316)
-    ED_HI = (110, 238, 152, 255)
-    ED_BASE = (34, 197, 94, 255)
-    ED_SHADE = (22, 148, 70, 255)
-    ED_DEEP = (14, 98, 48, 255)
+    # 8-stop Canopy Emerald Dragon Scale ramp (#0B3B24 -> #22C55E -> #DCFEF0)
+    SCALE_RAMP = [
+        (11, 59, 36, 255),     # 0: Deep jungle crevice shadow
+        (15, 86, 50, 255),     # 1: Dark forest scale shadow
+        (20, 118, 66, 255),    # 2: Shaded emerald
+        (26, 152, 80, 255),    # 3: Mid emerald scale
+        (34, 197, 94, 255),    # 4: DESIGN.md Canopy Emerald (#22C55E)
+        (82, 224, 134, 255),   # 5: Sunlit emerald highlight
+        (152, 244, 186, 255),  # 6: Pale mint scale sheen
+        (220, 254, 240, 255),  # 7: Specular dew-mint glint
+    ]
+    # 8-stop Ember Amber Flame & Wing Membrane ramp (#5E1908 -> #F97316 -> #FEF9C3)
+    EMBER_RAMP = [
+        (94, 25, 8, 255),      # 0: Charred crimson-umber shadow
+        (142, 42, 10, 255),    # 1: Deep burnt sienna
+        (196, 68, 14, 255),    # 2: Rich volcanic orange
+        (249, 115, 22, 255),   # 3: DESIGN.md Ember Amber (#F97316)
+        (252, 158, 42, 255),   # 4: Bright molten amber
+        (254, 198, 78, 255),   # 5: Golden belly scute
+        (254, 232, 132, 255),  # 6: Radiant solar flame
+        (254, 249, 195, 255),  # 7: White-hot ember core
+    ]
+    # 8-stop Ivory-Gold Horn, Fang & Claw ramp (#4A321E -> #FFFDF0)
+    HORN_RAMP = [
+        (74, 50, 30, 255),     # 0: Dark horn root shadow
+        (114, 82, 48, 255),    # 1: Aged bronze-ivory
+        (154, 118, 76, 255),   # 2: Warm tan horn shadow
+        (192, 156, 108, 255),  # 3: Mid bone-ivory
+        (224, 194, 146, 255),  # 4: Warm ivory base
+        (244, 224, 184, 255),  # 5: Sunlit horn highlight
+        (252, 242, 214, 255),  # 6: Cream-white horn ridge
+        (255, 253, 240, 255),  # 7: Pearlescent tip glint
+    ]
 
-    AMB_HI = (255, 222, 120, 255)
-    AMB_BASE = (249, 115, 22, 255)
-    AMB_SHADE = (194, 72, 14, 255)
-    AMB_DEEP = (138, 44, 10, 255)
+    PAL = {
+        "0": SCALE_RAMP[0],
+        "1": SCALE_RAMP[1],
+        "2": SCALE_RAMP[2],
+        "3": SCALE_RAMP[3],
+        "4": SCALE_RAMP[4],
+        "5": SCALE_RAMP[5],
+        "6": SCALE_RAMP[6],
+        "7": SCALE_RAMP[7],
+        "a": EMBER_RAMP[0],
+        "r": EMBER_RAMP[1],
+        "R": EMBER_RAMP[2],
+        "O": EMBER_RAMP[3],
+        "A": EMBER_RAMP[4],
+        "G": EMBER_RAMP[5],
+        "Y": EMBER_RAMP[6],
+        "W": EMBER_RAMP[7],
+        "k": HORN_RAMP[0],
+        "b": HORN_RAMP[1],
+        "n": HORN_RAMP[2],
+        "h": HORN_RAMP[3],
+        "H": HORN_RAMP[4],
+        "i": HORN_RAMP[5],
+        "I": HORN_RAMP[6],
+        "P": HORN_RAMP[7],
+        "D": (16, 28, 24, 255),    # Deep obsidian-forest pupil & nostril anchor
+        "C": (255, 255, 255, 255), # Specular eye sparkle
+    }
 
-    HORN_HI = (255, 246, 214, 255)
-    HORN_BASE = (224, 204, 164, 255)
-    HORN_SHADE = (176, 152, 118, 255)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # 1. Body [6, 5, 9] at [0, 0] + Belly [5, 1, 8] at [32, 0] + Dorsal Spikes [1, 2, 2] at [60, 0] & [68, 0]
-    smooth_coat(img, 0, 0, 6, 5, 9, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    bf = faces(0, 0, 6, 5, 9)
-    # Subtle dragon scale checker along top/sides
-    for side in ("top", "east", "west"):
+    def shade_ramp_box(u, v, w, h, d, ramp, *, diamond_scales=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.3,
+            "front": 4.6,
+            "east": 4.1,
+            "west": 3.7,
+            "back": 3.2,
+            "bottom": 2.1,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.4 - edge_dist * 1.1
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.5 if edge == 0 else 0.0) + (0.4 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                    if diamond_scales:
+                        cell = ((lx + (ly // 2) * 2) % 4, ly % 4)
+                        if cell in ((0, 0), (2, 2)):
+                            idx += 0.85
+                        elif cell in ((1, 1), (3, 3)):
+                            idx -= 0.75
+                        elif (lx * 5 + ly * 11 + seed * 3) % 9 == 0:
+                            idx += 0.35
+                    else:
+                        tuft = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 11
+                        if tuft <= 1:
+                            idx += 0.45
+                        elif tuft >= 9:
+                            idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.6
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    def paint_cutout_z(u, v, w, h, front_grid, *, back_grid=None, glow_keys=()):
+        if back_grid is None:
+            back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
+
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
+
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
+
+    # 1. Body [6, 5, 9] @ [0, 0] -> 12x10x18 px
+    shade_ramp_box(0, 0, 6, 5, 9, SCALE_RAMP, diamond_scales=True, seed=1)
+    bf = f2x(0, 0, 6, 5, 9)
+    # Golden-amber dorsal ridge accents & flank ember spots
+    tx, ty, tw, th = bf["top"]
+    for ly in range(1, th - 1):
+        put(img, tx + 5, ty + ly, PAL["G"] if ly % 3 == 0 else PAL["6"])
+        put(img, tx + 6, ty + ly, PAL["Y"] if ly % 3 == 0 else PAL["7"])
+    for side in ("east", "west"):
         sx, sy, sw, sh = bf[side]
-        for py in range(sy, sy + sh):
-            for px in range(sx, sx + sw):
-                if (px + py) % 3 == 0:
-                    put(img, px, py, ED_HI if side == "top" else ED_SHADE)
-    smooth_coat(img, 32, 0, 5, 1, 8, AMB_HI, (255, 190, 96, 255), AMB_BASE, AMB_SHADE)
-    smooth_coat(img, 60, 0, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
-    smooth_coat(img, 68, 0, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+        for ox, oy, ch in ((4, 3, "6"), (5, 4, "O"), (9, 4, "G"), (10, 5, "O"), (13, 3, "6")):
+            put(img, sx + ox, sy + oy, PAL[ch])
+            if ch in ("O", "G"):
+                put(glow, sx + ox, sy + oy, PAL[ch])
+    # Warm ember chest plate center on body front
+    fx, fy, fw, fh = bf["front"]
+    for py in range(4, fh - 1):
+        for px in range(3, fw - 3):
+            put(img, fx + px, fy + py, PAL["G"] if py in (5, 6) and px in (5, 6) else PAL["A"])
+            if py in (5, 6) and px in (5, 6):
+                put(glow, fx + px, fy + py, PAL["Y"])
 
-    # 2. Neck [4, 4, 3] at [76, 0]
-    smooth_coat(img, 76, 0, 4, 4, 3, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    nf = faces(76, 0, 4, 4, 3)
-    fill(img, (nf["front"][0] + 1, nf["front"][1] + 1, 2, 3), AMB_HI)
+    # 2. Ribbed Golden-Amber Belly Scutes [5, 2, 8] @ [30, 0] -> 10x4x16 px
+    shade_ramp_box(30, 0, 5, 2, 8, EMBER_RAMP, seed=2)
+    blf = f2x(30, 0, 5, 2, 8)
+    # Crisp chest hearth core on front
+    paint_box_2x(img, 30, 0, 5, 2, 8, {
+        "front": [
+            "rOGYWWYGOr",
+            "ROYWWWWYOR",
+            "aOGYYYYGOa",
+            "arROAAORra",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 30, 0, 5, 2, 8, {
+        "front": [
+            "...YWWY...",
+            "..YWWWWY..",
+            "...YYYY...",
+            "..........",
+        ],
+    }, PAL)
+    # Ribbed horizontal scute plates on bottom, east, west
+    bx, by, bw, bh = blf["bottom"]
+    for ly in range(bh):
+        scute_seam = ly % 3 == 0
+        for lx in range(bw):
+            edge = lx in (0, bw - 1)
+            ch = "r" if (scute_seam or edge) else ("G" if ly % 3 == 1 else "A")
+            put(img, bx + lx, by + ly, PAL[ch])
+    for side in ("east", "west"):
+        sx, sy, sw, sh = blf[side]
+        for lx in range(sw):
+            if lx % 3 == 0:
+                for ly in range(sh):
+                    put(img, sx + lx, sy + ly, PAL["r"])
 
-    # 3. Head [6, 5, 5] at [0, 16], Snout [4, 3, 3] at [24, 16], Jaw [3, 1, 3] at [40, 16], Crest [1, 2, 2] at [54, 16]
-    smooth_coat(img, 0, 16, 6, 5, 5, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    smooth_coat(img, 24, 16, 4, 3, 3, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    snf = faces(24, 16, 4, 3, 3)
-    put(img, snf["front"][0], snf["front"][1] + 1, ED_DEEP)
-    put(img, snf["front"][0] + 3, snf["front"][1] + 1, ED_DEEP)
-    smooth_coat(img, 40, 16, 3, 1, 3, AMB_HI, (255, 190, 96, 255), AMB_BASE, AMB_SHADE)
-    smooth_coat(img, 54, 16, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+    # 3. Dorsal Flame-Spine Crest Cutout [0, 3, 8] @ [56, 0] -> 16x6 px
+    #    west col 0 = front (-Z), col 15 = back (+Z)
+    paint_cutout_x(56, 0, 3, 8, [
+        "..W.....W.....Y.",
+        ".YOY...YOY...YO.",
+        "rOAOr.rOAOr.rOAr",
+        "2343212343212342",
+        "1243211243211231",
+        "0122100122100120",
+    ], glow_keys={"W", "Y", "O"})
 
-    # 4. Horns [1, 3, 1] at [62, 16] & [68, 16]
-    for hu in (62, 68):
-        smooth_coat(img, hu, 16, 1, 3, 1, HORN_HI, HORN_BASE, HORN_SHADE, HORN_SHADE)
+    # 4. Arched Neck [4, 4, 3] @ [72, 0] -> 8x8x6 px & Neck Spine [0, 2, 3] @ [86, 0] -> 6x4 px
+    shade_ramp_box(72, 0, 4, 4, 3, SCALE_RAMP, diamond_scales=True, seed=3)
+    nf = f2x(72, 0, 4, 4, 3)
+    nfx, nfy, nfw, nfh = nf["front"]
+    for ly in range(nfh):
+        scute = "r" if ly % 2 == 1 else ("Y" if ly in (2, 4) else "G")
+        for lx in range(2, 6):
+            put(img, nfx + lx, nfy + ly, PAL[scute] if lx in (3, 4) else PAL["A" if ly % 2 == 0 else "R"])
+            if ly in (2, 4) and lx in (3, 4):
+                put(glow, nfx + lx, nfy + ly, PAL["Y"])
+    paint_cutout_x(86, 0, 2, 3, [
+        ".W..Y.",
+        "YOYrOr",
+        "243232",
+        "121121",
+    ], glow_keys={"W", "Y"})
 
-    # 5. Golden-Amber Eyes [2, 2, 1] at [74, 16] & [82, 16]
-    for idx, eu in enumerate((74, 82)):
-        ef = faces(eu, 16, 2, 2, 1)
-        for rect in ef.values():
-            fill(img, rect, AMB_DEEP)
-        ex, ey, _, _ = ef["front"]
-        fill(img, (ex, ey, 2, 2), AMB_HI)
-        put(img, ex + (1 if idx == 0 else 0), ey + 1, (38, 18, 10, 255))
-        put(img, ex + (0 if idx == 0 else 1), ey, (255, 255, 255, 255))
+    # 5. Dragon Cranium [6, 5, 5] @ [0, 15] -> 12x10x10 px
+    shade_ramp_box(0, 15, 6, 5, 5, SCALE_RAMP, diamond_scales=True, seed=4)
+    paint_box_2x(img, 0, 15, 6, 5, 5, {
+        "front": [
+            "123567765321",
+            "124565565421",
+            "015443344510",
+            "D0134554310D",
+            "DD02466420DD",
+            "DD02455420DD",
+            "D0123443210D",
+            "012233332210",
+            "011234432110",
+            "001122221100",
+        ],
+    }, PAL)
+    # Subtle glowing brow rune center on forehead
+    hfx, hfy, _, _ = f2x(0, 15, 6, 5, 5)["front"]
+    put(img, hfx + 5, hfy + 3, PAL["Y"])
+    put(img, hfx + 6, hfy + 3, PAL["Y"])
+    put(glow, hfx + 5, hfy + 3, PAL["Y"])
+    put(glow, hfx + 6, hfy + 3, PAL["Y"])
 
-    # 6. Fluttering Baby Wings: Arm [6, 1, 2] at [0, 28] & [40, 28], Membrane [6, 1, 4] at [18, 28] & [58, 28]
-    for wu in (0, 40):
-        smooth_coat(img, wu, 28, 6, 1, 2, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    for mu in (18, 58):
-        smooth_coat(img, mu, 28, 6, 1, 4, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+    # 6. Tapered Upper Snout [4, 2, 3] @ [22, 15] -> 8x4x6 px & Lower Jaw [3, 1, 3] @ [36, 15] -> 6x2x6 px
+    shade_ramp_box(22, 15, 4, 2, 3, SCALE_RAMP, diamond_scales=True, seed=5)
+    paint_box_2x(img, 22, 15, 4, 2, 3, {
+        "front": [
+            "34566543",
+            "2DO44OD2",
+            "12344321",
+            "0P1221P0",
+        ],
+    }, PAL)
+    snfx, snfy, _, _ = f2x(22, 15, 4, 2, 3)["front"]
+    put(glow, snfx + 2, snfy + 1, PAL["O"])
+    put(glow, snfx + 5, snfy + 1, PAL["O"])
 
-    # 7. Tail Base [4, 4, 4] at [0, 36], Spike [1, 2, 2] at [18, 36], Tail Tip [3, 3, 4] at [26, 36], Spade [4, 2, 3] at [42, 36]
-    smooth_coat(img, 0, 36, 4, 4, 4, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    smooth_coat(img, 18, 36, 1, 2, 2, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
-    smooth_coat(img, 26, 36, 3, 3, 4, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-    smooth_coat(img, 42, 36, 4, 2, 3, AMB_HI, AMB_BASE, AMB_SHADE, AMB_DEEP)
+    shade_ramp_box(36, 15, 3, 1, 3, EMBER_RAMP, seed=6)
+    paint_box_2x(img, 36, 15, 3, 1, 3, {
+        "front": [
+            "rAGGAr",
+            "aROORa",
+        ],
+    }, PAL)
 
-    # 8. Stubby Clawed Legs [2, 4, 2] at [0, 48], [10, 48], [20, 48], [30, 48]
-    for lu in (0, 10, 20, 30):
-        smooth_coat(img, lu, 48, 2, 4, 2, ED_HI, ED_BASE, ED_SHADE, ED_DEEP)
-        lf = faces(lu, 48, 2, 4, 2)
-        fill(img, lf["bottom"], HORN_BASE)
-        put(img, lf["front"][0], lf["front"][1] + 3, HORN_HI)
-        put(img, lf["front"][0] + 1, lf["front"][1] + 3, HORN_HI)
+    # 7. Head Crest Fin [0, 3, 5] @ [48, 12] -> 10x6 px
+    paint_cutout_x(48, 12, 3, 5, [
+        ".....W..Y.",
+        "...WYOYrO.",
+        "..YOAOr23r",
+        ".rO3432121",
+        "1234321010",
+        "01221000..",
+    ], glow_keys={"W", "Y", "O"})
 
-    dest = OUT / "entity/ember_drake.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    # 8. Flared Dragon Cheek Frills [3, 4, 0] @ [58, 15] (left) & [64, 15] (right) -> 6x8 px
+    frill_left = [
+        "..OYW.",
+        ".25OY.",
+        "1345O.",
+        "0234O.",
+        "0123G.",
+        "0134O.",
+        ".012R.",
+        "..01..",
+    ]
+    frill_right = [row[::-1] for row in frill_left]
+    paint_cutout_z(58, 15, 3, 4, frill_left, glow_keys={"W", "Y", "O"})
+    paint_cutout_z(64, 15, 3, 4, frill_right, glow_keys={"W", "Y", "O"})
+
+    # 9. Swept Curved Ivory-Gold Horns: Base [2, 2, 2] @ [70, 15] & [82, 15], Tip [1, 3, 1] @ [78, 15] & [90, 15]
+    for idx, (bu, tu) in enumerate(((70, 78), (82, 90))):
+        shade_ramp_box(bu, 15, 2, 2, 2, HORN_RAMP, seed=7 + idx)
+        hb = f2x(bu, 15, 2, 2, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = hb[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + rh - 1, PAL["k"])
+                put(img, rx + lx, ry, PAL["i"])
+        shade_ramp_box(tu, 15, 1, 3, 1, HORN_RAMP, seed=9 + idx)
+        ht = f2x(tu, 15, 1, 3, 1)
+        for fname in ("front", "back", "east", "west", "top"):
+            rx, ry, rw, rh = ht[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry, PAL["P"])
+                put(glow, rx + lx, ry, PAL["Y"])
+                if rh >= 2:
+                    put(img, rx + lx, ry + 1, PAL["I"])
+
+    # 10. Expressive Flush Slit-Pupil Dragon Eyes [2, 3, 0] @ [94, 15] & [98, 15] -> 4x6 px
+    eye_left_grid = [
+        "Daa.",
+        "aOYD",
+        "OWDO",
+        "OYDY",
+        "RODY",
+        "aROa",
+    ]
+    eye_right_grid = [row[::-1] for row in eye_left_grid]
+    paint_cutout_z(94, 15, 2, 3, eye_left_grid, glow_keys={"W", "Y", "O"})
+    paint_cutout_z(98, 15, 2, 3, eye_right_grid, glow_keys={"W", "Y", "O"})
+
+    # 11. Articulated Dragon Wings:
+    #     Inner spar [5, 1, 2] @ [0, 26] & [60, 26], Outer spar [4, 1, 1] @ [14, 26] & [74, 26]
+    #     Scalloped Wing Membrane Cutout [9, 0, 7] @ [24, 26] (left) & [84, 26] (right) -> 18x14 px
+    for idx, (su, ou) in enumerate(((0, 14), (60, 74))):
+        shade_ramp_box(su, 26, 5, 1, 2, SCALE_RAMP, diamond_scales=True, seed=11 + idx)
+        sf = f2x(su, 26, 5, 1, 2)
+        for fname in ("front", "top"):
+            rx, ry, rw, rh = sf[fname]
+            put(img, rx + (0 if idx == 0 else rw - 1), ry, PAL["I"])
+        shade_ramp_box(ou, 26, 4, 1, 1, SCALE_RAMP, seed=13 + idx)
+        of = f2x(ou, 26, 4, 1, 1)
+        for fname in ("front", "top"):
+            rx, ry, rw, rh = of[fname]
+            put(img, rx + (rw - 1 if idx == 0 else 0), ry, PAL["P"])
+            put(glow, rx + (rw - 1 if idx == 0 else 0), ry, PAL["Y"])
+
+    # Left wing membrane top (18 cols: lx=0 inner shoulder -> lx=17 outer wingtip;
+    # ly=0 trailing scalloped rear -> ly=13 leading front spar)
+    wing_left_top = [
+        "..............W...",
+        "............WYY...",
+        ".a......O..YOa....",
+        "rOa....rYrROr.....",
+        "rRO....ROaOR......",
+        "aROr..rOGYOr......",
+        ".aOOr.ROAYO.......",
+        ".rOARrOGYOa....Y..",
+        "..rOAOAGOr....YOr.",
+        "..aOAOGYOr...ROr..",
+        "...rOGYYOOr.ROr...",
+        "...aOAYGYOOrOOr...",
+        "123345434454322P..",
+        "0123344334432110..",
+    ]
+    wing_right_top = [row[::-1] for row in wing_left_top]
+    paint_cutout_y(24, 26, 9, 7, wing_left_top, glow_keys={"W", "Y", "O"})
+    paint_cutout_y(84, 26, 9, 7, wing_right_top, glow_keys={"W", "Y", "O"})
+
+    # 12. Tapered Tail & Crossed-Plane Blazing Tail Spade:
+    #     tail_base [4, 3, 5] @ [0, 35] -> 8x6x10 px, spine [0, 3, 5] @ [18, 35] -> 10x6 px
+    shade_ramp_box(0, 35, 4, 3, 5, SCALE_RAMP, diamond_scales=True, seed=15)
+    tbf = f2x(0, 35, 4, 3, 5)
+    bx, by, bw, bh = tbf["bottom"]
+    for ly in range(bh):
+        for lx in range(2, bw - 2):
+            put(img, bx + lx, by + ly, PAL["r"] if ly % 2 == 0 else PAL["A"])
+    paint_cutout_x(18, 35, 3, 5, [
+        "..W....Y..",
+        ".YOY..rOr.",
+        "rOAOr.ROAr",
+        "2343212342",
+        "1232101231",
+        "0110000110",
+    ], glow_keys={"W", "Y", "O"})
+
+    #     tail_tip shaft [3, 2, 5] @ [28, 35] -> 6x4x10 px
+    shade_ramp_box(28, 35, 3, 2, 5, SCALE_RAMP, diamond_scales=True, seed=16)
+    ttf = f2x(28, 35, 3, 2, 5)
+    bx, by, bw, bh = ttf["bottom"]
+    for ly in range(bh):
+        for lx in range(1, bw - 1):
+            put(img, bx + lx, by + ly, PAL["r"] if ly % 2 == 0 else PAL["G"])
+
+    #     Horizontal leaf-flame tail spade [5, 0, 5] @ [44, 35] -> 10x10 px
+    #     row 0 = tip (+Z), row 9 = shaft (-Z)
+    paint_cutout_y(44, 35, 5, 5, [
+        "....WW....",
+        "...WYYW...",
+        "..YWWWWY..",
+        ".YOYYYYOY.",
+        "rOAYWWYAOr",
+        "rROAGGGORr",
+        ".aROAAORa.",
+        "..aROORa..",
+        "...2332...",
+        "...1221...",
+    ], glow_keys={"W", "Y", "O", "A"})
+
+    #     Vertical blazing tail-flame plume [0, 4, 5] @ [64, 35] -> 10x8 px
+    #     col 0 = shaft (-Z), col 9 = flame tip (+Z)
+    paint_cutout_x(64, 35, 4, 5, [
+        ".......YW.",
+        ".....YWWY.",
+        "...rOYWWO.",
+        ".23ROAYWY.",
+        "123ROAYWY.",
+        ".12rOYYWO.",
+        "...aROYW..",
+        ".....rO...",
+    ], glow_keys={"W", "Y", "O", "A"})
+
+    # 13. Four Tapered Dragon Legs, 3-Clawed Feet & Trailing Ember Ankle Spurs:
+    #     leg_fl (0), leg_fr (26), leg_bl (52), leg_br (78) at v=45
+    spur_west = [
+        "..YW",
+        ".rOY",
+        "234O",
+        "123r",
+        "012.",
+        ".01.",
+    ]
+    for idx, base_u in enumerate((0, 26, 52, 78)):
+        # Upper thigh [2, 2, 2] @ [base_u, 45] -> 4x4x4 px
+        shade_ramp_box(base_u, 45, 2, 2, 2, SCALE_RAMP, diamond_scales=True, seed=20 + idx)
+        # Lower shin [2, 2, 2] @ [base_u + 8, 45] -> 4x4x4 px
+        shade_ramp_box(base_u + 8, 45, 2, 2, 2, SCALE_RAMP, seed=24 + idx)
+        lf = f2x(base_u + 8, 45, 2, 2, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = lf[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + rh - 1, PAL["O" if lx in (1, 2) else "r"])
+                if fname == "front" and lx in (1, 2):
+                    put(glow, rx + lx, ry + rh - 1, PAL["O"])
+
+        # Taloned 3-clawed foot [2, 1, 3] @ [base_u, 50] -> 4x2x6 px
+        shade_ramp_box(base_u, 50, 2, 1, 3, SCALE_RAMP, seed=28 + idx)
+        paint_box_2x(img, base_u, 50, 2, 1, 3, {
+            "front": [
+                "P2P2",
+                "k0k0",
+            ],
+            "top": [
+                "1221",
+                "2332",
+                "2442",
+                "3443",
+                "P3P3",
+                "k1k1",
+            ],
+            "bottom": [
+                "k1k1",
+                "b2b2",
+                "1221",
+                "0110",
+                "0110",
+                "0000",
+            ],
+        }, PAL)
+
+        # Trailing ember ankle spur [0, 3, 2] @ [base_u + 12, 50] -> 4x6 px
+        paint_cutout_x(base_u + 12, 50, 3, 2, spur_west, glow_keys={"W", "Y", "O"})
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "ember_drake.png")
+    glow.save(entity_dir / "ember_drake_glowmask.png")
 
 
 def make_peepkin():
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    """256x128 (2x scale over 128x64 UV grid) Peepkin: cosmic floating Eye-companion + glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    # DESIGN.md Eye Realm Accent: Twilight Magenta (#D946EF) & Pupil Glow (#7DF9FF)
-    PK_HI = (128, 96, 192, 255)
-    PK_BASE = (86, 56, 146, 255)
-    PK_SHADE = (58, 36, 106, 255)
-    PK_DEEP = (36, 22, 72, 255)
+    # 8-stop Astral Plum Plush Coat ramp (#150D2A -> #D8C4FA)
+    COAT_RAMP = [
+        (21, 13, 42, 255),     # 0: Deep cosmic void plum shadow
+        (36, 22, 72, 255),     # 1: Dark velvet plum
+        (58, 36, 106, 255),    # 2: Twilight shadow violet
+        (86, 56, 146, 255),    # 3: Rich astral indigo
+        (114, 80, 178, 255),   # 4: Plush violet base
+        (146, 112, 208, 255),  # 5: Soft lavender highlight
+        (182, 152, 234, 255),  # 6: Pastel nebula sheen
+        (216, 196, 250, 255),  # 7: Specular moonlight fluff
+    ]
+    # 8-stop Twilight Magenta Accent ramp (#4C0E5E -> #D946EF -> #FDF2FF)
+    MAG_RAMP = [
+        (76, 14, 94, 255),     # 0: Deep magenta shadow
+        (116, 24, 140, 255),   # 1: Rich plum-magenta
+        (158, 42, 184, 255),   # 2: Shaded twilight orchid
+        (194, 54, 214, 255),   # 3: Mid orchid
+        (217, 70, 239, 255),   # 4: DESIGN.md Twilight Magenta (#D946EF)
+        (240, 124, 252, 255),  # 5: Bright neon orchid
+        (248, 184, 255, 255),  # 6: Soft petal glow
+        (253, 242, 255, 255),  # 7: White-orchid highlight
+    ]
+    # 8-stop Starlight Cyan Pupil-Glow ramp (#0B3B4C -> #38D9C0 -> #7DF9FF -> #FFFFFF)
+    STAR_RAMP = [
+        (11, 59, 76, 255),     # 0: Deep abyssal teal
+        (18, 96, 114, 255),    # 1: Dark starlight teal
+        (32, 156, 154, 255),   # 2: Ocean cyan shade
+        (56, 217, 192, 255),   # 3: DESIGN.md Starlight Teal (#38D9C0)
+        (92, 236, 242, 255),   # 4: Bright sky aqua
+        (125, 249, 255, 255),  # 5: DESIGN.md Pupil Glow (#7DF9FF)
+        (206, 254, 255, 255),  # 6: Ice-white cyan core
+        (255, 255, 255, 255),  # 7: Pure starlight sparkle
+    ]
+    # 8-stop Pearl Sclera Lens ramp (#8A7EB0 -> #FFFFFF)
+    SCLERA_RAMP = [
+        (138, 126, 176, 255),  # 0: Deep lid-shadow sclera
+        (164, 154, 200, 255),  # 1: Cool lavender sclera shade
+        (192, 186, 222, 255),  # 2: Soft pearl rim
+        (218, 214, 238, 255),  # 3: Pale mist sclera
+        (234, 232, 248, 255),  # 4: Bright pearl white
+        (244, 244, 253, 255),  # 5: Soft ivory-white lens
+        (250, 250, 255, 255),  # 6: Crisp sclera white
+        (255, 255, 255, 255),  # 7: Pure catchlight white
+    ]
 
-    MAG_HI = (244, 142, 255, 255)
-    MAG_BASE = (217, 70, 239, 255)   # #D946EF
-    MAG_SHADE = (158, 42, 184, 255)
-    PUPIL_GLOW = (125, 249, 255, 255)  # #7DF9FF
-    SCLERA = (250, 250, 255, 255)
-    SCLERA_SHADE = (214, 212, 236, 255)
+    PAL = {
+        "0": COAT_RAMP[0],
+        "1": COAT_RAMP[1],
+        "2": COAT_RAMP[2],
+        "3": COAT_RAMP[3],
+        "4": COAT_RAMP[4],
+        "5": COAT_RAMP[5],
+        "6": COAT_RAMP[6],
+        "7": COAT_RAMP[7],
+        "d": MAG_RAMP[0],
+        "r": MAG_RAMP[1],
+        "m": MAG_RAMP[2],
+        "n": MAG_RAMP[3],
+        "M": MAG_RAMP[4],
+        "p": MAG_RAMP[5],
+        "P": MAG_RAMP[6],
+        "o": MAG_RAMP[7],
+        "a": STAR_RAMP[0],
+        "s": STAR_RAMP[1],
+        "t": STAR_RAMP[2],
+        "T": STAR_RAMP[3],
+        "c": STAR_RAMP[4],
+        "C": STAR_RAMP[5],
+        "i": STAR_RAMP[6],
+        "W": STAR_RAMP[7],
+        "l": SCLERA_RAMP[0],
+        "L": SCLERA_RAMP[2],
+        "S": SCLERA_RAMP[5],
+        "Q": SCLERA_RAMP[6],
+        "V": (14, 8, 30, 255),  # Deep cosmic pupil void
+    }
 
-    # 1. Plush Orb Core [8, 8, 8] at [0, 0] + Belly Rim [7, 2, 7] at [34, 0] + Crown Tuft [4, 2, 4] at [64, 0]
-    smooth_coat(img, 0, 0, 8, 8, 8, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-    smooth_coat(img, 34, 0, 7, 2, 7, MAG_HI, MAG_BASE, MAG_SHADE, PK_DEEP)
-    smooth_coat(img, 64, 0, 4, 2, 4, MAG_HI, MAG_BASE, MAG_SHADE, PK_SHADE)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # 2. Giant Main Eye: Sclera [6, 5, 1] at [0, 18] & Iris/Pupil [3, 3, 1] at [16, 18]
-    smooth_coat(img, 0, 18, 6, 5, 1, SCLERA, SCLERA, SCLERA, SCLERA_SHADE)
-    ir = faces(16, 18, 3, 3, 1)
-    for rect in ir.values():
-        fill(img, rect, MAG_SHADE)
-    ix, iy, _, _ = ir["front"]
-    fill(img, (ix, iy, 3, 3), MAG_BASE)
-    put(img, ix + 1, iy + 1, (24, 18, 52, 255))
-    put(img, ix + 1, iy, PUPIL_GLOW)
-    put(img, ix + 1, iy + 2, PUPIL_GLOW)
-    put(img, ix + 2, iy, (255, 255, 255, 255))
+    def shade_ramp_box(u, v, w, h, d, ramp, *, starry=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.3,
+            "front": 4.6,
+            "east": 4.1,
+            "west": 3.7,
+            "back": 3.2,
+            "bottom": 2.2,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.4 - edge_dist * 1.0
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.45 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.2)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                    tuft = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 11
+                    if tuft <= 1:
+                        idx += 0.45
+                    elif tuft >= 9:
+                        idx -= 0.45
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.55
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+                    if starry and (lx * 11 + ly * 17 + seed * 7) % 23 == 0 and 1 <= lx <= rw - 2 and 1 <= ly <= rh - 2:
+                        star_col = PAL["C"] if (lx + ly) % 2 == 0 else PAL["p"]
+                        put(img, rx + lx, ry + ly, star_col)
+                        put(glow, rx + lx, ry + ly, star_col)
 
-    # 3. Blinking Eyelids [6, 1, 1] at [28, 18] & [44, 18]
-    for lu in (28, 44):
-        smooth_coat(img, lu, 18, 6, 1, 1, MAG_HI, PK_BASE, PK_SHADE, PK_DEEP)
-        lf = faces(lu, 18, 6, 1, 1)
-        fill(img, lf["front"], MAG_BASE)
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
 
-    # 4. Two Crown Eye-Buds: Stalks [1, 3, 1] at [60, 18] & [80, 18], Mini Orbs [3, 3, 3] at [66, 18] & [86, 18]
-    for su in (60, 80):
-        smooth_coat(img, su, 18, 1, 3, 1, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-    for ou in (66, 86):
-        smooth_coat(img, ou, 18, 3, 3, 3, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-        mof = faces(ou, 18, 3, 3, 3)
-        fx, fy, _, _ = mof["front"]
-        fill(img, (fx, fy, 3, 3), SCLERA)
-        put(img, fx + 1, fy + 1, PUPIL_GLOW)
-        put(img, fx + 1, fy, MAG_BASE)
+    def paint_cutout_z(u, v, w, h, front_grid, *, back_grid=None, glow_keys=()):
+        if back_grid is None:
+            back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
 
-    # 5. Ear-Winglets [4, 3, 2] at [0, 28] & [14, 28]
-    for eu in (0, 14):
-        smooth_coat(img, eu, 28, 4, 3, 2, MAG_HI, MAG_BASE, MAG_SHADE, PK_SHADE)
-        ef = faces(eu, 28, 4, 3, 2)
-        fill(img, (ef["front"][0] + (3 if eu == 0 else 0), ef["front"][1], 1, 3), PUPIL_GLOW)
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
 
-    # 6. Tail Stem [3, 2, 4] at [28, 28] & Peeking Tail Eye [4, 3, 3] at [44, 28]
-    smooth_coat(img, 28, 28, 3, 2, 4, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-    smooth_coat(img, 44, 28, 4, 3, 3, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-    tef = faces(44, 28, 4, 3, 3)
-    bx, by, _, _ = tef["back"]
-    fill(img, (bx + 1, by, 2, 3), SCLERA)
-    put(img, bx + 1, by + 1, PUPIL_GLOW)
-    put(img, bx + 2, by + 1, MAG_BASE)
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
 
-    # 7. Four Floating Tassel Feet [2, 3, 2] at [0, 38], [10, 38], [20, 38], [30, 38]
-    for fu in (0, 10, 20, 30):
-        smooth_coat(img, fu, 38, 2, 3, 2, PK_HI, PK_BASE, PK_SHADE, PK_DEEP)
-        ff = faces(fu, 38, 2, 3, 2)
-        fill(img, (ff["front"][0], ff["front"][1] + 2, 2, 1), MAG_BASE)
-        fill(img, ff["bottom"], PUPIL_GLOW)
+    # 1. Plush Astral Orb Core [8, 8, 8] @ [0, 0] -> 16x16x16 px
+    shade_ramp_box(0, 0, 8, 8, 8, COAT_RAMP, starry=True, seed=1)
+    bf = f2x(0, 0, 8, 8, 8)
+    # Deep twilight ocular socket frame on front + crescent nebula cheek marks
+    fx, fy, fw, fh = bf["front"]
+    for ly in range(2, 14):
+        for lx in range(1, 15):
+            if 3 <= ly <= 12 and 2 <= lx <= 13:
+                put(img, fx + lx, fy + ly, PAL["0"])
+            elif (lx in (1, 14) and ly in (6, 8)) or (ly == 2 and lx in (6, 9)):
+                put(img, fx + lx, fy + ly, PAL["M"])
+                put(glow, fx + lx, fy + ly, PAL["M"])
+    # Glowing twilight eye rune on body back
+    bkx, bky, bkw, bkh = bf["back"]
+    for dx, dy, ch in ((7, 5, "M"), (8, 5, "M"), (6, 6, "M"), (9, 6, "M"), (7, 6, "C"), (8, 6, "C"), (7, 7, "C"), (8, 7, "C"), (7, 8, "M"), (8, 8, "M")):
+        put(img, bkx + dx, bky + dy, PAL[ch])
+        put(glow, bkx + dx, bky + dy, PAL[ch])
 
-    dest = OUT / "entity/peepkin.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    # 2. Lower Scalloped Twilight Ruff [7, 2, 7] @ [32, 0] -> 14x4x14 px
+    shade_ramp_box(32, 0, 7, 2, 7, MAG_RAMP, starry=True, seed=2)
+    rf = f2x(32, 0, 7, 2, 7)
+    for fname in ("front", "back", "east", "west"):
+        rx, ry, rw, rh = rf[fname]
+        for lx in range(rw):
+            ch = "C" if lx % 4 == 1 else ("P" if lx % 2 == 0 else "r")
+            put(img, rx + lx, ry + rh - 1, PAL[ch])
+            if ch == "C":
+                put(glow, rx + lx, ry + rh - 1, PAL[ch])
+
+    # 3. Upper Plush Crown Cap [5, 2, 5] @ [60, 0] -> 10x4x10 px
+    shade_ramp_box(60, 0, 5, 2, 5, COAT_RAMP, starry=True, seed=3)
+    cf = f2x(60, 0, 5, 2, 5)
+    cfx, cfy, cfw, cfh = cf["front"]
+    put(img, cfx + 4, cfy + 1, PAL["C"])
+    put(img, cfx + 5, cfy + 1, PAL["C"])
+    put(glow, cfx + 4, cfy + 1, PAL["C"])
+    put(glow, cfx + 5, cfy + 1, PAL["C"])
+
+    # 4. Vertical Astral Halo Crest [0, 3, 5] @ [80, 0] -> 10x6 px
+    #    west col 0 = front (-Z), col 9 = back (+Z)
+    paint_cutout_x(80, 0, 3, 5, [
+        "....WC....",
+        "...PCcP...",
+        "..mMcpMm..",
+        ".rMMnMMMr.",
+        "123443211.",
+        "01233210..",
+    ], glow_keys={"W", "C", "c", "P", "p"})
+
+    # 5. Front Star-Tuft [4, 3, 0] @ [90, 0] -> 8x6 px
+    paint_cutout_z(90, 0, 4, 3, [
+        "...WC...",
+        "..PCcP..",
+        ".rMcpMr.",
+        "12MMpM21",
+        "01233210",
+        ".012210.",
+    ], glow_keys={"W", "C", "c", "P", "p"})
+
+    # 6. Cheek Tufts [3, 4, 0] @ [98, 0] (left) & [104, 0] (right) -> 6x8 px
+    cheek_left = [
+        "..pP..",
+        ".mMpC.",
+        "234Mp.",
+        "1234C.",
+        "123Mp.",
+        "012Mp.",
+        ".01r..",
+        "..0...",
+    ]
+    cheek_right = [row[::-1] for row in cheek_left]
+    paint_cutout_z(98, 0, 3, 4, cheek_left, glow_keys={"C", "P", "p"})
+    paint_cutout_z(104, 0, 3, 4, cheek_right, glow_keys={"C", "P", "p"})
+
+    # 7. Giant Main Eye:
+    #    Convex Sclera Lens [6, 5, 1] @ [0, 17] -> 12x10x2 px
+    shade_ramp_box(0, 17, 6, 5, 1, SCLERA_RAMP, seed=4)
+    paint_box_2x(img, 0, 17, 6, 5, 1, {
+        "front": [
+            "llLLSSSSLLll",
+            "lLSSQQQQQSSl",
+            "LSQQQQQQQQSL",
+            "LSQQQQQQQQSL",
+            "SQQQQQQQQQQS",
+            "SQQQQQQQQQQS",
+            "LSQQQQQQQQSL",
+            "LSQQQQQQQQSL",
+            "lLSSQQQQQSSl",
+            "llLLSSSSLLll",
+        ],
+    }, PAL)
+
+    #    Layered Glowing Iris & Pupil Lens [4, 4, 1] @ [14, 17] -> 8x8x2 px
+    shade_ramp_box(14, 17, 4, 4, 1, MAG_RAMP, starry=True, seed=5)
+    paint_box_2x(img, 14, 17, 4, 4, 1, {
+        "front": [
+            "dmmMMmmd",
+            "mMpcCpMm",
+            "MpCVVWcp",
+            "McVVWWCM",
+            "McVVVVCM",
+            "MpCVVCpM",
+            "mMpcCpmm",
+            "dmmMMmmd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 14, 17, 4, 4, 1, {
+        "front": [
+            "...MM...",
+            ".MpcCp..",
+            "MpC..Wcp",
+            "Mc..WWCM",
+            "Mc....CM",
+            "MpC..CpM",
+            ".MpcCp..",
+            "...MM...",
+        ],
+    }, PAL)
+
+    # 8. Blinking Eyelids & Sweeping Eyelashes:
+    #    Upper Hood [6, 1, 1] @ [24, 17] -> 12x2x2 px, Lower Rim [6, 1, 1] @ [24, 20] -> 12x2x2 px
+    shade_ramp_box(24, 17, 6, 1, 1, COAT_RAMP, seed=6)
+    paint_box_2x(img, 24, 17, 6, 1, 1, {
+        "front": [
+            "1234MCcM4321",
+            "drrMMppMMrrd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 24, 17, 6, 1, 1, {
+        "front": [
+            "....MCcM....",
+            "...MMppMM...",
+        ],
+    }, PAL)
+    shade_ramp_box(24, 20, 6, 1, 1, COAT_RAMP, seed=7)
+    paint_box_2x(img, 24, 20, 6, 1, 1, {
+        "front": [
+            "dmmMMppMMmmd",
+            "011234432110",
+        ],
+    }, PAL)
+
+    #    Sweeping Eyelash Cutout [7, 2, 0] @ [38, 17] -> 14x4 px
+    paint_cutout_z(38, 17, 7, 2, [
+        "C............C",
+        "pP..........Pp",
+        "mMp........pMm",
+        ".drrMMppMMrrd.",
+    ], glow_keys={"C", "P", "p"})
+
+    # 9. Two Crown Eye-Buds:
+    #    eyebud_left: stalk [1, 3, 1] @ [52, 17], orb [3, 3, 3] @ [56, 17], fin [3, 2, 0] @ [68, 17]
+    #    eyebud_right: stalk [1, 3, 1] @ [74, 17], orb [3, 3, 3] @ [78, 17], fin [3, 2, 0] @ [90, 17]
+    for idx, (su, ou, fu) in enumerate(((52, 56, 68), (74, 78, 90))):
+        shade_ramp_box(su, 17, 1, 3, 1, COAT_RAMP, seed=8 + idx)
+        sf = f2x(su, 17, 1, 3, 1)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = sf[fname]
+            put(img, rx, ry + 2, PAL["M"])
+            put(img, rx + 1, ry + 2, PAL["M"])
+            put(glow, rx, ry + 2, PAL["M"])
+            put(glow, rx + 1, ry + 2, PAL["M"])
+
+        shade_ramp_box(ou, 17, 3, 3, 3, COAT_RAMP, starry=True, seed=10 + idx)
+        paint_box_2x(img, ou, 17, 3, 3, 3, {
+            "front": [
+                "12MM21",
+                "1LQWQL",
+                "LMCCML",
+                "LMCVML",
+                "0LmML0",
+                "01mm10",
+            ],
+        }, PAL)
+        paint_box_2x(glow, ou, 17, 3, 3, 3, {
+            "front": [
+                "..MM..",
+                "...W..",
+                ".MCCM.",
+                ".MC.M.",
+                "..mM..",
+                "......",
+            ],
+        }, PAL)
+
+        fin_left = [
+            "..CW..",
+            ".PCcP.",
+            "mMcpMm",
+            ".1221.",
+        ]
+        fin_grid = fin_left if idx == 0 else [row[::-1] for row in fin_left]
+        paint_cutout_z(fu, 17, 3, 2, fin_grid, glow_keys={"W", "C", "c", "P"})
+
+    # 10. Feathered Eye-Spot Ear-Winglets:
+    #     ear_wing_left: joint [2, 2, 2] @ [0, 25], winglet [6, 5, 0] @ [8, 25], plume [5, 0, 3] @ [0, 30]
+    #     ear_wing_right: joint [2, 2, 2] @ [26, 25], winglet [6, 5, 0] @ [34, 25], plume [5, 0, 3] @ [26, 30]
+    for idx, ju in enumerate((0, 26)):
+        shade_ramp_box(ju, 25, 2, 2, 2, COAT_RAMP, starry=True, seed=12 + idx)
+
+    # Left winglet front (12x10: lx=0 inner shoulder, lx=11 outer wingtip)
+    winglet_left = [
+        "......rMMpCW",
+        "....rmMMpCCW",
+        "..1mMMMpCcP.",
+        ".12mMTCcMp..",
+        "123MCWVMp...",
+        "123MCVVMr...",
+        ".12rMCCr....",
+        "..12rMmCW...",
+        "...012rMp...",
+        "....01......",
+    ]
+    winglet_right = [row[::-1] for row in winglet_left]
+    paint_cutout_z(8, 25, 6, 5, winglet_left, glow_keys={"W", "C", "c", "T", "P", "p"})
+    paint_cutout_z(34, 25, 6, 5, winglet_right, glow_keys={"W", "C", "c", "T", "P", "p"})
+
+    # Left horizontal flutter-plume top (10x6: lx=0 inner, lx=9 outer tip)
+    plume_left_top = [
+        "....mMpCCW",
+        "..1mMMpCcP",
+        "123MMTCcP.",
+        "123MMpMm..",
+        ".12rmMr...",
+        "...01.....",
+    ]
+    plume_right_top = [row[::-1] for row in plume_left_top]
+    paint_cutout_y(0, 30, 5, 3, plume_left_top, glow_keys={"W", "C", "c", "T", "P", "p"})
+    paint_cutout_y(26, 30, 5, 3, plume_right_top, glow_keys={"W", "C", "c", "T", "P", "p"})
+
+    # 11. Peeking Tail Eye & Starry Tail-Eye Fan:
+    #     stem [3, 2, 4] @ [52, 25] -> 6x4x8 px
+    shade_ramp_box(52, 25, 3, 2, 4, COAT_RAMP, starry=True, seed=14)
+    tsf = f2x(52, 25, 3, 2, 4)
+    tx, ty, tw, th = tsf["top"]
+    for ly in (2, 5):
+        put(img, tx + 2, ty + ly, PAL["M"])
+        put(img, tx + 3, ty + ly, PAL["M"])
+        put(glow, tx + 2, ty + ly, PAL["M"])
+        put(glow, tx + 3, ty + ly, PAL["M"])
+
+    #     peeking tail-eye bulb [4, 3, 3] @ [66, 25] -> 8x6x6 px
+    shade_ramp_box(66, 25, 4, 3, 3, COAT_RAMP, starry=True, seed=15)
+    paint_box_2x(img, 66, 25, 4, 3, 3, {
+        "back": [
+            "1dmMMmd1",
+            "lLSQQSLl",
+            "SQcWWcQS",
+            "SQCVVCQS",
+            "LSmCCmSL",
+            "0dmmMMd0",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 66, 25, 4, 3, 3, {
+        "back": [
+            "...MM...",
+            "........",
+            "..cWWc..",
+            "..C..C..",
+            "...CC...",
+            "........",
+        ],
+    }, PAL)
+
+    #     vertical tail-crest plume [0, 5, 5] @ [80, 25] -> 10x10 px (col 0 = front -Z, col 9 = back +Z)
+    paint_cutout_x(80, 25, 5, 5, [
+        "......CW..",
+        "....PCcP..",
+        "...mMcpM..",
+        "..rMMpMm..",
+        ".123MMr...",
+        "1234Mr....",
+        ".123MpC...",
+        "..12rMC...",
+        "...012r...",
+        "..........",
+    ], glow_keys={"W", "C", "c", "P", "p"})
+
+    #     horizontal tail-lash fan [6, 0, 4] @ [90, 25] -> 12x8 px (ly=0 = back +Z tip, ly=7 = front -Z)
+    paint_cutout_y(90, 25, 6, 4, [
+        "W..........W",
+        "CCp......pCC",
+        ".cPM....MPc.",
+        "..mMrrrrMm..",
+        "..12mMMm21..",
+        "...123321...",
+        "....0110....",
+        "............",
+    ], glow_keys={"W", "C", "c", "P", "p"})
+
+    # 12. Four Floating Tassel Feet & Starlight Ribbons:
+    #     foot_fl (0), foot_fr (24), foot_bl (48), foot_br (72) at v=36
+    ribbon_west = [
+        "23M.",
+        "12Mp",
+        "01cC",
+        ".0C.",
+        "..W.",
+        "....",
+    ]
+    for idx, base_u in enumerate((0, 24, 48, 72)):
+        # Upper plush foot [2, 2, 2] @ [base_u, 36] -> 4x4x4 px
+        shade_ramp_box(base_u, 36, 2, 2, 2, COAT_RAMP, starry=True, seed=20 + idx)
+        # Tapered tassel tip [2, 1, 2] @ [base_u + 8, 36] -> 4x2x4 px
+        shade_ramp_box(base_u + 8, 36, 2, 1, 2, MAG_RAMP, seed=24 + idx)
+        paint_box_2x(img, base_u + 8, 36, 2, 1, 2, {
+            "front": [
+                "mMMm",
+                "cCCc",
+            ],
+            "bottom": [
+                "mCCm",
+                "CWWC",
+                "CWWC",
+                "mCCm",
+            ],
+        }, PAL)
+        paint_box_2x(glow, base_u + 8, 36, 2, 1, 2, {
+            "front": [
+                ".MM.",
+                "cCCc",
+            ],
+            "bottom": [
+                ".CC.",
+                "CWWC",
+                "CWWC",
+                ".CC.",
+            ],
+        }, PAL)
+        # Floating star-ribbon [0, 3, 2] @ [base_u + 16, 36] -> 4x6 px
+        paint_cutout_x(base_u + 16, 36, 3, 2, ribbon_west, glow_keys={"W", "C", "c", "p"})
+
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "peepkin.png")
+    glow.save(entity_dir / "peepkin_glowmask.png")
 
 
 def make_prismling():
@@ -1009,40 +3549,79 @@ def make_prismling():
         k = 1 + amount
         return (int(r * k), int(g * k), int(b * k), a)
 
-    def shade_box(u, v, w, h, d, hi, base, shade, deep, target=img):
+    def shade_box(u, v, w, h, d, hi, base, shade, deep, target=img, seed=0):
         f = faces(u, v, w, h, d)
+        top_hi = tint(hi, 0.25)
+        edge_hi = tint(base, 0.16)
+        recess = tint(shade, -0.14)
         for name, rect in f.items():
             x, y, rw, rh = rect
-            col = hi if name == "top" else deep if name == "bottom" else base if name in ("front", "back") else shade
-            fill(target, rect, col)
-            if name in ("front", "back", "east", "west"):
-                for px in range(x, x + rw):
-                    put(target, px, y, hi)
-                    put(target, px, y + rh - 1, deep)
-                for py in range(y + 1, y + rh - 1):
-                    put(target, x, py, tint(col, 0.15))
-                    put(target, x + rw - 1, py, shade)
-            elif name == "top":
-                for px in range(x, x + rw):
-                    put(target, px, y, tint(hi, 0.25))
+            if rw <= 0 or rh <= 0:
+                continue
+            for dy in range(rh):
+                ty = dy / max(1, rh - 1)
+                for dx in range(rw):
+                    tx = dx / max(1, rw - 1)
+                    border = dx == 0 or dx == rw - 1 or dy == 0 or dy == rh - 1
+                    grain = (dx * 7 + dy * 13 + seed * 5 + (dx ^ dy) * 3) % 11
+                    if name == "top":
+                        if dy == 0:
+                            col = top_hi
+                        elif border:
+                            col = hi
+                        elif (dx == 1 or dx == rw - 2) and (dy == 1 or dy == rh - 2) and rw >= 4 and rh >= 4:
+                            col = shade
+                        elif dy == rh // 2 and rw >= 5 and rh >= 5 and 1 <= dx <= rw - 2:
+                            col = shade if dx % 2 == 0 else edge_hi
+                        else:
+                            col = hi if (ty < 0.45 and grain < 7) else (edge_hi if grain >= 9 else base)
+                    elif name == "bottom":
+                        if border:
+                            col = deep
+                        elif rw >= 4 and rh >= 4 and (dx in (1, rw - 2) or dy in (1, rh - 2)):
+                            col = recess if grain < 4 else shade
+                        else:
+                            col = base if (grain <= 2 or (dx + dy) % 4 == 0) else (shade if grain <= 8 else recess)
+                    else:
+                        if dy == 0:
+                            col = hi
+                        elif dy == rh - 1:
+                            col = deep
+                        elif dx == 0:
+                            col = edge_hi if name in ("front", "back") else base
+                        elif dx == rw - 1:
+                            col = shade if name in ("front", "back") else deep
+                        else:
+                            base_mid = base if name in ("front", "back") else shade
+                            if ty < 0.28:
+                                col = edge_hi if grain < 8 else base_mid
+                            elif ty > 0.72:
+                                col = recess if grain > 7 else shade
+                            else:
+                                col = base_mid if grain < 8 else (edge_hi if grain == 8 else shade)
+                            if rw >= 5 and rh >= 5 and (dx in (1, rw - 2) and dy in (1, rh - 2)):
+                                col = deep
+                    put(target, x + dx, y + dy, col)
 
     def paint_rainbow_band(target, x, y, band_w, h, color, is_top=False, is_bottom=False, add_glow=False):
         for dx in range(band_w):
             for dy in range(h):
                 if is_top:
-                    c = tint(color, 0.35 if dy == 0 else 0.20)
+                    facet = (dx + dy) % 5 == 0
+                    c = tint(color, 0.40 if (dy == 0 or facet) else (0.12 if (dx + dy) % 3 == 0 else 0.22))
                 elif is_bottom:
-                    c = tint(color, -0.32)
+                    facet = (dx == 0 or dx == band_w - 1 or dy == 0 or dy == h - 1)
+                    c = tint(color, -0.40 if facet else (-0.18 if (dx + dy) % 3 == 0 else -0.30))
                 else:
                     if dy == 0:
-                        c = tint(color, 0.32)
+                        c = tint(color, 0.34)
                     elif dy == h - 1:
-                        c = tint(color, -0.25)
+                        c = tint(color, -0.28)
                     elif dx == 0:
-                        c = tint(color, 0.18)
+                        c = tint(color, 0.20)
                     elif dx == band_w - 1:
-                        c = tint(color, -0.14)
-                    elif dy in (2, 3) and dx == 1:
+                        c = tint(color, -0.16)
+                    elif (dy in (2, 3) and dx == 1) or (dx + dy) % 7 == 0:
                         c = tint(color, 0.45)
                     else:
                         c = color
@@ -1065,10 +3644,21 @@ def make_prismling():
         paint_rainbow_band(img, bx + i * 4, by, 4, bh, color, is_bottom=True)
     for side_name, col in (("east", BANDS[0]), ("west", BANDS[-1])):
         sx, sy, sw, sh = bf[side_name]
-        fill(img, (sx, sy, sw, sh), col)
         for py in range(sy, sy + sh):
-            put(img, sx, py, tint(col, 0.2))
-            put(img, sx + sw - 1, py, tint(col, -0.2))
+            for px in range(sx, sx + sw):
+                if py == sy:
+                    c = tint(col, 0.32)
+                elif py == sy + sh - 1:
+                    c = tint(col, -0.28)
+                elif px == sx:
+                    c = tint(col, 0.20)
+                elif px == sx + sw - 1:
+                    c = tint(col, -0.20)
+                elif (px + py) % 4 == 0:
+                    c = tint(col, 0.25)
+                else:
+                    c = col
+                put(img, px, py, c)
 
     cf = faces(0, 106, 12, 8, 1)
     for face, order in (("front", BANDS[2:5]), ("back", list(reversed(BANDS[2:5])))):
@@ -1078,24 +3668,24 @@ def make_prismling():
         for px in range(cx, cx + cw):
             put(img, px, cy, OUTLINE_HI)
             put(img, px, cy + ch - 1, OUTLINE_DARK)
-    fill(img, cf["top"], OUTLINE_HI)
-    fill(img, cf["bottom"], OUTLINE_DARK)
-    fill(img, cf["east"], OUTLINE)
-    fill(img, cf["west"], OUTLINE)
+    for fname, (rx, ry, rw, rh) in ((k, cf[k]) for k in ("top", "bottom", "east", "west")):
+        for py in range(ry, ry + rh):
+            for px in range(rx, rx + rw):
+                put(img, px, py, OUTLINE_HI if (fname == "top" or px == rx) else (OUTLINE_DARK if py == ry + rh - 1 else OUTLINE))
 
     # 2. Shoulder armor [32, 4, 12] at [0, 21], waist [24, 3, 10] at [0, 70], side pillars [2, 10, 11] at [0, 84], pauldrons [6, 3, 10] at [28, 84].
-    shade_box(0, 21, 32, 4, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(0, 21, 32, 4, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=1)
     sf = faces(0, 21, 32, 4, 12)
     for face, order in (("front", BANDS), ("back", list(reversed(BANDS)))):
         sx, sy, _, _ = sf[face]
         for i, color in enumerate(order):
             fill(img, (sx + 2 + i * 4, sy + 3, 4, 1), tint(color, 0.1))
-    shade_box(0, 70, 24, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(0, 84, 2, 10, 11, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(28, 84, 6, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(0, 70, 24, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=2)
+    shade_box(0, 84, 2, 10, 11, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=3)
+    shade_box(28, 84, 6, 3, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=4)
 
     # 3. Stoic Guardian Head [12, 10, 11] at [78, 0] + crown [14, 3, 12] at [76, 38] + cheek rails [2, 9, 12] at [84, 54] + crest & horns.
-    shade_box(78, 0, 12, 10, 11, IVORY_HI, IVORY, IVORY_SHADE, IVORY_DEEP)
+    shade_box(78, 0, 12, 10, 11, IVORY_HI, IVORY, IVORY_SHADE, IVORY_DEEP, seed=5)
     hf = faces(78, 0, 12, 10, 11)
     fx, fy, fw, fh = hf["front"]
     fill(img, (fx, fy, fw, fh), IVORY)
@@ -1120,42 +3710,70 @@ def make_prismling():
     put(img, fx + 1, fy + 6, IVORY_DEEP)
     put(img, fx + 10, fy + 6, IVORY_DEEP)
 
-    shade_box(76, 38, 14, 3, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(84, 54, 2, 9, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(90, 96, 3, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    # Sculpted back & top ivory helm panels + glowing prism rune on back of helm
+    bkx, bky, bkw, bkh = hf["back"]
+    fill(img, (bkx + 2, bky + 2, bkw - 4, bkh - 4), IVORY_SHADE)
+    for px in range(bkx + 2, bkx + bkw - 2):
+        put(img, px, bky + 1, OUTLINE_DARK)
+        put(img, px, bky + bkh - 2, OUTLINE_DARK)
+    for py in range(bky + 2, bky + bkh - 2):
+        put(img, bkx + 2, py, IVORY_DEEP)
+        put(img, bkx + bkw - 3, py, IVORY_DEEP)
+    for target in (img, glow):
+        put(target, bkx + 5, bky + 4, EYE_GLOW)
+        put(target, bkx + 6, bky + 4, EYE_GLOW)
+        put(target, bkx + 5, bky + 5, EYE_CORE)
+        put(target, bkx + 6, bky + 5, EYE_CORE)
+
+    htx, hty, htw, hth = hf["top"]
+    for px in range(htx + 2, htx + htw - 2):
+        put(img, px, hty + 2, IVORY_DEEP)
+        put(img, px, hty + hth - 3, IVORY_DEEP)
+    put(img, htx + 5, hty + 5, EYE_GLOW)
+    put(img, htx + 6, hty + 5, EYE_GLOW)
+    put(glow, htx + 5, hty + 5, EYE_GLOW)
+    put(glow, htx + 6, hty + 5, EYE_GLOW)
+
+    shade_box(76, 38, 14, 3, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=6)
+    shade_box(84, 54, 2, 9, 12, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=7)
+    shade_box(90, 96, 3, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=8)
     # Glowing crystal core on forehead crest
     cf_crest = faces(90, 96, 3, 4, 2)["front"]
     fill(img, (cf_crest[0] + 1, cf_crest[1] + 1, 1, 2), EYE_CORE)
     fill(glow, (cf_crest[0] + 1, cf_crest[1] + 1, 1, 2), EYE_GLOW)
-    shade_box(90, 104, 2, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    shade_box(90, 104, 2, 4, 2, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=9)
 
     # 4. Pillar Legs [9, 9, 9]: right red [0, 38], left lavender [38, 38], plus armored soles [10, 2, 10].
-    for u, color in ((0, BANDS[0]), (38, BANDS[-1])):
-        shade_box(u, 38, 9, 9, 9, tint(color, 0.3), color, tint(color, -0.18), tint(color, -0.35))
+    for idx, (u, color) in enumerate(((0, BANDS[0]), (38, BANDS[-1]))):
+        shade_box(u, 38, 9, 9, 9, tint(color, 0.3), color, tint(color, -0.18), tint(color, -0.35), seed=10 + idx)
         lf = faces(u, 38, 9, 9, 9)
         lx, ly, lw, _ = lf["front"]
         fill(img, (lx, ly, lw, 2), OUTLINE_DARK)
         fill(img, (lx + 2, ly + 3, 5, 2), tint(color, 0.28))
-    shade_box(0, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
-    shade_box(42, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+        put(img, lx + 4, ly + 4, tint(color, 0.55))
+        put(glow, lx + 4, ly + 4, tint(color, 0.55))
+    shade_box(0, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=12)
+    shade_box(42, 57, 10, 2, 10, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=13)
     for u, color in ((0, BANDS[0]), (42, BANDS[-1])):
         bx, by, bw, bh = faces(u, 57, 10, 2, 10)["bottom"]
         fill(img, (bx + 1, by + 1, bw - 2, bh - 2), tint(color, -0.22))
+        for tread_y in (by + 2, by + 5, by + 7):
+            fill(img, (bx + 2, tread_y, bw - 4, 1), tint(color, -0.38))
 
     # 5. Arms, 3-pronged hands & glowing octagonal blue cuffs.
-    for u, v, w, h, d in (
+    for idx, (u, v, w, h, d) in enumerate((
         (62, 91, 4, 4, 4),
         (62, 84, 10, 3, 3),
         (90, 82, 3, 8, 3),
         (104, 82, 5, 2, 2),
         (104, 88, 4, 2, 2),
-    ):
-        shade_box(u, v, w, h, d, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP)
+    )):
+        shade_box(u, v, w, h, d, OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DEEP, seed=14 + idx)
 
-    for u, v, w, h, d in ((28, 100, 4, 6, 6), (50, 100, 3, 7, 5), (68, 100, 3, 5, 7)):
-        shade_box(u, v, w, h, d, CUFF_HI, CUFF, CUFF_SHADE, CUFF_DEEP)
+    for idx, (u, v, w, h, d) in enumerate(((28, 100, 4, 6, 6), (50, 100, 3, 7, 5), (68, 100, 3, 5, 7))):
+        shade_box(u, v, w, h, d, CUFF_HI, CUFF, CUFF_SHADE, CUFF_DEEP, seed=20 + idx)
         cf_cuff = faces(u, v, w, h, d)
-        for face_name in ("front", "back", "east", "west", "top"):
+        for face_name in ("front", "back", "east", "west", "top", "bottom"):
             cx, cy, cw, ch = cf_cuff[face_name]
             mid_x = cx + cw // 2
             for py in range(cy + 1, cy + max(2, ch - 1)):
@@ -1347,29 +3965,69 @@ def make_prismling():
 
 
 def make_flurrywing():
-    """Flurrywing: the kids' four-winged snow-fairy snowman (qa/reference/pets/flurrywing-drawing-2026-11-17.jpg).
+    """256x128 (2x scale over 128x64 UV grid) Flurrywing: snow-fairy snowman + glowmask.
 
-    Layout matches src/main/resources/assets/artilian/geo/entity/flurrywing.geo.json (box UV, 128x64),
-    exported from tools/art/models/flurrywing.bbmodel. Each entry is (u, v, w, h, d).
+    Faithful to qa/reference/pets/flurrywing-drawing-2026-11-17.jpg and flurrywing.geo.json:
+    three stacked snowballs with vertical coal dash buttons, ribbed turquoise beanie,
+    asymmetric stick & ice-blue mitten arms, and four veined crystalline frost butterfly wings.
     """
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    SNOW = (248, 252, 255, 255)
-    SNOW_HI = (255, 255, 255, 255)
-    SNOW_SHADE = (214, 236, 248, 255)   # pale ice-blue shade side
-    SNOW_DEEP = (184, 216, 238, 255)
-    OUTLINE = (45, 212, 191, 255)       # #2DD4BF, the drawing's turquoise marker
-    OUTLINE_DARK = (17, 158, 142, 255)
-    OUTLINE_HI = (110, 231, 214, 255)
-    COAL = (36, 36, 44, 255)
-    WING = (125, 249, 255, 255)         # #7DF9FF, Ice
-    WING_PALE = (178, 252, 255, 255)
-    VEIN = (255, 255, 255, 255)
-    STICK = (122, 80, 42, 255)
-    STICK_DARK = (86, 54, 26, 255)
-    MITTEN = (125, 188, 240, 255)
-    MITTEN_HI = (168, 214, 250, 255)
-    MITTEN_DARK = (86, 150, 214, 255)
+    # 8-stop Spherical Snow & Ice-Shadow ramp (#8EC5E8 -> #FFFFFF)
+    SNOW_RAMP = [
+        (142, 197, 232, 255),  # 0: Deep arctic-blue under-ball shadow
+        (168, 214, 242, 255),  # 1: Cool sky-ice shade
+        (194, 228, 248, 255),  # 2: Pale frost-blue shadow
+        (216, 238, 252, 255),  # 3: Soft glacier tint
+        (232, 246, 254, 255),  # 4: Bright snow mist
+        (244, 251, 255, 255),  # 5: Crisp snow base
+        (251, 254, 255, 255),  # 6: Sunlit powder snow
+        (255, 255, 255, 255),  # 7: Pure specular snow white
+    ]
+    # 8-stop Turquoise Marker & Knit Beanie ramp (#126E64 -> #BFF8F0)
+    TURQ_RAMP = [
+        (18, 110, 100, 255),   # 0: Deep evergreen-teal crevice shadow
+        (23, 146, 134, 255),   # 1: Rich sea-teal shade
+        (32, 182, 166, 255),   # 2: Shaded turquoise
+        (45, 212, 191, 255),   # 3: Kid drawing turquoise marker (#2DD4BF)
+        (86, 228, 212, 255),   # 4: Bright frost-mint knit
+        (134, 238, 228, 255),  # 5: Pastel seafoam knit highlight
+        (184, 248, 242, 255),  # 6: Frosted mint sheen
+        (224, 253, 250, 255),  # 7: Snow-dusted knit highlight
+    ]
+    # 8-stop Glacial Cyan Butterfly Wing ramp (#1998A0 -> #FFFFFF)
+    WING_RAMP = [
+        (25, 152, 160, 255),   # 0: Deep frost-teal wing rim
+        (44, 198, 202, 255),   # 1: Shaded glacier cyan
+        (76, 228, 238, 255),   # 2: Mid ice-fairy cyan
+        (125, 249, 255, 255),  # 3: DESIGN.md Ice Glow (#7DF9FF)
+        (166, 252, 255, 255),  # 4: Luminous frost aqua
+        (206, 254, 255, 255),  # 5: Translucent crystal highlight
+        (236, 255, 255, 255),  # 6: Bright frost vein shimmer
+        (255, 255, 255, 255),  # 7: Specular ice-crystal glint
+    ]
+    # 6-stop Bark Stick & Ice-Blue Mitten ramps
+    STICK_RAMP = [
+        (66, 40, 20, 255),
+        (92, 58, 30, 255),
+        (122, 80, 42, 255),
+        (146, 98, 54, 255),
+        (170, 118, 68, 255),
+        (194, 142, 88, 255),
+    ]
+    MITTEN_RAMP = [
+        (64, 118, 184, 255),
+        (86, 150, 214, 255),
+        (114, 178, 236, 255),
+        (142, 200, 246, 255),
+        (178, 220, 252, 255),
+        (216, 240, 255, 255),
+    ]
+    COAL_DARK = (24, 26, 36, 255)
+    COAL_MID = (44, 48, 64, 255)
+    COAL_HI = (78, 86, 112, 255)
 
     BALLS = {
         "bottom_core": (0, 0, 10, 6, 10),
@@ -1380,116 +4038,256 @@ def make_flurrywing():
         "head_cap": (20, 16, 3, 5, 3),
     }
     HAT = {"hat_brim": (32, 16, 6, 1, 6), "hat_crown": (74, 16, 4, 1, 4)}
-    STICKS = {"stick_upper": (100, 29, 5, 1, 1), "stick_lower": (40, 25, 1, 3, 1), "mitten_arm": (12, 32, 4, 1, 1)}
-    MITTENS = {"mitten_palm": (12, 25, 3, 2, 2), "mitten_tip": (32, 25, 2, 2, 2)}
-    # Wing slabs, hinge to tip. Pointed upper-left, rounded upper-right, then the two lower fans.
+    STICKS = {"stick_left": (0, 36, 4, 1, 1), "stick_right": (34, 36, 4, 1, 1)}
+    MITTENS = {
+        "mitten_palm_left": (12, 36, 3, 2, 2),
+        "mitten_tip_left": (24, 36, 2, 2, 2),
+        "mitten_palm_right": (46, 36, 3, 2, 2),
+        "mitten_tip_right": (58, 36, 2, 2, 2),
+    }
     UPPER_WINGS = [
-        [(22, 25, 4, 3, 1), (90, 16, 6, 4, 1), (0, 25, 5, 3, 1), (88, 29, 3, 2, 1), (96, 29, 1, 2, 1)],
-        [(78, 29, 4, 2, 1), (104, 16, 7, 3, 1), (56, 16, 8, 4, 1), (36, 29, 6, 2, 1), (22, 32, 4, 1, 1)],
+        [(0, 42, 4, 2, 1), (12, 42, 7, 3, 1), (30, 42, 8, 4, 1), (50, 42, 6, 2, 1), (66, 42, 4, 1, 1)],
+        [(0, 49, 4, 2, 1), (12, 49, 7, 3, 1), (30, 49, 8, 4, 1), (50, 49, 6, 2, 1), (66, 49, 4, 1, 1)],
     ]
     LOWER_WINGS = [
         [(50, 29, 6, 2, 1), (84, 25, 8, 2, 1), (44, 25, 9, 2, 1), (102, 25, 8, 2, 1), (112, 29, 5, 1, 1)],
         [(64, 29, 6, 2, 1), (0, 29, 8, 2, 1), (64, 25, 9, 2, 1), (18, 29, 8, 2, 1), (0, 32, 5, 1, 1)],
     ]
 
-    # 1. Snowballs: white fronts, pale ice-blue sides, turquoise marker rim down each silhouette edge.
-    for name, (u, v, w, h, d) in BALLS.items():
-        f = faces(u, v, w, h, d)
-        for face, (x, y, fw, fh) in f.items():
-            base = {"top": SNOW_HI, "bottom": SNOW_DEEP, "east": SNOW_SHADE, "west": SNOW_SHADE}.get(face, SNOW)
-            fill(img, (x, y, fw, fh), base)
-            if face in ("front", "back", "east", "west"):
-                for py in range(y, y + fh):
-                    put(img, x, py, OUTLINE)
-                    put(img, x + fw - 1, py, OUTLINE)
-                if name.endswith("_cap"):
-                    for px in range(x, x + fw):
-                        put(img, px, y, OUTLINE)
-                        put(img, px, y + fh - 1, OUTLINE_DARK)
-                for py in range(y + 1, y + fh - 1):  # frosty sparkle
-                    for px in range(x + 1, x + fw - 1):
-                        if (px * 7 + py * 3) % 11 == 0:
-                            put(img, px, py, SNOW_SHADE if base == SNOW else SNOW)
-            elif face == "top" and name.endswith("_core"):
-                for px in range(x, x + fw):
-                    put(img, px, y, OUTLINE)
-                    put(img, px, y + fh - 1, OUTLINE)
-                for py in range(y, y + fh):
-                    put(img, x, py, OUTLINE)
-                    put(img, x + fw - 1, py, OUTLINE)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # Coal buttons: the drawing's dashed line, 3 dashes on the bottom ball and 2 on the middle.
-    x, y, _, _ = faces(*BALLS["bottom_core"])["front"]
-    for row in (0, 2, 4):
-        fill(img, (x + 4, y + row, 2, 1), COAL)
-    x, y, _, _ = faces(*BALLS["middle_core"])["front"]
-    for row in (0, 2):
-        fill(img, (x + 2, y + row, 2, 1), COAL)
+    def shade_snowball(u, v, w, h, d, is_cap=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 6.2,
+            "front": 5.5,
+            "east": 4.6,
+            "west": 4.2,
+            "back": 4.0,
+            "bottom": 1.6,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    dx = (tx - 0.5) * 2.0
+                    dy = (ty - 0.5) * 2.0
+                    radial = (dx * dx + dy * dy) ** 0.5
+                    sparkle = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 13
+                    if name == "bottom":
+                        idx = bias + (1.0 - min(1.2, radial)) * 2.2 - radial * 0.6
+                        if sparkle == 0:
+                            idx += 0.8
+                        c_idx = max(0, min(len(SNOW_RAMP) - 1, int(round(idx))))
+                        col = TURQ_RAMP[1] if radial > 1.15 and is_cap else SNOW_RAMP[c_idx]
+                    else:
+                        idx = bias + (0.45 - ty) * 1.4 + (0.45 - radial) * 1.1
+                        if sparkle <= 1:
+                            idx += 0.55
+                        elif sparkle >= 11:
+                            idx -= 0.55
+                        edge_x = lx in (0, rw - 1)
+                        edge_y = (ly in (0, rh - 1)) and (is_cap or name == "top")
+                        if edge_x or edge_y:
+                            # Soft turquoise frost marker contour rim along outer silhouette edges
+                            t_idx = 3 if (name in ("front", "top") and ly < rh - 1) else 2
+                            if lx in (0, rw - 1) and ly in (0, rh - 1):
+                                t_idx = 1
+                            col = TURQ_RAMP[t_idx]
+                        elif lx in (1, rw - 2) or (is_cap and ly in (1, rh - 2)):
+                            # Soft ice-mint inner frost transition halo
+                            col = TURQ_RAMP[5] if name in ("front", "top") else TURQ_RAMP[4]
+                        else:
+                            c_idx = max(0, min(len(SNOW_RAMP) - 1, int(round(idx))))
+                            col = SNOW_RAMP[c_idx]
+                            if sparkle == 0 and radial < 0.7 and name == "front":
+                                put(glow, rx + lx, ry + ly, WING_RAMP[5])
+                    put(img, rx + lx, ry + ly, col)
 
-    # Coal face: two dot eyes and a small mouth.
-    x, y, _, _ = faces(*BALLS["head_core"])["front"]
-    fill(img, (x + 1, y, 3, 4), SNOW)
-    put(img, x + 1, y + 1, COAL)
-    put(img, x + 3, y + 1, COAL)
-    put(img, x + 2, y + 3, COAL)
+    def shade_ramp_box(u, v, w, h, d, ramp, *, knit=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.3,
+            "front": 4.4,
+            "east": 3.8,
+            "west": 3.4,
+            "back": 3.1,
+            "bottom": 1.8,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.5 - edge_dist * 0.9
+                    elif name == "top":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.2 - edge_dist * 0.6
+                    else:
+                        idx = bias + (0.45 - ty) * 1.6 + (0.2 - tx) * 0.35
+                    if knit:
+                        rib = (lx % 2 == 0)
+                        if name == "top" and (lx + ly) % 3 == 0:
+                            idx += 0.9
+                        elif name != "bottom":
+                            idx += 0.7 if rib else -0.7
+                    else:
+                        grain = (lx * 7 + ly * 11 + seed * 5) % 9
+                        if grain <= 1:
+                            idx += 0.55
+                        elif grain >= 7:
+                            idx -= 0.55
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
 
-    # 2. Turquoise beanie.
-    smooth_coat(img, *HAT["hat_brim"], OUTLINE_HI, OUTLINE, OUTLINE_DARK, OUTLINE_DARK)
-    smooth_coat(img, *HAT["hat_crown"], OUTLINE_HI, OUTLINE_HI, OUTLINE, OUTLINE_DARK)
+    # 1. Three Stacked Snowballs at 2x resolution
+    for i, (name, box) in enumerate(BALLS.items()):
+        shade_snowball(*box, is_cap=name.endswith("_cap"), seed=i + 1)
 
-    # 3. Brown stick arm and ice-blue mitten.
-    for box in STICKS.values():
-        smooth_coat(img, *box, STICK, STICK, STICK_DARK, STICK_DARK)
-    for box in MITTENS.values():
-        smooth_coat(img, *box, MITTEN_HI, MITTEN, MITTEN_DARK, MITTEN_DARK)
+    # Coal buttons: faithful to the drawing's dashed vertical line (3 dashes bottom, 2 dashes middle)
+    def draw_coal_dash(cx, cy, h_px):
+        for dy in range(h_px):
+            for dx in range(2):
+                col = COAL_HI if (dy == 0 and dx == 0) else (COAL_DARK if dy == h_px - 1 else COAL_MID)
+                put(img, cx + dx, cy + dy, col)
+        # Soft frost rim below/beside coal button
+        put(img, cx - 1, cy + h_px - 1, SNOW_RAMP[2])
+        put(img, cx + 2, cy + h_px - 1, SNOW_RAMP[2])
 
-    # 4. Frost wings: pale cyan panes with white veins, turquoise marker on every thin edge.
-    for slabs in UPPER_WINGS + LOWER_WINGS:
-        upper = slabs in UPPER_WINGS
+    bx, by, _, _ = f2x(*BALLS["bottom_core"])["front"]
+    for row in (1, 5, 9):
+        draw_coal_dash(bx + 9, by + row, 2)
+
+    mx, my, _, _ = f2x(*BALLS["middle_core"])["front"]
+    for row in (1, 5):
+        draw_coal_dash(mx + 5, my + row, 2)
+
+    # Expressive coal face on head_core front (10x8 px)
+    hx, hy, _, _ = f2x(*BALLS["head_core"])["front"]
+    for ly in range(1, 7):
+        for lx in range(2, 8):
+            put(img, hx + lx, hy + ly, SNOW_RAMP[7] if ly < 4 else SNOW_RAMP[5])
+    # Rounded coal eyes (2x3) with a single crisp frost catchlight sparkle
+    for ex in (hx + 2, hx + 6):
+        fill(img, (ex, hy + 1, 2, 3), COAL_DARK)
+        put(img, ex, hy + 1, WING_RAMP[6])
+        put(glow, ex, hy + 1, WING_RAMP[5])
+    # Rosy arctic-cyan frost cheeks & friendly coal mouth
+    put(img, hx + 2, hy + 4, TURQ_RAMP[5])
+    put(img, hx + 7, hy + 4, TURQ_RAMP[5])
+    fill(img, (hx + 4, hy + 5, 2, 2), COAL_DARK)
+    put(img, hx + 4, hy + 5, COAL_MID)
+
+    # 2. Ribbed Knit Turquoise Beanie (hat_brim & hat_crown)
+    shade_ramp_box(*HAT["hat_brim"], TURQ_RAMP, knit=True, seed=10)
+    shade_ramp_box(*HAT["hat_crown"], TURQ_RAMP, knit=True, seed=11)
+    # Snow dusting across the crown pom-pom top
+    htx, hty, htw, hth = f2x(*HAT["hat_crown"])["top"]
+    for ly in range(2, hth - 2):
+        for lx in range(2, htw - 2):
+            if (lx + ly) % 2 == 0 or (2 <= lx <= htw - 3 and 2 <= ly <= hth - 3):
+                put(img, htx + lx, hty + ly, SNOW_RAMP[7 if (lx + ly) % 3 == 0 else 5])
+
+    # 3. Matching Wood-Bark Stick & Quilted Ice-Blue Mitten Arms
+    for i, box in enumerate(STICKS.values()):
+        shade_ramp_box(*box, STICK_RAMP, seed=20 + i)
+    for i, (mname, box) in enumerate(MITTENS.items()):
+        shade_ramp_box(*box, MITTEN_RAMP, seed=30 + i)
+        if mname.startswith("mitten_palm_"):
+            is_left = mname.endswith("_left")
+            mf = f2x(*box)
+            for fname in ("front", "back", "top", "bottom"):
+                rx, ry, rw, rh = mf[fname]
+                cuff_x = (rw - 1 if fname != "back" else 0) if is_left else (0 if fname != "back" else rw - 1)
+                for ly in range(rh):
+                    put(img, rx + cuff_x, ry + ly, SNOW_RAMP[6 if ly % 2 == 0 else 4])
+
+    # 4. Four Veined Crystalline Frost Butterfly Wings + Glowmask
+    for wing_idx, slabs in enumerate(UPPER_WINGS + LOWER_WINGS):
+        upper = wing_idx < 2
+        is_left = (wing_idx % 2 == 0)
         for i, (u, v, w, h, d) in enumerate(slabs):
-            f = faces(u, v, w, h, d)
+            f = f2x(u, v, w, h, d)
+            # Shaded turquoise crystalline wing frame along thin edges
             for face in ("top", "bottom", "east", "west"):
-                fill(img, f[face], OUTLINE)
+                rx, ry, rw, rh = f[face]
+                for ly in range(rh):
+                    for lx in range(rw):
+                        edge = lx == 0 or ly == 0
+                        col = TURQ_RAMP[4 if (lx + ly) % 3 == 0 else (3 if edge else 2)]
+                        put(img, rx + lx, ry + ly, col)
+                        if (lx + ly) % 4 == 0:
+                            put(glow, rx + lx, ry + ly, WING_RAMP[4])
+            # Shimmering crystalline membrane on front & back with diagonal rib + frost veins
             for face in ("front", "back"):
-                x, y, fw, fh = f[face]
-                fill(img, (x, y, fw, fh), WING)
-                for py in range(y, y + fh):
-                    for px in range(x, x + fw):
-                        if (px + py) % 4 == 0:
-                            put(img, px, py, VEIN)
-                        elif (px - py) % 6 == 0:
-                            put(img, px, py, WING_PALE)
-                    put(img, x, py, OUTLINE)
-                    put(img, x + fw - 1, py, OUTLINE)
-                if i == len(slabs) - 1:  # the tip slab closes the wing: top edge up high, bottom edge down low
-                    for px in range(x, x + fw):
-                        put(img, px, y if upper else y + fh - 1, OUTLINE)
+                rx, ry, rw, rh = f[face]
+                for ly in range(rh):
+                    ty = ly / max(1, rh - 1)
+                    for lx in range(rw):
+                        tx = lx / max(1, rw - 1)
+                        is_border = (
+                            lx in (0, rw - 1)
+                            or (i == len(slabs) - 1 and ly in (0, 1) if upper else i == len(slabs) - 1 and ly in (rh - 2, rh - 1))
+                            or (i == 0 and ((ly == rh - 1) if upper else (ly == 0)))
+                        )
+                        if is_border:
+                            col = TURQ_RAMP[2 if (lx == 0 or lx == rw - 1) else 3]
+                        else:
+                            # Diagonal central wing rib (echoes the kid's drawing!) + branching frost crystal veins
+                            diag = abs((tx if is_left else (1.0 - tx)) - (1.0 - ty if upper else ty))
+                            rib = diag < 0.18
+                            vein = (lx + ly * 2 + i) % 5 == 0
+                            center_dist = abs(tx - 0.5) * 0.8 + abs(ty - 0.5) * 0.6
+                            if rib:
+                                col = WING_RAMP[7 if (lx + ly) % 2 == 0 else 6]
+                                put(glow, rx + lx, ry + ly, WING_RAMP[5])
+                            elif vein:
+                                col = WING_RAMP[6]
+                                put(glow, rx + lx, ry + ly, WING_RAMP[4])
+                            else:
+                                idx = 4.8 - center_dist * 2.6 + (0.6 if upper else 0.3)
+                                c_idx = max(1, min(5, int(round(idx))))
+                                col = WING_RAMP[c_idx]
+                                if c_idx >= 4 and (lx * 3 + ly * 7) % 9 == 0:
+                                    put(glow, rx + lx, ry + ly, WING_RAMP[4])
+                        put(img, rx + lx, ry + ly, col)
 
-    dest = OUT / "entity/flurrywing.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    img.save(dest)
+    entity_dir = OUT / "entity"
+    entity_dir.mkdir(parents=True, exist_ok=True)
+    img.save(entity_dir / "flurrywing.png")
+    glow.save(entity_dir / "flurrywing_glowmask.png")
 
 
 def make_sunbeam():
     """Sunbeam: the kids' legendary Sunsteel guardian (qa/reference/pets/sunsteel-drawing-2026-11-17.jpg).
 
-    Art pass v2:
-    - Creature-like Sunsteel guardian head: dark recessed visor, angled glowing solar eyes,
-      forehead sun-diamond, 3D armored beak/jaw-crest (no human smiley face), and 5-ray solar crown
-    - Sculpted Sunsteel breastplate & layered chest chevron (no permanent chest orb/streamer)
-    - Attack-only `chest_beam` bone (hidden at scale 0 in idle/walk/sit, blasts forward in attack)
-    - Four articulated spiky solar wing-arms with 3-pronged starburst claws & chunky greaves
-
-    Writes sunbeam.geo.json, sunbeam.png, and sunbeam_glowmask.png from a single UV layout.
+    Art pass v3 (256x256 at 2x over sunbeam.geo.json's 128x128 UV layout):
+    - Multi-stop forged Sunsteel armor shading across all 6 faces (bevels, seams, corner rivets, sole treads)
+    - Creature-like Sunsteel guardian head: dark recessed visor, 2x angled glowing solar eyes,
+      faceted forehead sun-diamond, 3D armored beak/jaw-crest, carved back-of-head solar rune & 5-ray solar crown
+    - Sculpted Sunsteel breastplate with a flush solar-emitter core (sunbeam attack fires as particles in-world)
+    - Four articulated spiky solar wing-arms with glowing plasma conduits & 3-pronged starburst claws
     """
     import json
 
-    img = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
-    glow = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+    S = 2
+    img = Image.new("RGBA", (128 * S, 128 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 128 * S), (0, 0, 0, 0))
 
-    # Rich Sunsteel & solar-plasma palette
+    # Rich 8-stop Sunsteel & solar-plasma palette
     WHITE_HOT = (255, 253, 236, 255)
     SUN_HI = (254, 224, 102, 255)
+    GOLD_BRIGHT = (252, 198, 54, 255)
     GOLD = (245, 168, 24, 255)
     GOLD_MID = (217, 119, 16, 255)
     BRONZE = (164, 76, 18, 255)
@@ -1501,7 +4299,7 @@ def make_sunbeam():
     FLAME_Y = (253, 224, 71, 255)
     FLAME_O = (249, 115, 22, 255)
 
-    # Box UV definitions: (u, v, w, h, d) — zero overlaps on 128x128
+    # Box UV definitions: (u, v, w, h, d) — zero overlaps on 128x128 UV grid
     CHEST = (0, 0, 12, 9, 8)
     CHEST_PLATE = (42, 0, 10, 6, 1)
     PELVIS = (66, 0, 10, 3, 7)
@@ -1515,9 +4313,6 @@ def make_sunbeam():
     SNOUT = (84, 33, 6, 3, 2)
     CROWN_RAY = (102, 33, 2, 5, 2)
     CROWN_RAY_SM = (112, 33, 2, 4, 2)
-
-    BEAM_CORE = (0, 42, 4, 4, 14)
-    BEAM_FLARE = (38, 42, 6, 6, 1)
 
     THIGH = (0, 60, 4, 3, 4)
     SHIN = (18, 60, 4, 3, 3)
@@ -1534,185 +4329,241 @@ def make_sunbeam():
     FORE_LO = (42, 84, 7, 2, 2)
     SPIKE_SM = (62, 84, 3, 1, 1)
 
-    def plate(box, hi, base, shade, deep, target=img, rim=SEAM):
-        """Beveled Sunsteel armor plate with top highlight, side shading, and dark seam trim."""
-        for face, (x, y, fw, fh) in faces(*box).items():
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
+
+    def plate(box, hi, base, shade, deep, target=img, rim=SEAM, seed=0):
+        """Multi-stop forged Sunsteel armor plate with top/bottom bevels, panel seams, and rivets."""
+        for face, (x, y, fw, fh) in f2x(*box).items():
             for py in range(y, y + fh):
-                t = (py - y) / max(1, fh - 1)
+                ly = py - y
+                t = ly / max(1, fh - 1)
                 for px in range(x, x + fw):
+                    lx = px - x
+                    border = lx == 0 or lx == fw - 1 or ly == 0 or ly == fh - 1
+                    grain = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 11
                     if face == "top":
-                        color = hi
+                        if ly == 0:
+                            color = WHITE_HOT if hi == SUN_HI else hi
+                        elif border:
+                            color = hi
+                        elif fw >= 8 and fh >= 8 and (lx in (2, fw - 3) and ly in (2, fh - 3)):
+                            color = rim
+                        elif fh >= 6 and ly == fh // 2 and 2 <= lx <= fw - 3:
+                            color = shade if lx % 2 == 0 else base
+                        else:
+                            color = hi if (t < 0.42 and grain < 7) else (base if grain < 9 else shade)
                     elif face == "bottom":
-                        color = deep
+                        if border:
+                            color = rim
+                        elif fw >= 6 and fh >= 6 and (lx in (1, fw - 2) or ly in (1, fh - 2)):
+                            color = deep
+                        elif fw >= 8 and fh >= 8 and (lx in (2, fw - 3) and ly in (2, fh - 3)):
+                            color = rim
+                        else:
+                            color = base if (grain <= 1 or (lx + ly) % 5 == 0) else (shade if grain <= 6 else deep)
                     elif face in ("east", "west"):
-                        color = shade if t < 0.75 else deep
+                        if border:
+                            color = rim
+                        elif t < 0.25:
+                            color = base if grain < 8 else hi
+                        elif t < 0.72:
+                            color = shade if grain < 9 else base
+                        else:
+                            color = deep
                     else:
-                        color = hi if t < 0.18 else (base if t < 0.78 else shade)
+                        if ly == 0:
+                            color = hi
+                        elif ly == fh - 1:
+                            color = rim
+                        elif lx == 0 or lx == fw - 1:
+                            color = rim if (fw >= 6 and fh >= 6) else shade
+                        elif fw >= 8 and fh >= 8 and (lx in (2, fw - 3) and ly in (2, fh - 3)):
+                            color = rim
+                        else:
+                            color = hi if (t < 0.18 and grain < 9) else (base if (t < 0.75 and grain < 9) else shade)
                     put(target, px, py, color)
-            if face in ("front", "back", "east", "west") and fw >= 3 and fh >= 3:
-                for py in range(y, y + fh):
-                    put(target, x, py, rim)
-                    put(target, x + fw - 1, py, rim)
-                for px in range(x, x + fw):
-                    put(target, px, y + fh - 1, rim)
-                    if fh >= 5:
-                        put(target, px, y, rim)
 
-    def flat(box, color, target):
-        for rect in faces(*box).values():
-            fill(target, rect, color)
+    # 1. Forged Sunsteel Armor Plates at 2x resolution
+    plate(CHEST, SUN_HI, GOLD, GOLD_MID, BRONZE, seed=1)
+    plate(CHEST_PLATE, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=2)
+    plate(FLAP, SUN_HI, GOLD, GOLD_MID, BRONZE, seed=3)
+    plate(PELVIS, GOLD_BRIGHT, GOLD, BRONZE, BRONZE_DEEP, seed=4)
+    plate(NECK, GOLD, BRONZE, BRONZE_DEEP, SEAM, seed=5)
 
-    # 1. Armor plates
-    plate(CHEST, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(CHEST_PLATE, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(FLAP, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(PELVIS, GOLD, BRONZE, BRONZE_DEEP, SEAM)
-    plate(NECK, BRONZE, BRONZE_DEEP, BRONZE_DEEP, SEAM)
+    plate(THIGH, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=6)
+    plate(SHIN, GOLD, BRONZE, BRONZE_DEEP, SEAM, seed=7)
+    plate(BOOT, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE_DEEP, seed=8)
 
-    plate(THIGH, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(SHIN, GOLD, BRONZE, BRONZE_DEEP, SEAM)
-    plate(BOOT, SUN_HI, GOLD, GOLD_MID, BRONZE_DEEP)
+    plate(PAULDRON_UP, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=9)
+    plate(ARM_UP, GOLD, BRONZE, BRONZE_DEEP, SEAM, seed=10)
+    plate(FORE_UP, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=11)
 
-    plate(PAULDRON_UP, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(ARM_UP, GOLD, BRONZE, BRONZE_DEEP, SEAM)
-    plate(FORE_UP, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    plate(PAULDRON_LO, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=12)
+    plate(ARM_LO, GOLD, BRONZE, BRONZE_DEEP, SEAM, seed=13)
+    plate(FORE_LO, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=14)
 
-    plate(PAULDRON_LO, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(ARM_LO, GOLD, BRONZE, BRONZE_DEEP, SEAM)
-    plate(FORE_LO, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    # Boot sole treads on bottom (8x12 px)
+    bsx, bsy, bsw, bsh = f2x(*BOOT)["bottom"]
+    for tread_y in (bsy + 2, bsy + 5, bsy + 8):
+        fill(img, (bsx + 2, tread_y, bsw - 4, 2), SEAM)
+        fill(img, (bsx + 2, tread_y, bsw - 4, 1), BRONZE)
 
-    # Sculpted Sunsteel breastplate chevron & recessed sternum seam (no permanent orb)
-    cx, cy, cw, ch = faces(*CHEST_PLATE)["front"]
-    for i in range(4):
-        put(img, cx + 1 + i, cy + 1 + i, SEAM)
-        put(img, cx + cw - 2 - i, cy + 1 + i, SEAM)
-        put(img, cx + 1 + i, cy + i, SUN_HI)
-        put(img, cx + cw - 2 - i, cy + i, SUN_HI)
-    for py in range(cy + 3, cy + ch - 1):
-        put(img, cx + cw // 2 - 1, py, BRONZE)
-        put(img, cx + cw // 2, py, BRONZE)
-    # Subtle glowing solar-forge vents along the upper chest flanks
+    # Sculpted Sunsteel breastplate chevron & recessed sternum seam (20x12 px)
+    cx, cy, cw, ch = f2x(*CHEST_PLATE)["front"]
+    for i in range(8):
+        for t in range(2):
+            put(img, cx + 2 + i, cy + 2 + i + t, SEAM)
+            put(img, cx + cw - 3 - i, cy + 2 + i + t, SEAM)
+        put(img, cx + 2 + i, cy + 1 + i, WHITE_HOT if i < 3 else SUN_HI)
+        put(img, cx + cw - 3 - i, cy + 1 + i, WHITE_HOT if i < 3 else SUN_HI)
+    for py in range(cy + 6, cy + ch - 2):
+        fill(img, (cx + cw // 2 - 2, py, 4, 1), BRONZE)
+        fill(img, (cx + cw // 2 - 1, py, 2, 1), SEAM)
+    # Flush recessed chest solar-emitter emblem & solar-forge flank vents
+    em_x, em_y = cx + cw // 2, cy + 5
+    fill(img, (em_x - 3, em_y - 2, 6, 5), SEAM)
     for target in (img, glow):
-        put(target, cx + 1, cy + 2, FLAME_Y)
-        put(target, cx + cw - 2, cy + 2, FLAME_Y)
+        fill(target, (em_x - 2, em_y - 1, 4, 3), FLAME_O)
+        fill(target, (em_x - 1, em_y - 1, 2, 3), FLAME_Y)
+        fill(target, (em_x - 2, em_y, 4, 1), FLAME_Y)
+        fill(target, (em_x - 1, em_y, 2, 1), WHITE_HOT)
+        fill(target, (cx + 2, cy + 4, 2, 2), FLAME_Y)
+        fill(target, (cx + cw - 4, cy + 4, 2, 2), FLAME_Y)
+        put(target, cx + 2, cy + 4, WHITE_HOT)
+        put(target, cx + cw - 4, cy + 4, WHITE_HOT)
 
-    # Backplate solar spine & shoulder vents
-    bx, by, bw, bh = faces(*CHEST)["back"]
-    for py in range(by + 1, by + bh - 1):
-        put(img, bx + bw // 2 - 1, py, SEAM)
-        put(img, bx + bw // 2, py, SEAM)
-        if py % 2 == 0:
+    # Backplate solar spine & shoulder vents (24x18 px)
+    bx, by, bw, bh = f2x(*CHEST)["back"]
+    for py in range(by + 2, by + bh - 2):
+        fill(img, (bx + bw // 2 - 2, py, 4, 1), SEAM)
+        if py % 4 in (0, 1):
             for target in (img, glow):
-                put(target, bx + bw // 2 - 2, py, FLAME_Y)
-                put(target, bx + bw // 2 + 1, py, FLAME_Y)
+                fill(target, (bx + bw // 2 - 4, py, 2, 1), FLAME_Y if py % 4 == 0 else FLAME_O)
+                fill(target, (bx + bw // 2 + 2, py, 2, 1), FLAME_Y if py % 4 == 0 else FLAME_O)
 
-    # Pelvis belt buckle
-    px0, py0, pw, ph = faces(*PELVIS)["front"]
-    fill(img, (px0 + pw // 2 - 2, py0, 4, ph), GOLD)
+    # Pelvis belt buckle (20x6 px)
+    px0, py0, pw, ph = f2x(*PELVIS)["front"]
+    fill(img, (px0 + pw // 2 - 4, py0, 8, ph), GOLD_BRIGHT)
+    for px in range(px0 + pw // 2 - 4, px0 + pw // 2 + 4):
+        put(img, px, py0, SUN_HI)
+        put(img, px, py0 + ph - 1, SEAM)
     for target in (img, glow):
-        fill(target, (px0 + pw // 2 - 1, py0 + 1, 2, 1), FLAME_Y)
+        fill(target, (px0 + pw // 2 - 2, py0 + 2, 4, 2), FLAME_Y)
+        fill(target, (px0 + pw // 2 - 1, py0 + 2, 2, 1), WHITE_HOT)
 
     # Pauldron ridge + glowing wing conduits
     for box in (PAULDRON_UP, PAULDRON_LO):
         for face in ("front", "back", "east", "west"):
-            x, y, fw, fh = faces(*box)[face]
-            for px in range(x + 1, x + fw - 1):
-                put(img, px, y + 2, BRONZE)
+            x, y, fw, fh = f2x(*box)[face]
+            fill(img, (x + 2, y + 4, fw - 4, 2), BRONZE)
     for box in (ARM_UP, FORE_UP, ARM_LO):
         for face in ("front", "back", "top"):
-            x, y, fw, fh = faces(*box)[face]
-            for px in range(x + 1, x + fw - 1):
+            x, y, fw, fh = f2x(*box)[face]
+            for px in range(x + 2, x + fw - 2):
                 for target in (img, glow):
+                    put(target, px, y + fh // 2 - 1, WHITE_HOT if box == FORE_UP else FLAME_Y)
                     put(target, px, y + fh // 2, FLAME_Y if box == FORE_UP else FLAME_O)
     for face in ("front", "back", "top"):
-        x, y, fw, fh = faces(*FORE_LO)[face]
-        for px in range(x + 1, x + fw - 1):
+        x, y, fw, fh = f2x(*FORE_LO)[face]
+        for px in range(x + 2, x + fw - 2):
             for target in (img, glow):
-                put(target, px, y, FLAME_Y)
+                put(target, px, y + 1, FLAME_Y)
 
     # Boot glowing ankle trim
-    x, y, fw, fh = faces(*BOOT)["front"]
+    x, y, fw, fh = f2x(*BOOT)["front"]
     for target in (img, glow):
-        fill(target, (x + 1, y, fw - 2, 1), FLAME_Y)
+        fill(target, (x + 2, y + 1, fw - 4, 1), WHITE_HOT)
+        fill(target, (x + 2, y + 2, fw - 4, 1), FLAME_Y)
 
-    # 2. Creature Head: gold helm, dark recessed visor, angled glowing solar eyes, forehead sun-gem, armored snout
-    plate(HEAD_CORE, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(HEAD_BAND, SUN_HI, GOLD, GOLD_MID, BRONZE)
-    plate(HEAD_CAP, WHITE_HOT, SUN_HI, GOLD, GOLD_MID)
-    plate(HEAD_CHIN, GOLD, GOLD_MID, BRONZE, BRONZE_DEEP)
-    plate(SNOUT, SUN_HI, GOLD, GOLD_MID, BRONZE)
+    # 2. Creature Head: gold helm, dark recessed visor, 2x angled glowing solar eyes, forehead sun-gem, carved backplate
+    plate(HEAD_CORE, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=15)
+    plate(HEAD_BAND, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=16)
+    plate(HEAD_CAP, WHITE_HOT, SUN_HI, GOLD_BRIGHT, GOLD_MID, seed=17)
+    plate(HEAD_CHIN, GOLD, GOLD_MID, BRONZE, BRONZE_DEEP, seed=18)
+    plate(SNOUT, SUN_HI, GOLD_BRIGHT, GOLD_MID, BRONZE, seed=19)
 
-    # Snout beak-ridge detail
-    sx0, sy0, sw, sh = faces(*SNOUT)["front"]
-    fill(img, (sx0 + 1, sy0 + 1, sw - 2, 1), BRONZE)
-    put(img, sx0 + sw // 2 - 1, sy0, WHITE_HOT)
-    put(img, sx0 + sw // 2, sy0, WHITE_HOT)
+    # Snout beak-ridge detail (12x6 px)
+    sx0, sy0, sw, sh = f2x(*SNOUT)["front"]
+    fill(img, (sx0 + 2, sy0 + 2, sw - 4, 2), BRONZE)
+    fill(img, (sx0 + sw // 2 - 2, sy0, 4, 2), WHITE_HOT)
 
     # Side ear-crests glow softly on HEAD_BAND east/west
     for face in ("east", "west"):
-        x, y, fw, fh = faces(*HEAD_BAND)[face]
+        x, y, fw, fh = f2x(*HEAD_BAND)[face]
         for target in (img, glow):
-            fill(target, (x + fw // 2 - 1, y + 1, 2, fh - 2), FLAME_Y)
+            fill(target, (x + fw // 2 - 2, y + 2, 4, fh - 4), FLAME_Y)
+            fill(target, (x + fw // 2 - 1, y + 3, 2, fh - 6), WHITE_HOT)
 
-    # Dark Sunsteel visor recess on HEAD_CORE front
-    hx, hy, hw, hh = faces(*HEAD_CORE)["front"]
-    fill(img, (hx + 1, hy + 1, hw - 2, hh - 2), VISOR)
-    for px in range(hx + 1, hx + hw - 1):
-        put(img, px, hy + 1, VISOR_SHADE)
+    # Dark Sunsteel visor recess on HEAD_CORE front (24x18 px)
+    hx, hy, hw, hh = f2x(*HEAD_CORE)["front"]
+    fill(img, (hx + 2, hy + 2, hw - 4, hh - 4), VISOR)
+    for py in range(hy + 2, hy + hh - 2):
+        if py % 2 == 0:
+            fill(img, (hx + 2, py, hw - 4, 1), VISOR_SHADE)
 
-    # Forehead sun-diamond (honoring the 3rd circle in the kid's drawing)
+    # Faceted forehead sun-diamond (honoring the 3rd circle in the kid's drawing)
     for target in (img, glow):
-        put(target, hx + hw // 2 - 1, hy + 1, FLAME_Y)
-        put(target, hx + hw // 2, hy + 1, FLAME_Y)
-        put(target, hx + hw // 2 - 1, hy + 2, WHITE_HOT)
-        put(target, hx + hw // 2, hy + 2, WHITE_HOT)
+        cx0 = hx + hw // 2
+        fill(target, (cx0 - 2, hy + 2, 4, 4), FLAME_O)
+        fill(target, (cx0 - 1, hy + 2, 2, 4), FLAME_Y)
+        fill(target, (cx0 - 2, hy + 3, 4, 2), FLAME_Y)
+        fill(target, (cx0 - 1, hy + 3, 2, 2), WHITE_HOT)
 
-    # Angled glowing creature eyes (fierce yet noble, no human sclera/pupils)
-    # Left eye slopes down-right, right eye slopes down-left
+    # Angled glowing creature eyes (2x crisp detail)
     for target in (img, glow):
         # Left eye
-        put(target, hx + 2, hy + 3, FLAME_O)
-        put(target, hx + 3, hy + 3, FLAME_Y)
-        put(target, hx + 2, hy + 4, FLAME_Y)
-        put(target, hx + 3, hy + 4, WHITE_HOT)
-        put(target, hx + 4, hy + 4, WHITE_HOT)
+        fill(target, (hx + 4, hy + 6, 4, 2), FLAME_O)
+        fill(target, (hx + 5, hy + 6, 3, 2), FLAME_Y)
+        fill(target, (hx + 4, hy + 8, 6, 2), FLAME_Y)
+        fill(target, (hx + 6, hy + 8, 4, 2), WHITE_HOT)
         # Right eye
-        put(target, hx + hw - 3, hy + 3, FLAME_O)
-        put(target, hx + hw - 4, hy + 3, FLAME_Y)
-        put(target, hx + hw - 3, hy + 4, FLAME_Y)
-        put(target, hx + hw - 4, hy + 4, WHITE_HOT)
-        put(target, hx + hw - 5, hy + 4, WHITE_HOT)
+        fill(target, (hx + hw - 8, hy + 6, 4, 2), FLAME_O)
+        fill(target, (hx + hw - 8, hy + 6, 3, 2), FLAME_Y)
+        fill(target, (hx + hw - 10, hy + 8, 6, 2), FLAME_Y)
+        fill(target, (hx + hw - 10, hy + 8, 4, 2), WHITE_HOT)
 
-    # 3. Solar Crown Rays behind/above the head (glowing!)
+    # Carved back-of-head Sunsteel helm plate + glowing 8-rayed solar crest rune (24x18 px)
+    hbx, hby, hbw, hbh = f2x(*HEAD_CORE)["back"]
+    fill(img, (hbx + 3, hby + 3, hbw - 6, hbh - 6), GOLD)
+    for px in range(hbx + 3, hbx + hbw - 3):
+        put(img, px, hby + 3, SEAM)
+        put(img, px, hby + hbh - 4, SEAM)
+    for py in range(hby + 3, hby + hbh - 3):
+        put(img, hbx + 3, py, BRONZE)
+        put(img, hbx + hbw - 4, py, BRONZE)
+    rcx, rcy = hbx + hbw // 2, hby + hbh // 2
+    for target in (img, glow):
+        fill(target, (rcx - 2, rcy - 2, 4, 4), FLAME_Y)
+        fill(target, (rcx - 1, rcy - 1, 2, 2), WHITE_HOT)
+        for dx, dy in ((-4, 0), (3, 0), (0, -4), (0, 3), (-3, -3), (2, -3), (-3, 2), (2, 2)):
+            put(target, rcx + dx, rcy + dy, FLAME_O)
+
+    # 3. Solar Crown Rays behind/above the head (glowing coronal plasma)
     for box in (CROWN_RAY, CROWN_RAY_SM):
         for target in (img, glow):
-            for face, (x, y, fw, fh) in faces(*box).items():
+            for face, (x, y, fw, fh) in f2x(*box).items():
                 for py in range(y, y + fh):
                     t = (py - y) / max(1, fh - 1)
-                    color = WHITE_HOT if t < 0.35 else (FLAME_Y if t < 0.75 else FLAME_O)
                     for px in range(x, x + fw):
+                        lx = px - x
+                        inner = 1 <= lx <= fw - 2
+                        if t < 0.35:
+                            color = WHITE_HOT if inner else FLAME_Y
+                        elif t < 0.75:
+                            color = FLAME_Y if inner else FLAME_O
+                        else:
+                            color = FLAME_O
                         put(target, px, py, color)
 
     # 4. Spiky Solar Starburst Claws (glowing white-hot -> gold!)
     for box in (SPIKE_LG, SPIKE_MD, SPIKE_SM):
         for target in (img, glow):
-            for face, (x, y, fw, fh) in faces(*box).items():
+            for face, (x, y, fw, fh) in f2x(*box).items():
                 for py in range(y, y + fh):
                     for px in range(x, x + fw):
-                        put(target, px, py, WHITE_HOT if px == x else (FLAME_Y if px < x + fw - 1 else FLAME_O))
-
-    # 5. Attack-only Chest Solar Beam (hidden at scale 0 in idle/walk/sit)
-    for target in (img, glow):
-        flat(BEAM_CORE, FLAME_Y, target)
-        for face, (x, y, fw, fh) in faces(*BEAM_CORE).items():
-            if fw >= 3 and fh >= 3:
-                fill(target, (x + 1, y + 1, fw - 2, fh - 2), WHITE_HOT)
-        for face, (x, y, fw, fh) in faces(*BEAM_FLARE).items():
-            fill(target, (x, y, fw, fh), FLAME_O)
-            if fw >= 4 and fh >= 4:
-                fill(target, (x + 1, y + 1, fw - 2, fh - 2), FLAME_Y)
-            if fw >= 6 and fh >= 6:
-                fill(target, (x + 2, y + 2, fw - 4, fh - 4), WHITE_HOT)
+                        tx = (px - x) / max(1, fw - 1)
+                        put(target, px, py, WHITE_HOT if tx < 0.25 else (FLAME_Y if tx < 0.72 else FLAME_O))
 
     # Save textures
     dest = OUT / "entity/sunbeam.png"
@@ -1841,15 +4692,6 @@ def make_sunbeam():
                         ],
                     },
                     {
-                        "name": "chest_beam",
-                        "parent": "body",
-                        "pivot": [0, 14.5, -5],
-                        "cubes": [
-                            cube([-3, 11.5, -5.5], BEAM_FLARE),
-                            cube([-2, 12.5, -19.5], BEAM_CORE),
-                        ],
-                    },
-                    {
                         "name": "neck",
                         "parent": "body",
                         "pivot": [0, 19, 0],
@@ -1906,304 +4748,1027 @@ def make_sunbeam():
 
 
 def make_frogduck():
-    """Frogduck: the kids' amphibious teal frog with an orange duck on its head (qa/reference/pets/frog-duck-drawing-2026-11-17.jpg).
+    """256x128 (2x scale over 128x64 UV grid) Frogduck: dappled lagoon-teal frog + tangerine duck + glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 64 * S), (0, 0, 0, 0))
 
-    Layout matches src/main/resources/assets/artilian/geo/entity/frogduck.geo.json (box UV, 128x64).
-    """
-    img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    # 8-stop Lagoon Teal Frog Skin ramp (#063B3A -> #38D9C0 -> #D5FBF6)
+    TEAL_RAMP = [
+        (6, 59, 58, 255),      # 0: Deep crevice shadow
+        (11, 93, 89, 255),     # 1: Dark lagoon shadow
+        (13, 130, 122, 255),   # 2: Shaded amphibian teal
+        (20, 168, 155, 255),   # 3: Mid teal base
+        (34, 199, 180, 255),   # 4: Bright lagoon teal
+        (56, 217, 192, 255),   # 5: DESIGN.md Starlight Teal (#38D9C0)
+        (124, 238, 224, 255),  # 6: Sunlit aqua highlight
+        (213, 251, 246, 255),  # 7: Wet amphibian dew glint
+    ]
+    # 8-stop Tangerine Duck Plumage ramp (#5C1D08 -> #F97316 -> #FEF3C7)
+    DUCK_RAMP = [
+        (92, 29, 8, 255),      # 0: Deep burnt umber shadow
+        (140, 45, 12, 255),    # 1: Rich russet orange
+        (194, 65, 12, 255),    # 2: Shaded tangerine
+        (234, 88, 12, 255),    # 3: Mid warm orange
+        (249, 115, 22, 255),   # 4: DESIGN.md Ember Amber (#F97316)
+        (251, 146, 60, 255),   # 5: Sunlit tangerine feather
+        (253, 186, 116, 255),  # 6: Soft apricot highlight
+        (254, 243, 199, 255),  # 7: Warm cream feather glint
+    ]
+    # 8-stop Chestnut/Umber Eye & Cloud ramp (#2E1105 -> #FFF7ED)
+    BROWN_RAMP = [
+        (46, 17, 5, 255),      # 0: Deep espresso outline
+        (74, 29, 9, 255),      # 1: Dark chestnut
+        (107, 45, 14, 255),    # 2: Rich umber brown
+        (140, 62, 20, 255),    # 3: Mid warm brown
+        (180, 83, 9, 255),     # 4: Golden chestnut
+        (217, 119, 36, 255),   # 5: Amber-brown highlight
+        (242, 166, 90, 255),   # 6: Warm caramel rim
+        (255, 247, 237, 255),  # 7: Specular eye catchlight
+    ]
+    # 8-stop Golden Bill ramp (#78350F -> #FEF9C3)
+    BILL_RAMP = [
+        (120, 53, 15, 255),
+        (161, 82, 12, 255),
+        (202, 118, 16, 255),
+        (234, 158, 22, 255),
+        (251, 191, 36, 255),
+        (253, 214, 78, 255),
+        (254, 235, 138, 255),
+        (254, 249, 195, 255),
+    ]
+    # 8-stop Pearl-Aqua Claw ramp (#1B4D4A -> #F2FFFD)
+    CLAW_RAMP = [
+        (27, 77, 74, 255),
+        (45, 110, 106, 255),
+        (78, 148, 142, 255),
+        (122, 186, 180, 255),
+        (170, 220, 216, 255),
+        (210, 242, 238, 255),
+        (232, 252, 249, 255),
+        (242, 255, 253, 255),
+    ]
 
-    TEAL_HI = (94, 234, 212, 255)
-    TEAL = (20, 184, 166, 255)
-    TEAL_DEEP = (13, 148, 136, 255)
-    TEAL_OUTLINE = (15, 118, 110, 255)
-    FACE = (186, 248, 240, 255)
-    BROWN = (120, 53, 15, 255)
-    BROWN_HI = (146, 64, 14, 255)
-    CLAW = (224, 252, 248, 255)
+    PAL = {
+        "0": TEAL_RAMP[0],
+        "1": TEAL_RAMP[1],
+        "2": TEAL_RAMP[2],
+        "3": TEAL_RAMP[3],
+        "4": TEAL_RAMP[4],
+        "5": TEAL_RAMP[5],
+        "6": TEAL_RAMP[6],
+        "7": TEAL_RAMP[7],
+        "d": DUCK_RAMP[0],
+        "r": DUCK_RAMP[1],
+        "R": DUCK_RAMP[2],
+        "o": DUCK_RAMP[3],
+        "O": DUCK_RAMP[4],
+        "A": DUCK_RAMP[5],
+        "a": DUCK_RAMP[6],
+        "Y": DUCK_RAMP[7],
+        "k": BROWN_RAMP[0],
+        "b": BROWN_RAMP[1],
+        "B": BROWN_RAMP[2],
+        "u": BROWN_RAMP[3],
+        "n": BROWN_RAMP[4],
+        "N": BROWN_RAMP[5],
+        "W": BROWN_RAMP[7],
+        "g": BILL_RAMP[2],
+        "G": BILL_RAMP[4],
+        "y": BILL_RAMP[6],
+        "c": CLAW_RAMP[4],
+        "C": CLAW_RAMP[7],
+        "m": (162, 242, 232, 255),  # Lagoon-mint face plate inner base
+        "M": (196, 250, 242, 255),  # Pale mint face plate highlight
+        "s": (132, 224, 212, 255),  # Soft mint face plate bevel
+        "Q": (125, 249, 255, 255),  # Bioluminescent cyan-teal dew glow
+    }
 
-    ORANGE_HI = (253, 186, 116, 255)
-    ORANGE = (249, 115, 22, 255)
-    ORANGE_DEEP = (234, 88, 12, 255)
-    ORANGE_OUTLINE = (194, 65, 12, 255)
-    GOLD_BILL = (251, 191, 36, 255)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    def paint_box(box, base, side, top_c, outline_c):
-        f = faces(*box)
-        for face, (x, y, fw, fh) in f.items():
-            color = {"top": top_c, "bottom": outline_c, "east": side, "west": side}.get(face, base)
-            fill(img, (x, y, fw, fh), color)
-            if face in ("front", "back", "east", "west"):
-                for py in range(y, y + fh):
-                    put(img, x, py, outline_c)
-                    put(img, x + fw - 1, py, outline_c)
-                for px in range(x, x + fw):
-                    put(img, px, y + fh - 1, outline_c)
+    def shade_ramp_box(u, v, w, h, d, ramp, *, dappled=False, feathered=False, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.3,
+            "front": 4.6,
+            "east": 4.1,
+            "west": 3.7,
+            "back": 3.2,
+            "bottom": 2.1,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.4 - edge_dist * 1.1
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.55 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                    if dappled:
+                        spot = (lx * 7 + ly * 13 + seed * 5 + (lx ^ ly) * 3) % 13
+                        if spot <= 1:
+                            idx += 0.9
+                        elif spot >= 11:
+                            idx -= 0.75
+                    elif feathered:
+                        vane = ((lx + (ly // 2)) % 3 == 0)
+                        if vane:
+                            idx += 0.55
+                        elif (lx * 5 + ly * 11 + seed * 3) % 9 == 0:
+                            idx -= 0.55
+                    if name not in ("top", "bottom") and ly == rh - 1:
+                        idx -= 0.6
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
 
-    # 1. Teal frog body & hump
-    TORSO = (0, 0, 12, 8, 10)
-    HUMP = (46, 0, 10, 1, 8)
-    FACE_PLATE = (46, 10, 8, 7, 1)
-    paint_box(TORSO, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
-    paint_box(HUMP, TEAL_HI, TEAL, TEAL_HI, TEAL_OUTLINE)
-    paint_box(FACE_PLATE, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
 
-    # Face in the middle of the body: brown eyes, two teal dots, brown cloud below them.
-    fx, fy, fw, fh = faces(*FACE_PLATE)["front"]
-    fill(img, (fx + 1, fy + 1, fw - 2, fh - 2), FACE)
-    # Two round brown eyes
-    fill(img, (fx + 1, fy + 1, 2, 2), BROWN)
-    fill(img, (fx + 5, fy + 1, 2, 2), BROWN)
-    put(img, fx + 1, fy + 1, BROWN_HI)
-    put(img, fx + 5, fy + 1, BROWN_HI)
-    # Two teal nostril dots
-    put(img, fx + 2, fy + 3, TEAL_OUTLINE)
-    put(img, fx + 5, fy + 3, TEAL_OUTLINE)
-    # Brown cloud shape below them
-    fill(img, (fx + 2, fy + 4, 4, 2), BROWN)
-    put(img, fx + 1, fy + 5, BROWN_HI)
-    put(img, fx + 6, fy + 5, BROWN_HI)
-    put(img, fx + 3, fy + 4, BROWN_HI)
-    put(img, fx + 4, fy + 4, BROWN_HI)
+    def paint_cutout_z(u, v, w, h, front_grid, *, glow_keys=()):
+        back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
 
-    # 2. Four legs with clawed feet
-    for leg in ((0, 20, 3, 5, 3), (32, 20, 3, 5, 3), (0, 30, 3, 4, 3), (32, 30, 3, 4, 3)):
-        paint_box(leg, TEAL, TEAL_DEEP, TEAL_HI, TEAL_OUTLINE)
-    for foot in ((14, 20, 4, 1, 4), (46, 20, 4, 1, 4), (14, 30, 4, 1, 4), (46, 30, 4, 1, 4)):
-        paint_box(foot, TEAL_DEEP, TEAL_OUTLINE, TEAL, TEAL_OUTLINE)
-    for face, rect in faces(66, 10, 1, 1, 1).items():
-        fill(img, rect, CLAW)
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
 
-    # 3. Orange duck on top of its head (part of the same creature)
-    DUCK_CHEST = (84, 0, 5, 3, 5)
-    DUCK_CREST = (106, 0, 2, 2, 1)
-    DUCK_HEAD = (84, 10, 5, 4, 4)
-    DUCK_BILL = (104, 10, 3, 1, 1)
-    paint_box(DUCK_CHEST, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
-    paint_box(DUCK_CREST, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
-    paint_box(DUCK_HEAD, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
-    for face, rect in faces(*DUCK_BILL).items():
-        fill(img, rect, GOLD_BILL)
-    # Duck slit eyes
-    dx, dy, _, _ = faces(*DUCK_HEAD)["front"]
-    put(img, dx + 1, dy + 1, BROWN)
-    put(img, dx + 1, dy + 2, BROWN)
-    put(img, dx + 3, dy + 1, BROWN)
-    put(img, dx + 3, dy + 2, BROWN)
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
 
-    # Outstretched orange duck wings
-    for wing in ((66, 20, 6, 2, 2), (66, 26, 6, 2, 2)):
-        paint_box(wing, ORANGE, ORANGE_DEEP, ORANGE_HI, ORANGE_OUTLINE)
-    for tip in ((84, 20, 3, 1, 1), (84, 26, 3, 1, 1)):
-        paint_box(tip, ORANGE_HI, ORANGE, ORANGE_HI, ORANGE_OUTLINE)
+    # 1. Teal frog body [12, 8, 10] @ [0, 0] + back hump [10, 1, 8] @ [44, 0]
+    shade_ramp_box(0, 0, 12, 8, 10, TEAL_RAMP, dappled=True, seed=1)
+    bf = f2x(0, 0, 12, 8, 10)
+    # Bioluminescent lagoon dew-spots on back & flanks
+    for side in ("east", "west"):
+        sx, sy, sw, sh = bf[side]
+        for ox, oy, ch in ((4, 3, "6"), (5, 4, "Q"), (12, 5, "6"), (13, 6, "Q"), (8, 9, "7")):
+            if ox < sw and oy < sh:
+                put(img, sx + ox, sy + oy, PAL[ch])
+                if ch in ("Q", "7"):
+                    put(glow, sx + ox, sy + oy, PAL["Q"])
+
+    shade_ramp_box(44, 0, 10, 1, 8, TEAL_RAMP, dappled=True, seed=2)
+    hf = f2x(44, 0, 10, 1, 8)
+    htx, hty, htw, hth = hf["top"]
+    for ox, oy in ((3, 4), (4, 5), (15, 4), (16, 5), (5, 11), (14, 11)):
+        put(img, htx + ox, hty + oy, PAL["7"])
+        put(glow, htx + ox, hty + oy, PAL["Q"])
+
+    # 2. Middle front face plate [8, 8, 1] @ [44, 9] -> 16x16 front canvas
+    shade_ramp_box(44, 9, 8, 8, 1, TEAL_RAMP, dappled=True, seed=3)
+    paint_box_2x(img, 44, 9, 8, 8, 1, {
+        "front": [
+            "1234455445544321",
+            "13sMMMMMMMMMMs31",
+            "2smkbbMMMMbbkms2",
+            "2smkWbbMMbbWkms2",
+            "3smkBBBMMBBBkms3",
+            "3smMkbbMMbbkMms3",
+            "3smMMMMMMMMMMms3",
+            "2smMMM1mMMm1Mms2",
+            "2smMMM2mMMm2Mms2",
+            "2smMMMMMMMMMMms2",
+            "2smMMkbbkkbbkMs2",
+            "1smMkBBuBuBBkMs1",
+            "1smkBBuuuuuBBks1",
+            "1smMkBBuuBBBkMs1",
+            "02ssMkbbbbkMss20",
+            "0112333333332110",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 44, 9, 8, 8, 1, {
+        "front": [
+            "................",
+            "................",
+            "................",
+            "....W......W....",
+            "................",
+            "................",
+            "................",
+            "......Q....Q....",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+            "................",
+        ],
+    }, PAL)
+
+    # 3. Frog shoulder puffs [1, 4, 5] @ [62, 9] + cheek gill-frills [2, 4, 0] @ [74, 9] & [78, 9] + rear fin [0, 4, 2] @ [116, 0]
+    shade_ramp_box(62, 9, 1, 4, 5, TEAL_RAMP, dappled=True, seed=4)
+    gill_left = [
+        "Q6..",
+        "653.",
+        "4320",
+        "Q53.",
+        "642.",
+        "3210",
+        "Q42.",
+        ".21.",
+    ]
+    gill_right = [row[::-1] for row in gill_left]
+    paint_cutout_z(74, 9, 2, 4, gill_left, glow_keys={"Q"})
+    paint_cutout_z(78, 9, 2, 4, gill_right, glow_keys={"Q"})
+    paint_cutout_x(116, 0, 4, 2, [
+        ".Q6.",
+        "567.",
+        "3456",
+        "234Q",
+        "1235",
+        "123.",
+        "012.",
+        "01..",
+    ], glow_keys={"Q"})
+
+    # 4. Duck torso [6, 3, 5] @ [80, 0] + diamond keel [3, 3, 1] @ [102, 0] + tail tuft [3, 2, 2] @ [102, 4]
+    shade_ramp_box(80, 0, 6, 3, 5, DUCK_RAMP, feathered=True, seed=5)
+    # Twin-lobed warm breast shading on duck front
+    paint_box_2x(img, 80, 0, 6, 3, 5, {
+        "front": [
+            "rOAaYYaOOaYYaAOr",
+            "ROAaaAORROAaaAOR",
+            "dROOOORddROOOORd",
+            "drROOORddROOORrd",
+            "ddrrRRddddRRrrdd",
+            "dddrrddddddrrddd",
+        ][:6] if False else [
+            "ROAaYYAOROAaYYAO"[:12],
+            "oOAAaaAAOOAAaaAO"[:12],
+            "rOOAaaAOrOOAaaAO"[:12],
+            "rROOOOORrROOOOOR"[:12],
+            "drrRRRRddrrRRRRd"[:12],
+            "ddrrrrddddrrrrdd"[:12],
+        ],
+    }, PAL)
+
+    shade_ramp_box(102, 0, 3, 3, 1, DUCK_RAMP, feathered=True, seed=6)
+    paint_box_2x(img, 102, 0, 3, 3, 1, {
+        "front": [
+            "rOYYOr",
+            "OAYYAO",
+            "OAaaAO",
+            "oOAAOo",
+            "ROOOOR",
+            "drRRrd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 102, 0, 3, 3, 1, {
+        "front": [
+            "..YY..",
+            "..YY..",
+            "......",
+            "......",
+            "......",
+            "......",
+        ],
+    }, PAL)
+
+    shade_ramp_box(102, 4, 3, 2, 2, DUCK_RAMP, feathered=True, seed=7)
+
+    # 5. Duck head [5, 4, 4] @ [84, 9] + cleft crown lobes [2, 1, 3] @ [102, 9] + golden bill [3, 1, 2] @ [112, 9]
+    shade_ramp_box(84, 9, 5, 4, 4, DUCK_RAMP, feathered=True, seed=8)
+    paint_box_2x(img, 84, 9, 5, 4, 4, {
+        "front": [
+            "ROAaYYaAOR",
+            "oOAAAAAAOo",
+            "OAkkoOkkoO",
+            "OAbBOOBbAO",
+            "oObBOOBbOo",
+            "ROkBOOBkOR",
+            "rROOOOOORr",
+            "drRRRRRRrd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 84, 9, 5, 4, 4, {
+        "front": [
+            "....YY....",
+            "..........",
+            "..........",
+            "..W....W..",
+            "..........",
+            "..........",
+            "..........",
+            "..........",
+        ],
+    }, PAL)
+    shade_ramp_box(102, 9, 2, 1, 3, DUCK_RAMP, feathered=True, seed=9)
+    shade_ramp_box(112, 9, 3, 1, 2, BILL_RAMP, seed=10)
+
+    # 6. Outstretched feathered duck wings:
+    #    Left: inner [5, 2, 2] @ [64, 18], outer [4, 1, 2] @ [78, 18], vert cutout [9, 4, 0] @ [90, 18], horiz fan [9, 0, 4] @ [64, 28]
+    #    Right: inner [5, 2, 2] @ [64, 23], outer [4, 1, 2] @ [78, 23], vert cutout [9, 4, 0] @ [90, 23], horiz fan [9, 0, 4] @ [90, 28]
+    for idx, wu in enumerate(((64, 18, 78, 18), (64, 23, 78, 23))):
+        iu, iv, ou, ov = wu
+        shade_ramp_box(iu, iv, 5, 2, 2, DUCK_RAMP, feathered=True, seed=11 + idx)
+        shade_ramp_box(ou, ov, 4, 1, 2, DUCK_RAMP, feathered=True, seed=13 + idx)
+
+    wing_vert_left = [
+        "AAOOAAOOAAOOAAaY..",
+        "OOooOOooOOooAAaYY.",
+        "RRrOOrrOOrrOOaAYY.",
+        "dR.rO.rO.rO.rOaY..",
+        "...dR.rR.rR..rO...",
+        "......d..d...d....",
+        "..................",
+        "..................",
+    ]
+    wing_vert_right = [row[::-1] for row in wing_vert_left]
+    paint_cutout_z(90, 18, 9, 4, wing_vert_left, glow_keys={"Y"})
+    paint_cutout_z(90, 23, 9, 4, wing_vert_right, glow_keys={"Y"})
+
+    wing_horiz_left = [
+        "aAAOOaAAOOaAAaYY..",
+        "OOAAaOOAAaOOAaYYY.",
+        "oOOAAoOOAAoOOaAY..",
+        "RoOOARoOOARoOAa...",
+        "rROOOrROOOrROO....",
+        ".drRO.drRO.drR....",
+        "..d....d....d.....",
+        "..................",
+    ]
+    wing_horiz_right = [row[::-1] for row in wing_horiz_left]
+    paint_cutout_y(64, 28, 9, 4, wing_horiz_left, glow_keys={"Y"})
+    paint_cutout_y(90, 28, 9, 4, wing_horiz_right, glow_keys={"Y"})
+
+    # 7. Four webbed 3-toed legs with clawed toes and ankle fins
+    ankle_fin = [
+        "..6Q",
+        ".457",
+        "2356",
+        "124Q",
+        "0135",
+        ".01.",
+    ]
+    # Front legs: left @ u=0, right @ u=32, v=20
+    for idx, bu in enumerate((0, 32)):
+        shade_ramp_box(bu, 20, 3, 5, 3, TEAL_RAMP, dappled=True, seed=20 + idx)
+        shade_ramp_box(bu + 12, 20, 4, 1, 4, TEAL_RAMP, dappled=True, seed=22 + idx)
+        for ti, tu in enumerate((bu + 12, bu + 18, bu + 24)):
+            shade_ramp_box(tu, 25, 1, 1, 2, TEAL_RAMP, seed=24 + ti)
+            tf = f2x(tu, 25, 1, 1, 2)
+            fx, fy, fw, fh = tf["front"]
+            for px in range(fw):
+                put(img, fx + px, fy, PAL["C"])
+                put(img, fx + px, fy + 1, PAL["c"])
+        paint_cutout_x(bu + 28, 20, 3, 2, ankle_fin, glow_keys={"Q"})
+
+    # Back legs: left @ u=0, right @ u=32, v=30
+    for idx, bu in enumerate((0, 32)):
+        shade_ramp_box(bu, 30, 3, 4, 4, TEAL_RAMP, dappled=True, seed=30 + idx)
+        shade_ramp_box(bu + 14, 30, 4, 1, 4, TEAL_RAMP, dappled=True, seed=32 + idx)
+        for ti, tu in enumerate((bu + 14, bu + 20, bu + 26)):
+            shade_ramp_box(tu, 35, 1, 1, 2, TEAL_RAMP, seed=34 + ti)
+            tf = f2x(tu, 35, 1, 1, 2)
+            fx, fy, fw, fh = tf["front"]
+            for px in range(fw):
+                put(img, fx + px, fy, PAL["C"])
+                put(img, fx + px, fy + 1, PAL["c"])
+        paint_cutout_x(bu, 38, 3, 2, ankle_fin, glow_keys={"Q"})
 
     dest = OUT / "entity/frogduck.png"
     dest.parent.mkdir(parents=True, exist_ok=True)
     img.save(dest)
+    glow.save(OUT / "entity/frogduck_glowmask.png")
 
 
 def make_zapkin():
-    """128x128 texture + glowmask for Zapkin (sleek storm-navy, electric-cyan, neon-yellow & plasma-red electric buddy)."""
-    img = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
-    glow = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+    """256x256 (2x scale over 128x128 UV grid) Zapkin: storm-navy armor, crimson trim, cutout lightning crown & plasma orb halos + glowmask."""
+    S = 2
+    img = Image.new("RGBA", (128 * S, 128 * S), (0, 0, 0, 0))
+    glow = Image.new("RGBA", (128 * S, 128 * S), (0, 0, 0, 0))
 
-    pal = {
-        "N": (30, 38, 66, 255),      # Storm navy armor
-        "S": (18, 23, 42, 255),      # Deep slate shadow
-        "B": (49, 64, 108, 255),     # Steel-blue highlight
-        "Y": (250, 204, 21, 255),    # High-voltage electric yellow
-        "H": (254, 240, 138, 255),   # Bright spark yellow
-        "W": (255, 253, 240, 255),   # White-hot plasma core
-        "C": (56, 189, 248, 255),    # Electric sky cyan
-        "K": (125, 249, 255, 255),   # Neon cyan glow
-        "R": (239, 68, 68, 255),     # Charged crimson-red plasma
-        "O": (249, 115, 22, 255),    # Hot amber-orange edge
+    # 8-stop Storm-Navy Armor ramp (#0B1022 -> #B4CCF4)
+    NAVY_RAMP = [
+        (11, 16, 34, 255),     # 0: Deep storm-void seam
+        (18, 25, 50, 255),     # 1: Dark storm-navy shadow
+        (28, 38, 72, 255),     # 2: Shaded storm-navy plate
+        (40, 54, 98, 255),     # 3: Mid storm-navy
+        (56, 76, 132, 255),    # 4: Storm-cobalt highlight
+        (78, 104, 168, 255),   # 5: Forged steel-blue bevel
+        (118, 148, 208, 255),  # 6: Bright edge sheen
+        (180, 204, 244, 255),  # 7: Specular armor glint
+    ]
+    # 8-stop Charged Crimson-Red & Amber Plasma Trim ramp (#4C0814 -> #FDE047)
+    RED_RAMP = [
+        (76, 8, 20, 255),      # 0: Deep crimson shadow
+        (124, 16, 32, 255),    # 1: Dark scarlet
+        (185, 28, 44, 255),    # 2: Rich crimson
+        (239, 68, 68, 255),    # 3: Charged red
+        (249, 115, 22, 255),   # 4: Hot ember-orange
+        (251, 168, 42, 255),   # 5: Solar amber rim
+        (253, 214, 78, 255),   # 6: Bright plasma gold
+        (254, 240, 138, 255),  # 7: White-gold highlight
+    ]
+    # 8-stop High-Voltage Yellow-Gold Lightning ramp (#713F12 -> #FFFFFF)
+    VOLT_RAMP = [
+        (113, 63, 18, 255),    # 0: Dark bronze-gold
+        (161, 98, 7, 255),     # 1: Amber shadow
+        (202, 138, 4, 255),    # 2: Rich gold
+        (234, 179, 8, 255),    # 3: Electric gold
+        (250, 204, 21, 255),   # 4: High-voltage yellow
+        (254, 240, 138, 255),  # 5: Bright spark yellow
+        (255, 253, 216, 255),  # 6: White-hot cream
+        (255, 255, 255, 255),  # 7: Pure arc flash
+    ]
+    # 8-stop Arc-Cyan Plasma ramp (#0B3B4C -> #FFFFFF)
+    CYAN_RAMP = [
+        (11, 59, 76, 255),
+        (18, 96, 128, 255),
+        (28, 142, 186, 255),
+        (56, 189, 248, 255),
+        (92, 224, 252, 255),
+        (125, 249, 255, 255),
+        (206, 254, 255, 255),
+        (255, 255, 255, 255),
+    ]
+
+    PAL = {
+        "0": NAVY_RAMP[0],
+        "1": NAVY_RAMP[1],
+        "2": NAVY_RAMP[2],
+        "3": NAVY_RAMP[3],
+        "4": NAVY_RAMP[4],
+        "5": NAVY_RAMP[5],
+        "6": NAVY_RAMP[6],
+        "7": NAVY_RAMP[7],
+        "d": RED_RAMP[0],
+        "r": RED_RAMP[1],
+        "R": RED_RAMP[2],
+        "E": RED_RAMP[3],
+        "O": RED_RAMP[4],
+        "A": RED_RAMP[5],
+        "G": RED_RAMP[6],
+        "y": RED_RAMP[7],
+        "b": VOLT_RAMP[1],
+        "Y": VOLT_RAMP[4],
+        "H": VOLT_RAMP[5],
+        "I": VOLT_RAMP[6],
+        "W": VOLT_RAMP[7],
+        "c": CYAN_RAMP[3],
+        "K": CYAN_RAMP[5],
+        "i": CYAN_RAMP[6],
     }
 
-    def box_fill(target, u, v, w, h, d, fill_col, edge_col, hi_col=None):
-        for name, (rx, ry, rw, rh) in faces(u, v, w, h, d).items():
-            for px in range(rx, rx + rw):
-                for py in range(ry, ry + rh):
-                    is_edge = (px == rx or px == rx + rw - 1 or py == ry or py == ry + rh - 1)
-                    if is_edge:
-                        put(target, px, py, edge_col)
-                    elif hi_col is not None and (py == ry + 1 or name == "top"):
-                        put(target, px, py, hi_col)
-                    else:
-                        put(target, px, py, fill_col)
+    def f2x(u, v, w, h, d):
+        return {k: (rx * S, ry * S, rw * S, rh * S) for k, (rx, ry, rw, rh) in faces(u, v, w, h, d).items()}
 
-    # Head cranium [7, 5, 7] at (0, 0)
-    box_fill(img, 0, 0, 7, 5, 7, pal["N"], pal["S"], pal["B"])
-    # Electric yellow stripe along top & back of cranium
-    paint_geo_box(img, 0, 0, 7, 5, 7, {
+    def shade_armor_box(u, v, w, h, d, ramp, *, riveted=True, seed=0):
+        f = f2x(u, v, w, h, d)
+        face_bias = {
+            "top": 5.2,
+            "front": 4.4,
+            "east": 3.9,
+            "west": 3.5,
+            "back": 3.0,
+            "bottom": 1.9,
+        }
+        for name, (rx, ry, rw, rh) in f.items():
+            if rw <= 0 or rh <= 0:
+                continue
+            bias = face_bias[name]
+            for ly in range(rh):
+                ty = ly / max(1, rh - 1)
+                for lx in range(rw):
+                    tx = lx / max(1, rw - 1)
+                    if name == "bottom":
+                        edge_dist = max(abs(tx - 0.5) * 2.0, abs(ty - 0.5) * 2.0)
+                        idx = bias + (1.0 - edge_dist) * 1.4 - edge_dist * 1.1
+                    elif name == "top":
+                        edge = min(lx, rw - 1 - lx, ly, rh - 1 - ly)
+                        idx = bias - (0.6 if edge == 0 else 0.0) + (0.45 if ty < 0.45 else -0.25)
+                    else:
+                        idx = bias + (0.45 - ty) * 1.85 + (0.2 - tx) * 0.35
+                        if ly == 0:
+                            idx += 0.55
+                        elif ly == rh - 1:
+                            idx -= 0.7
+                        elif lx in (0, rw - 1):
+                            idx -= 0.45
+                    if (lx * 5 + ly * 11 + seed * 7) % 13 == 0:
+                        idx += 0.35
+                    c_idx = max(0, min(len(ramp) - 1, int(round(idx))))
+                    put(img, rx + lx, ry + ly, ramp[c_idx])
+            if riveted and rw >= 6 and rh >= 6 and name in ("front", "back", "east", "west"):
+                for rvx, rvy in ((1, 1), (rw - 2, 1), (1, rh - 2), (rw - 2, rh - 2)):
+                    put(img, rx + rvx, ry + rvy, ramp[6])
+
+    def paint_box_2x(target, u, v, w, h, d, face_grids, palette):
+        rects = f2x(u, v, w, h, d)
+        for name, grid in face_grids.items():
+            rx, ry, rw, rh = rects[name]
+            assert len(grid) == rh and all(len(r) == rw for r in grid), (
+                f"Grid size mismatch on {name} at ({u},{v}): expected {rw}x{rh}, got {len(grid[0])}x{len(grid)}"
+            )
+            paint_grid(target, rx, ry, grid, palette)
+
+    def paint_cutout_z(u, v, w, h, front_grid, *, back_grid=None, glow_keys=()):
+        if back_grid is None:
+            back_grid = [row[::-1] for row in front_grid]
+        paint_box_2x(img, u, v, w, h, 0, {"front": front_grid, "back": back_grid}, PAL)
+        if glow_keys:
+            gf = ["".join(ch if ch in glow_keys else "." for ch in row) for row in front_grid]
+            gb = ["".join(ch if ch in glow_keys else "." for ch in row) for row in back_grid]
+            paint_box_2x(glow, u, v, w, h, 0, {"front": gf, "back": gb}, PAL)
+
+    def paint_cutout_x(u, v, h, d, west_grid, *, glow_keys=()):
+        east_grid = [row[::-1] for row in west_grid]
+        paint_box_2x(img, u, v, 0, h, d, {"west": west_grid, "east": east_grid}, PAL)
+        if glow_keys:
+            gw = ["".join(ch if ch in glow_keys else "." for ch in row) for row in west_grid]
+            ge = [row[::-1] for row in gw]
+            paint_box_2x(glow, u, v, 0, h, d, {"west": gw, "east": ge}, PAL)
+
+    def paint_cutout_y(u, v, w, d, top_grid, *, glow_keys=()):
+        bottom_grid = top_grid[::-1]
+        paint_box_2x(img, u, v, w, 0, d, {"top": top_grid, "bottom": bottom_grid}, PAL)
+        if glow_keys:
+            gt = ["".join(ch if ch in glow_keys else "." for ch in row) for row in top_grid]
+            gb = gt[::-1]
+            paint_box_2x(glow, u, v, w, 0, d, {"top": gt, "bottom": gb}, PAL)
+
+    # 1. Head cranium [7, 5, 7] @ [0, 0] -> 14x10x14 px
+    shade_armor_box(0, 0, 7, 5, 7, NAVY_RAMP, seed=1)
+    paint_box_2x(img, 0, 0, 7, 5, 7, {
         "top": [
-            "SSBBBSS",
-            "SYYYYYS",
-            "SYHHHYH",
-            "SYHHHYH",
-            "SYYYYYS",
-            "SYCYCYS",
-            "SSBBBSS",
+            "12456666665421",
+            "24565555556542",
+            "34RRRRRRRRRR43",
+            "34RYYYYYYYYR43",
+            "34RYHHHHHHYR43",
+            "34RYHWWWWWHYR3",
+            "34RYHWWWWWHYR3",
+            "34RYHHHHHHYR43",
+            "34RYYYYYYYYR43",
+            "23RYYcYYcYYR32",
+            "234RRKYYKRR432",
+            "12344555544321",
+            "12233444433221",
+            "01122333322110",
         ],
         "back": [
-            "SYYYYYS",
-            "SYHHHYH",
-            "SSCYCSS",
-            "SSCYCSS",
-            "SSSSSSS",
+            "12345666654321",
+            "23RRYYYYYYRR32",
+            "23RYHHHHHHYR32",
+            "22RYYHWWWHYY22",
+            "123RRKYYKRR321",
+            "12343cYYc34321",
+            "12322cKKc22321",
+            "01222222222210",
+            "01112222221110",
+            "00111111111100",
         ],
-    }, pal)
-    paint_geo_box(glow, 0, 0, 7, 5, 7, {
+    }, PAL)
+    paint_box_2x(glow, 0, 0, 7, 5, 7, {
         "top": [
-            ".......",
-            ".YYYYY.",
-            ".YHHHY.",
-            ".YHHHY.",
-            ".YYYYY.",
-            "..C.C..",
-            ".......",
+            "..............",
+            "..............",
+            "..............",
+            "...YYYYYYYY...",
+            "...YHHHHHHY...",
+            "...YHWWWWWHY..",
+            "...YHWWWWWHY..",
+            "...YHHHHHHY...",
+            "...YYYYYYYY...",
+            "...YY.YY.YY...",
+            ".....KYYK.....",
+            "..............",
+            "..............",
+            "..............",
         ],
-    }, pal)
+        "back": [
+            "..............",
+            "....YYYYYY....",
+            "...YHHHHHHY...",
+            "....YHWWWHY...",
+            ".....KYYK.....",
+            ".....cYYc.....",
+            ".....cKKc.....",
+            "..............",
+            "..............",
+            "..............",
+        ],
+    }, PAL)
 
-    # Sleek storm-visor face plate [7, 4, 1] at (28, 0)
-    box_fill(img, 28, 0, 7, 4, 1, pal["S"], pal["B"])
-    visor_front = [
-        "BBBBBBB",
-        "SKWKWKS",
-        "SKCKCKS",
-        "SRYYRYS",
-    ]
-    paint_geo_box(img, 28, 0, 7, 4, 1, {"front": visor_front}, pal)
-    visor_glow = [
-        ".......",
-        ".KW.WK.",
-        ".KC.CK.",
-        "..YY.Y.",
-    ]
-    paint_geo_box(glow, 28, 0, 7, 4, 1, {"front": visor_glow}, pal)
-
-    # Cheek lightning fins [2, 3, 2] at (44, 0) and (52, 0)
-    for cu in (44, 52):
-        box_fill(img, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
-        box_fill(glow, cu, 0, 2, 3, 2, pal["Y"], pal["C"], pal["H"])
-
-    # Three sharp Z-kink lightning head bolts: blazing electric yellow + white-hot core (no orange candy-corn stripes!)
-    for (u, v, w, h, d, is_tip) in [
-        (0, 14, 1, 3, 1, False),
-        (6, 14, 2, 1, 1, False),
-        (14, 14, 1, 3, 1, True),
-        (20, 14, 1, 3, 1, False),
-        (26, 14, 2, 1, 1, False),
-        (34, 14, 1, 3, 1, True),
-        (40, 14, 1, 3, 1, False),
-        (46, 14, 3, 1, 1, False),
-        (56, 14, 1, 3, 1, False),
-        (62, 14, 2, 1, 1, False),
-        (70, 14, 1, 3, 1, True),
-    ]:
-        for name, (rx, ry, rw, rh) in faces(u, v, w, h, d).items():
-            for px in range(rx, rx + rw):
-                for py in range(ry, ry + rh):
-                    if is_tip and py == ry:
-                        c = pal["W"]
-                    elif name in ("front", "back"):
-                        c = pal["H"] if is_tip else pal["Y"]
-                    else:
-                        c = pal["W"] if is_tip else pal["H"]
-                    put(img, px, py, c)
-                    put(glow, px, py, c)
-
-    # Waist [5, 3, 4] at (0, 26) — dark slate with glowing cyan energy belt
-    box_fill(img, 0, 26, 5, 3, 4, pal["S"], pal["N"])
-    paint_geo_box(img, 0, 26, 5, 3, 4, {
-        "front": ["SSSSS", "CKWKC", "SSSSS"],
-        "back":  ["SSSSS", "CKCKC", "SSSSS"],
-    }, pal)
-    paint_geo_box(glow, 0, 26, 5, 3, 4, {
-        "front": [".....", "CKWKC", "....."],
-        "back":  [".....", "CKCKC", "....."],
-    }, pal)
-
-    # Chest [8, 4, 5] at (18, 26) — storm-navy armor with yellow/cyan circuit seams
-    box_fill(img, 18, 26, 8, 4, 5, pal["N"], pal["S"], pal["B"])
-    paint_geo_box(img, 18, 26, 8, 4, 5, {
+    # 2. Storm visor [7, 4, 1] @ [28, 0] -> 14x8 px front
+    shade_armor_box(28, 0, 7, 4, 1, NAVY_RAMP, riveted=False, seed=2)
+    paint_box_2x(img, 28, 0, 7, 4, 1, {
         "front": [
-            "SBBBBBBBS"[:8],
-            "NYYNNYYN",
-            "NCNNNNNC",
-            "SSSSSSSS",
+            "24566666666542",
+            "12000000000021",
+            "10KWWK00KWWK01",
+            "10KHHK00KHHK01",
+            "10cYYc00cYYc01",
+            "10000000000001",
+            "0RYYRYYRYYRYY0",
+            "01111111111110",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 28, 0, 7, 4, 1, {
+        "front": [
+            "..............",
+            "..............",
+            "..KWWK..KWWK..",
+            "..KHHK..KHHK..",
+            "..cYYc..cYYc..",
+            "..............",
+            "..YY.YY.YY.YY.",
+            "..............",
+        ],
+    }, PAL)
+
+    # 3. Cheek fins [1, 3, 2] @ [44, 0] & [50, 0] + razor-sharp cheek lightning sparks [3, 4, 0] @ [56, 0] & [62, 0]
+    for cu in (44, 50):
+        shade_armor_box(cu, 0, 1, 3, 2, RED_RAMP, riveted=False, seed=3)
+    cheek_spark_l = [
+        ".....K",
+        "....WY",
+        "..KYWb",
+        ".YWHb.",
+        "..bWY.",
+        ".YWHK.",
+        "KYb...",
+        "......",
+    ]
+    cheek_spark_r = [row[::-1] for row in cheek_spark_l]
+    paint_cutout_z(56, 0, 3, 4, cheek_spark_l, glow_keys={"Y", "H", "W", "K"})
+    paint_cutout_z(62, 0, 3, 4, cheek_spark_r, glow_keys={"Y", "H", "W", "K"})
+
+    # 4. Head Lightning Crown (`spikes`): 4 angled cutout Z-bolts with 1px needle tips & zero red borders
+    #    4a. Tall Right Hero Z-Bolt [7, 11, 0] @ [28, 11] -> 14x22 px
+    hero_bolt = [
+        ".............K",
+        "............KW",
+        "...........KWH",
+        "..........YWHb",
+        ".........YWHb.",
+        "........YWHb..",
+        ".......YWHb...",
+        "......YWHb....",
+        ".....YWHYYHK..",
+        "....bYWWWWWHb.",
+        ".....bYYYYWHb.",
+        ".........YWHb.",
+        "........YWHb..",
+        ".......YWHb...",
+        "......YWHb....",
+        ".....YWHYYHK..",
+        "....bYWWWWHb..",
+        ".....bYYWHb...",
+        ".......YWHb...",
+        "......YWHb....",
+        ".....YWHb.....",
+        "....bWHb......",
+    ]
+    paint_cutout_z(28, 11, 7, 11, hero_bolt, glow_keys={"Y", "H", "W", "K"})
+
+    #    4b. Center Sharp Z-Bolt [5, 8, 0] @ [44, 11] -> 10x16 px
+    center_bolt = [
+        "........K.",
+        ".......KW.",
+        "......KWH.",
+        ".....YWHb.",
+        "....YWHb..",
+        "...YWHb...",
+        "..YWHYYHK.",
+        ".bYWWWWWHb",
+        "..bYYYWHb.",
+        ".....YWHb.",
+        "....YWHb..",
+        "...YWHb...",
+        "..YWHb....",
+        "...YWHb...",
+        "....YWHb..",
+        "....bWHb..",
+    ]
+    paint_cutout_z(44, 11, 5, 8, center_bolt, glow_keys={"Y", "H", "W", "K"})
+
+    #    4c. Left Forked Z-Bolt [5, 7, 0] @ [56, 11] -> 10x14 px
+    left_bolt = [
+        "K.........",
+        "WK........",
+        "HWK.......",
+        "bHWY......",
+        ".bHWY.....",
+        "..bHWY..K.",
+        "..bYYWHYHK",
+        ".bHWWWWWHb",
+        "..bHWYYYb.",
+        "...bHWY...",
+        "....bHWY..",
+        ".....bHWY.",
+        "......bHWY",
+        ".......bWb",
+    ]
+    paint_cutout_z(56, 11, 5, 7, left_bolt, glow_keys={"Y", "H", "W", "K"})
+
+    #    4d. Swept-Back Sagittal Z-Crest [0, 8, 6] @ [68, 10] -> 12x16 px (col 0 = front -Z, col 11 = back +Z)
+    sagittal_bolt = [
+        "...........K",
+        "..........KW",
+        ".........KWH",
+        "........YWHb",
+        ".......YWHb.",
+        "......YWHb..",
+        ".....YWHYYHK",
+        "....bYWWWWWH",
+        ".....bYYYWHb",
+        "........YWHb",
+        ".......YWHb.",
+        "......YWHb..",
+        ".....YWHb...",
+        "....YWHb....",
+        "...YWHb.....",
+        "...bWHb.....",
+    ]
+    paint_cutout_x(68, 10, 8, 6, sagittal_bolt, glow_keys={"Y", "H", "W", "K"})
+
+    # 5. Torso: Waist [5, 3, 4] @ [0, 26] -> 10x6 px
+    shade_armor_box(0, 26, 5, 3, 4, NAVY_RAMP, riveted=False, seed=5)
+    paint_box_2x(img, 0, 26, 5, 3, 4, {
+        "front": [
+            "1234444321",
+            "0122222210",
+            "cKKWWWWKKc",
+            "cKKYYYYKKc",
+            "0122222210",
+            "0011111100",
         ],
         "back": [
-            "SBBBBBBBS"[:8],
-            "NCNNNNNC",
-            "NYYNNYYN",
-            "SSSSSSSS",
+            "1233333321",
+            "0122222210",
+            "cKKYYYYKKc",
+            "cKKccccKKc",
+            "0122222210",
+            "0011111100",
         ],
-    }, pal)
-    paint_geo_box(glow, 18, 26, 8, 4, 5, {
-        "front": ["........", ".YY..YY.", ".C....C.", "........"],
-        "back":  ["........", ".C....C.", ".YY..YY.", "........"],
-    }, pal)
+    }, PAL)
+    paint_box_2x(glow, 0, 26, 5, 3, 4, {
+        "front": ["..........", "..........", "cKKWWWWKKc", "cKKYYYYKKc", "..........", ".........."],
+        "back":  ["..........", "..........", "cKKYYYYKKc", "cKKccccKKc", "..........", ".........."],
+    }, PAL)
 
-    # Chest lightning core [4, 3, 1] at (44, 26)
-    box_fill(img, 44, 26, 4, 3, 1, pal["H"], pal["R"], pal["W"])
-    paint_geo_box(img, 44, 26, 4, 3, 1, {"front": ["RRWR", "RWHR", "RWRR"]}, pal)
-    paint_geo_box(glow, 44, 26, 4, 3, 1, {"front": ["..W.", ".WH.", ".W.."]}, pal)
+    #    Chest [8, 4, 5] @ [18, 26] -> 16x8 px
+    shade_armor_box(18, 26, 8, 4, 5, NAVY_RAMP, seed=6)
+    paint_box_2x(img, 18, 26, 8, 4, 5, {
+        "front": [
+            "2456666666666542",
+            "234YYYY22YYYY432",
+            "13RYYH2222HYYR31",
+            "12cKK222222KKc21",
+            "12cKK222222KKc21",
+            "1233222222223321",
+            "0122222222222210",
+            "0011111111111100",
+        ],
+        "back": [
+            "2345555555555432",
+            "13cKK333333KKc31",
+            "12cKK333333KKc21",
+            "123RYY3333YYR321",
+            "123RYY3333YYR321",
+            "0122222222222210",
+            "0111111111111110",
+            "0011111111111100",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 18, 26, 8, 4, 5, {
+        "front": [
+            "................",
+            "...YYYY..YYYY...",
+            "...YYH....HYY...",
+            "..cKK......KKc..",
+            "..cKK......KKc..",
+            "................",
+            "................",
+            "................",
+        ],
+        "back": [
+            "................",
+            "..cKK......KKc..",
+            "..cKK......KKc..",
+            "....YY....YY....",
+            "....YY....YY....",
+            "................",
+            "................",
+            "................",
+        ],
+    }, PAL)
 
-    # Shoulders [3, 2, 4] at (56, 26) & (70, 26) — crimson-trimmed storm pauldrons with yellow stripes
+    #    Chest lightning core [4, 3, 1] @ [44, 26] -> 8x6 px
+    shade_armor_box(44, 26, 4, 3, 1, RED_RAMP, riveted=False, seed=7)
+    paint_box_2x(img, 44, 26, 4, 3, 1, {
+        "front": [
+            "dRRYYRRd",
+            "RYWWWWYR",
+            "RWHWWWHR",
+            "RWHWWWHR",
+            "RYWWWWYR",
+            "dRRYYRRd",
+        ],
+    }, PAL)
+    paint_box_2x(glow, 44, 26, 4, 3, 1, {
+        "front": [
+            "...YY...",
+            ".YWWWWY.",
+            ".WHWWWH.",
+            ".WHWWWH.",
+            ".YWWWWY.",
+            "...YY...",
+        ],
+    }, PAL)
+
+    #    Pauldrons [3, 2, 4] @ [56, 26] & [70, 26]
     for su in (56, 70):
-        box_fill(img, su, 26, 3, 2, 4, pal["N"], pal["R"], pal["Y"])
-        paint_geo_box(glow, su, 26, 3, 2, 4, {"top": ["...", ".Y.", ".Y.", "..."]}, pal)
+        shade_armor_box(su, 26, 3, 2, 4, NAVY_RAMP, riveted=False, seed=8)
+        pf = f2x(su, 26, 3, 2, 4)
+        for fname in ("front", "back", "top"):
+            rx, ry, rw, rh = pf[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + rh - 1, PAL["R"])
+                put(img, rx + lx, ry, PAL["Y"] if lx in (2, 3) else PAL["6"])
+                if lx in (2, 3):
+                    put(glow, rx + lx, ry, PAL["Y"])
 
-    # Back Tesla coils [2, 5, 2] at (84, 26) & (92, 26)
+    #    Back Tesla coils [2, 5, 2] @ [84, 26] & [92, 26]
     for cu in (84, 92):
-        for name, (rx, ry, rw, rh) in faces(cu, 26, 2, 5, 2).items():
-            for px in range(rx, rx + rw):
-                for py in range(ry, ry + rh):
-                    row = py - ry
-                    c = pal["W"] if row == 0 else (pal["K"] if row in (1, 3) else pal["N"])
-                    put(img, px, py, c)
-                    if row in (0, 1, 3):
-                        put(glow, px, py, c)
+        shade_armor_box(cu, 26, 2, 5, 2, NAVY_RAMP, riveted=False, seed=9)
+        tf = f2x(cu, 26, 2, 5, 2)
+        for fname in ("front", "back", "east", "west", "top"):
+            rx, ry, rw, rh = tf[fname]
+            for ly in range(rh):
+                if fname == "top" or ly in (0, 1):
+                    col = "W"
+                elif ly in (3, 6):
+                    col = "K"
+                else:
+                    continue
+                for lx in range(rw):
+                    put(img, rx + lx, ry + ly, PAL[col])
+                    put(glow, rx + lx, ry + ly, PAL[col])
 
-    # Arms [3, 2, 2] + cuffs [2, 2, 2]
+    # 6. Arms & cuffs
     for au in (0, 20):
-        box_fill(img, au, 38, 3, 2, 2, pal["N"], pal["S"], pal["C"])
+        shade_armor_box(au, 38, 3, 2, 2, NAVY_RAMP, riveted=False, seed=10)
     for cu in (10, 30):
-        box_fill(img, cu, 38, 2, 2, 2, pal["R"], pal["O"], pal["Y"])
-        box_fill(glow, cu, 38, 2, 2, 2, pal["Y"], (0, 0, 0, 0), pal["W"])
+        shade_armor_box(cu, 38, 2, 2, 2, RED_RAMP, riveted=False, seed=11)
+        cf = f2x(cu, 38, 2, 2, 2)
+        for fname in ("front", "back", "east", "west"):
+            rx, ry, rw, rh = cf[fname]
+            for lx in range(rw):
+                put(img, rx + lx, ry + 1, PAL["Y"])
+                put(glow, rx + lx, ry + 1, PAL["Y"])
 
-    # Electric Plasma Orb Hands: white-hot/yellow core [3, 3, 3] + crimson-red & cyan energy rings!
-    for ou in (0, 44):
-        box_fill(img, ou, 44, 3, 3, 3, pal["H"], pal["Y"], pal["W"])
-        box_fill(glow, ou, 44, 3, 3, 3, pal["H"], pal["Y"], pal["W"])
-    for ru in (12, 56):
-        box_fill(img, ru, 44, 4, 1, 5, pal["R"], pal["O"], pal["Y"])
-        box_fill(glow, ru, 44, 4, 1, 5, pal["R"], pal["O"], pal["Y"])
-    for ru in (30, 74):
-        box_fill(img, ru, 44, 1, 4, 5, pal["C"], pal["K"], pal["W"])
-        box_fill(glow, ru, 44, 1, 4, 5, pal["C"], pal["K"], pal["W"])
+    # 7. Spherical Yellow-and-Red Plasma Orb Hands [3, 3, 3] @ [0, 44] & [50, 44] + Circular Cutout Halo Rings
+    orb_face = [
+        "rROYYO",
+        "ROHWWY",
+        "OYWWWW",
+        "OYWWWW",
+        "ROHWWY",
+        "dROYYO",
+    ]
+    for ou in (0, 50):
+        shade_armor_box(ou, 44, 3, 3, 3, RED_RAMP, riveted=False, seed=12)
+        paint_box_2x(img, ou, 44, 3, 3, 3, {
+            "front": orb_face,
+            "back":  orb_face,
+            "east":  orb_face,
+            "west":  orb_face,
+            "top":   orb_face,
+            "bottom": orb_face,
+        }, PAL)
+        paint_box_2x(glow, ou, 44, 3, 3, 3, {
+            "front": orb_face,
+            "back":  orb_face,
+            "east":  orb_face,
+            "west":  orb_face,
+            "top":   orb_face,
+            "bottom": orb_face,
+        }, PAL)
 
-    # Legs [2, 5, 3] at (0, 56) & (24, 56) — storm-navy greaves with glowing yellow/cyan bolts
+    ring_12x12 = [
+        "...rRYYRr...",
+        "..RYHWWGYR..",
+        ".RYW....WYR.",
+        "rYH......HYr",
+        "RYW......WYR",
+        "YH........HY",
+        "YH........HY",
+        "RYW......WYR",
+        "rYH......HYr",
+        ".RYW....WYR.",
+        "..RYGWWGYR..",
+        "...rRYYRr...",
+    ]
+    for ru in (12, 62):
+        paint_cutout_y(ru, 44, 6, 6, ring_12x12, glow_keys={"r", "R", "Y", "H", "W", "G"})
+    for ru in (36, 86):
+        paint_cutout_x(ru, 44, 6, 6, ring_12x12, glow_keys={"r", "R", "Y", "H", "W", "G"})
+
+    # 8. Legs [2, 5, 3] @ [0, 60] & [24, 60] + Boots [3, 2, 4] @ [10, 60] & [34, 60]
     for lu in (0, 24):
-        box_fill(img, lu, 56, 2, 5, 3, pal["N"], pal["S"], pal["B"])
-        paint_geo_box(img, lu, 56, 2, 5, 3, {
-            "front": ["YY", "NY", "YN", "YY", "RR"],
-            "east":  ["NYY", "NNY", "YNN", "NYY", "RRR"],
-            "west":  ["NYY", "NNY", "YNN", "NYY", "RRR"],
-        }, pal)
-        paint_geo_box(glow, lu, 56, 2, 5, 3, {
-            "front": ["YY", ".Y", "Y.", "YY", ".."],
-        }, pal)
+        shade_armor_box(lu, 60, 2, 5, 3, NAVY_RAMP, riveted=False, seed=13)
+        paint_box_2x(img, lu, 60, 2, 5, 3, {
+            "front": [
+                "3443",
+                "2YY2",
+                "1HY1",
+                "1WY1",
+                "1YH1",
+                "1YY1",
+                "1221",
+                "RYYR",
+                "dRRd",
+                "0110",
+            ],
+        }, PAL)
+        paint_box_2x(glow, lu, 60, 2, 5, 3, {
+            "front": [
+                "....",
+                ".YY.",
+                ".HY.",
+                ".WY.",
+                ".YH.",
+                ".YY.",
+                "....",
+                "RYYR",
+                "....",
+                "....",
+            ],
+        }, PAL)
 
-    # Boots/feet [3, 2, 4] at (10, 56) & (34, 56)
     for fu in (10, 34):
-        box_fill(img, fu, 56, 3, 2, 4, pal["S"], pal["R"], pal["Y"])
-        paint_geo_box(glow, fu, 56, 3, 2, 4, {"front": ["YYY", "..."]}, pal)
+        shade_armor_box(fu, 60, 3, 2, 4, NAVY_RAMP, riveted=False, seed=14)
+        paint_box_2x(img, fu, 60, 3, 2, 4, {
+            "front": [
+                "RYYYYR",
+                "dRRRRd",
+                "123321",
+                "011110",
+            ],
+            "bottom": [
+                "012210",
+                "120021",
+                "123321",
+                "120021",
+                "123321",
+                "120021",
+                "123321",
+                "011110",
+            ],
+        }, PAL)
+        paint_box_2x(glow, fu, 60, 3, 2, 4, {
+            "front": [
+                "RYYYYR",
+                "......",
+                "......",
+                "......",
+            ],
+        }, PAL)
 
-    # Floating static sparks [1, 2, 1] at (50, 56) & (56, 56)
-    for su in (50, 56):
-        box_fill(img, su, 56, 1, 2, 1, pal["K"], pal["W"])
-        box_fill(glow, su, 56, 1, 2, 1, pal["K"], pal["W"])
+    # 9. Floating Z-sparks: [2, 3, 0] @ [50, 60] & [60, 60], [0, 3, 2] @ [54, 60] & [64, 60]
+    z_spark = [
+        "KYWK",
+        "..WK",
+        ".KW.",
+        "KW..",
+        "KYWK",
+        "....",
+    ]
+    for su, sxu in ((50, 54), (60, 64)):
+        paint_cutout_z(su, 60, 2, 3, z_spark, glow_keys={"K", "Y", "W"})
+        paint_cutout_x(sxu, 60, 3, 2, z_spark, glow_keys={"K", "Y", "W"})
 
     entity_dir = OUT / "entity"
     entity_dir.mkdir(parents=True, exist_ok=True)
@@ -2214,21 +5779,53 @@ def make_zapkin():
 def main():
     import sys
 
+    if "--crystal-fox" in sys.argv:
+        make_crystal_fox()
+        print("Generated Crystal Fox 256x128 texture and glowmask.")
+        return
+    if "--shadow-wisp" in sys.argv:
+        make_shadow_wisp()
+        print("Generated Shadow Wisp 256x128 texture and glowmask.")
+        return
+    if "--cinder-crag" in sys.argv:
+        make_cinder_crag()
+        print("Generated Cinder Crag 256x128 texture and glowmask.")
+        return
+    if "--zaphox" in sys.argv:
+        make_zaphox()
+        print("Generated Zaphox 256x128 texture and glowmask.")
+        return
+    if "--galecorn" in sys.argv:
+        make_galecorn()
+        print("Generated Galecorn 256x128 texture and glowmask.")
+        return
+    if "--ember-drake" in sys.argv:
+        make_ember_drake()
+        print("Generated Ember Drake 256x128 texture and glowmask.")
+        return
+    if "--peepkin" in sys.argv:
+        make_peepkin()
+        print("Generated Peepkin 256x128 texture and glowmask.")
+        return
     if "--zapkin" in sys.argv:
         make_zapkin()
-        print("Generated Zapkin 64x64 texture and glowmask.")
+        print("Generated Zapkin 256x256 texture and glowmask.")
         return
     if "--frogduck" in sys.argv:
         make_frogduck()
-        print("Generated Frogduck 128x64 texture.")
+        print("Generated Frogduck 256x128 texture and glowmask.")
         return
     if "--sunbeam" in sys.argv:
         make_sunbeam()
-        print("Generated Sunbeam 128x128 texture and glowmask.")
+        print("Generated Sunbeam 256x256 texture and glowmask.")
         return
     if "--prismling" in sys.argv:
         make_prismling()
-        print("Generated Prismling 128x128 texture and glowmask.")
+        print("Generated Prismling 256x128 texture and glowmask.")
+        return
+    if "--flurrywing" in sys.argv:
+        make_flurrywing()
+        print("Generated Flurrywing 256x128 texture and glowmask.")
         return
     make_crystal_fox()
     make_shadow_wisp()

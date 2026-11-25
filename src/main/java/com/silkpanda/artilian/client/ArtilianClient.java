@@ -46,11 +46,11 @@ public final class ArtilianClient {
         event.registerEntityRenderer(ArtilianEntities.FROGDUCK.get(), FrogduckRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.ZAPKIN.get(), ZapkinRenderer::new);
         event.registerEntityRenderer(ArtilianEntities.PRISM_SENTINEL.get(),
-                ctx -> new StructureEnemyRenderer<>(ctx, "prism_sentinel", 0.55F));
+                ctx -> new StructureEnemyRenderer<>(ctx, "prism_sentinel", 0.55F, true));
         event.registerEntityRenderer(ArtilianEntities.CINDER_RAIDER.get(),
-                ctx -> new StructureEnemyRenderer<>(ctx, "cinder_raider", 0.45F));
+                ctx -> new StructureEnemyRenderer<>(ctx, "cinder_raider", 0.45F, true));
         event.registerEntityRenderer(ArtilianEntities.ASTRAL_STALKER.get(),
-                ctx -> new StructureEnemyRenderer<>(ctx, "astral_stalker", 0.48F));
+                ctx -> new StructureEnemyRenderer<>(ctx, "astral_stalker", 0.48F, true));
         event.registerEntityRenderer(ArtilianEntities.PEEPER.get(),
                 ctx -> new EyeRealmEnemyRenderer<>(ctx, "peeper", 0.45F));
         event.registerEntityRenderer(ArtilianEntities.OCULUS_SLIME.get(),

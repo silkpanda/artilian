@@ -2,6 +2,7 @@ package com.silkpanda.artilian.client;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.pet.GalecornEntity;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 
@@ -23,5 +24,10 @@ public class GalecornModel extends GeoModel<GalecornEntity> {
     @Override
     public ResourceLocation getAnimationResource(GalecornEntity entity) {
         return ANIMATIONS;
+    }
+
+    @Override
+    public RenderType getRenderType(GalecornEntity animatable, ResourceLocation texture) {
+        return RenderType.entityCutoutNoCull(texture);
     }
 }

@@ -65,6 +65,10 @@ def check(geo_path, tex_path):
     geo = json.loads(geo_path.read_text(encoding="utf-8"))
     sheet = Image.open(tex_path)
     width, height = sheet.size
+    desc = geo["minecraft:geometry"][0].get("description", {})
+    uv_w = desc.get("texture_width", width)
+    uv_h = desc.get("texture_height", height)
+    sx, sy = width / uv_w, height / uv_h
     problems, notes = [], []
 
     cubes = []
@@ -78,22 +82,37 @@ def check(geo_path, tex_path):
         u, v = cube.get("uv", [0, 0])[:2]
         rect = rect_of(u, v, size[0], size[1], size[2])
         label = f"{bone_name}/{origin}"
-        if rect[0] < 0 or rect[1] < 0 or rect[0] + rect[2] > width or rect[1] + rect[3] > height:
+        if rect[0] < 0 or rect[1] < 0 or rect[0] + rect[2] > uv_w or rect[1] + rect[3] > uv_h:
             problems.append(
-                f"{label}: UV rect {rect} leaves the {width}x{height} sheet"
+                f"{label}: UV rect {rect} leaves the {uv_w}x{uv_h} UV grid"
             )
         for other_label, other, other_mirror in taken:
             if overlaps(rect, other) and not (cube.get("mirror") or other_mirror):
+                if all(abs(a - b) < 1e-4 for a, b in zip(rect, other)):
+                    continue  # Intentional identical UV tile reuse
                 problems.append(f"{label}: UV rect {rect} overlaps {other_label} {other}")
         taken.append((label, rect, bool(cube.get("mirror"))))
 
+        # Zero-thickness planes and outer alpha-cutout filigree cages intentionally use Alpha=0 cutouts
+        is_cutout_layer = (
+            min(size[0], size[1], size[2]) == 0
+            or float(cube.get("inflate", 0.0)) >= 0.46
+        )
         for face, face_rect in box_faces(u, v, size[0], size[1], size[2]).items():
-            alpha, colors, _ = describe_face(sheet, face_rect)
-            if alpha < 0.99:
+            if face_rect[2] <= 0 or face_rect[3] <= 0:
+                continue
+            scaled_rect = (
+                int(round(face_rect[0] * sx)),
+                int(round(face_rect[1] * sy)),
+                max(1, int(round(face_rect[2] * sx))),
+                max(1, int(round(face_rect[3] * sy))),
+            )
+            alpha, colors, _ = describe_face(sheet, scaled_rect)
+            if not is_cutout_layer and alpha < 0.99:
                 problems.append(
                     f"{label}: {face} face {face_rect} is {alpha:.0%} opaque (holes in the armour)"
                 )
-            elif colors <= 1:
+            elif not is_cutout_layer and colors <= 1:
                 notes.append(f"{label}: {face} face {face_rect} is one flat colour")
 
     return problems, notes

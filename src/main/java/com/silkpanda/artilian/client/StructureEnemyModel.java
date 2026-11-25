@@ -2,6 +2,7 @@ package com.silkpanda.artilian.client;
 
 import com.silkpanda.artilian.ArtilianMod;
 import com.silkpanda.artilian.enemy.StructureEnemyEntity;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 
@@ -30,5 +31,10 @@ public class StructureEnemyModel<T extends StructureEnemyEntity> extends GeoMode
     @Override
     public ResourceLocation getAnimationResource(T entity) {
         return this.animations;
+    }
+
+    @Override
+    public RenderType getRenderType(T animatable, ResourceLocation texture) {
+        return RenderType.entityCutoutNoCull(texture);
     }
 }

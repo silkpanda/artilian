@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -121,15 +122,24 @@ public class CinderCragEntity extends ArtilianPetEntity {
     @Override
     public void aiStep() {
         super.aiStep();
-        if (this.level().isClientSide && this.random.nextInt(5) == 0) {
+        if (this.level().isClientSide && this.random.nextInt(2) == 0) {
+            int crownSlot = this.random.nextInt(3);
+            double localX = crownSlot == 0 ? -0.20 : (crownSlot == 1 ? 0.20 : 0.0);
+            float yawRad = this.yBodyRot * Mth.DEG_TO_RAD;
+            double px = this.getX() + localX * Mth.cos(yawRad) + (this.random.nextDouble() - 0.5) * 0.14;
+            double pz = this.getZ() + localX * Mth.sin(yawRad) + (this.random.nextDouble() - 0.5) * 0.14;
+            double py = this.getY() + (crownSlot == 2 ? 0.88 : 0.96) + this.random.nextDouble() * 0.16;
             this.level().addParticle(
-                    ParticleTypes.SMALL_FLAME,
-                    this.getRandomX(0.32),
-                    this.getY() + 1.08 + this.random.nextDouble() * 0.15,
-                    this.getRandomZ(0.32),
-                    0.0,
-                    0.02,
-                    0.0);
+                    this.random.nextInt(3) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMALL_FLAME,
+                    px,
+                    py,
+                    pz,
+                    (this.random.nextDouble() - 0.5) * 0.015,
+                    0.02 + this.random.nextDouble() * 0.015,
+                    (this.random.nextDouble() - 0.5) * 0.015);
+            if (this.random.nextInt(14) == 0) {
+                this.level().addParticle(ParticleTypes.LAVA, px, py, pz, 0.0, 0.02, 0.0);
+            }
         }
     }
 

@@ -688,9 +688,17 @@ def build_crystal_colossus():
                     hval = _h(px, py, seed)
 
                     if face == "top":
-                        col = c_spec if (dx == 0 or dy == 0 or hval > 150) else c_hi
+                        if dx + dy <= 1:
+                            col = c_spec
+                        elif dx >= fw - 1 and dy >= fh - 1:
+                            col = c_mid
+                        elif (dx + dy) % 2 == 0 or hval > 150:
+                            col = c_hi
+                        else:
+                            col = _lerp_color(c_hi, c_mid, 0.5)
                     elif face == "bottom":
-                        col = SLATE_DARK
+                        edge = (dx == 0 or dx == fw - 1 or dy == 0 or dy == fh - 1)
+                        col = VOID_DEEP if edge else (c_root if (dx + dy) % 2 == 0 else c_deep)
                     else:
                         # Vertical gradient from glowing tip (ty=0) to stone-crusted root (ty=1)
                         if ty < 0.22:
@@ -1612,6 +1620,13 @@ def build_brimstone_doubloon():
 
 
 def main():
+    import sys
+
+    if "--crystal-colossus" in sys.argv:
+        build_crystal_colossus()
+        print("Generated Crystal Colossus 256x128 texture, glowmask, geo, and animations.")
+        return
+
     build_training_golem()
     build_boss_altar()
     build_golem_core()

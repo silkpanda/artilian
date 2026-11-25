@@ -12,9 +12,6 @@
 						"2.4": { "post": [0, 1.5, 0], "lerp_mode": "catmullrom" }
 					}
 				},
-				"chest_beam": {
-					"scale": [0, 0, 0]
-				},
 				"head": {
 					"rotation": {
 						"0.0": { "post": [0, 0, -2], "lerp_mode": "catmullrom" },
@@ -105,9 +102,6 @@
 						"1.0": { "post": [0, 2.0, 0], "lerp_mode": "catmullrom" }
 					}
 				},
-				"chest_beam": {
-					"scale": [0, 0, 0]
-				},
 				"body": {
 					"rotation": [10, 0, 0]
 				},
@@ -179,9 +173,6 @@
 				"root": {
 					"position": [0, -4.5, 0]
 				},
-				"chest_beam": {
-					"scale": [0, 0, 0]
-				},
 				"head": {
 					"rotation": {
 						"0.0": { "post": [4, 0, 0], "lerp_mode": "catmullrom" },
@@ -224,15 +215,6 @@
 						"0.2": { "post": [-12, 0, 0], "lerp_mode": "catmullrom" },
 						"0.4": { "post": [12, 0, 0], "lerp_mode": "catmullrom" },
 						"0.75": { "post": [0, 0, 0], "lerp_mode": "catmullrom" }
-					}
-				},
-				"chest_beam": {
-					"scale": {
-						"0.0": [0, 0, 0],
-						"0.18": [0.4, 0.4, 0.1],
-						"0.35": [1.2, 1.2, 1.5],
-						"0.55": [0.8, 0.8, 1.2],
-						"0.75": [0, 0, 0]
 					}
 				},
 				"wing_left_upper": {
