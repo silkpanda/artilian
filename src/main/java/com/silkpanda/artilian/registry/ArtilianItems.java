@@ -10,6 +10,11 @@ import com.silkpanda.artilian.gear.ArtilianSwordItem;
 import com.silkpanda.artilian.gear.ArtilianTiers;
 import com.silkpanda.artilian.gear.DragonscaleSwordItem;
 import com.silkpanda.artilian.gear.PrismaticSwordItem;
+import com.silkpanda.artilian.gear.SunsteelAxeItem;
+import com.silkpanda.artilian.gear.SunsteelHoeItem;
+import com.silkpanda.artilian.gear.SunsteelPickaxeItem;
+import com.silkpanda.artilian.gear.SunsteelShovelItem;
+import com.silkpanda.artilian.gear.SunsteelSwordItem;
 import com.silkpanda.artilian.gear.TwinStarBladeItem;
 import com.silkpanda.artilian.mana.ArtilianWandItem;
 import com.silkpanda.artilian.mana.WandSpell;
@@ -238,22 +243,22 @@ public class ArtilianItems {
 
     // Sunsteel weapons & tools
     public static final DeferredItem<SwordItem> SUNSTEEL_SWORD = ITEMS.register("sunsteel_sword",
-            () -> new ArtilianSwordItem(
+            () -> new SunsteelSwordItem(
                     ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(SwordItem.createAttributes(ArtilianTiers.SUNSTEEL, 3, -2.4F)),
                     "item.artilian.sunsteel_sword.tooltip",
                     ChatFormatting.GOLD));
     public static final DeferredItem<PickaxeItem> SUNSTEEL_PICKAXE = ITEMS.register("sunsteel_pickaxe",
-            () -> new PickaxeItem(ArtilianTiers.SUNSTEEL,
+            () -> new SunsteelPickaxeItem(ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(PickaxeItem.createAttributes(ArtilianTiers.SUNSTEEL, 1.0F, -2.8F))));
     public static final DeferredItem<AxeItem> SUNSTEEL_AXE = ITEMS.register("sunsteel_axe",
-            () -> new AxeItem(ArtilianTiers.SUNSTEEL,
+            () -> new SunsteelAxeItem(ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(AxeItem.createAttributes(ArtilianTiers.SUNSTEEL, 5.5F, -3.0F))));
     public static final DeferredItem<ShovelItem> SUNSTEEL_SHOVEL = ITEMS.register("sunsteel_shovel",
-            () -> new ShovelItem(ArtilianTiers.SUNSTEEL,
+            () -> new SunsteelShovelItem(ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(ShovelItem.createAttributes(ArtilianTiers.SUNSTEEL, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> SUNSTEEL_HOE = ITEMS.register("sunsteel_hoe",
-            () -> new HoeItem(ArtilianTiers.SUNSTEEL,
+            () -> new SunsteelHoeItem(ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(HoeItem.createAttributes(ArtilianTiers.SUNSTEEL, -2.0F, -1.0F))));
 
     // Starlight Crystal weapons & tools

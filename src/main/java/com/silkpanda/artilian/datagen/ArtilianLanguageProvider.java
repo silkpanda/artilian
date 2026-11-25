@@ -41,11 +41,15 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.STARLIGHT_CRYSTAL, "Starlight Crystal");
 
         this.addItem(ArtilianItems.SUNSTEEL_SWORD, "Sunsteel Sword");
-        this.add("item.artilian.sunsteel_sword.tooltip", "Sturdy Sunsteel blade");
+        this.add("item.artilian.sunsteel_sword.tooltip", "Right-Click (15 Mana) — Solar Slash golden arc + Speed!");
         this.addItem(ArtilianItems.SUNSTEEL_PICKAXE, "Sunsteel Pickaxe");
+        this.add("item.artilian.sunsteel_pickaxe.tooltip", "Ore Haste + Shift+Click (10 Mana) Solar Flare light!");
         this.addItem(ArtilianItems.SUNSTEEL_AXE, "Sunsteel Axe");
+        this.add("item.artilian.sunsteel_axe.tooltip", "Right-Click (15 Mana) — Sun-Cleave sweep + Slow!");
         this.addItem(ArtilianItems.SUNSTEEL_SHOVEL, "Sunsteel Shovel");
+        this.add("item.artilian.sunsteel_shovel.tooltip", "Warm Scoop — Speed boost + pulls nearby drops!");
         this.addItem(ArtilianItems.SUNSTEEL_HOE, "Sunsteel Hoe");
+        this.add("item.artilian.sunsteel_hoe.tooltip", "Shift+Click Crop (15 Mana) — 3x3 Sunburst Growth!");
 
         this.addItem(ArtilianItems.STARLIGHT_SWORD, "Starlight Sword");
         this.add("item.artilian.starlight_sword.tooltip", "Swift Starlight blade");
