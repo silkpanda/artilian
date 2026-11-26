@@ -181,6 +181,10 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.TWIN_STAR_CORE.get());
                         output.accept(ArtilianItems.TWIN_STAR_BLADE.get());
                         output.accept(ArtilianItems.TWIN_STAR_STAFF.get());
+                        output.accept(ArtilianItems.TWIN_STAR_PICKAXE.get());
+                        output.accept(ArtilianItems.TWIN_STAR_AXE.get());
+                        output.accept(ArtilianItems.TWIN_STAR_SHOVEL.get());
+                        output.accept(ArtilianItems.TWIN_STAR_HOE.get());
                         output.accept(ArtilianItems.TWIN_STAR_HELMET.get());
                         output.accept(ArtilianItems.TWIN_STAR_CHESTPLATE.get());
                         output.accept(ArtilianItems.TWIN_STAR_LEGGINGS.get());

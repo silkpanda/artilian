@@ -28,7 +28,12 @@ import com.silkpanda.artilian.gear.SunsteelHoeItem;
 import com.silkpanda.artilian.gear.SunsteelPickaxeItem;
 import com.silkpanda.artilian.gear.SunsteelShovelItem;
 import com.silkpanda.artilian.gear.SunsteelSwordItem;
+import com.silkpanda.artilian.gear.TwinStarAxeItem;
 import com.silkpanda.artilian.gear.TwinStarBladeItem;
+import com.silkpanda.artilian.gear.TwinStarHoeItem;
+import com.silkpanda.artilian.gear.TwinStarPickaxeItem;
+import com.silkpanda.artilian.gear.TwinStarShovelItem;
+import com.silkpanda.artilian.gear.TwinStarStaffItem;
 import com.silkpanda.artilian.mana.ArtilianWandItem;
 import com.silkpanda.artilian.mana.WandSpell;
 import com.silkpanda.artilian.pet.BiomeTreatItem;
@@ -587,9 +592,25 @@ public class ArtilianItems {
                     "item.artilian.twin_star_blade.tooltip",
                     ChatFormatting.AQUA));
     public static final DeferredItem<ArtilianWandItem> TWIN_STAR_STAFF = ITEMS.register("twin_star_staff",
-            () -> new ArtilianWandItem(
+            () -> new TwinStarStaffItem(
                     WandSpell.TWIN_STAR_HARMONY,
                     new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+    public static final DeferredItem<PickaxeItem> TWIN_STAR_PICKAXE = ITEMS.register("twin_star_pickaxe",
+            () -> new TwinStarPickaxeItem(ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(PickaxeItem.createAttributes(ArtilianTiers.TWIN_STAR, 1.0F, -2.8F))));
+    public static final DeferredItem<AxeItem> TWIN_STAR_AXE = ITEMS.register("twin_star_axe",
+            () -> new TwinStarAxeItem(ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(AxeItem.createAttributes(ArtilianTiers.TWIN_STAR, 5.5F, -2.8F))));
+    public static final DeferredItem<ShovelItem> TWIN_STAR_SHOVEL = ITEMS.register("twin_star_shovel",
+            () -> new TwinStarShovelItem(ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(ShovelItem.createAttributes(ArtilianTiers.TWIN_STAR, 1.5F, -3.0F))));
+    public static final DeferredItem<HoeItem> TWIN_STAR_HOE = ITEMS.register("twin_star_hoe",
+            () -> new TwinStarHoeItem(ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(HoeItem.createAttributes(ArtilianTiers.TWIN_STAR, -5.0F, 0.0F))));
     public static final DeferredItem<ArmorItem> TWIN_STAR_HELMET = ITEMS.register("twin_star_helmet",
             () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.HELMET,
                     new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(46))

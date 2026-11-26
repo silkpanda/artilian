@@ -40,16 +40,20 @@ public class ArtilianItemTagsProvider extends ItemTagsProvider {
                 ArtilianItems.TWIN_STAR_BLADE.get());
         tag(ItemTags.PICKAXES).add(
                 ArtilianItems.SUNSTEEL_PICKAXE.get(), ArtilianItems.STARLIGHT_PICKAXE.get(),
-                ArtilianItems.PRISMATIC_PICKAXE.get(), ArtilianItems.DRAGONSCALE_PICKAXE.get());
+                ArtilianItems.PRISMATIC_PICKAXE.get(), ArtilianItems.DRAGONSCALE_PICKAXE.get(),
+                ArtilianItems.TWIN_STAR_PICKAXE.get());
         tag(ItemTags.AXES).add(
                 ArtilianItems.SUNSTEEL_AXE.get(), ArtilianItems.STARLIGHT_AXE.get(),
-                ArtilianItems.PRISMATIC_AXE.get(), ArtilianItems.DRAGONSCALE_AXE.get());
+                ArtilianItems.PRISMATIC_AXE.get(), ArtilianItems.DRAGONSCALE_AXE.get(),
+                ArtilianItems.TWIN_STAR_AXE.get());
         tag(ItemTags.SHOVELS).add(
                 ArtilianItems.SUNSTEEL_SHOVEL.get(), ArtilianItems.STARLIGHT_SHOVEL.get(),
-                ArtilianItems.PRISMATIC_SHOVEL.get(), ArtilianItems.DRAGONSCALE_SHOVEL.get());
+                ArtilianItems.PRISMATIC_SHOVEL.get(), ArtilianItems.DRAGONSCALE_SHOVEL.get(),
+                ArtilianItems.TWIN_STAR_SHOVEL.get());
         tag(ItemTags.HOES).add(
                 ArtilianItems.SUNSTEEL_HOE.get(), ArtilianItems.STARLIGHT_HOE.get(),
-                ArtilianItems.PRISMATIC_HOE.get(), ArtilianItems.DRAGONSCALE_HOE.get());
+                ArtilianItems.PRISMATIC_HOE.get(), ArtilianItems.DRAGONSCALE_HOE.get(),
+                ArtilianItems.TWIN_STAR_HOE.get());
 
         tag(ItemTags.HEAD_ARMOR).add(
                 ArtilianItems.SUNSTEEL_HELMET.get(), ArtilianItems.STARLIGHT_HELMET.get(),

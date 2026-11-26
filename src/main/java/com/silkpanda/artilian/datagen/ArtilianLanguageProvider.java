@@ -361,13 +361,22 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("item.artilian.sovereigns_ember_heart.tooltip", "Boss Trophy — Heart of the Embercrown Sovereign!");
         this.add("message.artilian.embercrown_sovereign.primal_fury", "Embercrown Sovereign unleashes Primal Fury!");
 
-        // Phase 5 Stage 9: Twin-Star Endgame Rewards
+        // Phase 5 Stage 9 & Phase 6 Stage 1E: Twin-Star Endgame Rewards & Abilities
         this.addItem(ArtilianItems.TWIN_STAR_CORE, "Twin-Star Core");
         this.add("item.artilian.twin_star_core.tooltip", "Unites the Eye Realm and Dragon Jungle in twin-star harmony!");
         this.addItem(ArtilianItems.TWIN_STAR_BLADE, "Twin-Star Blade");
-        this.add("item.artilian.twin_star_blade.tooltip", "Twin-Realm Blade — Ignites, weakens, and reveals foes!");
+        this.add("item.artilian.twin_star_blade.tooltip", "Right-Click (35 Mana): Eclipse Twin-Slash — heals allies & blasts foes; ignites & weakens on hit!");
         this.addItem(ArtilianItems.TWIN_STAR_STAFF, "Twin-Star Harmony Staff");
         this.add("item.artilian.twin_star_staff.tooltip", "50 Mana — Heals allies & pets while blasting nearby foes!");
+        this.add("item.artilian.twin_star_staff.sanctuary_tooltip", "Shift + Right-Click (40 Mana): Twin-Star Sanctuary — cleanses & shields allies!");
+        this.addItem(ArtilianItems.TWIN_STAR_PICKAXE, "Twin-Star Pickaxe");
+        this.add("item.artilian.twin_star_pickaxe.tooltip", "Astral Sight (auto-smelt + Haste III) & Shift + Right-Click (30 Mana): 3x3x2 Quarry + Ore Pulse!");
+        this.addItem(ArtilianItems.TWIN_STAR_AXE, "Twin-Star Axe");
+        this.add("item.artilian.twin_star_axe.tooltip", "Right-Click (35 Mana): Sovereign Gaze | Shift + Right-Click Log (25 Mana): Worldtree Harvest!");
+        this.addItem(ArtilianItems.TWIN_STAR_SHOVEL, "Twin-Star Shovel");
+        this.add("item.artilian.twin_star_shovel.tooltip", "Starlight Glide (Speed II + Haste II) & Shift + Right-Click (25 Mana): 5x5 Eclipse Excavate!");
+        this.addItem(ArtilianItems.TWIN_STAR_HOE, "Twin-Star Hoe");
+        this.add("item.artilian.twin_star_hoe.tooltip", "Shift + Right-Click Crop/Farmland (30 Mana): 11x11 Twin-Realm Genesis & 9x9 Auto-Replant!");
         this.addItem(ArtilianItems.TWIN_STAR_HELMET, "Twin-Star Helmet");
         this.addItem(ArtilianItems.TWIN_STAR_CHESTPLATE, "Twin-Star Chestplate");
         this.addItem(ArtilianItems.TWIN_STAR_LEGGINGS, "Twin-Star Leggings");
