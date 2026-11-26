@@ -27,6 +27,12 @@ Phase 2 Stage 5 pets (Shadow Wisp, Cinder Crag, Zaphox, Galecorn) and Stage 6 pe
 ## frog-duck-drawing-2026-11-17.jpg
 
 - A frog duck. One single character.
-- The teal body is the frog. Its face is in the middle of the body: brown eyes, two teal dots, and the brown cloud shape below them.
-- The orange shape on top of its head is the duck. It is part of the same creature.
-- Four legs with clawed feet.
+- **Frog Duck:**
+  - The teal body is the frog. Its face is in the middle of the body: brown eyes, two teal dots, and the brown cloud shape below them.
+  - The orange shape on top of its head is the duck. It is part of the same creature.
+  - Four legs with clawed feet.
+
+## fangwing-drawing-2026-11-25.jpg (upright: fangwing-drawing-upright-2026-11-25.jpg)
+
+- **Scary Bat (working name: Fangwing):** Purple scary bat drawn sideways on the original page (rotated 90° CCW in `fangwing-drawing-upright-2026-11-25.jpg`).
+- Pointed bat ears on top, two large round eyes with horizontal slit pupils, a wide open mouth with 4 big jagged triangular fangs, and two broad outstretched geometric bat wings (left and right).

@@ -10,9 +10,9 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **`Phase 6 — Stage 1D (Tier 4 Dragonscale Weapons & Tools Abilities, 1.0.3)` implemented & verified on `phase-6-stage-1d-dragonscale-abilities` (`248/248` GameTests green, `adventures-in-artilian-1.0.3.jar` built).** (`release/1.0.0` → `main` PR open with `adventures-in-artilian-1.0.0.jar`, deployed to CurseForge; Stage 1A `1.0.1` green on `phase-6-stage-1a-sunsteel-abilities`; Stage 1C `1.0.2` committed on `phase-6-stage-1c-prismatic-abilities`.) |
-| **Next** | Run live `./gradlew runClient` visual showcase for Stage 1A, Stage 1C & Stage 1D (`qa/evidence/`), open/merge PRs for `phase-6-stage-1a-sunsteel-abilities`, `phase-6-stage-1c-prismatic-abilities`, & `phase-6-stage-1d-dragonscale-abilities` → `main`, begin implementing Stage 1B (Starlight, locked in), and lock in Stage 1E (Twin-Star) plan. |
-| **Waiting on the owner** | 1. Family co-op playtest feedback on `1.0.0` in CurseForge (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, and **Zapkin** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. 5. Alex & Steve's theme pick for the Phase 10 3rd dimension. |
+| **In progress** | **Fangwing (`artilian:fangwing`, scary purple bat pet) implemented & verified on `pets/fangwing`** (`251/251` GameTests green, `lint_art.py --strict --entity fangwing` clean; branched from `phase-6-stage-1d-dragonscale-abilities` with `1.0.3`). |
+| **Next** | Run live `./gradlew runClient` visual showcase for Fangwing (and Stage 1A/1C/1D), open/merge PR for `pets/fangwing` → `main` (and Phase 6 Stage 1A/1C/1D PRs), and continue Stage 1B/1E. |
+| **Waiting on the owner** | 1. Family co-op playtest feedback on `1.0.0` in CurseForge (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, **Zapkin**, and **Fangwing** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. 5. Alex & Steve's theme pick for the Phase 10 3rd dimension. |
 | **Other work in flight** | `release/1.0.0` → `main`, `plan/2026-11-25-phase6-sunsteel`. |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). Pass `--crystal-fox` / `--shadow-wisp` / `--cinder-crag` / `--zaphox` / `--galecorn` / `--ember-drake` / `--peepkin` / `--prismling` / `--flurrywing` / `--sunbeam` / `--frogduck` / `--zapkin` to `tools/art/make_pets_art.py` to regenerate a single pet (`make_crystal_fox()`..`make_flurrywing()` and `make_frogduck()` target `128×64` at `256×128`; `make_sunbeam()` and `make_zapkin()` target `128×128` at `256×256`). |
 
@@ -301,6 +301,12 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   - Pure `ELECTRIC`, hitbox `0.95 x 1.55`, 22 HP, 4.5 ATK, 0.32 speed, Starlight Highlands weight `4`, `ELECTRIC_SPARK` particles.
   - v2 storm-navy armor, glowing cyan/white-hot visor, Z-kink lightning head bolts, back Tesla coils, spinning crimson/cyan/yellow plasma orb hands, `zapkin_glowmask.png` (`make_pets_art.py --zapkin`).
   - Red-proof: `getPrimaryElement` → `NATURE`. Evidence: `qa/evidence/zapkin-2026-11-17.png`.
+- **6F — Fangwing (`artilian:fangwing`, `[x] Code & GameTests Complete` on `pets/fangwing`):**
+  - Kid-drawn scary purple bat (`qa/reference/pets/fangwing-drawing-2026-11-25.jpg`, upright `fangwing-drawing-upright-2026-11-25.jpg`). `SHADOW / AIR`, hitbox `1.25 x 1.25`, eye height `0.72`, 22 HP, 4.5 ATK, 0.32 speed, hover descent damping + zero fall damage, `PORTAL` particles.
+  - **Void Screech:** melee hits apply `WEAKNESS` (60t) + `SLOWNESS` (60t) with 60t cooldown, bat/phantom audio, and `PORTAL`/`WITCH` particles.
+  - **Spawns:** Starlight Highlands (weight `5`, group `1..2`, any light on Starlight Turf/Slate) + Overworld caves/night (`add_fangwing_overworld`, weight `4`, group `1..2`, `rawBrightness <= 7` on animal ground or `BASE_STONE_OVERWORLD`).
+  - **Art Brief & Generator:** `tools/art/make_fangwing_art.py` generates `256x128` `fangwing.png`, `fangwing_glowmask.png`, `fangwing.geo.json`, and `fangwing.animation.json` (sculpted deep void-plum/dark-slate body, pointed ears, glowing twilight-magenta slit-pupil eyes, recessed abyssal mouth with 4 sharp 3D ivory fangs, 2-segment geometric bat wings).
+  - **Red-proofs:** `causeFallDamage` → `super` and skipped `applyVoidScreech` → `fangwingisshadowairglidesandspawnsinstarlightordarkoverworld` and `fangwingbattleswithshadowairmatchupsandvoidscreech` failed (`249/251`); restored green (`251/251`).
 
 ### Phase 2 — Stage 7: Biome Structures & Structure Enemies
 - [x] **Complete** — Merged in PR #3 (`f969c60`, `8284ff4`, `d549792`).

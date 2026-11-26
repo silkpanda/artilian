@@ -22,6 +22,7 @@ import com.silkpanda.artilian.pet.CanopyDragonlingEntity;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.CrystalFoxEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
+import com.silkpanda.artilian.pet.FangwingEntity;
 import com.silkpanda.artilian.pet.FlurrywingEntity;
 import com.silkpanda.artilian.pet.FrogduckEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
@@ -156,6 +157,14 @@ public class ArtilianEntities {
                     .eyeHeight(1.10F)
                     .clientTrackingRange(10)
                     .build("zapkin"));
+
+    /** Fangwing: kid-drawn scary purple bat pet, Shadow / Air, Starlight Highlands & dark Overworld. */
+    public static final DeferredHolder<EntityType<?>, EntityType<FangwingEntity>> FANGWING =
+            ENTITY_TYPES.register("fangwing", () -> EntityType.Builder.of(FangwingEntity::new, MobCategory.CREATURE)
+                    .sized(1.25F, 1.25F)
+                    .eyeHeight(0.72F)
+                    .clientTrackingRange(8)
+                    .build("fangwing"));
 
     /** Prism Sentinel: Crystal/Earth guardian of the Crystal Grove Shrine. */
     public static final DeferredHolder<EntityType<?>, EntityType<PrismSentinelEntity>> PRISM_SENTINEL =

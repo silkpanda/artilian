@@ -6,6 +6,7 @@ import com.silkpanda.artilian.pet.CaptureCrystalItem;
 import com.silkpanda.artilian.pet.CapturedPetData;
 import com.silkpanda.artilian.pet.CinderCragEntity;
 import com.silkpanda.artilian.pet.EmberDrakeEntity;
+import com.silkpanda.artilian.pet.FangwingEntity;
 import com.silkpanda.artilian.pet.FlurrywingEntity;
 import com.silkpanda.artilian.pet.FrogduckEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
@@ -1412,6 +1413,135 @@ public class PetRosterGameTests {
                         && Math.abs(CaptureCrystalItem.getVisualState(crystal) - 0.25F) < 0.01F,
                 "Fainted Zapkin must safely return to its crystal in fainted state");
 
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void fangwingIsShadowAirGlidesAndSpawnsInStarlightOrDarkOverworld(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        FangwingEntity fangwing = ArtilianEntities.FANGWING.get().create(level);
+        helper.assertTrue(fangwing != null
+                        && fangwing.getPrimaryElement() == PetElement.SHADOW
+                        && fangwing.getSecondaryElement().equals(Optional.of(PetElement.AIR)),
+                "Fangwing must be SHADOW / AIR dual-element");
+        helper.assertFalse(fangwing.causeFallDamage(12.0F, 1.0F, level.damageSources().fall()),
+                "Fangwing must take zero fall damage");
+
+        Registry<Biome> biomes = level.registryAccess().registryOrThrow(Registries.BIOME);
+        Holder<Biome> starlight = biomes.getHolderOrThrow(ArtilianBiomes.STARLIGHT_HIGHLANDS);
+        Holder<Biome> plains = biomes.getHolderOrThrow(Biomes.PLAINS);
+        boolean inStarlight = starlight.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.FANGWING.get());
+        boolean inPlains = plains.value().getMobSettings().getMobs(MobCategory.CREATURE).unwrap()
+                .stream().anyMatch(d -> d.type == ArtilianEntities.FANGWING.get());
+        helper.assertTrue(inStarlight && inPlains,
+                "Fangwing must spawn in Starlight Highlands and Overworld biomes");
+
+        BlockPos spawnPos = helper.absolutePos(new BlockPos(7, 2, 7));
+        level.setBlockAndUpdate(spawnPos, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(spawnPos.above(), Blocks.AIR.defaultBlockState());
+
+        level.setBlockAndUpdate(spawnPos.below(), ArtilianBlocks.STARLIGHT_TURF.get().defaultBlockState());
+        helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.FANGWING.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Fangwing must be allowed to spawn on Starlight Turf");
+
+        level.setBlockAndUpdate(spawnPos.below(), ArtilianBlocks.STARLIGHT_SLATE.get().defaultBlockState());
+        helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.FANGWING.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Fangwing must be allowed to spawn on Starlight Slate");
+
+        level.setBlockAndUpdate(spawnPos.below(), Blocks.GLASS.defaultBlockState());
+        helper.assertFalse(SpawnPlacements.checkSpawnRules(
+                        ArtilianEntities.FANGWING.get(), level, MobSpawnType.NATURAL, spawnPos, level.random),
+                "Fangwing must not spawn on glass");
+
+        // Nighttime (maxLocalRawBrightness <= 7) allows Overworld stone / cave spawn after sky brightness updates on next tick
+        BlockPos darkPos = helper.absolutePos(new BlockPos(3, 2, 3));
+        level.setBlockAndUpdate(darkPos, Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(darkPos.above(), Blocks.AIR.defaultBlockState());
+        level.setBlockAndUpdate(darkPos.below(), Blocks.STONE.defaultBlockState());
+        long prevTime = level.getDayTime();
+        level.setDayTime(18000L);
+        helper.runAfterDelay(1, () -> {
+            try {
+                helper.assertTrue(SpawnPlacements.checkSpawnRules(
+                                ArtilianEntities.FANGWING.get(), level, MobSpawnType.NATURAL, darkPos, level.random),
+                        "Fangwing must be allowed to spawn on dark Overworld stone");
+                helper.succeed();
+            } finally {
+                level.setDayTime(prevTime);
+            }
+        });
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void fangwingCapturesBefriendsSummonsAndFaintsSafelyIntoCrystal(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "FangwingRoster");
+
+        FangwingEntity wild = ArtilianEntities.FANGWING.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(6, 1, 7));
+        wild.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(wild);
+
+        ItemStack treats = new ItemStack(ArtilianItems.BIOME_TREAT.get(), 4);
+        player.setItemInHand(InteractionHand.MAIN_HAND, treats);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        helper.assertTrue(wild.isBefriended(), "Two Biome Treats should befriend Fangwing");
+
+        ItemStack crystal = new ItemStack(ArtilianItems.CAPTURE_CRYSTAL.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, crystal);
+        player.interactOn(wild, InteractionHand.MAIN_HAND);
+        CapturedPetData data = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(data != null
+                        && data.primaryElement() == PetElement.SHADOW
+                        && data.secondaryElement().equals(Optional.of(PetElement.AIR))
+                        && data.entityType().equals(ArtilianEntities.FANGWING.getId()),
+                "Capture Crystal should store Fangwing identity and SHADOW / AIR elements");
+
+        crystal.use(level, player, InteractionHand.MAIN_HAND);
+        List<FangwingEntity> summoned = level.getEntitiesOfClass(FangwingEntity.class, wild.getBoundingBox().inflate(10.0));
+        helper.assertTrue(summoned.size() == 1, "Capture Crystal must summon Fangwing");
+
+        FangwingEntity active = summoned.get(0);
+        active.hurt(level.damageSources().mobAttack(active), 999.0F);
+        helper.assertFalse(active.isAlive(), "Fainted Fangwing should withdraw from the world");
+        CapturedPetData fainted = crystal.get(ArtilianDataComponents.CAPTURED_PET.get());
+        helper.assertTrue(fainted != null && fainted.fainted()
+                        && Math.abs(CaptureCrystalItem.getVisualState(crystal) - 0.25F) < 0.01F,
+                "Fainted Fangwing must safely return to its crystal in fainted state");
+
+        helper.succeed();
+    }
+
+    @GameTest(template = "tnt_arena")
+    public static void fangwingBattlesWithShadowAirMatchupsAndVoidScreech(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = ChesterTestSupport.playerInTestArea(helper, "FangwingBattle");
+
+        FangwingEntity fangwing = ArtilianEntities.FANGWING.get().create(level);
+        BlockPos pos = helper.absolutePos(new BlockPos(6, 1, 7));
+        fangwing.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        fangwing.setOwner(player);
+        fangwing.addAffinity(100);
+        level.addFreshEntity(fangwing);
+
+        // NATURE (Bogged) is weak to SHADOW (1.5x -> 6.75F)
+        var bogged = EntityType.BOGGED.create(level);
+        bogged.moveTo(pos.getX() + 1.2, pos.getY(), pos.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(bogged);
+        float before = bogged.getHealth();
+        fangwing.doHurtTarget(bogged);
+        float dealt = before - bogged.getHealth();
+        helper.assertTrue(Math.abs(dealt - 6.75F) < 0.05F,
+                "Fangwing (4.5 base, SHADOW) vs NATURE Bogged must deal 6.75 (1.5x), got " + dealt);
+        helper.assertTrue(bogged.hasEffect(MobEffects.WEAKNESS) && bogged.hasEffect(MobEffects.MOVEMENT_SLOWDOWN),
+                "Fangwing Void Screech must apply Weakness and Slowness");
+
+        bogged.discard();
+        fangwing.discard();
         helper.succeed();
     }
 }

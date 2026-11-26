@@ -98,6 +98,9 @@ public class ArtilianItems {
     public static final DeferredItem<DeferredSpawnEggItem> ZAPKIN_SPAWN_EGG =
             ITEMS.register("zapkin_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.ZAPKIN, 0xFACC15, 0xDC2626, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> FANGWING_SPAWN_EGG =
+            ITEMS.register("fangwing_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.FANGWING, 0x3B1E5C, 0xD946EF, new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> PRISM_SENTINEL_SPAWN_EGG =
             ITEMS.register("prism_sentinel_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.PRISM_SENTINEL, 0x3A2F4D, 0x38D9C0, new Item.Properties()));
