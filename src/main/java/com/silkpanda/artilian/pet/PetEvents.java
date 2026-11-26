@@ -32,6 +32,7 @@ public final class PetEvents {
             event.put(ArtilianEntities.FROGDUCK.get(), FrogduckEntity.createAttributes().build());
             event.put(ArtilianEntities.ZAPKIN.get(), ZapkinEntity.createAttributes().build());
             event.put(ArtilianEntities.FANGWING.get(), FangwingEntity.createAttributes().build());
+            event.put(ArtilianEntities.VINER.get(), VinerEntity.createAttributes().build());
             event.put(ArtilianEntities.BLINKY.get(), BlinkyEntity.createAttributes().build());
             event.put(ArtilianEntities.CANOPY_DRAGONLING.get(), CanopyDragonlingEntity.createAttributes().build());
             event.put(ArtilianEntities.AMBER_DRAGONLING.get(), AmberDragonlingEntity.createAttributes().build());
@@ -129,6 +130,13 @@ public final class PetEvents {
                     SpawnPlacementTypes.ON_GROUND,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     FangwingEntity::checkFangwingSpawnRules,
+                    RegisterSpawnPlacementsEvent.Operation.REPLACE
+            );
+            event.register(
+                    ArtilianEntities.VINER.get(),
+                    SpawnPlacementTypes.ON_GROUND,
+                    Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    VinerEntity::checkVinerSpawnRules,
                     RegisterSpawnPlacementsEvent.Operation.REPLACE
             );
             event.register(

@@ -117,6 +117,8 @@ public final class ArtilianWorldGen {
             ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ArtilianMod.id("add_cinder_crag_nether"));
     public static final ResourceKey<BiomeModifier> ADD_FANGWING_OVERWORLD =
             ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ArtilianMod.id("add_fangwing_overworld"));
+    public static final ResourceKey<BiomeModifier> ADD_VINER_OVERWORLD =
+            ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ArtilianMod.id("add_viner_overworld"));
 
     public static void bootstrapConfiguredFeatures(BootstrapContext<ConfiguredFeature<?, ?>> context) {
         RuleTest stoneReplaceables = new TagMatchTest(BlockTags.STONE_ORE_REPLACEABLES);
@@ -348,6 +350,12 @@ public final class ArtilianWorldGen {
         context.register(ADD_FANGWING_OVERWORLD, BiomeModifiers.AddSpawnsBiomeModifier.singleSpawn(
                 biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
                 fangwingSpawn));
+
+        MobSpawnSettings.SpawnerData vinerSpawn =
+                new MobSpawnSettings.SpawnerData(ArtilianEntities.VINER.get(), 4, 1, 2);
+        context.register(ADD_VINER_OVERWORLD, BiomeModifiers.AddSpawnsBiomeModifier.singleSpawn(
+                biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
+                vinerSpawn));
     }
 
     private static List<PlacementModifier> orePlacement(int veinsPerChunk, PlacementModifier heightRange) {

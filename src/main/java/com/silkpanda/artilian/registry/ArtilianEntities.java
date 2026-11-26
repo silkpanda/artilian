@@ -28,6 +28,7 @@ import com.silkpanda.artilian.pet.FrogduckEntity;
 import com.silkpanda.artilian.pet.GalecornEntity;
 import com.silkpanda.artilian.pet.PeepkinEntity;
 import com.silkpanda.artilian.pet.PrismlingEntity;
+import com.silkpanda.artilian.pet.VinerEntity;
 import com.silkpanda.artilian.pet.ShadowWispEntity;
 import com.silkpanda.artilian.pet.StormDragonlingEntity;
 import com.silkpanda.artilian.pet.SunbeamEntity;
@@ -165,6 +166,14 @@ public class ArtilianEntities {
                     .eyeHeight(0.72F)
                     .clientTrackingRange(8)
                     .build("fangwing"));
+
+    /** Viner: kid-drawn Plant / Water flower-vine pet, Crystal Canopy Woods & near Overworld water. */
+    public static final DeferredHolder<EntityType<?>, EntityType<VinerEntity>> VINER =
+            ENTITY_TYPES.register("viner", () -> EntityType.Builder.of(VinerEntity::new, MobCategory.CREATURE)
+                    .sized(1.10F, 1.45F)
+                    .eyeHeight(1.05F)
+                    .clientTrackingRange(8)
+                    .build("viner"));
 
     /** Prism Sentinel: Crystal/Earth guardian of the Crystal Grove Shrine. */
     public static final DeferredHolder<EntityType<?>, EntityType<PrismSentinelEntity>> PRISM_SENTINEL =

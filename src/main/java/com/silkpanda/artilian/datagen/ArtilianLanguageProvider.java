@@ -183,6 +183,7 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addEntityType(ArtilianEntities.FROGDUCK, "Frogduck");
         this.addEntityType(ArtilianEntities.ZAPKIN, "Zapkin");
         this.addEntityType(ArtilianEntities.FANGWING, "Fangwing");
+        this.addEntityType(ArtilianEntities.VINER, "Viner");
         this.addItem(ArtilianItems.CRYSTAL_FOX_SPAWN_EGG, "Crystal Fox Spawn Egg");
         this.addItem(ArtilianItems.SHADOW_WISP_SPAWN_EGG, "Shadow Wisp Spawn Egg");
         this.addItem(ArtilianItems.CINDER_CRAG_SPAWN_EGG, "Cinder Crag Spawn Egg");
@@ -196,6 +197,7 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.FROGDUCK_SPAWN_EGG, "Frogduck Spawn Egg");
         this.addItem(ArtilianItems.ZAPKIN_SPAWN_EGG, "Zapkin Spawn Egg");
         this.addItem(ArtilianItems.FANGWING_SPAWN_EGG, "Fangwing Spawn Egg");
+        this.addItem(ArtilianItems.VINER_SPAWN_EGG, "Viner Spawn Egg");
         // Phase 2 Stage 6: Structure Enemies
         this.addEntityType(ArtilianEntities.PRISM_SENTINEL, "Prism Sentinel");
         this.addEntityType(ArtilianEntities.CINDER_RAIDER, "Cinder Raider");

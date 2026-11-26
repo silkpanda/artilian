@@ -36,3 +36,8 @@ Phase 2 Stage 5 pets (Shadow Wisp, Cinder Crag, Zaphox, Galecorn) and Stage 6 pe
 
 - **Scary Bat (working name: Fangwing):** Purple scary bat drawn sideways on the original page (rotated 90° CCW in `fangwing-drawing-upright-2026-11-25.jpg`).
 - Pointed bat ears on top, two large round eyes with horizontal slit pupils, a wide open mouth with 4 big jagged triangular fangs, and two broad outstretched geometric bat wings (left and right).
+
+## viner-drawing-2026-11-25.jpg (upright: viner-drawing-upright-2026-11-25.jpg)
+
+- **Viner (official name):** Plant / Water creature drawn sideways on the original page (rotated 90° CCW in `viner-drawing-upright-2026-11-25.jpg`).
+- Blue water-core flower head ringed with yellow-and-teal petals, two long hooked teal vine arms extending outward, and a leafy teal stem at the bottom.
