@@ -306,7 +306,7 @@ Nobody on this project is an artist and there is no budget for commissions. The 
   - **Void Screech:** melee hits apply `WEAKNESS` (60t) + `SLOWNESS` (60t) with 60t cooldown, bat/phantom audio, and `PORTAL`/`WITCH` particles.
   - **Spawns:** Starlight Highlands (weight `5`, group `1..2`, any light on Starlight Turf/Slate) + Overworld caves/night (`add_fangwing_overworld`, weight `4`, group `1..2`, `rawBrightness <= 7` on animal ground or `BASE_STONE_OVERWORLD`).
   - **Art Brief & Generator:** `tools/art/make_fangwing_art.py` generates `256x128` `fangwing.png`, `fangwing_glowmask.png`, `fangwing.geo.json`, and `fangwing.animation.json` (sculpted deep void-plum/dark-slate body, pointed ears, glowing twilight-magenta slit-pupil eyes, recessed abyssal mouth with 4 sharp 3D ivory fangs, 2-segment geometric bat wings).
-  - **Red-proofs:** `causeFallDamage` → `super` and skipped `applyVoidScreech` → `fangwingisshadowairglidesandspawnsinstarlightordarkoverworld` and `fangwingbattleswithshadowairmatchupsandvoidscreech` failed (`249/251`); restored green (`251/251`).
+  - **Red-proofs:** `causeFallDamage` → `super` and skipped `applyVoidScreech` → `fangwingisshadowairglidesandspawnsinstarlightordarkoverworld` and `fangwingbattleswithshadowairmatchupsandvoidscreech` failed (`249/251`); restored green (`251/251`). Evidence: `qa/evidence/previews/fangwing-preview.png`.
 
 ### Phase 2 — Stage 7: Biome Structures & Structure Enemies
 - [x] **Complete** — Merged in PR #3 (`f969c60`, `8284ff4`, `d549792`).
