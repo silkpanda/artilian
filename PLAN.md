@@ -6,14 +6,14 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 ## Now
 
-*Updated 2026-11-25 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
+*Updated 2026-11-26 by Antigravity. A session handoff, not history: every session rewrites this section before it ends (see AGENTS.md). Read it first.*
 
 | | |
 |---|---|
-| **In progress** | **Viner (`artilian:viner`, official-named Plant / Water pet) Art Pass 2 implemented & verified on `pets/viner`** (`256×256` botanical-green plant + tapered water-core blossom, `254/254` GameTests green, `lint_art.py --strict --entity viner` clean; branched from `pets/fangwing`). |
-| **Next** | Run live `./gradlew runClient` visual showcase for Viner & Fangwing (and Stage 1A/1C/1D), open/merge PRs for `pets/viner` / `pets/fangwing` → `main` (and Phase 6 Stage 1A/1C/1D PRs), and continue Stage 1B/1E. |
+| **In progress** | **Phase 6 Stage 1B (Starlight Weapons & Tools Abilities, `1.0.4`) implemented & verified on `phase-6-stage-1b-starlight-abilities`** (`260/260` GameTests green, 2 red-proofs confirmed, `adventures-in-artilian-1.0.4.jar` built; branched from `pets/viner`). |
+| **Next** | Lock in & implement **Phase 6 Stage 1E (Twin-Star)**, run live `./gradlew runClient` visual showcases (Viner & Fangwing + Phase 6 Stage 1A/1B/1C/1D), and open/merge PRs to `main`. |
 | **Waiting on the owner** | 1. Family co-op playtest feedback on `1.0.0` in CurseForge (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, **Zapkin**, and **Fangwing** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. 5. Alex & Steve's theme pick for the Phase 10 3rd dimension. |
-| **Other work in flight** | `release/1.0.0` → `main`, `plan/2026-11-25-phase6-sunsteel`. |
+| **Other work in flight** | `release/1.0.0` → `main`, `plan/2026-11-25-phase6-sunsteel`, `phase-6-stage-1a-sunsteel-abilities`, `phase-6-stage-1c-prismatic-abilities`, `phase-6-stage-1d-dragonscale-abilities`, `pets/fangwing`, `pets/viner`. |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). Pass `--crystal-fox` / `--shadow-wisp` / `--cinder-crag` / `--zaphox` / `--galecorn` / `--ember-drake` / `--peepkin` / `--prismling` / `--flurrywing` / `--sunbeam` / `--frogduck` / `--zapkin` to `tools/art/make_pets_art.py` to regenerate a single pet (`make_crystal_fox()`..`make_flurrywing()` and `make_frogduck()` target `128×64` at `256×128`; `make_sunbeam()` and `make_zapkin()` target `128×128` at `256×256`). |
 
 ---
@@ -888,7 +888,7 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
 
 | Stage | Checkpoint | Name | Scope | Status |
 |---|---|---|---|---|
-| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced). **Stage 1A (Sunsteel) implemented & `235/235` green**; **Stage 1B (Starlight) locked in (`1.0.x`)**; **Stage 1C (Tier 3 Prismatic Brimstone) implemented & `241/241` green (`1.0.2`)**; **Stage 1D (Tier 4 Dragonscale) implemented & `248/248` green (`1.0.3`)**; 1E pending lock-in. | ⏳ 1A, 1C & 1D Green; 1B Locked; 1E Planned |
+| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced). **Stage 1A (Sunsteel) implemented & `235/235` green**; **Stage 1B (Starlight) implemented & `260/260` green (`1.0.4`)**; **Stage 1C (Tier 3 Prismatic Brimstone) implemented & `241/241` green (`1.0.2`)**; **Stage 1D (Tier 4 Dragonscale) implemented & `248/248` green (`1.0.3`)**; 1E pending lock-in. | ⏳ 1A, 1B, 1C & 1D Green; 1E Planned |
 | 2 | `1.0.2` | Armor Set Bonuses & Visual/Passive Identity Pass | Distinct 2-piece & 4-piece passive/reactive perks across all 5 armor sets with clear HUD/particle cues | ⏹ Planned |
 | 3 | `1.0.3` | Pet Signature Abilities, Stances & Elemental Synergies Pass | Upgraded active signature skills for all 16 pets, elemental combo bonuses, pet stance/command whistle controls, battle telegraphs/VFX | ⏹ Planned |
 | 4 | `1.1.0` | Phase 6 Balance, `KidSafeTargets` Security Audit (`P6-01`) & `1.1.0` Checkpoint | Co-op balance pass, red-proven `P6-01` probe across all new abilities, and `1.1.0` CurseForge JAR | ⏹ Planned |
@@ -929,8 +929,8 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
 - **Security Gate:** Feeds into Phase 6 `P6-01` (`KidSafeTargets` offensive filtering + air-only light placement safety; zero `BlockEntity` modification).
 - **Evidence & Done When:** `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` green locally & in CI; live `./gradlew runClient` verifies all 5 Sunsteel abilities in-game; `adventures-in-artilian-1.0.1.jar` built.
 
-#### Phase 6 — Stage 1B: Starlight Weapons & Tools Abilities (`1.0.x`)
-- [ ] **Planned (Locked In)**
+#### Phase 6 — Stage 1B: Starlight Weapons & Tools Abilities (`1.0.4`)
+- [ ] **In Progress (`260/260` GameTests Green & `1.0.4` JAR Built; Live Client Check Pending)**
 - **Why & Decisions:**
   - **Theme:** **Cosmic / Astral / Gravity & Swiftness** across all 5 Starlight items (`starlight_sword`, `starlight_pickaxe`, `starlight_axe`, `starlight_shovel`, `starlight_hoe`) — a clear step up from Sunsteel (`15–20` Mana, `7.0–7.5` damage, mobility, gravity crowd-control, and deep-caving utility).
   - **Shared invariants:**
@@ -952,9 +952,9 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
 
   | Sub-stage | Commit | Summary & Verification |
   |---|---|---|
-  | 1 Core Starlight abilities & tooltips | Pending | `StarlightAbilities`, `StarlightEvents`, `StarlightSwordItem`, `StarlightPickaxeItem`, `StarlightAxeItem`, `StarlightShovelItem`, `StarlightHoeItem`, `ArtilianItems`, `ArtilianLanguageProvider`, `runData` (`en_us.json`). |
-  | 2 GameTests & Red-proofs | Pending | `StarlightAbilitiesGameTests` (`6` new tests) + red-proofs for `KidSafeTargets`, solid-block dash stop, read-only ore scan, pull/float, and `5×5` bloom/hydration. |
-  | 3 Version bump, build & client verification | Pending | Bump patch version (`1.0.x`), `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer`, live `./gradlew runClient` showcase (`qa/evidence/starlight-abilities-*.png`) & PR. |
+  | 1 Core Starlight abilities & tooltips | Pending commit | `StarlightAbilities`, `StarlightEvents`, `StarlightSwordItem`, `StarlightPickaxeItem`, `StarlightAxeItem`, `StarlightShovelItem`, `StarlightHoeItem`, `ArtilianItems`, `ArtilianLanguageProvider`, `runData` (`en_us.json`). |
+  | 2 GameTests & Red-proofs | Pending commit | `StarlightAbilitiesGameTests` (`6` new tests, `260/260` green). Red-proofs: bypassed `KidSafeTargets` in `castStarstepDash` → `starstepdashhitshostilesspareskidsafeandstopsatwalls` failed (exit 1); skipped farmland hydration in `castAstralBloom` → `astralbloomgrowsandhydratesfivebyfive` failed (exit 1); restored green (`260/260`). |
+  | 3 Version bump, build & client verification | Pending | `mod_version=1.0.4` (`adventures-in-artilian-1.0.4.jar`), `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` (`260/260` green); live `./gradlew runClient` showcase (`qa/evidence/starlight-abilities-2026-11-26.png`) & PR pending. |
 
 - **Tests & Red-proofs (`StarlightAbilitiesGameTests`):**
   - `starstepDashHitsHostilesSparesKidSafeAndStopsAtWalls` (red-proof: bypass `KidSafeTargets` or wall-stop check → red)

@@ -52,11 +52,15 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("item.artilian.sunsteel_hoe.tooltip", "Shift+Click Crop (15 Mana) — 3x3 Sunburst Growth!");
 
         this.addItem(ArtilianItems.STARLIGHT_SWORD, "Starlight Sword");
-        this.add("item.artilian.starlight_sword.tooltip", "Swift Starlight blade");
+        this.add("item.artilian.starlight_sword.tooltip", "Right-Click (20 Mana) — Starstep Dash lunge + Levitation & Slow Falling!");
         this.addItem(ArtilianItems.STARLIGHT_PICKAXE, "Starlight Pickaxe");
+        this.add("item.artilian.starlight_pickaxe.tooltip", "Starlit Magnet + Shift+Click (15 Mana) Constellation Pulse ore scan!");
         this.addItem(ArtilianItems.STARLIGHT_AXE, "Starlight Axe");
+        this.add("item.artilian.starlight_axe.tooltip", "Right-Click (20 Mana) — Gravity Vortex pull & Levitation!");
         this.addItem(ArtilianItems.STARLIGHT_SHOVEL, "Starlight Shovel");
+        this.add("item.artilian.starlight_shovel.tooltip", "Meteor Scoop + Shift+Click (15 Mana) Star-Hop low-gravity jump!");
         this.addItem(ArtilianItems.STARLIGHT_HOE, "Starlight Hoe");
+        this.add("item.artilian.starlight_hoe.tooltip", "Shift+Click Crop (20 Mana) — 5x5 Astral Bloom & farmland hydration!");
 
         this.addItem(ArtilianItems.SUNSTEEL_HELMET, "Sunsteel Helmet");
         this.addItem(ArtilianItems.SUNSTEEL_CHESTPLATE, "Sunsteel Chestplate");

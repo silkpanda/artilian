@@ -18,6 +18,11 @@ import com.silkpanda.artilian.gear.PrismaticHoeItem;
 import com.silkpanda.artilian.gear.PrismaticPickaxeItem;
 import com.silkpanda.artilian.gear.PrismaticShovelItem;
 import com.silkpanda.artilian.gear.PrismaticSwordItem;
+import com.silkpanda.artilian.gear.StarlightAxeItem;
+import com.silkpanda.artilian.gear.StarlightHoeItem;
+import com.silkpanda.artilian.gear.StarlightPickaxeItem;
+import com.silkpanda.artilian.gear.StarlightShovelItem;
+import com.silkpanda.artilian.gear.StarlightSwordItem;
 import com.silkpanda.artilian.gear.SunsteelAxeItem;
 import com.silkpanda.artilian.gear.SunsteelHoeItem;
 import com.silkpanda.artilian.gear.SunsteelPickaxeItem;
@@ -277,22 +282,22 @@ public class ArtilianItems {
 
     // Starlight Crystal weapons & tools
     public static final DeferredItem<SwordItem> STARLIGHT_SWORD = ITEMS.register("starlight_sword",
-            () -> new ArtilianSwordItem(
+            () -> new StarlightSwordItem(
                     ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(SwordItem.createAttributes(ArtilianTiers.STARLIGHT, 3, -2.2F)),
                     "item.artilian.starlight_sword.tooltip",
                     ChatFormatting.AQUA));
     public static final DeferredItem<PickaxeItem> STARLIGHT_PICKAXE = ITEMS.register("starlight_pickaxe",
-            () -> new PickaxeItem(ArtilianTiers.STARLIGHT,
+            () -> new StarlightPickaxeItem(ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(PickaxeItem.createAttributes(ArtilianTiers.STARLIGHT, 1.0F, -2.8F))));
     public static final DeferredItem<AxeItem> STARLIGHT_AXE = ITEMS.register("starlight_axe",
-            () -> new AxeItem(ArtilianTiers.STARLIGHT,
+            () -> new StarlightAxeItem(ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(AxeItem.createAttributes(ArtilianTiers.STARLIGHT, 5.0F, -3.0F))));
     public static final DeferredItem<ShovelItem> STARLIGHT_SHOVEL = ITEMS.register("starlight_shovel",
-            () -> new ShovelItem(ArtilianTiers.STARLIGHT,
+            () -> new StarlightShovelItem(ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(ShovelItem.createAttributes(ArtilianTiers.STARLIGHT, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> STARLIGHT_HOE = ITEMS.register("starlight_hoe",
-            () -> new HoeItem(ArtilianTiers.STARLIGHT,
+            () -> new StarlightHoeItem(ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(HoeItem.createAttributes(ArtilianTiers.STARLIGHT, -3.0F, 0.0F))));
 
     // Tier 3 Prismatic Brimstone weapons & tools (boss-forged, fire-resistant)
