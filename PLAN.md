@@ -10,8 +10,8 @@ Written 2026-11-15; consolidated 2026-11-18 into a single phased and staged plan
 
 | | |
 |---|---|
-| **In progress** | **Phase 6 Stage 1E (Twin-Star Weapons & Tools Abilities, `1.0.5`) implemented & verified on `phase-6-stage-1e-twin-star-abilities`** (`268/268` GameTests green, 2 red-proofs confirmed, `adventures-in-artilian-1.0.5.jar` built; all 5 Stage 1 tiers 1A–1E complete). |
-| **Next** | Run live `./gradlew runClient` visual showcases (Viner & Fangwing + Phase 6 Stage 1A–1E), open/merge PRs to `main`, and begin **Phase 6 Stage 2 (Armor Set Bonuses & Visual/Passive Identity Pass)**. |
+| **In progress** | **Phase 6 Stage 1 (1A–1E, `1.0.5`) locked in with PR open to `main`** (`268/268` GameTests green, red-proofs confirmed, `adventures-in-artilian-1.0.5.jar` built; all 5 weapons & tools tiers complete). |
+| **Next** | Merge the Phase 6 Stage 1 PR to `main` once CI is green, run live co-op playtest / `./gradlew runClient` visual showcases, and begin **Phase 6 Stage 2 (Armor Set Bonuses & Visual/Passive Identity Pass)**. |
 | **Waiting on the owner** | 1. Family co-op playtest feedback on `1.0.0` in CurseForge (`qa/evidence/`). 2. The kids' official names for **Prismling**, **Flurrywing**, **Frogduck**, **Zapkin**, and **Fangwing** (placeholders; **Sunbeam** is final; only `en_us` display names change). 3. Steve's official names for **Shadow Wisp** and **Cinder Crag**. 4. Confirm the `PERSONAL_INFO_BLOCKLIST` GitHub Actions secret is set. 5. Alex & Steve's theme pick for the Phase 10 3rd dimension. |
 | **Other work in flight** | `release/1.0.0` → `main`, `plan/2026-11-25-phase6-sunsteel`, `phase-6-stage-1a-sunsteel-abilities`, `phase-6-stage-1b-starlight-abilities`, `phase-6-stage-1c-prismatic-abilities`, `phase-6-stage-1d-dragonscale-abilities`, `phase-6-stage-1e-twin-star-abilities`, `pets/fangwing`, `pets/viner`. |
 | **Loose ends** | `runData` rewrites `src/generated/**` with LF endings and no content change; commit only files with a real diff (`git diff --ignore-cr-at-eol`). Pass `--crystal-fox` / `--shadow-wisp` / `--cinder-crag` / `--zaphox` / `--galecorn` / `--ember-drake` / `--peepkin` / `--prismling` / `--flurrywing` / `--sunbeam` / `--frogduck` / `--zapkin` to `tools/art/make_pets_art.py` to regenerate a single pet (`make_crystal_fox()`..`make_flurrywing()` and `make_frogduck()` target `128×64` at `256×128`; `make_sunbeam()` and `make_zapkin()` target `128×128` at `256×256`). |
@@ -888,7 +888,7 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
 
 | Stage | Checkpoint | Name | Scope | Status |
 |---|---|---|---|---|
-| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced). **Stage 1A (Sunsteel, `1.0.1`) `235/235` green**; **Stage 1B (Starlight, `1.0.4`) `260/260` green**; **Stage 1C (Prismatic, `1.0.2`) `241/241` green**; **Stage 1D (Dragonscale, `1.0.3`) `248/248` green**; **Stage 1E (Twin-Star, `1.0.5`) `268/268` green**. | ⏳ 1A–1E Green; Client Check Pending |
+| 1 | `1.0.1` | Weapons & Tools Active Abilities Pass | Distinct right-click/hit skills & harvest perks across Sunsteel, Starlight, Tier 3, Dragonscale, and Twin-Star gear (`KidSafeTargets`-filtered, Mana/cooldown-balanced). **Stage 1A (Sunsteel, `1.0.1`) `235/235` green**; **Stage 1B (Starlight, `1.0.4`) `260/260` green**; **Stage 1C (Prismatic, `1.0.2`) `241/241` green**; **Stage 1D (Dragonscale, `1.0.3`) `248/248` green**; **Stage 1E (Twin-Star, `1.0.5`) `268/268` green**. | ✅ 1A–1E Locked In (PR Open, `1.0.5`) |
 | 2 | `1.0.2` | Armor Set Bonuses & Visual/Passive Identity Pass | Distinct 2-piece & 4-piece passive/reactive perks across all 5 armor sets with clear HUD/particle cues | ⏹ Planned |
 | 3 | `1.0.3` | Pet Signature Abilities, Stances & Elemental Synergies Pass | Upgraded active signature skills for all 16 pets, elemental combo bonuses, pet stance/command whistle controls, battle telegraphs/VFX | ⏹ Planned |
 | 4 | `1.1.0` | Phase 6 Balance, `KidSafeTargets` Security Audit (`P6-01`) & `1.1.0` Checkpoint | Co-op balance pass, red-proven `P6-01` probe across all new abilities, and `1.1.0` CurseForge JAR | ⏹ Planned |
@@ -1044,7 +1044,7 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
 - **Evidence & Done When:** `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` green locally & in CI; live `./gradlew runClient` verifies all 5 Dragonscale abilities in-game; `adventures-in-artilian-1.0.3.jar` built.
 
 #### Phase 6 — Stage 1E: Twin-Star Weapons & Tools Abilities (`1.0.5`)
-- [ ] **In Progress (`268/268` GameTests Green & `1.0.5` JAR Built; Live Client Check Pending)**
+- [x] **Locked In (`268/268` GameTests Green & `1.0.5` JAR Built; PR Open)**
 - **Why & Decisions:**
   - **Theme:** **Mythic Dual-Realm Finale (Eye Realm + Dragon Jungle)** across all 6 Twin-Star items (`twin_star_blade`, `twin_star_staff`, plus 4 new `Rarity.EPIC` fire-resistant tools: `twin_star_pickaxe`, `twin_star_axe`, `twin_star_shovel`, `twin_star_hoe`) — the capstone step above Dragonscale (`25–40` Mana, `14.0–15.0` skill damage, co-op ally healing/cleansing/buffs, `3×3×2` quarry + `16`-block ore scan, `36`-log harvest, `5×5` excavate, and `11×11` genesis).
   - **Preserved existing behavior:** Keeps `TwinStarBladeItem`'s on-hit `3s` fire + `Weakness` (`60`t) + `Glowing` (`80`t) passive and `TwinStarStaffItem`'s Right-Click *Twin-Star Harmony* spell intact.
@@ -1068,9 +1068,9 @@ Every stage below follows **How Work Flows** (`one stage, one PR, one jar`), bum
 
   | Sub-stage | Commit | Summary & Verification |
   |---|---|---|
-  | 1 Tool textures, abilities, items, datagen & tooltips | Pending commit | `make_ores_and_gear_art.py --twin-star-tools`, `TwinStarAbilities`, `TwinStarEvents`, `TwinStarBladeItem`, `TwinStarStaffItem`, `TwinStarPickaxeItem`, `TwinStarAxeItem`, `TwinStarShovelItem`, `TwinStarHoeItem`, `ArtilianItems`, `ArtilianCreativeTabs`, datagen (`runData`), `en_us.json`. |
-  | 2 GameTests & Red-proofs | Pending commit | `TwinStarAbilitiesGameTests` (`8` new tests, `268/268` green). Red-proofs: bypassed `KidSafeTargets` in `castEclipseTwinSlash` → `eclipsetwinslashhitshostilesspareskidsafestopsatwallsandhealsallies` failed (exit 1); bypassed `BlockEntity`/obsidian guard in `isTwinStarQuarryBreakable` → `twinstarquarrycarvesthreebythreebytwosafelyskippingblockentitiesandobsidian` failed (exit 1); restored green (`268/268`). |
-  | 3 Version bump, build & client verification | Pending | `mod_version=1.0.5` (`adventures-in-artilian-1.0.5.jar`), `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` (`268/268` green); live `./gradlew runClient` showcase & PR pending. |
+  | 1 Tool textures, abilities, items, datagen & tooltips | `0859d75` | `make_ores_and_gear_art.py --twin-star-tools`, `TwinStarAbilities`, `TwinStarEvents`, `TwinStarBladeItem`, `TwinStarStaffItem`, `TwinStarPickaxeItem`, `TwinStarAxeItem`, `TwinStarShovelItem`, `TwinStarHoeItem`, `ArtilianItems`, `ArtilianCreativeTabs`, datagen (`runData`), `en_us.json`. |
+  | 2 GameTests & Red-proofs | `0859d75` | `TwinStarAbilitiesGameTests` (`8` new tests, `268/268` green). Red-proofs: bypassed `KidSafeTargets` in `castEclipseTwinSlash` → `eclipsetwinslashhitshostilesspareskidsafestopsatwallsandhealsallies` failed (exit 1); bypassed `BlockEntity`/obsidian guard in `isTwinStarQuarryBreakable` → `twinstarquarrycarvesthreebythreebytwosafelyskippingblockentitiesandobsidian` failed (exit 1); restored green (`268/268`). |
+  | 3 Version bump, build & PR | `0859d75` | `mod_version=1.0.5` (`adventures-in-artilian-1.0.5.jar`), `./gradlew runData`, `./gradlew build`, `./gradlew runGameTestServer` (`268/268` green); PR open to `main` (live co-op / `runClient` showcase after deployment). |
 
 - **Tests & Red-proofs (`TwinStarAbilitiesGameTests`):**
   - `eclipseTwinSlashHitsHostilesSparesKidSafeStopsAtWallsAndHealsAllies` (red-proof: bypass `KidSafeTargets` → hits Villager → red)
