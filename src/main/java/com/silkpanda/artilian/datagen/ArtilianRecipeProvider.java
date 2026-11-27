@@ -473,6 +473,45 @@ public class ArtilianRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
                 .save(output);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.TWIN_STAR_PICKAXE.get())
+                .pattern("TST")
+                .pattern(" R ")
+                .pattern(" R ")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('R', Items.BLAZE_ROD)
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.TWIN_STAR_AXE.get())
+                .pattern("TD")
+                .pattern("TR")
+                .pattern(" R")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('D', ArtilianItems.DRAGON_SCALE.get())
+                .define('R', Items.BLAZE_ROD)
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.TWIN_STAR_SHOVEL.get())
+                .pattern("T")
+                .pattern("R")
+                .pattern("R")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('R', Items.BLAZE_ROD)
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ArtilianItems.TWIN_STAR_HOE.get())
+                .pattern("TS")
+                .pattern(" R")
+                .pattern(" R")
+                .define('T', ArtilianItems.TWIN_STAR_CORE.get())
+                .define('S', ArtilianItems.STARLIGHT_CRYSTAL.get())
+                .define('R', Items.BLAZE_ROD)
+                .unlockedBy("has_twin_star_core", has(ArtilianItems.TWIN_STAR_CORE.get()))
+                .save(output);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ArtilianItems.TWIN_STAR_HELMET.get())
                 .pattern("DTD")
                 .pattern("S S")

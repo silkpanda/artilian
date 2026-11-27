@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "R": {
+      "item": "minecraft:blaze_rod"
+    },
+    "S": {
+      "item": "artilian:starlight_crystal"
+    },
+    "T": {
+      "item": "artilian:twin_star_core"
+    }
+  },
+  "pattern": [
+    "TST",
+    " R ",
+    " R "
+  ],
+  "result": {
+    "count": 1,
+    "id": "artilian:twin_star_pickaxe"
+  }
+}

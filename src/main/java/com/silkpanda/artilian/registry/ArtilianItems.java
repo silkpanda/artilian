@@ -8,9 +8,32 @@ import com.silkpanda.artilian.chester.ChesterWhistleItem;
 import com.silkpanda.artilian.gear.ArtilianArmorItem;
 import com.silkpanda.artilian.gear.ArtilianSwordItem;
 import com.silkpanda.artilian.gear.ArtilianTiers;
+import com.silkpanda.artilian.gear.DragonscaleAxeItem;
+import com.silkpanda.artilian.gear.DragonscaleHoeItem;
+import com.silkpanda.artilian.gear.DragonscalePickaxeItem;
+import com.silkpanda.artilian.gear.DragonscaleShovelItem;
 import com.silkpanda.artilian.gear.DragonscaleSwordItem;
+import com.silkpanda.artilian.gear.PrismaticAxeItem;
+import com.silkpanda.artilian.gear.PrismaticHoeItem;
+import com.silkpanda.artilian.gear.PrismaticPickaxeItem;
+import com.silkpanda.artilian.gear.PrismaticShovelItem;
 import com.silkpanda.artilian.gear.PrismaticSwordItem;
+import com.silkpanda.artilian.gear.StarlightAxeItem;
+import com.silkpanda.artilian.gear.StarlightHoeItem;
+import com.silkpanda.artilian.gear.StarlightPickaxeItem;
+import com.silkpanda.artilian.gear.StarlightShovelItem;
+import com.silkpanda.artilian.gear.StarlightSwordItem;
+import com.silkpanda.artilian.gear.SunsteelAxeItem;
+import com.silkpanda.artilian.gear.SunsteelHoeItem;
+import com.silkpanda.artilian.gear.SunsteelPickaxeItem;
+import com.silkpanda.artilian.gear.SunsteelShovelItem;
+import com.silkpanda.artilian.gear.SunsteelSwordItem;
+import com.silkpanda.artilian.gear.TwinStarAxeItem;
 import com.silkpanda.artilian.gear.TwinStarBladeItem;
+import com.silkpanda.artilian.gear.TwinStarHoeItem;
+import com.silkpanda.artilian.gear.TwinStarPickaxeItem;
+import com.silkpanda.artilian.gear.TwinStarShovelItem;
+import com.silkpanda.artilian.gear.TwinStarStaffItem;
 import com.silkpanda.artilian.mana.ArtilianWandItem;
 import com.silkpanda.artilian.mana.WandSpell;
 import com.silkpanda.artilian.pet.BiomeTreatItem;
@@ -85,6 +108,12 @@ public class ArtilianItems {
     public static final DeferredItem<DeferredSpawnEggItem> ZAPKIN_SPAWN_EGG =
             ITEMS.register("zapkin_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.ZAPKIN, 0xFACC15, 0xDC2626, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> FANGWING_SPAWN_EGG =
+            ITEMS.register("fangwing_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.FANGWING, 0x3B1E5C, 0xD946EF, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> VINER_SPAWN_EGG =
+            ITEMS.register("viner_spawn_egg", () -> new DeferredSpawnEggItem(
+                    ArtilianEntities.VINER, 0x2EA043, 0x38BDF8, new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> PRISM_SENTINEL_SPAWN_EGG =
             ITEMS.register("prism_sentinel_spawn_egg", () -> new DeferredSpawnEggItem(
                     ArtilianEntities.PRISM_SENTINEL, 0x3A2F4D, 0x38D9C0, new Item.Properties()));
@@ -238,42 +267,42 @@ public class ArtilianItems {
 
     // Sunsteel weapons & tools
     public static final DeferredItem<SwordItem> SUNSTEEL_SWORD = ITEMS.register("sunsteel_sword",
-            () -> new ArtilianSwordItem(
+            () -> new SunsteelSwordItem(
                     ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(SwordItem.createAttributes(ArtilianTiers.SUNSTEEL, 3, -2.4F)),
                     "item.artilian.sunsteel_sword.tooltip",
                     ChatFormatting.GOLD));
     public static final DeferredItem<PickaxeItem> SUNSTEEL_PICKAXE = ITEMS.register("sunsteel_pickaxe",
-            () -> new PickaxeItem(ArtilianTiers.SUNSTEEL,
+            () -> new SunsteelPickaxeItem(ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(PickaxeItem.createAttributes(ArtilianTiers.SUNSTEEL, 1.0F, -2.8F))));
     public static final DeferredItem<AxeItem> SUNSTEEL_AXE = ITEMS.register("sunsteel_axe",
-            () -> new AxeItem(ArtilianTiers.SUNSTEEL,
+            () -> new SunsteelAxeItem(ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(AxeItem.createAttributes(ArtilianTiers.SUNSTEEL, 5.5F, -3.0F))));
     public static final DeferredItem<ShovelItem> SUNSTEEL_SHOVEL = ITEMS.register("sunsteel_shovel",
-            () -> new ShovelItem(ArtilianTiers.SUNSTEEL,
+            () -> new SunsteelShovelItem(ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(ShovelItem.createAttributes(ArtilianTiers.SUNSTEEL, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> SUNSTEEL_HOE = ITEMS.register("sunsteel_hoe",
-            () -> new HoeItem(ArtilianTiers.SUNSTEEL,
+            () -> new SunsteelHoeItem(ArtilianTiers.SUNSTEEL,
                     new Item.Properties().attributes(HoeItem.createAttributes(ArtilianTiers.SUNSTEEL, -2.0F, -1.0F))));
 
     // Starlight Crystal weapons & tools
     public static final DeferredItem<SwordItem> STARLIGHT_SWORD = ITEMS.register("starlight_sword",
-            () -> new ArtilianSwordItem(
+            () -> new StarlightSwordItem(
                     ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(SwordItem.createAttributes(ArtilianTiers.STARLIGHT, 3, -2.2F)),
                     "item.artilian.starlight_sword.tooltip",
                     ChatFormatting.AQUA));
     public static final DeferredItem<PickaxeItem> STARLIGHT_PICKAXE = ITEMS.register("starlight_pickaxe",
-            () -> new PickaxeItem(ArtilianTiers.STARLIGHT,
+            () -> new StarlightPickaxeItem(ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(PickaxeItem.createAttributes(ArtilianTiers.STARLIGHT, 1.0F, -2.8F))));
     public static final DeferredItem<AxeItem> STARLIGHT_AXE = ITEMS.register("starlight_axe",
-            () -> new AxeItem(ArtilianTiers.STARLIGHT,
+            () -> new StarlightAxeItem(ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(AxeItem.createAttributes(ArtilianTiers.STARLIGHT, 5.0F, -3.0F))));
     public static final DeferredItem<ShovelItem> STARLIGHT_SHOVEL = ITEMS.register("starlight_shovel",
-            () -> new ShovelItem(ArtilianTiers.STARLIGHT,
+            () -> new StarlightShovelItem(ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(ShovelItem.createAttributes(ArtilianTiers.STARLIGHT, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> STARLIGHT_HOE = ITEMS.register("starlight_hoe",
-            () -> new HoeItem(ArtilianTiers.STARLIGHT,
+            () -> new StarlightHoeItem(ArtilianTiers.STARLIGHT,
                     new Item.Properties().attributes(HoeItem.createAttributes(ArtilianTiers.STARLIGHT, -3.0F, 0.0F))));
 
     // Tier 3 Prismatic Brimstone weapons & tools (boss-forged, fire-resistant)
@@ -285,19 +314,19 @@ public class ArtilianItems {
                     "item.artilian.prismatic_sword.tooltip",
                     ChatFormatting.LIGHT_PURPLE));
     public static final DeferredItem<PickaxeItem> PRISMATIC_PICKAXE = ITEMS.register("prismatic_pickaxe",
-            () -> new PickaxeItem(ArtilianTiers.PRISMATIC,
+            () -> new PrismaticPickaxeItem(ArtilianTiers.PRISMATIC,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(PickaxeItem.createAttributes(ArtilianTiers.PRISMATIC, 1.0F, -2.8F))));
     public static final DeferredItem<AxeItem> PRISMATIC_AXE = ITEMS.register("prismatic_axe",
-            () -> new AxeItem(ArtilianTiers.PRISMATIC,
+            () -> new PrismaticAxeItem(ArtilianTiers.PRISMATIC,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(AxeItem.createAttributes(ArtilianTiers.PRISMATIC, 5.0F, -3.0F))));
     public static final DeferredItem<ShovelItem> PRISMATIC_SHOVEL = ITEMS.register("prismatic_shovel",
-            () -> new ShovelItem(ArtilianTiers.PRISMATIC,
+            () -> new PrismaticShovelItem(ArtilianTiers.PRISMATIC,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(ShovelItem.createAttributes(ArtilianTiers.PRISMATIC, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> PRISMATIC_HOE = ITEMS.register("prismatic_hoe",
-            () -> new HoeItem(ArtilianTiers.PRISMATIC,
+            () -> new PrismaticHoeItem(ArtilianTiers.PRISMATIC,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(HoeItem.createAttributes(ArtilianTiers.PRISMATIC, -4.0F, 0.0F))));
 
@@ -509,19 +538,19 @@ public class ArtilianItems {
                     "item.artilian.dragonscale_sword.tooltip",
                     ChatFormatting.GREEN));
     public static final DeferredItem<PickaxeItem> DRAGONSCALE_PICKAXE = ITEMS.register("dragonscale_pickaxe",
-            () -> new PickaxeItem(ArtilianTiers.DRAGONSCALE,
+            () -> new DragonscalePickaxeItem(ArtilianTiers.DRAGONSCALE,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(PickaxeItem.createAttributes(ArtilianTiers.DRAGONSCALE, 1.0F, -2.8F))));
     public static final DeferredItem<AxeItem> DRAGONSCALE_AXE = ITEMS.register("dragonscale_axe",
-            () -> new AxeItem(ArtilianTiers.DRAGONSCALE,
+            () -> new DragonscaleAxeItem(ArtilianTiers.DRAGONSCALE,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(AxeItem.createAttributes(ArtilianTiers.DRAGONSCALE, 5.0F, -3.0F))));
     public static final DeferredItem<ShovelItem> DRAGONSCALE_SHOVEL = ITEMS.register("dragonscale_shovel",
-            () -> new ShovelItem(ArtilianTiers.DRAGONSCALE,
+            () -> new DragonscaleShovelItem(ArtilianTiers.DRAGONSCALE,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(ShovelItem.createAttributes(ArtilianTiers.DRAGONSCALE, 1.5F, -3.0F))));
     public static final DeferredItem<HoeItem> DRAGONSCALE_HOE = ITEMS.register("dragonscale_hoe",
-            () -> new HoeItem(ArtilianTiers.DRAGONSCALE,
+            () -> new DragonscaleHoeItem(ArtilianTiers.DRAGONSCALE,
                     new Item.Properties().fireResistant().rarity(Rarity.RARE)
                             .attributes(HoeItem.createAttributes(ArtilianTiers.DRAGONSCALE, -4.0F, 0.0F))));
     public static final DeferredItem<ArmorItem> DRAGONSCALE_HELMET =
@@ -563,9 +592,25 @@ public class ArtilianItems {
                     "item.artilian.twin_star_blade.tooltip",
                     ChatFormatting.AQUA));
     public static final DeferredItem<ArtilianWandItem> TWIN_STAR_STAFF = ITEMS.register("twin_star_staff",
-            () -> new ArtilianWandItem(
+            () -> new TwinStarStaffItem(
                     WandSpell.TWIN_STAR_HARMONY,
                     new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+    public static final DeferredItem<PickaxeItem> TWIN_STAR_PICKAXE = ITEMS.register("twin_star_pickaxe",
+            () -> new TwinStarPickaxeItem(ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(PickaxeItem.createAttributes(ArtilianTiers.TWIN_STAR, 1.0F, -2.8F))));
+    public static final DeferredItem<AxeItem> TWIN_STAR_AXE = ITEMS.register("twin_star_axe",
+            () -> new TwinStarAxeItem(ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(AxeItem.createAttributes(ArtilianTiers.TWIN_STAR, 5.5F, -2.8F))));
+    public static final DeferredItem<ShovelItem> TWIN_STAR_SHOVEL = ITEMS.register("twin_star_shovel",
+            () -> new TwinStarShovelItem(ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(ShovelItem.createAttributes(ArtilianTiers.TWIN_STAR, 1.5F, -3.0F))));
+    public static final DeferredItem<HoeItem> TWIN_STAR_HOE = ITEMS.register("twin_star_hoe",
+            () -> new TwinStarHoeItem(ArtilianTiers.TWIN_STAR,
+                    new Item.Properties().fireResistant().rarity(Rarity.EPIC)
+                            .attributes(HoeItem.createAttributes(ArtilianTiers.TWIN_STAR, -5.0F, 0.0F))));
     public static final DeferredItem<ArmorItem> TWIN_STAR_HELMET = ITEMS.register("twin_star_helmet",
             () -> new ArtilianArmorItem(ArtilianArmorMaterials.TWIN_STAR, ArmorItem.Type.HELMET,
                     new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(46))

@@ -486,6 +486,97 @@ def make_tool_set(prefix, mat_palette):
         img.save(TEX_ROOT / "item" / f"{prefix}_{kind}.png")
 
 
+def make_twin_star_tools(mat_palette):
+    tp = {
+        **mat_palette,
+        "u": (40, 30, 11, 255),
+        "v": (73, 54, 21, 255),
+        "w": (104, 78, 30, 255),
+        "x": (137, 103, 39, 255),
+    }
+    pickaxe = [
+        "................",
+        "................",
+        "......ooooo.....",
+        ".....ohbmmbovw..",
+        "......oOOOmgxu..",
+        "..........vgmO..",
+        ".........vwumbO.",
+        "........vxu.OmO.",
+        ".......vwu..OmO.",
+        "......vxu...ObO.",
+        ".....vwu....OhO.",
+        "....vxu......O..",
+        "...vwu..........",
+        "..vxu...........",
+        "..uu............",
+        "................",
+    ]
+    axe = [
+        "................",
+        ".........oo.....",
+        "........ohho....",
+        ".......ohmbo....",
+        "......ohmgmvw...",
+        "......Ohbgsmu...",
+        ".......OOvmsmO..",
+        "........vwummO..",
+        ".......vxu.OO...",
+        "......vwu.......",
+        ".....vwu........",
+        "....vxu.........",
+        "...vwu..........",
+        "..vxu...........",
+        "..uu............",
+        "................",
+    ]
+    shovel = [
+        "................",
+        "................",
+        "...........ooO..",
+        "..........ohhmO.",
+        ".........ohbghO.",
+        "........ohbgbhO.",
+        ".........vmbhO..",
+        "........vxuhO...",
+        ".......vxu.O....",
+        "......vwu.......",
+        ".....vxu........",
+        "....vwu.........",
+        "..vvxu..........",
+        "..vxu...........",
+        "...uu...........",
+        "................",
+    ]
+    hoe = [
+        "................",
+        ".......ooo......",
+        "......ohgbo.....",
+        ".......OOmbovw..",
+        ".........Ommxu..",
+        "..........vbmO..",
+        ".........vwuO...",
+        "........vxu.....",
+        ".......vwu......",
+        "......vxu.......",
+        ".....vwu........",
+        "....vxu.........",
+        "...vwu..........",
+        "..vxu...........",
+        "..uu............",
+        "................",
+    ]
+    for kind, rows in (
+        ("pickaxe", pickaxe),
+        ("axe", axe),
+        ("shovel", shovel),
+        ("hoe", hoe),
+    ):
+        img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+        paint_checked(img, rows, tp, f"twin_star_{kind}")
+        img.save(TEX_ROOT / "item" / f"twin_star_{kind}.png")
+
+
 def paint_checked(img, rows, palette, name="pattern"):
     assert len(rows) == img.height, f"{name}: expected {img.height} rows, got {len(rows)}"
     for y, row in enumerate(rows):
@@ -1986,4 +2077,19 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--twin-star-tools" in sys.argv:
+        twin_tool_p = {
+            "O": TWIN_OUTLINE,
+            "o": TWIN_TRIM_DARK,
+            "d": TWIN_TRIM,
+            "s": TWIN_SHADE,
+            "m": TWIN_MAIN,
+            "b": TWIN_BRIGHT,
+            "h": TWIN_HI,
+            "g": TWIN_TRIM_HI,
+        }
+        make_twin_star_tools(twin_tool_p)
+        print("Generated Twin-Star tool textures.")
+    else:
+        main()

@@ -34,6 +34,8 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.SUNBEAM_SPAWN_EGG.get());
                         output.accept(ArtilianItems.FROGDUCK_SPAWN_EGG.get());
                         output.accept(ArtilianItems.ZAPKIN_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.FANGWING_SPAWN_EGG.get());
+                        output.accept(ArtilianItems.VINER_SPAWN_EGG.get());
                         output.accept(ArtilianItems.PRISM_SENTINEL_SPAWN_EGG.get());
                         output.accept(ArtilianItems.CINDER_RAIDER_SPAWN_EGG.get());
                         output.accept(ArtilianItems.ASTRAL_STALKER_SPAWN_EGG.get());
@@ -179,6 +181,10 @@ public class ArtilianCreativeTabs {
                         output.accept(ArtilianItems.TWIN_STAR_CORE.get());
                         output.accept(ArtilianItems.TWIN_STAR_BLADE.get());
                         output.accept(ArtilianItems.TWIN_STAR_STAFF.get());
+                        output.accept(ArtilianItems.TWIN_STAR_PICKAXE.get());
+                        output.accept(ArtilianItems.TWIN_STAR_AXE.get());
+                        output.accept(ArtilianItems.TWIN_STAR_SHOVEL.get());
+                        output.accept(ArtilianItems.TWIN_STAR_HOE.get());
                         output.accept(ArtilianItems.TWIN_STAR_HELMET.get());
                         output.accept(ArtilianItems.TWIN_STAR_CHESTPLATE.get());
                         output.accept(ArtilianItems.TWIN_STAR_LEGGINGS.get());

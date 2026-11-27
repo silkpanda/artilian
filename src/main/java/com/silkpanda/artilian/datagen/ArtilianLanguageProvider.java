@@ -41,18 +41,26 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.STARLIGHT_CRYSTAL, "Starlight Crystal");
 
         this.addItem(ArtilianItems.SUNSTEEL_SWORD, "Sunsteel Sword");
-        this.add("item.artilian.sunsteel_sword.tooltip", "Sturdy Sunsteel blade");
+        this.add("item.artilian.sunsteel_sword.tooltip", "Right-Click (15 Mana) — Solar Slash golden arc + Speed!");
         this.addItem(ArtilianItems.SUNSTEEL_PICKAXE, "Sunsteel Pickaxe");
+        this.add("item.artilian.sunsteel_pickaxe.tooltip", "Ore Haste + Shift+Click (10 Mana) Solar Flare light!");
         this.addItem(ArtilianItems.SUNSTEEL_AXE, "Sunsteel Axe");
+        this.add("item.artilian.sunsteel_axe.tooltip", "Right-Click (15 Mana) — Sun-Cleave sweep + Slow!");
         this.addItem(ArtilianItems.SUNSTEEL_SHOVEL, "Sunsteel Shovel");
+        this.add("item.artilian.sunsteel_shovel.tooltip", "Warm Scoop — Speed boost + pulls nearby drops!");
         this.addItem(ArtilianItems.SUNSTEEL_HOE, "Sunsteel Hoe");
+        this.add("item.artilian.sunsteel_hoe.tooltip", "Shift+Click Crop (15 Mana) — 3x3 Sunburst Growth!");
 
         this.addItem(ArtilianItems.STARLIGHT_SWORD, "Starlight Sword");
-        this.add("item.artilian.starlight_sword.tooltip", "Swift Starlight blade");
+        this.add("item.artilian.starlight_sword.tooltip", "Right-Click (20 Mana) — Starstep Dash lunge + Levitation & Slow Falling!");
         this.addItem(ArtilianItems.STARLIGHT_PICKAXE, "Starlight Pickaxe");
+        this.add("item.artilian.starlight_pickaxe.tooltip", "Starlit Magnet + Shift+Click (15 Mana) Constellation Pulse ore scan!");
         this.addItem(ArtilianItems.STARLIGHT_AXE, "Starlight Axe");
+        this.add("item.artilian.starlight_axe.tooltip", "Right-Click (20 Mana) — Gravity Vortex pull & Levitation!");
         this.addItem(ArtilianItems.STARLIGHT_SHOVEL, "Starlight Shovel");
+        this.add("item.artilian.starlight_shovel.tooltip", "Meteor Scoop + Shift+Click (15 Mana) Star-Hop low-gravity jump!");
         this.addItem(ArtilianItems.STARLIGHT_HOE, "Starlight Hoe");
+        this.add("item.artilian.starlight_hoe.tooltip", "Shift+Click Crop (20 Mana) — 5x5 Astral Bloom & farmland hydration!");
 
         this.addItem(ArtilianItems.SUNSTEEL_HELMET, "Sunsteel Helmet");
         this.addItem(ArtilianItems.SUNSTEEL_CHESTPLATE, "Sunsteel Chestplate");
@@ -65,11 +73,15 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.STARLIGHT_BOOTS, "Starlight Boots");
 
         this.addItem(ArtilianItems.PRISMATIC_SWORD, "Prismatic Sword");
-        this.add("item.artilian.prismatic_sword.tooltip", "Boss-forged blade — Lights up and burns foes!");
+        this.add("item.artilian.prismatic_sword.tooltip", "Right-Click (25 Mana) — Prism Beam + Glowing & Embers!");
         this.addItem(ArtilianItems.PRISMATIC_PICKAXE, "Prismatic Pickaxe");
+        this.add("item.artilian.prismatic_pickaxe.tooltip", "Prism Smelt + Shift+Click Ore (20 Mana) Vein Pulse!");
         this.addItem(ArtilianItems.PRISMATIC_AXE, "Prismatic Axe");
+        this.add("item.artilian.prismatic_axe.tooltip", "Right-Click (25 Mana) — Brimstone Slam shockwave!");
         this.addItem(ArtilianItems.PRISMATIC_SHOVEL, "Prismatic Shovel");
+        this.add("item.artilian.prismatic_shovel.tooltip", "Molten Scoop + Shift+Click (20 Mana) 3x3 Excavation!");
         this.addItem(ArtilianItems.PRISMATIC_HOE, "Prismatic Hoe");
+        this.add("item.artilian.prismatic_hoe.tooltip", "Shift+Click Crop (25 Mana) — 7x7 Growth & 5x5 Replant!");
         this.addItem(ArtilianItems.PRISMATIC_HELMET, "Prismatic Helmet");
         this.addItem(ArtilianItems.PRISMATIC_CHESTPLATE, "Prismatic Chestplate");
         this.addItem(ArtilianItems.PRISMATIC_LEGGINGS, "Prismatic Leggings");
@@ -77,11 +89,15 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("item.artilian.prismatic_armor.tooltip", "Full Set — Grants Fire Resistance!");
 
         this.addItem(ArtilianItems.DRAGONSCALE_SWORD, "Dragonscale Sword");
-        this.add("item.artilian.dragonscale_sword.tooltip", "Dragon-forged blade — Scorches and weakens foes!");
+        this.add("item.artilian.dragonscale_sword.tooltip", "Right-Click (30 Mana) — Dragonfire Breath + Scorch & Weaken!");
         this.addItem(ArtilianItems.DRAGONSCALE_PICKAXE, "Dragonscale Pickaxe");
+        this.add("item.artilian.dragonscale_pickaxe.tooltip", "Wyvern Forge + Shift+Click (25 Mana) 3x3 Dragon Bore!");
         this.addItem(ArtilianItems.DRAGONSCALE_AXE, "Dragonscale Axe");
+        this.add("item.artilian.dragonscale_axe.tooltip", "Right-Click (30 Mana) Wingbeat Roar + Shift+Click Log (20 Mana) Canopy Fell!");
         this.addItem(ArtilianItems.DRAGONSCALE_SHOVEL, "Dragonscale Shovel");
+        this.add("item.artilian.dragonscale_shovel.tooltip", "Sovereign Scoop + Shift+Click (25 Mana) 3x3x2 Terra Rake!");
         this.addItem(ArtilianItems.DRAGONSCALE_HOE, "Dragonscale Hoe");
+        this.add("item.artilian.dragonscale_hoe.tooltip", "Shift+Click Crop (25 Mana) — 9x9 Growth & 7x7 Replant!");
         this.addItem(ArtilianItems.DRAGONSCALE_HELMET, "Dragonscale Helmet");
         this.addItem(ArtilianItems.DRAGONSCALE_CHESTPLATE, "Dragonscale Chestplate");
         this.addItem(ArtilianItems.DRAGONSCALE_LEGGINGS, "Dragonscale Leggings");
@@ -170,6 +186,8 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addEntityType(ArtilianEntities.SUNBEAM, "Sunbeam");
         this.addEntityType(ArtilianEntities.FROGDUCK, "Frogduck");
         this.addEntityType(ArtilianEntities.ZAPKIN, "Zapkin");
+        this.addEntityType(ArtilianEntities.FANGWING, "Fangwing");
+        this.addEntityType(ArtilianEntities.VINER, "Viner");
         this.addItem(ArtilianItems.CRYSTAL_FOX_SPAWN_EGG, "Crystal Fox Spawn Egg");
         this.addItem(ArtilianItems.SHADOW_WISP_SPAWN_EGG, "Shadow Wisp Spawn Egg");
         this.addItem(ArtilianItems.CINDER_CRAG_SPAWN_EGG, "Cinder Crag Spawn Egg");
@@ -182,6 +200,8 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.addItem(ArtilianItems.SUNBEAM_SPAWN_EGG, "Sunbeam Spawn Egg");
         this.addItem(ArtilianItems.FROGDUCK_SPAWN_EGG, "Frogduck Spawn Egg");
         this.addItem(ArtilianItems.ZAPKIN_SPAWN_EGG, "Zapkin Spawn Egg");
+        this.addItem(ArtilianItems.FANGWING_SPAWN_EGG, "Fangwing Spawn Egg");
+        this.addItem(ArtilianItems.VINER_SPAWN_EGG, "Viner Spawn Egg");
         // Phase 2 Stage 6: Structure Enemies
         this.addEntityType(ArtilianEntities.PRISM_SENTINEL, "Prism Sentinel");
         this.addEntityType(ArtilianEntities.CINDER_RAIDER, "Cinder Raider");
@@ -341,13 +361,22 @@ public class ArtilianLanguageProvider extends LanguageProvider {
         this.add("item.artilian.sovereigns_ember_heart.tooltip", "Boss Trophy — Heart of the Embercrown Sovereign!");
         this.add("message.artilian.embercrown_sovereign.primal_fury", "Embercrown Sovereign unleashes Primal Fury!");
 
-        // Phase 5 Stage 9: Twin-Star Endgame Rewards
+        // Phase 5 Stage 9 & Phase 6 Stage 1E: Twin-Star Endgame Rewards & Abilities
         this.addItem(ArtilianItems.TWIN_STAR_CORE, "Twin-Star Core");
         this.add("item.artilian.twin_star_core.tooltip", "Unites the Eye Realm and Dragon Jungle in twin-star harmony!");
         this.addItem(ArtilianItems.TWIN_STAR_BLADE, "Twin-Star Blade");
-        this.add("item.artilian.twin_star_blade.tooltip", "Twin-Realm Blade — Ignites, weakens, and reveals foes!");
+        this.add("item.artilian.twin_star_blade.tooltip", "Right-Click (35 Mana): Eclipse Twin-Slash — heals allies & blasts foes; ignites & weakens on hit!");
         this.addItem(ArtilianItems.TWIN_STAR_STAFF, "Twin-Star Harmony Staff");
         this.add("item.artilian.twin_star_staff.tooltip", "50 Mana — Heals allies & pets while blasting nearby foes!");
+        this.add("item.artilian.twin_star_staff.sanctuary_tooltip", "Shift + Right-Click (40 Mana): Twin-Star Sanctuary — cleanses & shields allies!");
+        this.addItem(ArtilianItems.TWIN_STAR_PICKAXE, "Twin-Star Pickaxe");
+        this.add("item.artilian.twin_star_pickaxe.tooltip", "Astral Sight (auto-smelt + Haste III) & Shift + Right-Click (30 Mana): 3x3x2 Quarry + Ore Pulse!");
+        this.addItem(ArtilianItems.TWIN_STAR_AXE, "Twin-Star Axe");
+        this.add("item.artilian.twin_star_axe.tooltip", "Right-Click (35 Mana): Sovereign Gaze | Shift + Right-Click Log (25 Mana): Worldtree Harvest!");
+        this.addItem(ArtilianItems.TWIN_STAR_SHOVEL, "Twin-Star Shovel");
+        this.add("item.artilian.twin_star_shovel.tooltip", "Starlight Glide (Speed II + Haste II) & Shift + Right-Click (25 Mana): 5x5 Eclipse Excavate!");
+        this.addItem(ArtilianItems.TWIN_STAR_HOE, "Twin-Star Hoe");
+        this.add("item.artilian.twin_star_hoe.tooltip", "Shift + Right-Click Crop/Farmland (30 Mana): 11x11 Twin-Realm Genesis & 9x9 Auto-Replant!");
         this.addItem(ArtilianItems.TWIN_STAR_HELMET, "Twin-Star Helmet");
         this.addItem(ArtilianItems.TWIN_STAR_CHESTPLATE, "Twin-Star Chestplate");
         this.addItem(ArtilianItems.TWIN_STAR_LEGGINGS, "Twin-Star Leggings");

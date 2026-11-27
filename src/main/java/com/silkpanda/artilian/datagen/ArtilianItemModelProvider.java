@@ -35,6 +35,8 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.withExistingParent("sunbeam_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("frogduck_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("zapkin_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("fangwing_spawn_egg", mcLoc("item/template_spawn_egg"));
+        this.withExistingParent("viner_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("prism_sentinel_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("cinder_raider_spawn_egg", mcLoc("item/template_spawn_egg"));
         this.withExistingParent("astral_stalker_spawn_egg", mcLoc("item/template_spawn_egg"));
@@ -107,6 +109,10 @@ public class ArtilianItemModelProvider extends ItemModelProvider {
         this.basicItem(ArtilianItems.TWIN_STAR_CORE.get());
         this.handheldItem(ArtilianItems.TWIN_STAR_BLADE.get());
         this.handheldItem(ArtilianItems.TWIN_STAR_STAFF.get());
+        this.handheldItem(ArtilianItems.TWIN_STAR_PICKAXE.get());
+        this.handheldItem(ArtilianItems.TWIN_STAR_AXE.get());
+        this.handheldItem(ArtilianItems.TWIN_STAR_SHOVEL.get());
+        this.handheldItem(ArtilianItems.TWIN_STAR_HOE.get());
         this.basicItem(ArtilianItems.TWIN_STAR_HELMET.get());
         this.basicItem(ArtilianItems.TWIN_STAR_CHESTPLATE.get());
         this.basicItem(ArtilianItems.TWIN_STAR_LEGGINGS.get());
